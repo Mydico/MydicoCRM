@@ -1,0 +1,29 @@
+{
+    "name": "TblCustomerMap",
+    "fields": [
+        {
+            "fieldName": "customerId",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "userId",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "siteId",
+            "fieldType": "Integer"
+        }
+    ],
+    "relationships": [],
+    "changelogDate": "20201203202100",
+    "entityTableName": "tbl_customer_map",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": true,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

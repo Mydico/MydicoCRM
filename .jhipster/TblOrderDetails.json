@@ -1,0 +1,81 @@
+{
+    "name": "TblOrderDetails",
+    "fields": [
+        {
+            "fieldName": "createdAt",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "createdBy",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "updatedAt",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "updatedBy",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "isDel",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "productId",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "detailId",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "quantity",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "price",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "storeId",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "priceTotal",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "reducePercent",
+            "fieldType": "Float"
+        },
+        {
+            "fieldName": "priceReal",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "siteId",
+            "fieldType": "Integer"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "tblOrder",
+            "otherEntityRelationshipName": "tblOrderDetails",
+            "relationshipName": "order",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20201203203100",
+    "entityTableName": "tbl_order_details",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": true,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

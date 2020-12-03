@@ -1,0 +1,61 @@
+{
+    "name": "TblProductQuantity",
+    "fields": [
+        {
+            "fieldName": "quantity",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "createdAt",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "createdBy",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "updatedAt",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "updatedBy",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "isDel",
+            "fieldType": "Boolean"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "tblStore",
+            "otherEntityRelationshipName": "tblProductQuantity",
+            "relationshipValidateRules": "required",
+            "relationshipName": "store",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "tblProductDetails",
+            "otherEntityRelationshipName": "tblProductQuantity",
+            "relationshipValidateRules": "required",
+            "relationshipName": "detail",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20201203203700",
+    "entityTableName": "tbl_product_quantity",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": true,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}
