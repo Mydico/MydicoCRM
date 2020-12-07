@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf dist",
-    "rimraf": "./node_modules/rimraf/bin.js",
+    "heroku-prebuild": "export NPM_CONFIG_PRODUCTION=false; export NODE_ENV=; NPM_CONFIG_PRODUCTION=false NODE_ENV=development npm install --only=dev --dev",
+    "heroku-postbuild": "export NPM_CONFIG_PRODUCTION=true; export NODE_ENV=production;",
     "build": "npm run clean && tsc -p tsconfig.build.json && npm run copy-resources",
     "webpack:prod": "npm run clean && webpack --config webpack.server.prod.config.js && npm run copy-resources",
     "copy-resources": "ts-node scripts/copy-resources.ts",
