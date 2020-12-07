@@ -12,10 +12,11 @@ const commonConf = {
 
 let ormconfig: TypeOrmModuleOptions = {
   name: 'default',
-  type: 'sqlite',
-  database: '../target/sqlite-dev-db.sql',
-  logging: true,
-  synchronize: true,
+  type: 'mysql',
+  database: 'MydicoCRM',
+  url: 'mysql://root@localhost:3306/MydicoCRM',
+  logging: false,
+  synchronize: commonConf.SYNCRONIZE,
   entities: commonConf.ENTITIES,
   migrations: commonConf.MIGRATIONS,
   cli: commonConf.CLI,
@@ -27,7 +28,7 @@ if (process.env.NODE_ENV === 'prod') {
     name: 'default',
     type: 'mysql',
     database: 'MydicoCRM',
-    url: 'mysql://YOUR_USER:YOUR_PWD@localhost:27017/MydicoCRM',
+    url: 'mysql://root@localhost:3306/MydicoCRM',
     logging: false,
     synchronize: commonConf.SYNCRONIZE,
     entities: commonConf.ENTITIES,
@@ -37,11 +38,12 @@ if (process.env.NODE_ENV === 'prod') {
   };
 }
 
-if (process.env.NODE_ENV === 'test') {
+if (process.env.NODE_ENV === 'dev') {
   ormconfig = {
     name: 'default',
-    type: 'sqlite',
-    database: ':memory:',
+    type: 'mysql',
+    database: 'MydicoCRM',
+    url: 'mysql://root@localhost:3306/MydicoCRM',
     logging: true,
     synchronize: true,
     entities: commonConf.ENTITIES,
