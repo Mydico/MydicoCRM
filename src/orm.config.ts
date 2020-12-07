@@ -13,8 +13,7 @@ const commonConf = {
 let ormconfig: TypeOrmModuleOptions = {
   name: 'default',
   type: 'mysql',
-  database: 'MydicoCRM',
-  url: 'mysql://root@localhost:3306/MydicoCRM',
+  url: process.env.DATABASE_URL,
   logging: false,
   synchronize: commonConf.SYNCRONIZE,
   entities: commonConf.ENTITIES,
