@@ -27,8 +27,7 @@ if (process.env.NODE_ENV === 'prod') {
   ormconfig = {
     name: 'default',
     type: 'mysql',
-    database: process.env.Database,
-    url: process.env.URI,
+    url: process.env.DATABASE_URL,
     logging: false,
     synchronize: commonConf.SYNCRONIZE,
     entities: commonConf.ENTITIES,
