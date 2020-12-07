@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf dist",
+    "rimraf": "./node_modules/rimraf/bin.js",
     "build": "npm run clean && tsc -p tsconfig.build.json && npm run copy-resources",
     "webpack:prod": "npm run clean && webpack --config webpack.server.prod.config.js && npm run copy-resources",
     "copy-resources": "ts-node scripts/copy-resources.ts",
