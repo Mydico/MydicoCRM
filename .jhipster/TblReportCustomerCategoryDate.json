@@ -1,0 +1,55 @@
+{
+    "name": "TblReportCustomerCategoryDate",
+    "fields": [
+        {
+            "fieldName": "date",
+            "javadoc": "báo cáo ngày",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "categoryId",
+            "javadoc": "nhóm khách hàng",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "siteId",
+            "javadoc": "chi nhánh",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "totalMoney",
+            "fieldType": "bigint"
+        },
+        {
+            "fieldName": "realMoney",
+            "fieldType": "bigint"
+        },
+        {
+            "fieldName": "reduceMoney",
+            "fieldType": "bigint"
+        },
+        {
+            "fieldName": "createdAt",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "updatedAt",
+            "fieldType": "Integer"
+        }
+    ],
+    "relationships": [],
+    "changelogDate": "20201207181700",
+    "entityTableName": "tbl_report_customer_category_date",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": true,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

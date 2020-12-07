@@ -1,120 +1,143 @@
-# MydicoCRM
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+</p>
 
-This application was generated using the [NodeJS blueprint](https://github.com/jhipster/generator-jhipster-nodejs) of JHipster 6.8.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v6.8.0](https://www.jhipster.tech/documentation-archive/v6.8.0). For any questions you can refer to the stream lead: [Angelo Manganiello](https://github.com/amanganiello90).
+[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
+[travis-url]: https://travis-ci.org/nestjs/nest
+[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
+[linux-url]: https://travis-ci.org/nestjs/nest
 
-## Development
+  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
+    <p align="center">
+        <a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+        <a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+        <a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
+        <a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
+        <a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
+        <a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
+        <a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
+        <a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
+        <a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
+          <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
+          <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
+        </p>
+          <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
+          [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-To start your application in the dev profile, simply run:
+## Description
 
-    cd server && npm install
-    npm run start:app
+[NestJS Framework](https://github.com/nestjs/nest) server project generated from official [JHipster NodeJS blueprint](https://github.com/jhipster/generator-jhipster-nodejs).
 
-Before you can build this project, you must install and configure the following dependencies on your machine:
-
-1. [Node.js][]: We use Node to run a development web server and build the project.
-   Depending on your system, you can install Node either from source or as a pre-packaged bundle.
-
-After installing Node, you should be able to run the following command to install development tools.
-You will only need to run this command when dependencies change in [package.json](package.json).
-
-    npm install
-    cd server && npm install
-
-The `npm run` command will list all of the scripts available to run for this project.
-
-## Using Docker to simplify development (optional)
-
-You can use Docker to improve your JHipster development experience. A number of docker-compose configuration are available in the [src/main/docker](src/main/docker) folder to launch required third party services.
-You can also fully dockerize your application and all the services that it depends on.
-
-For example, to start a mysql database in a docker container, run:
-
-    docker-compose -f src/main/docker/mysql.yml up -d
-
-To stop it and remove the container, run:
-
-    docker-compose -f src/main/docker/mysql.yml down
-
-For the entire app run:
-
-```
-docker-compose -f src/main/docker/app.yml up -d
-```
-
-For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the docker-compose sub-generator (`jhipster docker-compose`), which is able to generate docker configurations for one or several JHipster applications.
-
-## JWT authentication and authorization
-
-Congratulations! You've selected an excellent way to secure your NHipster application. If you're not sure what JSON Web Token (JWT) is, please see [What the Heck is JWT?](https://jwt.io/introduction/)
-
-Your app uses, to get and use the token, the `server/src/config/application.yml` settings:
-
-```yaml
-  ...
-  security:
-    authentication:
-        jwt:
-            # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
-            base64-secret: {yourSecret}
-            # Token is valid 24 hours
-            token-validity-in-seconds: 86400
-            token-validity-in-seconds-for-remember-me: 2592000
-```
-
-You can use the default secret created from the app, or change it.
-So to get a token, you have to pass a POST request on the _api/authenticate_ url with **UserLoginDTO** as body.
-For this you can use **swagger ui** on **/api/v2/api-docs** path, or the client login page (if you have generated it).
-
-### Using NestJS CLI
-
-You can also use [NestJS CLI][] to generate some custom server code.
-
-For example, the following command:
-
-    nest generate module my-module
-
-will generate the file:
-
-    create server/src/my-component/my-component.module.ts
-
-## Building and running
-
-#### Running
+## Installation
 
 ```bash
-npm run start:app
+$ npm install
 ```
 
-#### Building
+## TypeORM configuration
+
+### Define your prod database
+
+For prod database configuration,
+in [src/orm.config.ts](src/orm.config.ts) change your **url** connection:
+
+```ts
+if(process.env.NODE_ENV==='prod'){
+  ormconfig = {
+      ...
+      url: 'YOUR CONNECTION URL',
+      logging: false,
+      synchronize: commonConf.SYNCRONIZE,
+      entities: commonConf.ENTITIES,
+      migrations: commonConf.MIGRATIONS,
+      cli: commonConf.CLI,
+      migrationsRun: commonConf.MIGRATIONS_RUN,
+  };
+}
+
+```
+
+### Migration data and schema
+
+According [typeORM migration guide](https://github.com/typeorm/typeorm/blob/master/docs/migrations.md),
+there are under [src/migrations/](src/migrations/) the scripts to create the database schema and after to insert data seed.
+The scripts are automatically run in the first start up, and after anymore.
+
+## Running the app
 
 ```bash
-npm build:app
+# development
+$ npm run start
+
+# watch mode
+$ npm run start:dev
+
+# build and run in production mode
+$ set NODE_ENV=prod&& npm run build && npm run start:prod
+
+# run production build with node
+$ set NODE_ENV=prod&& node dist/main.js
+
+# build production bundle with webpack
+$ npm run webpack:prod
+
+# run production bundle with node (not require node_modules folder)
+$ node dist/bundle.js
 ```
 
-The build folder with all compiled sources will be **server/dist**.
+> You can specify dev or prod NODE_ENV value (default is dev as indicated in [.env](.env))
+> The webpack build bundle automatically is configured for prod env, and **can run without node_modules**
 
-> For more explanation about full stack server/client build refer to [server/README.md](server/README.md)
+## Lint
 
-### Code quality
+```bash
+# run lint
+$ npm run lint
 
-Sonar is used to analyse code quality. You can start a local Sonar server (accessible on http://localhost:9001) with:
+# fix lint issues
+$ npm run lint:fix
 
 ```
-docker-compose -f src/main/docker/sonar.yml up -d
+
+## Debug
+
+```bash
+# run this and after you can execute debug task in VSCode
+$ npm run start:debug
+
 ```
 
-You can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner).
-Then, run a Sonar analysis in the server folder:
+## Test
 
-    npm run sonar:scanner
+```bash
+# unit tests
+$ npm run test
 
-For more information, refer to the [Code quality page][].
+# lint
+$ npm run lint
 
-[jhipster homepage and latest documentation]: https://www.jhipster.tech
-[jhipster 6.8.0 archive]: https://www.jhipster.tech/documentation-archive/v6.8.0
-[using jhipster in development]: https://www.jhipster.tech/documentation-archive/v6.8.0/development/
-[using docker and docker-compose]: https://www.jhipster.tech/documentation-archive/v6.8.0/docker-compose
-[using jhipster in production]: https://www.jhipster.tech/documentation-archive/v6.8.0/production/
-[running tests page]: https://www.jhipster.tech/documentation-archive/v6.8.0/running-tests/
-[code quality page]: https://www.jhipster.tech/documentation-archive/v6.8.0/code-quality/
-[setting up continuous integration]: https://www.jhipster.tech/documentation-archive/v6.8.0/setting-up-ci/
+# fix lint issues
+$ npm run lint:fix
+
+# test coverage of unit tests
+$ npm run test:cov
+
+# e2e tests with full app coverage report
+$ npm run test:e2e
+
+```
+
+## Support
+
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+
+## Stay in touch
+
+- Community - [jhipster homepage](https://www.jhipster.tech)
+- Stream Lead - [Angelo Manganiello](https://github.com/amanganiello90)
+- Website And Guide - [https://nestjs.com](https://nestjs.com/)
+- Twitter - [@nestframework](https://twitter.com/nestframework)
+
+## License
+
+Nest is [MIT licensed](LICENSE).

@@ -1,0 +1,798 @@
+entity CustomerToken {
+	id Integer required,
+	type Boolean,
+	token String maxlength(255),
+	tokenHash String maxlength(255),
+	expiredAt Integer,
+	createdAt Integer,
+	updatedAt Integer,
+	customerId Integer required
+}
+
+entity Promotion {
+	id Integer required,
+	startTime Integer,
+	endTime Integer,
+	name String maxlength(255),
+	description String maxlength(512),
+	totalRevenue Long,
+	customerTargetType Integer,
+	createdAt Integer,
+	updatedAt Integer,
+	createdBy Integer,
+	updatedBy Integer,
+	siteId Integer,
+	image String maxlength(255)
+}
+
+entity TblAttribute {
+	id Integer required,
+	name String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+entity TblAttributeMap {
+	id Integer required,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	siteId Integer
+}
+
+entity TblAttributeValue {
+	id Integer required,
+	name String required maxlength(255),
+	productId Integer,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+entity TblBill {
+	id Integer required,
+	customerId Integer required,
+	orderId Integer required,
+	storeId Integer required,
+	/**  0 : khởi tạo chờ duyệt, -1 : hủy duyệt, 1: duyệt đơn và xuất kho, trừ số lượng trong kho (không hủy được nữa), 2 : đang vận chuyển , 3 : giao thành công (tạo công nợ cho khách), 4 : khách hủy đơn (phải tạo dơn nhập lại hàng vào kho) */
+	status Integer,
+	isDel Boolean,
+	note String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	/** mã vận đơn */
+	code String maxlength(255),
+	saleId Integer,
+	siteId Integer
+}
+
+entity TblCity {
+	id Integer required,
+	name String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	storeId Integer,
+	codIds String maxlength(250)
+}
+
+entity TblCodlog {
+	id Integer required,
+	transportId Integer,
+	content String maxlength(255),
+	time Integer,
+	orderId Integer,
+	siteId Integer
+}
+
+entity TblCustomer {
+	id Integer required,
+	name String maxlength(255),
+	tel String maxlength(100),
+	cityId Integer,
+	districtId Integer,
+	wardsId Integer,
+	address String maxlength(255),
+	fanpageId Integer,
+	/** năm sinh */
+	yearOfBirth Integer,
+	obclubJoinTime Integer,
+	/** chiều cao (cm) */
+	estimateRevenueMonth Integer,
+	/** cân nặng(kg) */
+	capacity Integer,
+	/** tình trạng hôn nhân (đọc thân, đã kết hôn, đã ly hôn) */
+	marriage Boolean,
+	/** loại da */
+	skinId Integer,
+	/** phân loại khách hàng */
+	categoryId Integer,
+	/** trạng thái */
+	statusId Integer,
+	/** id bảng yêu cầu */
+	requestId Integer,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	productId Integer,
+	userIds String maxlength(250),
+	email String maxlength(250),
+	type Integer,
+	level Integer,
+	code String required maxlength(256),
+	contactName String required maxlength(256),
+	note String maxlength(500),
+	contactYearOfBirth Integer,
+	totalDebt Integer,
+	/** Công nợ đầu kỳ */
+	earlyDebt Integer,
+	siteId Integer
+}
+
+entity TblCustomerAdvisory {
+	id Integer required,
+	name String maxlength(255),
+	desc String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+entity TblCustomerCall {
+	id Integer required,
+	/** trạng thái (đã chốt đơn, chưa chốt yêu cầu) */
+	statusId Integer,
+	/** ghi chú */
+	comment String maxlength(255),
+	customerId Integer,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+entity TblCustomerCategory {
+	id Integer required,
+	name String maxlength(255),
+	desc String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+entity TblCustomerMap {
+	id Integer required,
+	customerId Integer,
+	userId Integer,
+	siteId Integer
+}
+
+entity TblCustomerRequest {
+	id Integer required,
+	name String maxlength(255),
+	tel String maxlength(100),
+	node String maxlength(255),
+	isDel Boolean,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updateBy Integer,
+	userId Integer,
+	email String maxlength(250),
+	/** trạng thái xử lý */
+	status Boolean,
+	siteId Integer
+}
+
+entity TblCustomerSkin {
+	id Integer required,
+	name String maxlength(255),
+	desc String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+entity TblCustomerStatus {
+	id Integer required,
+	name String maxlength(255),
+	desc String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+/** VIEW */
+entity TblCustomerTemp {
+	name String maxlength(255),
+	tel String maxlength(100),
+	address String maxlength(255)
+}
+
+entity TblCustomerType {
+	id Integer required,
+	name String maxlength(255),
+	desc String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+entity TblDistrict {
+	id Integer required,
+	name String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	storeId Integer,
+	codIds String maxlength(250)
+}
+
+entity TblFanpage {
+	id Integer required,
+	name String maxlength(255),
+	link String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	code String maxlength(255),
+	siteId Integer
+}
+
+entity TblMigration {
+	version String required maxlength(180),
+	applyTime Integer
+}
+
+entity TblOrder {
+	id Integer required,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	customerId Integer,
+	customerName String maxlength(255),
+	customerTel String maxlength(255),
+	cityId Integer,
+	districtId Integer,
+	wardsId Integer,
+	address String maxlength(255),
+	codCode String maxlength(255),
+	status Integer,
+	storeId Integer,
+	transportId Integer,
+	/** tổng tiền */
+	totalMoney Double,
+	summary String maxlength(255),
+	requestId Integer,
+	note String maxlength(500),
+	customerNote String maxlength(250),
+	pushStatus Boolean,
+	promotionId Integer,
+	promotionItemId Integer,
+	realMoney Integer,
+	reduceMoney Integer,
+	siteId Integer
+}
+
+entity TblOrderDetails {
+	id Integer required,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	productId Integer,
+	detailId Integer,
+	quantity Integer,
+	price Double,
+	storeId Integer,
+	priceTotal Double,
+	reducePercent Float,
+	priceReal Double,
+	siteId Integer
+}
+
+entity TblOrderPush {
+	id Integer required,
+	orderId Integer,
+	transportId Integer,
+	repon String maxlength(255),
+	isDel Boolean,
+	createdAt Integer,
+	updatedAt Integer,
+	/** mã đơn hàng + random (để 1 đơn hàng push dc nhiều lần) */
+	code String maxlength(100),
+	/** ghi chú nội dung cho tiện theo dõi */
+	note String maxlength(255),
+	status Integer,
+	siteId Integer
+}
+
+entity TblProduct {
+	id Integer required,
+	name String required maxlength(255),
+	image String maxlength(255),
+	desc String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	code String maxlength(255),
+	status Integer,
+	/** Giá gốc của sản phẩm tính theo đơn vị của sản phẩm */
+	price Integer,
+	/** Đơn vị của sản phẩm : 0 - Cái, 1 - Hộp, 2 - Chai , 3 - Túi , 4 - Tuýp , 5 - Hũ , 6 - Lọ, 7 - Cặp  */
+	unit Integer,
+	/** Giá gốc của sản phẩm danh cho đại lý tính theo đơn vị của sản phẩm */
+	agentPrice Integer
+}
+
+entity TblProductDetails {
+	id Integer required,
+	barcode String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	name String maxlength(250)
+}
+
+entity TblProductGroup {
+	id Integer required,
+	name String maxlength(255),
+	description String maxlength(512),
+	createdAt Integer,
+	createdBy String maxlength(255),
+	updatedAt Integer,
+	updatedBy String maxlength(255)
+}
+
+entity TblProductGroupMap {
+	id Integer required,
+	groupId Integer required,
+	productId Integer required,
+	createdAt Integer,
+	createdBy String maxlength(255),
+	updatedAt Integer,
+	updatedBy String maxlength(255)
+}
+
+entity TblProductQuantity {
+	id Integer required,
+	quantity Integer required,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean
+}
+
+entity TblPromotionCustomerLevel {
+	id Integer required,
+	customerId Integer,
+	promotionId Integer,
+	promotionItemId Integer,
+	totalMoney Integer,
+	updatedAt Integer,
+	createdAt Integer,
+	siteId Integer
+}
+
+entity TblPromotionItem {
+	id Integer required,
+	name String maxlength(255),
+	totalMoney Long,
+	reducePercent Integer,
+	note String maxlength(512),
+	productGroupId Integer,
+	promotionId Integer,
+	createdAt Integer,
+	updatedAt Integer,
+	siteId Integer
+}
+
+entity TblReceipt {
+	id Integer required,
+	customerId Integer required,
+	/** mã phiếu thu (số phiếu thu) */
+	code String maxlength(255),
+	/** 0 :un active, 1 : active */
+	status Integer,
+	isDel Boolean,
+	note String maxlength(255),
+	/** Số tiền thu được của khách hàng */
+	money Integer,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	/** 0 - Thu từ công nợ, 1 - Trừ công nợ do trả hàng */
+	type Integer,
+	/** đơn trả hàng */
+	storeInputId Integer,
+	siteId Integer
+}
+
+entity TblReportCustomerCategoryDate {
+	id Integer required,
+	/** báo cáo ngày */
+	date Integer required,
+	/** nhóm khách hàng */
+	categoryId Integer,
+	/** chi nhánh */
+	siteId Integer,
+	totalMoney Long,
+	realMoney Long,
+	reduceMoney Long,
+	createdAt Integer,
+	updatedAt Integer
+}
+
+entity TblReportDate {
+	id Integer required,
+	/** báo cáo ngày */
+	date Integer required,
+	/** chi nhánh */
+	siteId Integer,
+	/** nhân viên */
+	saleId Integer,
+	totalMoney Long,
+	realMoney Long,
+	reduceMoney Long,
+	createdAt Integer,
+	updatedAt Integer,
+	teamId Integer
+}
+
+entity TblSite {
+	id Integer required,
+	name String maxlength(255),
+	address String maxlength(255),
+	createdAt Integer,
+	createdBy String maxlength(255),
+	updatedAt Integer,
+	updatedBy String maxlength(255)
+}
+
+entity TblSiteMapDomain {
+	id Integer required,
+	siteId Integer,
+	domain String maxlength(255),
+	createdAt Integer,
+	createdBy String maxlength(255),
+	updatedAt Integer,
+	updatedBy String maxlength(255)
+}
+
+entity TblStore {
+	id Integer required,
+	name String required maxlength(255),
+	address String maxlength(255),
+	tel String maxlength(100),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	transportId Integer,
+	siteId Integer
+}
+
+entity TblStoreInput {
+	id Integer required,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	summary String maxlength(255),
+	/** Kiểu nhập kho : 0 - Nhập mới, 1 - Nhập trả  */
+	type Integer,
+	/** Trạng thái đơn nhập : 0 - Chưa duyệt, 1 - Đã duyệt, 2 - Hủy duyệt */
+	status Integer,
+	customerId Integer,
+	orderId Integer,
+	totalMoney Integer,
+	note String maxlength(255),
+	siteId Integer
+}
+
+entity TblStoreInputDetails {
+	id Integer required,
+	quantity Integer,
+	isDel Boolean,
+	price Integer,
+	siteId Integer
+}
+
+entity TblTransaction {
+	id Integer required,
+	customerId Integer required,
+	orderId Integer,
+	storeId Integer,
+	billId Integer,
+	/**  0 : chưa thanh toán, 1 : đã thanh toán */
+	status Integer,
+	isDel Boolean,
+	note String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	saleId Integer,
+	totalMoney Integer,
+	/** Số tiền hòa trả do trả hàng */
+	refundMoney Integer,
+	/** 0 : ghi nợ, 1 : thu công nợ, 2 thu tiền mặt */
+	type Integer,
+	/** công nợ đầu kỳ */
+	earlyDebt Integer,
+	/** ghi nợ */
+	debit Integer,
+	/** ghi có */
+	debitYes Integer,
+	/** id phiếu thu */
+	receiptId Integer,
+	siteId Integer
+}
+
+entity TblTransport {
+	id Integer required,
+	name String maxlength(255),
+	desc String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+entity TblTransportLog {
+	id Integer required,
+	/** User vận chuyển đơn hàng */
+	userId Integer required,
+	customerId Integer required,
+	orderId Integer required,
+	billId Integer required,
+	storeId Integer required,
+	/**  1: Đang vận chuyển, 2 : đã giao cho khách , 3 : khách không nhận hàng (chuyển lại về kho), 4 : Đã trả về kho */
+	status Integer,
+	isDel Boolean,
+	note String maxlength(255),
+	createdAt Integer,
+	createdBy String maxlength(255),
+	updatedAt Integer,
+	updatedBy String maxlength(255),
+	siteId Integer
+}
+
+entity TblUser {
+	id Integer required,
+	username String maxlength(250),
+	fullName String maxlength(250),
+	email String maxlength(250),
+	phoneNumber String maxlength(45),
+	authKey String maxlength(32),
+	passwordHash String maxlength(255),
+	passwordResetToken String maxlength(255),
+	status Integer,
+	createdAt Integer,
+	updatedAt Integer,
+	typeId Integer,
+	/** dùng cho telesale chia team */
+	teamId Integer,
+	storeId Integer,
+	siteId Integer
+}
+
+entity TblUserDeviceToken {
+	id Integer required,
+	/** id user management */
+	userId Integer required,
+	/** token nhận notify push theo từng device */
+	deviceToken String maxlength(255),
+	createdAt Integer,
+	updatedAt Integer
+}
+
+entity TblUserNotify {
+	id Integer required,
+	userId Integer,
+	title String maxlength(255),
+	content String maxlength(255),
+	/** 0 - chưa đọc, 1 - đã đọc */
+	isRead Integer,
+	createdAt Integer,
+	updatedAt Integer,
+	type Integer,
+	referenceId Integer required
+}
+
+entity TblUserRole {
+	id Integer required,
+	name String required maxlength(255),
+	permission String required maxlength(255),
+	siteId Integer
+}
+
+entity TblUserTeam {
+	id Integer required,
+	name String maxlength(255),
+	/** id user là leader */
+	leaderId Integer,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+entity TblUserType {
+	id Integer required,
+	name String maxlength(255),
+	percent Integer,
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean,
+	siteId Integer
+}
+
+entity TblWards {
+	id Integer required,
+	name String maxlength(255),
+	createdAt Integer,
+	createdBy Integer,
+	updatedAt Integer,
+	updatedBy Integer,
+	isDel Boolean
+}
+
+entity UserToken {
+	id Integer required,
+	type Boolean,
+	token String maxlength(255),
+	tokenHash String maxlength(255),
+	expiredAt Integer,
+	createdAt Integer,
+	updatedAt Integer,
+	userId Integer required
+}
+
+
+
+// Relations
+relationship ManyToOne {
+	TblAttribute{product} to TblProduct
+}
+
+relationship ManyToOne {
+	TblAttributeMap{detail required} to TblProductDetails
+}
+
+relationship ManyToOne {
+	TblAttributeMap{value required} to TblAttributeValue
+}
+
+relationship ManyToOne {
+	TblAttributeValue{attribute} to TblAttribute
+}
+
+relationship ManyToOne {
+	TblCustomerRequest{product} to TblProduct
+}
+
+relationship ManyToOne {
+	TblCustomerRequest{type} to TblCustomerType
+}
+
+relationship ManyToOne {
+	TblCustomerRequest{fanpage} to TblFanpage
+}
+
+relationship ManyToOne {
+	TblDistrict{city} to TblCity
+}
+
+relationship ManyToOne {
+	TblOrderDetails{order} to TblOrder
+}
+
+relationship ManyToOne {
+	TblProductDetails{product required} to TblProduct
+}
+
+relationship ManyToOne {
+	TblProductQuantity{store required} to TblStore
+}
+
+relationship ManyToOne {
+	TblProductQuantity{detail required} to TblProductDetails
+}
+
+relationship ManyToOne {
+	TblStore{city} to TblCity
+}
+
+relationship ManyToOne {
+	TblStore{district} to TblDistrict
+}
+
+relationship ManyToOne {
+	TblStore{wards} to TblWards
+}
+
+relationship ManyToOne {
+	TblStoreInput{storeOutput} to TblStore
+}
+
+relationship ManyToOne {
+	TblStoreInput{storeInput} to TblStore
+}
+
+relationship ManyToOne {
+	TblStoreInputDetails{nhapkho required} to TblStoreInput
+}
+
+relationship ManyToOne {
+	TblStoreInputDetails{chitiet required} to TblProductDetails
+}
+
+relationship ManyToOne {
+	TblUser{role} to TblUserRole
+}
+
+relationship ManyToOne {
+	TblWards{district} to TblDistrict
+}
+
+
+
+// Options
+service * with serviceClass
+paginate * with pagination
+dto * with mapstruct
+filter *
+
