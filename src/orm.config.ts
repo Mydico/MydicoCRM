@@ -27,8 +27,8 @@ if (process.env.NODE_ENV === 'prod') {
   ormconfig = {
     name: 'default',
     type: 'mysql',
-    database: 'MydicoCRM',
-    url: 'mysql://root@localhost:3306/MydicoCRM',
+    database: process.env.Database,
+    url: process.env.URI,
     logging: false,
     synchronize: commonConf.SYNCRONIZE,
     entities: commonConf.ENTITIES,
