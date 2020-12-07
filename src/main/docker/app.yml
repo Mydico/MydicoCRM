@@ -1,0 +1,8 @@
+version: '2'
+services:
+  mydicocrm-app:
+    build: ../../..
+    container_name: mydicocrm-app
+    environment:
+    ports:
+      - 8081:8081
