@@ -1,0 +1,50 @@
+{
+    "name": "StoreInputDetails",
+    "fields": [
+        {
+            "fieldName": "quantity",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "isDel",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "price",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "siteId",
+            "fieldType": "Integer"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "storeInput",
+            "otherEntityRelationshipName": "storeInputDetails",
+            "relationshipValidateRules": "required",
+            "relationshipName": "nhapkho",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "productDetails",
+            "otherEntityRelationshipName": "storeInputDetails",
+            "relationshipValidateRules": "required",
+            "relationshipName": "chitiet",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20201208202900",
+    "entityTableName": "store_input_details",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": true,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

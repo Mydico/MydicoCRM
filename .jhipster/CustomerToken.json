@@ -42,7 +42,7 @@
         }
     ],
     "relationships": [],
-    "changelogDate": "20201207174500",
+    "changelogDate": "20201208195100",
     "entityTableName": "customer_token",
     "dto": "mapstruct",
     "pagination": "pagination",

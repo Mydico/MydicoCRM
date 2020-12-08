@@ -1,0 +1,85 @@
+{
+    "name": "Receipt",
+    "fields": [
+        {
+            "fieldName": "customerId",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "code",
+            "javadoc": "mã phiếu thu (số phiếu thu)",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "maxlength"
+            ],
+            "fieldValidateRulesMaxlength": "255"
+        },
+        {
+            "fieldName": "status",
+            "javadoc": "0 :un active, 1 : active",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "isDel",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "note",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "maxlength"
+            ],
+            "fieldValidateRulesMaxlength": "255"
+        },
+        {
+            "fieldName": "money",
+            "javadoc": "Số tiền thu được của khách hàng",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "createdAt",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "createdBy",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "updatedAt",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "updatedBy",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "type",
+            "javadoc": "0 - Thu từ công nợ, 1 - Trừ công nợ do trả hàng",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "storeInputId",
+            "javadoc": "đơn trả hàng",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "siteId",
+            "fieldType": "Integer"
+        }
+    ],
+    "relationships": [],
+    "changelogDate": "20201208202200",
+    "entityTableName": "receipt",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": true,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

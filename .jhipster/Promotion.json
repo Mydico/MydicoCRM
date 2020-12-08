@@ -27,7 +27,7 @@
         },
         {
             "fieldName": "totalRevenue",
-            "fieldType": "bigint"
+            "fieldType": "Long"
         },
         {
             "fieldName": "customerTargetType",
@@ -63,7 +63,7 @@
         }
     ],
     "relationships": [],
-    "changelogDate": "20201207174600",
+    "changelogDate": "20201208195200",
     "entityTableName": "promotion",
     "dto": "mapstruct",
     "pagination": "pagination",

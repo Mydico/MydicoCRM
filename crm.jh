@@ -25,7 +25,7 @@ entity Promotion {
 	image String maxlength(255)
 }
 
-entity TblAttribute {
+entity Attribute {
 	id Integer required,
 	name String maxlength(255),
 	createdAt Integer,
@@ -36,7 +36,7 @@ entity TblAttribute {
 	siteId Integer
 }
 
-entity TblAttributeMap {
+entity AttributeMap {
 	id Integer required,
 	createdAt Integer,
 	createdBy Integer,
@@ -45,7 +45,7 @@ entity TblAttributeMap {
 	siteId Integer
 }
 
-entity TblAttributeValue {
+entity AttributeValue {
 	id Integer required,
 	name String required maxlength(255),
 	productId Integer,
@@ -57,7 +57,7 @@ entity TblAttributeValue {
 	siteId Integer
 }
 
-entity TblBill {
+entity Bill {
 	id Integer required,
 	customerId Integer required,
 	orderId Integer required,
@@ -76,7 +76,7 @@ entity TblBill {
 	siteId Integer
 }
 
-entity TblCity {
+entity City {
 	id Integer required,
 	name String maxlength(255),
 	createdAt Integer,
@@ -88,7 +88,7 @@ entity TblCity {
 	codIds String maxlength(250)
 }
 
-entity TblCodlog {
+entity Codlog {
 	id Integer required,
 	transportId Integer,
 	content String maxlength(255),
@@ -97,15 +97,10 @@ entity TblCodlog {
 	siteId Integer
 }
 
-entity TblCustomer {
-	id Integer required,
+entity Customer {
 	name String maxlength(255),
 	tel String maxlength(100),
-	cityId Integer,
-	districtId Integer,
-	wardsId Integer,
 	address String maxlength(255),
-	fanpageId Integer,
 	/** năm sinh */
 	yearOfBirth Integer,
 	obclubJoinTime Integer,
@@ -115,35 +110,39 @@ entity TblCustomer {
 	capacity Integer,
 	/** tình trạng hôn nhân (đọc thân, đã kết hôn, đã ly hôn) */
 	marriage Boolean,
-	/** loại da */
-	skinId Integer,
-	/** phân loại khách hàng */
-	categoryId Integer,
-	/** trạng thái */
-	statusId Integer,
-	/** id bảng yêu cầu */
-	requestId Integer,
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
-	productId Integer,
-	userIds String maxlength(250),
+    activated Boolean,
 	email String maxlength(250),
-	type Integer,
 	level Integer,
 	code String required maxlength(256),
 	contactName String required maxlength(256),
 	note String maxlength(500),
 	contactYearOfBirth Integer,
 	totalDebt Integer,
-	/** Công nợ đầu kỳ */
 	earlyDebt Integer,
 	siteId Integer
 }
 
-entity TblCustomerAdvisory {
+relationship ManyToOne {
+	Customer{city} to City
+    Customer{district} to District
+    Customer{ward} to Wards
+    Customer{fanpage} to Fanpage
+    Customer{ward} to Wards
+    Customer{skin} to CustomerSkin
+    Customer{category} to CustomerCategory
+    Customer{status} to CustomerStatus
+    Customer{type} to CustomerType
+    Customer{request} to CustomerRequest
+    
+}
+
+relationship ManyToMany {
+	Customer{user} to User{customer}
+}
+
+entity CustomerAdvisory {
 	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
@@ -155,7 +154,7 @@ entity TblCustomerAdvisory {
 	siteId Integer
 }
 
-entity TblCustomerCall {
+entity CustomerCall {
 	id Integer required,
 	/** trạng thái (đã chốt đơn, chưa chốt yêu cầu) */
 	statusId Integer,
@@ -170,7 +169,7 @@ entity TblCustomerCall {
 	siteId Integer
 }
 
-entity TblCustomerCategory {
+entity CustomerCategory {
 	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
@@ -182,14 +181,14 @@ entity TblCustomerCategory {
 	siteId Integer
 }
 
-entity TblCustomerMap {
+entity CustomerMap {
 	id Integer required,
 	customerId Integer,
 	userId Integer,
 	siteId Integer
 }
 
-entity TblCustomerRequest {
+entity CustomerRequest {
 	id Integer required,
 	name String maxlength(255),
 	tel String maxlength(100),
@@ -206,7 +205,7 @@ entity TblCustomerRequest {
 	siteId Integer
 }
 
-entity TblCustomerSkin {
+entity CustomerSkin {
 	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
@@ -218,7 +217,7 @@ entity TblCustomerSkin {
 	siteId Integer
 }
 
-entity TblCustomerStatus {
+entity CustomerStatus {
 	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
@@ -231,13 +230,13 @@ entity TblCustomerStatus {
 }
 
 /** VIEW */
-entity TblCustomerTemp {
+entity CustomerTemp {
 	name String maxlength(255),
 	tel String maxlength(100),
 	address String maxlength(255)
 }
 
-entity TblCustomerType {
+entity CustomerType {
 	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
@@ -249,7 +248,7 @@ entity TblCustomerType {
 	siteId Integer
 }
 
-entity TblDistrict {
+entity District {
 	id Integer required,
 	name String maxlength(255),
 	createdAt Integer,
@@ -261,7 +260,7 @@ entity TblDistrict {
 	codIds String maxlength(250)
 }
 
-entity TblFanpage {
+entity Fanpage {
 	id Integer required,
 	name String maxlength(255),
 	link String maxlength(255),
@@ -274,12 +273,12 @@ entity TblFanpage {
 	siteId Integer
 }
 
-entity TblMigration {
+entity Migration {
 	version String required maxlength(180),
 	applyTime Integer
 }
 
-entity TblOrder {
+entity Order {
 	id Integer required,
 	createdAt Integer,
 	createdBy Integer,
@@ -311,7 +310,7 @@ entity TblOrder {
 	siteId Integer
 }
 
-entity TblOrderDetails {
+entity OrderDetails {
 	id Integer required,
 	createdAt Integer,
 	createdBy Integer,
@@ -329,7 +328,7 @@ entity TblOrderDetails {
 	siteId Integer
 }
 
-entity TblOrderPush {
+entity OrderPush {
 	id Integer required,
 	orderId Integer,
 	transportId Integer,
@@ -345,7 +344,7 @@ entity TblOrderPush {
 	siteId Integer
 }
 
-entity TblProduct {
+entity Product {
 	id Integer required,
 	name String required maxlength(255),
 	image String maxlength(255),
@@ -365,7 +364,7 @@ entity TblProduct {
 	agentPrice Integer
 }
 
-entity TblProductDetails {
+entity ProductDetails {
 	id Integer required,
 	barcode String maxlength(255),
 	createdAt Integer,
@@ -376,7 +375,7 @@ entity TblProductDetails {
 	name String maxlength(250)
 }
 
-entity TblProductGroup {
+entity ProductGroup {
 	id Integer required,
 	name String maxlength(255),
 	description String maxlength(512),
@@ -386,7 +385,7 @@ entity TblProductGroup {
 	updatedBy String maxlength(255)
 }
 
-entity TblProductGroupMap {
+entity ProductGroupMap {
 	id Integer required,
 	groupId Integer required,
 	productId Integer required,
@@ -396,7 +395,7 @@ entity TblProductGroupMap {
 	updatedBy String maxlength(255)
 }
 
-entity TblProductQuantity {
+entity ProductQuantity {
 	id Integer required,
 	quantity Integer required,
 	createdAt Integer,
@@ -406,7 +405,7 @@ entity TblProductQuantity {
 	isDel Boolean
 }
 
-entity TblPromotionCustomerLevel {
+entity PromotionCustomerLevel {
 	id Integer required,
 	customerId Integer,
 	promotionId Integer,
@@ -417,7 +416,7 @@ entity TblPromotionCustomerLevel {
 	siteId Integer
 }
 
-entity TblPromotionItem {
+entity PromotionItem {
 	id Integer required,
 	name String maxlength(255),
 	totalMoney Long,
@@ -430,7 +429,7 @@ entity TblPromotionItem {
 	siteId Integer
 }
 
-entity TblReceipt {
+entity Receipt {
 	id Integer required,
 	customerId Integer required,
 	/** mã phiếu thu (số phiếu thu) */
@@ -452,7 +451,7 @@ entity TblReceipt {
 	siteId Integer
 }
 
-entity TblReportCustomerCategoryDate {
+entity ReportCustomerCategoryDate {
 	id Integer required,
 	/** báo cáo ngày */
 	date Integer required,
@@ -467,7 +466,7 @@ entity TblReportCustomerCategoryDate {
 	updatedAt Integer
 }
 
-entity TblReportDate {
+entity ReportDate {
 	id Integer required,
 	/** báo cáo ngày */
 	date Integer required,
@@ -483,7 +482,7 @@ entity TblReportDate {
 	teamId Integer
 }
 
-entity TblSite {
+entity Site {
 	id Integer required,
 	name String maxlength(255),
 	address String maxlength(255),
@@ -493,7 +492,7 @@ entity TblSite {
 	updatedBy String maxlength(255)
 }
 
-entity TblSiteMapDomain {
+entity SiteMapDomain {
 	id Integer required,
 	siteId Integer,
 	domain String maxlength(255),
@@ -503,7 +502,7 @@ entity TblSiteMapDomain {
 	updatedBy String maxlength(255)
 }
 
-entity TblStore {
+entity Store {
 	id Integer required,
 	name String required maxlength(255),
 	address String maxlength(255),
@@ -517,7 +516,7 @@ entity TblStore {
 	siteId Integer
 }
 
-entity TblStoreInput {
+entity StoreInput {
 	id Integer required,
 	createdAt Integer,
 	createdBy Integer,
@@ -536,7 +535,7 @@ entity TblStoreInput {
 	siteId Integer
 }
 
-entity TblStoreInputDetails {
+entity StoreInputDetails {
 	id Integer required,
 	quantity Integer,
 	isDel Boolean,
@@ -544,7 +543,7 @@ entity TblStoreInputDetails {
 	siteId Integer
 }
 
-entity TblTransaction {
+entity Transaction {
 	id Integer required,
 	customerId Integer required,
 	orderId Integer,
@@ -575,7 +574,7 @@ entity TblTransaction {
 	siteId Integer
 }
 
-entity TblTransport {
+entity Transport {
 	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
@@ -587,7 +586,7 @@ entity TblTransport {
 	siteId Integer
 }
 
-entity TblTransportLog {
+entity TransportLog {
 	id Integer required,
 	/** User vận chuyển đơn hàng */
 	userId Integer required,
@@ -606,7 +605,7 @@ entity TblTransportLog {
 	siteId Integer
 }
 
-entity TblUser {
+entity User {
 	id Integer required,
 	username String maxlength(250),
 	fullName String maxlength(250),
@@ -625,7 +624,7 @@ entity TblUser {
 	siteId Integer
 }
 
-entity TblUserDeviceToken {
+entity UserDeviceToken {
 	id Integer required,
 	/** id user management */
 	userId Integer required,
@@ -635,7 +634,7 @@ entity TblUserDeviceToken {
 	updatedAt Integer
 }
 
-entity TblUserNotify {
+entity UserNotify {
 	id Integer required,
 	userId Integer,
 	title String maxlength(255),
@@ -648,14 +647,14 @@ entity TblUserNotify {
 	referenceId Integer required
 }
 
-entity TblUserRole {
+entity UserRole {
 	id Integer required,
 	name String required maxlength(255),
 	permission String required maxlength(255),
 	siteId Integer
 }
 
-entity TblUserTeam {
+entity UserTeam {
 	id Integer required,
 	name String maxlength(255),
 	/** id user là leader */
@@ -668,7 +667,7 @@ entity TblUserTeam {
 	siteId Integer
 }
 
-entity TblUserType {
+entity UserType {
 	id Integer required,
 	name String maxlength(255),
 	percent Integer,
@@ -680,7 +679,7 @@ entity TblUserType {
 	siteId Integer
 }
 
-entity TblWards {
+entity Wards {
 	id Integer required,
 	name String maxlength(255),
 	createdAt Integer,
@@ -705,87 +704,87 @@ entity UserToken {
 
 // Relations
 relationship ManyToOne {
-	TblAttribute{product} to TblProduct
+	Attribute{product} to Product
 }
 
 relationship ManyToOne {
-	TblAttributeMap{detail required} to TblProductDetails
+	AttributeMap{detail required} to ProductDetails
 }
 
 relationship ManyToOne {
-	TblAttributeMap{value required} to TblAttributeValue
+	AttributeMap{value required} to AttributeValue
 }
 
 relationship ManyToOne {
-	TblAttributeValue{attribute} to TblAttribute
+	AttributeValue{attribute} to Attribute
 }
 
 relationship ManyToOne {
-	TblCustomerRequest{product} to TblProduct
+	CustomerRequest{product} to Product
 }
 
 relationship ManyToOne {
-	TblCustomerRequest{type} to TblCustomerType
+	CustomerRequest{type} to CustomerType
 }
 
 relationship ManyToOne {
-	TblCustomerRequest{fanpage} to TblFanpage
+	CustomerRequest{fanpage} to Fanpage
 }
 
 relationship ManyToOne {
-	TblDistrict{city} to TblCity
+	District{city} to City
 }
 
 relationship ManyToOne {
-	TblOrderDetails{order} to TblOrder
+	OrderDetails{order} to Order
 }
 
 relationship ManyToOne {
-	TblProductDetails{product required} to TblProduct
+	ProductDetails{product required} to Product
 }
 
 relationship ManyToOne {
-	TblProductQuantity{store required} to TblStore
+	ProductQuantity{store required} to Store
 }
 
 relationship ManyToOne {
-	TblProductQuantity{detail required} to TblProductDetails
+	ProductQuantity{detail required} to ProductDetails
 }
 
 relationship ManyToOne {
-	TblStore{city} to TblCity
+	Store{city} to City
 }
 
 relationship ManyToOne {
-	TblStore{district} to TblDistrict
+	Store{district} to District
 }
 
 relationship ManyToOne {
-	TblStore{wards} to TblWards
+	Store{wards} to Wards
 }
 
 relationship ManyToOne {
-	TblStoreInput{storeOutput} to TblStore
+	StoreInput{storeOutput} to Store
 }
 
 relationship ManyToOne {
-	TblStoreInput{storeInput} to TblStore
+	StoreInput{storeInput} to Store
 }
 
 relationship ManyToOne {
-	TblStoreInputDetails{nhapkho required} to TblStoreInput
+	StoreInputDetails{nhapkho required} to StoreInput
 }
 
 relationship ManyToOne {
-	TblStoreInputDetails{chitiet required} to TblProductDetails
+	StoreInputDetails{chitiet required} to ProductDetails
 }
 
-relationship ManyToOne {
-	TblUser{role} to TblUserRole
-}
+// relationship ManyToOne {
+// 	User{role} to UserRole
+// }
 
 relationship ManyToOne {
-	TblWards{district} to TblDistrict
+	Wards{district} to District
 }
 
 

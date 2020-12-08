@@ -1,0 +1,54 @@
+{
+    "name": "AttributeMap",
+    "fields": [
+        {
+            "fieldName": "createdAt",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "createdBy",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "updatedAt",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "updatedBy",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "siteId",
+            "fieldType": "Integer"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "productDetails",
+            "otherEntityRelationshipName": "attributeMap",
+            "relationshipValidateRules": "required",
+            "relationshipName": "detail",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "attributeValue",
+            "otherEntityRelationshipName": "attributeMap",
+            "relationshipValidateRules": "required",
+            "relationshipName": "value",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20201208195400",
+    "entityTableName": "attribute_map",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceClass",
+    "jpaMetamodelFiltering": true,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}
