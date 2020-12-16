@@ -23,7 +23,7 @@ export class AuthService {
 
     const userFind = await this.userService.findByfields({ where: { login: loginUserName, password: loginPassword } });
     if (!userFind) {
-      throw new HttpException('Invalid login name or password.', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Tên tài khoản hoặc mật khẩu không đúng', HttpStatus.BAD_REQUEST);
     }
 
     const user = await this.findUserWithAuthById(userFind.id);

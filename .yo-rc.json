@@ -5,7 +5,7 @@
     "baseName": "MydicoCRM",
     "packageName": "com.jhipster.node",
     "packageFolder": "com/jhipster/node",
-    "serverPort": "8081",
+    "serverPort": "8082",
     "authenticationType": "jwt",
     "cacheProvider": "no",
     "enableHibernateCache": false,
