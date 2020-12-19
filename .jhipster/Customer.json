@@ -122,6 +122,13 @@
         },
         {
             "relationshipType": "many-to-one",
+            "otherEntityName": "branch",
+            "otherEntityRelationshipName": "customer",
+            "relationshipName": "branch",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
             "otherEntityName": "district",
             "otherEntityRelationshipName": "customer",
             "relationshipName": "district",

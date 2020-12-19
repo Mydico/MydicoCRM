@@ -124,8 +124,16 @@ entity Customer {
 	siteId Integer
 }
 
+entity Branch {
+	name String maxlength(255),
+	code String maxlength(255),
+	desc String maxlength(255),
+	isDel Boolean,
+}
+
 relationship ManyToOne {
-	Customer{city} to City
+		Customer{city} to City
+		Customer{branch} to Branch
     Customer{district} to District
     Customer{ward} to Wards
     Customer{fanpage} to Fanpage

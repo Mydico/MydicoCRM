@@ -1,4 +1,4 @@
-import { ObjectIdColumn, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { ObjectIdColumn, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 export abstract class BaseEntity {
@@ -9,10 +9,12 @@ export abstract class BaseEntity {
 
   @Column({ nullable: true })
   createdBy?: string;
-  @Column({ nullable: true })
+  @CreateDateColumn()
+  @Column({ nullable: true, default: () => 'CURRENT_TIMESTAMP' })
   createdDate?: Date;
   @Column({ nullable: true })
   lastModifiedBy?: string;
+  @UpdateDateColumn()
   @Column({ nullable: true })
   lastModifiedDate?: Date;
 }

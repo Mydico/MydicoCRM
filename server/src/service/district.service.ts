@@ -22,9 +22,8 @@ export class DistrictService {
     return await this.districtRepository.findOne(options);
   }
 
-  async findAndCount(options: FindManyOptions<District>): Promise<[District[], number]> {
-    options.relations = relationshipNames;
-    return await this.districtRepository.findAndCount(options);
+  async findAndCount(options: FindManyOptions<District>): Promise<District[]> {
+    return await this.districtRepository.find(options);
   }
 
   async save(district: District): Promise<District | undefined> {

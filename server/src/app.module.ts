@@ -51,6 +51,7 @@ import { UserTeamModule } from './module/user-team.module';
 import { UserTypeModule } from './module/user-type.module';
 import { WardsModule } from './module/wards.module';
 import { UserTokenModule } from './module/user-token.module';
+import { BranchModule } from './module/branch.module';
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
 // jhipster-needle-add-service-module-to-main-import - JHipster will import service modules here, do not remove
@@ -107,7 +108,8 @@ import { UserTokenModule } from './module/user-token.module';
     UserTeamModule,
     UserTypeModule,
     WardsModule,
-    UserTokenModule
+    UserTokenModule,
+    BranchModule
     // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
   ],
   controllers: [

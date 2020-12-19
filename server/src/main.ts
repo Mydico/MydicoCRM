@@ -8,6 +8,8 @@ import { Logger, ValidationPipe, BadRequestException } from '@nestjs/common';
 import * as express from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
+import helmet from 'helmet';
+
 const logger: Logger = new Logger('Main');
 const port = process.env.NODE_SERVER_PORT || config.get('server.port');
 const useJHipsterRegistry = config.get('eureka.client.enabled');
@@ -18,6 +20,10 @@ async function bootstrap(): Promise<void> {
 
   const appOptions = { cors: true };
   const app = await NestFactory.create(AppModule, appOptions);
+  app.use(helmet());
+  app.enableCors({
+    exposedHeaders:'X-Total-Count'
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (): BadRequestException => new BadRequestException('Validation error')

@@ -14,13 +14,14 @@ export default class Wards extends BaseEntity {
   @Column({ name: 'name', length: 255, nullable: true })
   name: string;
 
+  @Column({ name: 'code', length: 255, nullable: true })
+  code: string;
 
+  @Column({ name: 'district', length: 255, nullable: true })
+  district: string;
 
   @Column({ type: 'boolean', name: 'is_del', nullable: true })
   isDel: boolean;
-
-  @ManyToOne(type => District)
-  district: District;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

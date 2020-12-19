@@ -12,7 +12,7 @@ export default class CustomerCategory extends BaseEntity {
   @Column({ name: 'name', length: 255, nullable: true })
   name: string;
 
-  @Column({ name: 'jhi_desc', length: 255, nullable: true })
+  @Column({ name: 'description', length: 255, nullable: true })
   desc: string;
 
 

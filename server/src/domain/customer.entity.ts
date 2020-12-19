@@ -13,8 +13,9 @@ import CustomerCategory from './customer-category.entity';
 import CustomerStatus from './customer-status.entity';
 import CustomerType from './customer-type.entity';
 import CustomerRequest from './customer-request.entity';
-
+import Branch from './branch.entity';
 import { User } from './user.entity';
+import { ApiModelProperty } from '@nestjs/swagger';
 
 /**
  * A Customer.
@@ -33,89 +34,97 @@ export default class Customer extends BaseEntity {
   /**
    * năm sinh
    */
-  @Column({ type: 'integer', name: 'year_of_birth', nullable: true })
-  yearOfBirth: number;
+  @Column({ name: 'date_of_birth', nullable: true })
+  dateOfBirth: string;
 
-  @Column({ type: 'integer', name: 'obclub_join_time', nullable: true })
-  obclubJoinTime: number;
+  @Column({ name: 'obclub_join_time', nullable: true })
+  obclubJoinTime?: string;
 
   /**
    * chiều cao (cm)
    */
   @Column({ type: 'integer', name: 'estimate_revenue_month', nullable: true })
-  estimateRevenueMonth: number;
+  estimateRevenueMonth?: number;
 
   /**
    * cân nặng(kg)
    */
   @Column({ type: 'integer', name: 'capacity', nullable: true })
-  capacity: number;
+  capacity?: number;
 
   /**
    * tình trạng hôn nhân (đọc thân, đã kết hôn, đã ly hôn)
    */
   @Column({ type: 'boolean', name: 'marriage', nullable: true })
-  marriage: boolean;
+  marriage?: boolean;
 
   @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
+  isDel?: boolean;
 
   @Column({ type: 'boolean', name: 'activated', nullable: true })
-  activated: boolean;
+  activated?: boolean;
 
   @Column({ name: 'email', length: 250, nullable: true })
-  email: string;
+  email?: string;
 
   @Column({ type: 'integer', name: 'level', nullable: true })
-  level: number;
+  level?: number;
 
-  @Column({ name: 'code', length: 256 })
+  @Column({ name: 'code', length: 256, unique: true, nullable: false })
   code: string;
 
-  @Column({ name: 'contact_name', length: 256 })
-  contactName: string;
+  @Column({ name: 'contact_name', length: 256, nullable: true })
+  contactName?: string;
+
+  @Column({ name: 'created_year', length: 256, nullable: true })
+  createdYear?: string;
 
   @Column({ name: 'note', length: 500, nullable: true })
-  note: string;
+  note?: string;
 
   @Column({ type: 'integer', name: 'contact_year_of_birth', nullable: true })
-  contactYearOfBirth: number;
+  contactYearOfBirth?: number;
 
   @Column({ type: 'integer', name: 'total_debt', nullable: true })
-  totalDebt: number;
+  totalDebt?: number;
 
   @Column({ type: 'integer', name: 'early_debt', nullable: true })
-  earlyDebt: number;
+  earlyDebt?: number;
 
   @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+  siteId?: number;
 
   @ManyToOne(type => City)
-  city: City;
+  city?: City;
+
+  @ManyToOne(type => Branch)
+  branch: Branch;
 
   @ManyToOne(type => District)
-  district: District;
+  district?: District;
 
   @ManyToOne(type => Wards)
-  ward: Wards;
+  ward?: Wards;
 
   @ManyToOne(type => Fanpage)
-  fanpage: Fanpage;
+  fanpage?: Fanpage;
 
   @ManyToOne(type => CustomerSkin)
-  skin: CustomerSkin;
+  skin?: CustomerSkin;
 
+  @ApiModelProperty({ example: '66ed8031-d40e-4f30-8ae4-8bf5c2ca87ff', description: 'Entity id' })
   @ManyToOne(type => CustomerCategory)
-  category: CustomerCategory;
+  category?: CustomerCategory;
 
+  @ApiModelProperty({ example: '66ed8031-d40e-4f30-8ae4-8bf5c2ca87ff', description: 'Entity id' })
   @ManyToOne(type => CustomerStatus)
-  status: CustomerStatus;
+  status?: CustomerStatus;
 
   @ManyToOne(type => CustomerType)
-  type: CustomerType;
+  type?: CustomerType;
 
   @ManyToOne(type => CustomerRequest)
-  request: CustomerRequest;
+  request?: CustomerRequest;
 
   @ManyToMany(type => User)
   @JoinTable({
@@ -123,7 +132,7 @@ export default class Customer extends BaseEntity {
     joinColumn: { name: 'customer_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' }
   })
-  users: User[];
+  users?: User[];
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

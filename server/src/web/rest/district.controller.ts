@@ -26,13 +26,11 @@ export class DistrictController {
     type: District
   })
   async getAll(@Req() req: Request): Promise<District[]> {
-    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const [results, count] = await this.districtService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder()
+    const results = await this.districtService.findAndCount({
+      where: {
+        city: req.query.city || ''
+      }
     });
-    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
     return results;
   }
 

@@ -12,16 +12,16 @@ export default class CustomerStatus extends BaseEntity {
   @Column({ name: 'name', length: 255, nullable: true })
   name: string;
 
-  @Column({ name: 'jhi_desc', length: 255, nullable: true })
-  desc: string;
+  @Column({ name: 'description', length: 255, nullable: true })
+  description: string;
 
 
 
   @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
+  isDel?: boolean;
 
   @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+  siteId?: number;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }
