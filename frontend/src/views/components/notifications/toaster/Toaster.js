@@ -35,7 +35,7 @@ export const Toaster = React.forwardRef((props, ref) => {
 
   const [position, setPosition] = useState('top-right');
   const [autohide, setAutohide] = useState(true);
-  const [autohideValue, setAutohideValue] = useState(5000);
+  const [autohideValue, setAutohideValue] = useState(1000);
   const [closeButton, setCloseButton] = useState(true);
   const [fade, setFade] = useState(true);
 

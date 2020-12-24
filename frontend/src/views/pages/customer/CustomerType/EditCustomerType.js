@@ -17,10 +17,12 @@ import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingCustomer, creatingCustomerStatus, getBranches, getCity, getCustomerType, getDistrict } from './customer.api';
-import Toaster from '../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
+import { creatingCustomer, creatingCustomerType, getBranches, getCity, getCustomerType, getDistrict } from '../customer.api';
+import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
+import { getDetailCustomerType, updateCustomerType } from './customer-type.api';
+import { fetching, globalizedcustomerTypeSelectors, reset } from './customer-type.reducer';
+import { setTimeout } from 'core-js';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = function (values) {
@@ -82,8 +84,8 @@ const touchAll = (setTouched, errors) => {
   validateForm(errors);
 };
 
-const CreateCustomerStatus = () => {
-  const { initialState } = useSelector(state => state.customer);
+const CreateCustomerType = props => {
+  const { initialState } = useSelector(state => state.customerType);
   const initialValues = {
     name: '',
     description: '',
@@ -91,38 +93,41 @@ const CreateCustomerStatus = () => {
   const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
-  const [selectedCity, setSelectedCity] = useState(null);
+  const { selectEntities } = globalizedcustomerTypeSelectors;
+  const customerType = useSelector(selectEntities);
+  const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
-    dispatch(getCity());
-    dispatch(getCustomerType());
-    dispatch(getBranches());
+    dispatch(getDetailCustomerType(props.match.params.id));
   }, []);
 
   useEffect(() => {
-    if (selectedCity) {
-      dispatch(getDistrict({ city: selectedCity }));
-    }
-  }, [selectedCity]);
+    setInitValues(customerType[props.match.params.id]);
+  }, [customerType]);
 
   const onSubmit = (values, { setSubmitting, setErrors }) => {
-    dispatch(creatingCustomerStatus(values));
+    dispatch(fetching());
+    dispatch(updateCustomerType(values));
   };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
       toastRef.current.addToast();
-      history.goBack();
+      dispatch(reset());
+      setTimeout(() => {
+        history.goBack();
+      }, 1000);
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới khách hàng thành công" />
+      <Toaster ref={toastRef} message="Lưu thông tin thành công" />
       <CCardHeader>
-      <span className="h2">Thêm mới</span></CCardHeader>
+        <span className="h2">Chỉnh sửa</span>
+      </CCardHeader>
       <CCardBody>
-        <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
+        <Formik initialValues={initValues || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
           {({
             values,
             errors,
@@ -176,15 +181,11 @@ const CreateCustomerStatus = () => {
                     <CInvalidFeedback>{errors.description}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup className="d-flex justify-content-center">
-                  <CButton type="submit" size="sm" color="primary" disabled={isSubmitting}>
-                    <CIcon name="cil-scrubber" /> {isSubmitting ? 'Đang xử lý' : 'Tạo mới'}
-                  </CButton>
-                  <CButton type="reset" size="sm" color="danger" onClick={handleReset} className="ml-5">
-                    <CIcon name="cil-ban" /> Xóa nhập liệu
-                  </CButton>
-                </CFormGroup>
+                    <CButton type="submit" color="primary" disabled={initialState.loading}>
+                      <CIcon name="cil-scrubber" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
+                    </CButton>
+                  </CFormGroup>
                 </CCol>
-
               </CRow>
             </CForm>
           )}
@@ -194,4 +195,4 @@ const CreateCustomerStatus = () => {
   );
 };
 
-export default CreateCustomerStatus;
+export default CreateCustomerType;

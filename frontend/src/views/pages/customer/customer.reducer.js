@@ -1,5 +1,5 @@
-import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { creatingCustomer, creatingCustomerStatus, creatingCustomerType, getBranches, getCity, getCustomer, getCustomerStatus, getCustomerType, getDistrict, getWard } from './customer.api';
+import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { creatingCustomer, creatingCustomerStatus, creatingCustomerType, getBranches, getCity, getCustomer, getCustomerBirthday, getCustomerStatus, getCustomerType, getDetailCustomer, getDistrict, getWard, updateCustomer } from './customer.api';
 
 const initialState = {
   loading: false,
@@ -24,6 +24,13 @@ const slice = createSlice({
   name: 'customer',
   initialState: customersAdapter.getInitialState({ initialState }),
   reducers: {
+    fetching(state) {
+      state.loading = true
+    },
+    reset(state) {
+      state.loading = false
+      state.updatingSuccess = false
+    },
     customersAddOne: customersAdapter.addOne,
     customersAddMany: customersAdapter.addMany,
     customerUpdate: customersAdapter.updateOne,
@@ -32,6 +39,15 @@ const slice = createSlice({
   extraReducers: {
     [creatingCustomer.fulfilled]: (state, action) => {
       state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [updateCustomer.fulfilled]: (state, action) => {
+      state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [getDetailCustomer.fulfilled]: (state, action) => {
+      customersAdapter.addOne(state, action.payload)
+      state.initialState.loading = false;
     },
     [creatingCustomerStatus.fulfilled]: (state, action) => {
       state.initialState.updatingSuccess = true;
@@ -40,6 +56,11 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
     },
     [getCustomer.fulfilled]: (state, action) => {
+      customersAdapter.setAll(state, action.payload.data);
+      state.initialState.totalItem = action.payload.total
+      state.initialState.loading = false;
+    },
+    [getCustomerBirthday.fulfilled]: (state, action) => {
       customersAdapter.setAll(state, action.payload.data);
       state.initialState.totalItem = action.payload.total
       state.initialState.loading = false;
@@ -75,5 +96,6 @@ const slice = createSlice({
 });
 
 export default slice.reducer;
-export const globalizedCustomerSelectors = customersAdapter.getSelectors(state => state.customer);
+export const { fetching, reset } = slice.actions
 
+export const globalizedCustomerSelectors = customersAdapter.getSelectors(state => state.customer);

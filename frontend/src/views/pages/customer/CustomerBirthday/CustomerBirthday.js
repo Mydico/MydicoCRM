@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
-import usersData from '../../users/UsersData.js';
+// import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCustomer } from './customer.api.js';
-import { globalizedCustomerSelectors } from './customer.reducer.js';
+import { getCustomerBirthday } from '../customer.api.js';
+import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
 import { useHistory } from 'react-router-dom';
 
 const Customer = props => {
@@ -15,12 +15,14 @@ const Customer = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(getCustomer());
+    dispatch(getCustomerBirthday());
+    dispatch(reset());
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomer({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
+    dispatch(getCustomerBirthday({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
   }, [activePage]);
+
   const { selectAll } = globalizedCustomerSelectors;
   const customers = useSelector(selectAll);
   const computedItems = items => {
@@ -28,7 +30,7 @@ const Customer = props => {
       return {
         ...item,
         typeName: item.type?.name,
-        statusName: item.status?.name,
+        branchName: item.branch?.name,
       };
     });
   };
@@ -51,8 +53,7 @@ const Customer = props => {
     { key: 'yearOfBirth', label: 'Năm Sinh', _style: { width: '15%' } },
     { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
     { key: 'users', label: 'Nhân viên quản lý', _style: { width: '15%' } },
-    { key: 'typeName', label: 'Loại khách hàng', _style: { width: '10%' } },
-    { key: 'statusName', label: 'Phân loại', _style: { width: '20%' } },
+    { key: 'dateOfBirth', label: 'Ngày sinh', _style: { width: '10%' } },
     {
       key: 'show_details',
       label: '',
@@ -75,30 +76,32 @@ const Customer = props => {
         return 'primary';
     }
   };
-  const [currentItems, setCurrentItems] = useState(usersData);
-  const csvContent = currentItems.map(item => Object.values(item).join(',')).join('\n');
+  const [currentItems, setCurrentItems] = useState([]);
+  const csvContent = computedItems(customers).map(item => Object.values(item).join(',')).join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {
     history.push(`${props.match.url}new`);
   };
 
-  const onFilterColumn = value => {
-    dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+  const toEditCustomer = userId => {
+    history.push(`${props.match.url}${userId}/edit`);
   };
+
+  const onFilterColumn = value => {
+    dispatch(getCustomerBirthday({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+  };
+
   return (
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách khách hàng
-        {/* <CButton color="primary" className="mb-2">
-         Thêm mới khách hàng
-        </CButton> */}
         <CButton color="success" variant="outline" className="ml-3" onClick={toCreateCustomer}>
           <CIcon name="cil-plus" /> Thêm mới khách hàng
         </CButton>
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Download current items (.csv)
+          Tải excel (.csv)
         </CButton>
         <CDataTable
           items={computedItems(customers)}
@@ -127,7 +130,7 @@ const Customer = props => {
             ),
             show_details: item => {
               return (
-                <td className="py-2">
+                <td className="d-flex py-2">
                   <CButton
                     color="primary"
                     variant="outline"
@@ -137,7 +140,7 @@ const Customer = props => {
                       toggleDetails(item.id);
                     }}
                   >
-                    <CIcon name="cil-pencil" />
+                    <CIcon name="cil-user" />
                   </CButton>
                 </td>
               );
@@ -146,14 +149,57 @@ const Customer = props => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
-                    <h4>{item.username}</h4>
-                    <p className="text-muted">User since: {item.registered}</p>
-                    <CButton size="sm" color="info">
-                      User Settings
-                    </CButton>
-                    <CButton size="sm" color="danger" className="ml-1">
-                      Delete
-                    </CButton>
+                    <h5>Thông tin người dùng</h5>
+                    <CRow>
+                      <CCol lg="6">
+                        <dl className="row">
+                          <dt className="col-sm-3">Mã:</dt>
+                          <dd className="col-sm-9">{item.code}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Tên cửa hàng:</dt>
+                          <dd className="col-sm-9">{item.name}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Tên liên lạc:</dt>
+                          <dd className="col-sm-9">{item.contactName}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Số điện thoại:</dt>
+                          <dd className="col-sm-9">{item.tel}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Ngày tháng năm sinh</dt>
+                          <dd className="col-sm-9">{item.dateOfBirth}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Email:</dt>
+                          <dd className="col-sm-9">{item.email}</dd>
+                        </dl>
+                      </CCol>
+                      <CCol lg="6">
+                        <dl className="row">
+                          <dt className="col-sm-3">Tỉnh thành:</dt>
+                          <dd className="col-sm-9">{item.city?.name}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Quận huyện:</dt>
+                          <dd className="col-sm-9">{item.district?.name}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Địa chỉ:</dt>
+                          <dd className="col-sm-9">{item.address}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Loại khách hàng:</dt>
+                          <dd className="col-sm-9">{item.type.name}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Chi nhánh:</dt>
+                          <dd className="col-sm-9">{item.branch.name}</dd>
+                        </dl>
+                      </CCol>
+                    </CRow>
                   </CCardBody>
                 </CCollapse>
               );

@@ -17,10 +17,12 @@ import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingCustomer, creatingCustomerType, getBranches, getCity, getCustomerType, getDistrict } from './customer.api';
-import Toaster from '../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
+import { creatingCustomer, creatingCustomerStatus, getBranches, getCity, getCustomerType, getDistrict } from '../customer.api';
+import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
+import { getDetailCustomerStatus, updateCustomerStatus } from './customer-status.api';
+import { fetching, globalizedcustomerStatuselectors, reset } from './customer-status.reducer';
+import { setTimeout } from 'core-js';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = function (values) {
@@ -82,8 +84,8 @@ const touchAll = (setTouched, errors) => {
   validateForm(errors);
 };
 
-const CreateCustomerType = () => {
-  const { initialState } = useSelector(state => state.customer);
+const CreateCustomerStatus = props => {
+  const { initialState } = useSelector(state => state.customerStatus);
   const initialValues = {
     name: '',
     description: '',
@@ -91,40 +93,41 @@ const CreateCustomerType = () => {
   const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
-  const [selectedCity, setSelectedCity] = useState(null);
+  const { selectEntities } = globalizedcustomerStatuselectors;
+  const customerStatus = useSelector(selectEntities);
+  const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
-    dispatch(getCity());
-    dispatch(getCustomerType());
-    dispatch(getBranches());
+    dispatch(getDetailCustomerStatus(props.match.params.id));
   }, []);
 
   useEffect(() => {
-    if (selectedCity) {
-      dispatch(getDistrict({ city: selectedCity }));
-    }
-  }, [selectedCity]);
+    setInitValues(customerStatus[props.match.params.id]);
+  }, [customerStatus]);
 
   const onSubmit = (values, { setSubmitting, setErrors }) => {
-    values.code = values.name.trim().split(' ').map(string => string[0]).join('')
-    dispatch(creatingCustomerType(values));
+    dispatch(fetching());
+    dispatch(updateCustomerStatus(values));
   };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
       toastRef.current.addToast();
-      history.goBack();
+      dispatch(reset());
+      setTimeout(() => {
+        history.goBack();
+      }, 1000);
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới khách hàng thành công" />
+      <Toaster ref={toastRef} message="Lưu thông tin thành công" />
       <CCardHeader>
-        <span className="h2">Thêm mới</span>
+        <span className="h2">Chỉnh sửa</span>
       </CCardHeader>
       <CCardBody>
-        <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
+        <Formik initialValues={initValues || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
           {({
             values,
             errors,
@@ -144,28 +147,12 @@ const CreateCustomerType = () => {
               <CRow>
                 <CCol lg="6">
                   <CFormGroup>
-                    <CLabel htmlFor="lastName">Mã</CLabel>
-                    <CInput
-                      type="text"
-                      name="code"
-                      id="code"
-                      placeholder="Tên loại"
-                      autoComplete="family-name"
-                      disabled
-                      required
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.name.trim().split(' ').map(string => string[0]).join('')}
-                    />
-                    <CInvalidFeedback>{errors.code}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="lastName">Tên loại</CLabel>
+                    <CLabel htmlFor="lastName">Tên trạng thái</CLabel>
                     <CInput
                       type="text"
                       name="name"
                       id="name"
-                      placeholder="Tên loại"
+                      placeholder="Tên trạng thái"
                       autoComplete="family-name"
                       valid={!errors.name}
                       invalid={touched.name && !!errors.name}
@@ -176,7 +163,6 @@ const CreateCustomerType = () => {
                     />
                     <CInvalidFeedback>{errors.name}</CInvalidFeedback>
                   </CFormGroup>
-
                   <CFormGroup>
                     <CLabel htmlFor="userName">Mô tả</CLabel>
                     <CInput
@@ -195,11 +181,8 @@ const CreateCustomerType = () => {
                     <CInvalidFeedback>{errors.description}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup className="d-flex justify-content-center">
-                    <CButton type="submit" size="sm" color="primary" disabled={isSubmitting}>
-                      <CIcon name="cil-scrubber" /> {isSubmitting ? 'Đang xử lý' : 'Tạo mới'}
-                    </CButton>
-                    <CButton type="reset" size="sm" color="danger" onClick={handleReset} className="ml-5">
-                      <CIcon name="cil-ban" /> Xóa nhập liệu
+                    <CButton type="submit" color="primary" disabled={initialState.loading}>
+                      <CIcon name="cil-scrubber" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
                     </CButton>
                   </CFormGroup>
                 </CCol>
@@ -212,4 +195,4 @@ const CreateCustomerType = () => {
   );
 };
 
-export default CreateCustomerType;
+export default CreateCustomerStatus;

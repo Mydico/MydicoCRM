@@ -37,6 +37,11 @@ export default [
         name: 'Trạng thái',
         to: '/customer/status',
       },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Sinh nhật 7 ngày tới',
+        to: '/customer/birthday',
+      },
     ],
   },
 

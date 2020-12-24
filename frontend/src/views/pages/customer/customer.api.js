@@ -10,9 +10,36 @@ export const getCustomer = createAsyncThunk('api/customers', async (params = { p
   }
 });
 
+export const getCustomerBirthday = createAsyncThunk('api/customers/birthday', async (params = { page: 0, size: 20, sort: 'createdDate,desc' }, thunkAPI) => {
+  try {
+    const result = await axios.get('api/customers/birthday', { params: params });
+    return { data: result.data, total: result.headers['x-total-count'] };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const getDetailCustomer = createAsyncThunk('api/detail/customers', async (userId, thunkAPI) => {
+  try {
+    const result = await axios.get('api/customers/'+ userId);
+    return result.data
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const creatingCustomer = createAsyncThunk('api/create/customers', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/customers', body);
+    return result.data
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const updateCustomer = createAsyncThunk('api/update/customers', async (body, thunkAPI) => {
+  try {
+    const result = await axios.put('api/customers', body);
     return result.data
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -47,9 +74,9 @@ export const getCity = createAsyncThunk('api/cities', async (params = { page: 0,
 });
 
 
-export const getDistrict = createAsyncThunk('api/districts', async (params = { page: 0, size: 20, sort: 'code,asc' }, thunkAPI) => {
+export const getDistrict = createAsyncThunk('api/districts', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/districts', { params: params });
+    const result = await axios.get('api/districts', { params });
     return result.data
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

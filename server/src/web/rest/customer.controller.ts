@@ -7,7 +7,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { Like } from 'typeorm';
+import { Between, Like } from 'typeorm';
 
 @Controller('api/customers')
 @UseGuards(AuthGuard, RolesGuard)
@@ -18,6 +18,35 @@ export class CustomerController {
   logger = new Logger('CustomerController');
 
   constructor(private readonly customerService: CustomerService) {}
+
+  @Get('/birthday')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: Customer
+  })
+  async getBirthdayAll(@Req() req: Request): Promise<Customer[]> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter = {};
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+        filter[item] = Like(`%${req.query[item]}%`);
+      }
+    });
+    const next7Days = new Date()
+    const [results, count] = await this.customerService.findAndCount({
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+      where: {
+        dateOfBirth: Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7))),
+        ...filter
+      }
+    });
+    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+    return results;
+  }
 
   @Get('/')
   @Roles(RoleType.USER)

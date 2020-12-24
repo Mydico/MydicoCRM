@@ -20,7 +20,6 @@ export const PrivateRouteComponent = ({ component: Component, isAuthorized, ...r
     // if (!sessionHasBeenFetched) {
     //   return <div></div>;
     // } else {
-      console.log(isAuthenticated)
       return isAuthenticated ? (
         <Component {...props} />
       ) : (

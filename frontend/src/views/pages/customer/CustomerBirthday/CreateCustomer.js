@@ -17,10 +17,11 @@ import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingCustomer, getBranches, getCity, getCustomerType, getDistrict } from './customer.api';
-import Toaster from '../../components/notifications/toaster/Toaster';
+import { creatingCustomer, getBranches, getCity, getCustomerType, getDistrict } from '../customer.api';
+import Toaster from '../../../components/notifications/toaster/Toaster';
 import { current } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router-dom';
+import { fetching } from '../customer.reducer';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = function (values) {
@@ -28,9 +29,9 @@ const validationSchema = function (values) {
     contactName: Yup.string().min(5, `Tên liên lạc phải lớn hơn 5 kí tự`).required('Tên liên lạc không để trống'),
     name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
     tel: Yup.string().matches(phoneRegExp, 'Số điện thoại không đúng').required('Số điện thoại không để trống'),
-    city: Yup.string().required('Thành phố không để trống'),
-    type: Yup.string().required('Loại khách hàng không để trống'),
-    branch: Yup.string().required('Chi nhánh không để trống'),
+    city: Yup.string().nullable(true).required('Thành phố không để trống'),
+    type: Yup.string().nullable(true).required('Loại khách hàng không để trống'),
+    branch: Yup.string().nullable(true).required('Chi nhánh không để trống'),
   });
 };
 
@@ -39,7 +40,6 @@ const validate = getValidationSchema => {
     const validationSchema = getValidationSchema(values);
     try {
       validationSchema.validateSync(values, { abortEarly: false });
-      console.log(values);
       return {};
     } catch (error) {
       return getErrorsFromValidationError(error);
@@ -73,18 +73,6 @@ const validateForm = errors => {
   });
 };
 
-const touchAll = (setTouched, errors) => {
-  setTouched({
-    code: true,
-    lastName: true,
-    userName: true,
-    email: true,
-    password: true,
-    confirmPassword: true,
-    accept: true,
-  });
-  validateForm(errors);
-};
 
 const CreateCustomer = () => {
   const { initialState } = useSelector(state => state.customer);
@@ -95,17 +83,17 @@ const CreateCustomer = () => {
     email: '',
     tel: '',
     dateOfBirth: '',
-    city: '',
-    district: '',
+    city: null,
+    district: null,
     address: '',
-    branch: '',
-    type: '',
+    branch: null,
+    type: null,
     createdYear: '',
     obclubJoinTime: '',
   };
   const toastRef = useRef();
   const dispatch = useDispatch();
-  const history = useHistory()
+  const history = useHistory();
   const [selectedCity, setSelectedCity] = useState(null);
 
   useEffect(() => {
@@ -120,10 +108,18 @@ const CreateCustomer = () => {
     }
   }, [selectedCity]);
 
-  const onSubmit = (values, { setSubmitting, setErrors }) => {
-    values.code = `${values.branch ? values.branch : initialState.branch[0]?.code}-${
+  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+    dispatch(fetching());
+    const code = `${values.branch ? values.branch : initialState.branch[0]?.code}-${
       values.type ? values.type : initialState.type[0]?.code
     }-${values.name.replaceAll(' ', '')}`;
+    const normalizeCode = code
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D');
+    values.code = normalizeCode;
+
     if (values.branch) {
       const founded = initialState.branch.filter(item => item.code === values.branch);
       if (founded.length > 0) {
@@ -137,6 +133,7 @@ const CreateCustomer = () => {
       }
     }
     dispatch(creatingCustomer(values));
+    resetForm();
   };
 
   useEffect(() => {
@@ -182,7 +179,12 @@ const CreateCustomer = () => {
                       onBlur={handleBlur}
                       value={`${values.branch ? values.branch : initialState.branch[0]?.code}-${
                         values.type ? values.type : initialState.type[0]?.code
-                      }-${values.name.replaceAll(' ', '')}`}
+                      }-${values.name
+                        .replaceAll(' ', '')
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/đ/g, 'd')
+                        .replace(/Đ/g, 'D')}`}
                     />
                   </CFormGroup>
                   <CFormGroup>
@@ -193,7 +195,7 @@ const CreateCustomer = () => {
                       id="name"
                       placeholder="Tên cửa hàng/đại lý"
                       autoComplete="family-name"
-                      valid={!errors.name}
+                      valid={errors.name || null}
                       invalid={touched.name && !!errors.name}
                       required
                       onChange={handleChange}
@@ -210,7 +212,7 @@ const CreateCustomer = () => {
                       id="contactName"
                       placeholder="Người liên lạc"
                       autoComplete="contactName"
-                      valid={!errors.contactName}
+                      valid={errors.contactName || null}
                       invalid={touched.contactName && !!errors.contactName}
                       required
                       onChange={handleChange}
@@ -227,7 +229,7 @@ const CreateCustomer = () => {
                       id="tel"
                       placeholder="Số điện thoại"
                       autoComplete="phone"
-                      valid={!errors.tel}
+                      valid={errors.tel || null}
                       invalid={touched.tel && !!errors.tel}
                       required
                       onChange={handleChange}
@@ -248,7 +250,7 @@ const CreateCustomer = () => {
                       id="email"
                       placeholder="Email"
                       autoComplete="email"
-                      valid={!errors.email}
+                      valid={errors.email || null}
                       invalid={touched.email && !!errors.email}
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -312,6 +314,7 @@ const CreateCustomer = () => {
                       placeholder="Địa chỉ"
                       autoComplete="address"
                       onChange={handleChange}
+                      valid={errors.address || null}
                       onBlur={handleBlur}
                       value={values.address}
                     />
@@ -354,6 +357,7 @@ const CreateCustomer = () => {
                       placeholder="User Name"
                       autoComplete="createdYear"
                       onChange={handleChange}
+                      valid={errors.createdYear || null}
                       onBlur={handleBlur}
                       value={values.createdYear}
                     />
@@ -361,24 +365,20 @@ const CreateCustomer = () => {
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="email">Ngày tham gia ObClub</CLabel>
-                    <CInput type="date" id="obclubJoinTime" name="obclubJoinTime" onChange={handleChange} placeholder="Ngày tháng năm sinh" />
-{/* 
                     <CInput
-                      type="text"
-                      name="obclubJoinTime"
+                      type="date"
                       id="obclubJoinTime"
-                      placeholder="obclubJoinTime"
+                      name="obclubJoinTime"
                       onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.obclubJoinTime}
-                    /> */}
+                      placeholder="Ngày tháng năm sinh"
+                    />
                     <CInvalidFeedback>{errors.obclubJoinTime}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>
               </CRow>
               <CFormGroup className="d-flex justify-content-center">
-                <CButton type="submit" size="sm" color="primary" disabled={isSubmitting}>
-                  <CIcon name="cil-scrubber" /> {isSubmitting ? 'Đang xử lý' : 'Tạo mới'}
+                <CButton type="submit" size="sm" color="primary" disabled={initialState.loading}>
+                  <CIcon name="cil-scrubber" /> {initialState.loading ? 'Đang xử lý' : 'Tạo mới'}
                 </CButton>
                 <CButton type="reset" size="sm" color="danger" onClick={handleReset} className="ml-5">
                   <CIcon name="cil-ban" /> Xóa nhập liệu
