@@ -25,11 +25,11 @@ const slice = createSlice({
   initialState: customersAdapter.getInitialState({ initialState }),
   reducers: {
     fetching(state) {
-      state.loading = true
+      state.initialState.loading = true
     },
     reset(state) {
-      state.loading = false
-      state.updatingSuccess = false
+      state.initialState.loading = false
+      state.initialState.updatingSuccess = false
     },
     customersAddOne: customersAdapter.addOne,
     customersAddMany: customersAdapter.addMany,

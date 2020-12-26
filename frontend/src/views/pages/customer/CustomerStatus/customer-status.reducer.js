@@ -19,7 +19,7 @@ const slice = createSlice({
   initialState: customerStatusAdapter.getInitialState({ initialState }),
   reducers: {
     fetching(state) {
-      state.loading = true
+      state.initialState.loading = true
     },
     reset(state) {
       state.initialState.loading = false
