@@ -15,14 +15,14 @@
 [npm-next]: https://img.shields.io/npm/v/@coreui/react/next.png?style=flat-square
 [npm]: https://www.npmjs.com/package/@coreui/react
 
-# CoreUI Pro v3 React Admin Template
+# Mydico CRM Professional
 
 CoreUI is meant to be the UX game changer. Pure & transparent code is devoid of redundant components, so the app is light enough to offer ultimate user experience. This means mobile devices also, where the navigation is just as easy and intuitive as on a desktop or laptop. The CoreUI Layout API lets you customize your project for almost any device – be it Mobile, Web or WebApp – CoreUI covers them all!
 
 ## Table of Contents
 
 * [Versions](#versions)
-* [CoreUI Pro](#coreui-pro)
+* [Mydico CRM Professional
 * [Installation](#installation)
 * [Basic usage](#create-react-app)
 * [What's included](#whats-included)
@@ -36,13 +36,13 @@ CoreUI is meant to be the UX game changer. Pure & transparent code is devoid of 
 
 **Only customers with [Membership Plan](https://coreui.io/pro/#buy) have access to private github repositories.**
 
-* [CoreUI Pro Bootstrap Admin Template](https://github.com/coreui/coreui-pro-bootstrap-admin-template)
-* [CoreUI Pro Angular 2+ Admin Template](https://github.com/coreui/coreui-pro-angular-admin-template)
-* [CoreUI Pro React.js Admin Template](https://github.com/coreui/coreui-pro-react-admin-template)
-* [CoreUI Pro Vue.js Admin Template](https://github.com/coreui/coreui-pro-vue-admin-template)
+* [Mydico CRM Professional
+* [Mydico CRM Professional
+* [Mydico CRM Professional
+* [Mydico CRM Professional
 
 
-## CoreUI Pro
+## Mydico CRM Professional
 
 * 💪  [CoreUI v3 Pro Bootstrap Admin Template](https://coreui.io/pro/)
 * 💪  [CoreUI v2 Pro Angular Admin Template](https://coreui.io/pro/angular)
@@ -134,7 +134,7 @@ The documentation for the CoreUI Admin Template is hosted at our website [CoreUI
 
 ## Versioning
 
-For transparency into our release cycle and in striving to maintain backward compatibility, CoreUI Pro Admin Template is maintained under [the Semantic Versioning guidelines](http://semver.org/).
+For transparency into our release cycle and in striving to maintain backward compatibility, Mydico CRM Professional
 
 See [the Releases section of our project](https://github.com/coreui/coreui-pro-react-admin-template/releases) for changelogs for each release version.
 
