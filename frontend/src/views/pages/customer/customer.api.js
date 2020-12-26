@@ -93,7 +93,7 @@ export const getWard = createAsyncThunk('api/wards', async (params = { page: 0, 
   }
 });
 
-export const getCustomerType = createAsyncThunk('api/customer-types', async (params = { page: 0, size: 20, sort: 'name,asc' }, thunkAPI) => {
+export const getCustomerType = createAsyncThunk('api/customer/customer-types', async (params = { page: 0, size: 20, sort: 'name,asc' }, thunkAPI) => {
   try {
     const result = await axios.get('api/customer-types', { params: params });
     return result.data
@@ -102,7 +102,7 @@ export const getCustomerType = createAsyncThunk('api/customer-types', async (par
   }
 });
 
-export const getCustomerStatus = createAsyncThunk('api/customer-statuses', async (params = { page: 0, size: 20, sort: 'name,asc' }, thunkAPI) => {
+export const getCustomerStatus = createAsyncThunk('api/customer/customer-statuses', async (params = { page: 0, size: 20, sort: 'name,asc' }, thunkAPI) => {
   try {
     const result = await axios.get('api/customer-statuses', { params: params });
     return result.data
@@ -111,7 +111,7 @@ export const getCustomerStatus = createAsyncThunk('api/customer-statuses', async
   }
 });
 
-export const getBranches = createAsyncThunk('api/branches', async (params = { page: 0, size: 20, sort: 'name,asc' }, thunkAPI) => {
+export const getBranches = createAsyncThunk('api/customer/branches', async (params = { page: 0, size: 20, sort: 'name,asc' }, thunkAPI) => {
   try {
     const result = await axios.get('api/branches', { params: params });
     return result.data
