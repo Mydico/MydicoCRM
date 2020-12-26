@@ -33,7 +33,10 @@ if (process.env.NODE_ENV === 'prod') {
     entities: commonConf.ENTITIES,
     migrations: commonConf.MIGRATIONS,
     cli: commonConf.CLI,
-    migrationsRun: commonConf.MIGRATIONS_RUN
+    migrationsRun: commonConf.MIGRATIONS_RUN,
+    extra: {
+      "charset": "utf8mb4_unicode_ci"
+    }
   };
 }
 
