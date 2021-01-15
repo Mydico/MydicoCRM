@@ -20,8 +20,8 @@ const Customer = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomer({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
-  }, [activePage]);
+    dispatch(getCustomer({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+  }, [activePage, size]);
 
   const { selectAll } = globalizedCustomerSelectors;
   const customers = useSelector(selectAll);
@@ -50,7 +50,7 @@ const Customer = props => {
     { key: 'code', label: 'Mã', _style: { width: '10%' } },
     { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
     { key: 'contactName', label: 'Người liên lạc', _style: { width: '15%' } },
-    { key: 'yearOfBirth', label: 'Năm Sinh', _style: { width: '15%' } },
+    { key: 'dateOfBirth', label: 'Năm Sinh', _style: { width: '15%' } },
     { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
     { key: 'users', label: 'Nhân viên quản lý', _style: { width: '15%' } },
     { key: 'typeName', label: 'Loại khách hàng', _style: { width: '10%' } },
@@ -111,14 +111,14 @@ const Customer = props => {
           tableFilter
           cleaner
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [20, 30, 50] }}
-          itemsPerPage={20}
+          itemsPerPage={size}
           hover
           sorter
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
           onPageChange={val => console.log('new page:', val)}
           onPagesChange={val => console.log('new pages:', val)}
-          onPaginationChange={val => console.log('new pagination:', val)}
+          onPaginationChange={val => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
           onTableFilterChange={val => console.log('new table filter:', val)}
@@ -221,7 +221,7 @@ const Customer = props => {
         />
         <CPagination
           activePage={activePage}
-          pages={Math.floor(initialState.totalItem / 20) + 1}
+          pages={Math.floor(initialState.totalItem / size) + 1}
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>

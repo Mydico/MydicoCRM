@@ -18,6 +18,29 @@ export default [
   },
   {
     _tag: 'CSidebarNavDropdown',
+    name: 'Quản lý bán hàng',
+    route: '/sales',
+    icon: 'cil-puzzle',
+    _children: [
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Chương trình bán hàng',
+        to: '/promotion/',
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Đơn hàng',
+        to: '/order',
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Điều phối khách hàng',
+        to: '/customer/status',
+      },
+    ],
+  },
+  {
+    _tag: 'CSidebarNavDropdown',
     name: 'Quản lý khách hàng',
     route: '/customer',
     icon: 'cil-puzzle',
@@ -44,7 +67,29 @@ export default [
       },
     ],
   },
-
+  {
+    _tag: 'CSidebarNavDropdown',
+    name: 'Quản lý sản phẩm',
+    route: '/product',
+    icon: 'cil-puzzle',
+    _children: [
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Danh sách',
+        to: '/product/',
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Loại sản phẩm',
+        to: '/product/group',
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Thương hiệu',
+        to: '/product/brand',
+      },
+    ],
+  },
   {
     _tag: 'CSidebarNavDivider'
   },

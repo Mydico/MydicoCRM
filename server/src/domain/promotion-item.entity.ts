@@ -3,6 +3,8 @@ import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne
 import { BaseEntity } from './base/base.entity';
 
 import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
+import ProductGroup from './product-group.entity';
+import Promotion from './promotion.entity';
 
 /**
  * A PromotionItem.
@@ -21,17 +23,13 @@ export default class PromotionItem extends BaseEntity {
   @Column({ name: 'note', length: 512, nullable: true })
   note: string;
 
-  @Column({ type: 'integer', name: 'product_group_id', nullable: true })
-  productGroupId: number;
+  @ManyToOne(type => ProductGroup, productGroup => productGroup.product, { cascade: true })
+  productGroup?: ProductGroup;
 
-  @Column({ type: 'integer', name: 'promotion_id', nullable: true })
-  promotionId: number;
 
-  @Column({ type: 'integer', name: 'created_at', nullable: true })
-  createdAt: number;
+  @ManyToOne(type => Promotion, promotion => promotion.promotionItem, { cascade: true })
+  promotion?: Promotion;
 
-  @Column({ type: 'integer', name: 'updated_at', nullable: true })
-  updatedAt: number;
 
   @Column({ type: 'integer', name: 'site_id', nullable: true })
   siteId: number;

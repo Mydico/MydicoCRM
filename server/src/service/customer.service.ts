@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import Customer from '../domain/customer.entity';
 import { CustomerRepository } from '../repository/customer.repository';
+import { increment_alphanumeric_str } from './utils/normalizeString';
 
 const relationshipNames = [];
 relationshipNames.push('city');
@@ -32,17 +33,6 @@ export class CustomerService {
     return await this.customerRepository.findOne(options);
   }
 
-  increment_alphanumeric_str = str => {
-    const numeric = str.match(/\d+$/) ? str.match(/\d+$/)[0] : '0';
-    const prefix = numeric === '0' ? str : str.split(numeric)[0];
-
-    const increment_string_num = str => {
-      const inc = String(parseInt(str) + 1);
-      return str.slice(0, str.length - inc.length) + inc;
-    };
-
-    return prefix + increment_string_num(numeric);
-  };
 
   async findAndCount(options: FindManyOptions<Customer>): Promise<[Customer[], number]> {
     options.relations = relationshipNames;
@@ -53,7 +43,7 @@ export class CustomerService {
     const foundedCustomer = await this.customerRepository.find({ code: Like(`%${customer.code}%`) });
     if (foundedCustomer.length > 0) {
       foundedCustomer.sort((a, b) => a.createdDate.valueOf() - b.createdDate.valueOf());
-      const res = this.increment_alphanumeric_str(foundedCustomer[foundedCustomer.length - 1].code);
+      const res = increment_alphanumeric_str(foundedCustomer[foundedCustomer.length - 1].code);
       customer.code = res;
     }
     return await this.customerRepository.save(customer);

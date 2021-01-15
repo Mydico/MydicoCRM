@@ -74,7 +74,15 @@
             "fieldType": "Integer"
         }
     ],
-    "relationships": [],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "productBrand",
+            "otherEntityRelationshipName": "product",
+            "relationshipName": "productBrand",
+            "otherEntityField": "id"
+        }
+    ],
     "changelogDate": "20201208201500",
     "entityTableName": "product",
     "dto": "mapstruct",

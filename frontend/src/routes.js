@@ -12,6 +12,22 @@ const EditCustomerStatus = React.lazy(() => import('./views/pages/customer/Custo
 const EditCustomerType = React.lazy(() => import('./views/pages/customer/CustomerType/EditCustomerType'));
 const CustomerBirthday = React.lazy(() => import('./views/pages/customer/CustomerBirthday/CustomerBirthday'));
 
+const Product = React.lazy(() => import('./views/pages/product/ProductList/Products'));
+const CreateProduct = React.lazy(() => import('./views/pages/product/ProductList/CreateProduct'));
+const EditProduct = React.lazy(() => import('./views/pages/product/ProductList/EditProduct'));
+
+const ProductGroup = React.lazy(() => import('./views/pages/product/ProductGroup/ProductGroup'));
+const CreateProductGroup = React.lazy(() => import('./views/pages/product/ProductGroup/CreateProductGroup'));
+const EditProductGroup = React.lazy(() => import('./views/pages/product/ProductGroup/EditProductGroup'));
+
+const ProductBrand = React.lazy(() => import('./views/pages/product/ProductBrand/ProductBrand'));
+const CreateProductBrand = React.lazy(() => import('./views/pages/product/ProductBrand/CreateProductBrand'));
+const EditProductBrand = React.lazy(() => import('./views/pages/product/ProductBrand/EditProductBrand'));
+
+const Promotion = React.lazy(() => import('./views/pages/sales/Promotion/Promotions'));
+const CreatePromotion = React.lazy(() => import('./views/pages/sales/Promotion/CreatePromotion'));
+const EditPromotion = React.lazy(() => import('./views/pages/sales/Promotion/EditPromotion'));
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -26,6 +42,18 @@ const routes = [
   { path: '/customer/type/new', name: 'Thêm mới', component: CreateCustomerType },
   { path: '/customer/type/:id/edit', name: 'Chỉnh sửa', component: EditCustomerType },
   { path: '/customer/birthday', name: 'Sinh nhật', component: CustomerBirthday },
+  { path: '/product', name: 'Sản phẩm', component: Product, exact: true },
+  { path: '/product/:id/edit', name: 'Chỉnh sửa sản phẩm', component: EditProduct },
+  { path: '/product/new', name: 'Thêm mới sản phẩm', component: CreateProduct },
+  { path: '/product/group', name: 'Loại sản phẩm', component: ProductGroup, exact: true  },
+  { path: '/product/group/new', name: 'Thêm mới', component: CreateProductGroup },
+  { path: '/product/group/:id/edit', name: 'Chỉnh sửa', component: EditProductGroup },
+  { path: '/product/brand', name: 'Thương hiệu', component: ProductBrand, exact: true  },
+  { path: '/product/brand/new', name: 'Thêm mới', component: CreateProductBrand },
+  { path: '/product/brand/:id/edit', name: 'Chỉnh sửa', component: EditProductBrand },
+  { path: '/promotion', name: 'Chương trình bán hàng', component: Promotion, exact: true },
+  { path: '/promotion/:id/edit', name: 'Chỉnh sửa Chương trình bán hàng', component: EditPromotion },
+  { path: '/promotion/new', name: 'Thêm mới Chương trình bán hàng', component: CreatePromotion },
 ];
 
 export default routes;

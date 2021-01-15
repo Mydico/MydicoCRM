@@ -93,8 +93,9 @@ const CreateCustomerStatus = props => {
   const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectEntities } = globalizedcustomerStatuselectors;
-  const customerStatus = useSelector(selectEntities);
+  const { selectById } = globalizedcustomerStatuselectors;
+  const customerStatus = useSelector(state => selectById(state, props.match.params.id));
+
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
@@ -102,7 +103,7 @@ const CreateCustomerStatus = props => {
   }, []);
 
   useEffect(() => {
-    setInitValues(customerStatus[props.match.params.id]);
+    setInitValues(customerStatus);
   }, [customerStatus]);
 
   const onSubmit = (values, { setSubmitting, setErrors }) => {
@@ -182,7 +183,7 @@ const CreateCustomerStatus = props => {
                   </CFormGroup>
                   <CFormGroup className="d-flex justify-content-center">
                     <CButton type="submit" color="primary" disabled={initialState.loading}>
-                      <CIcon name="cil-scrubber" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
+                      <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
                     </CButton>
                   </CFormGroup>
                 </CCol>

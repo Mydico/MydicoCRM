@@ -178,7 +178,7 @@ const CreateCustomerType = () => {
                   </CFormGroup>
                   <CFormGroup className="d-flex justify-content-center">
                     <CButton type="submit" size="sm" color="primary" disabled={initialState.loading}>
-                      <CIcon name="cil-scrubber" /> {initialState.loading ? 'Đang xử lý' : 'Tạo mới'}
+                      <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Tạo mới'}
                     </CButton>
                     <CButton type="reset" size="sm" color="danger" onClick={handleReset} className="ml-5">
                       <CIcon name="cil-ban" /> Xóa nhập liệu

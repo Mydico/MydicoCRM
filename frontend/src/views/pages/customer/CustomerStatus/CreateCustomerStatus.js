@@ -152,10 +152,10 @@ const CreateCustomerStatus = () => {
                     <CInvalidFeedback>{errors.description}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup className="d-flex justify-content-center">
-                    <CButton type="submit" size="sm" color="primary" disabled={initialState.loading}>
-                      <CIcon name="cil-scrubber" /> {initialState.loading ? 'Đang xử lý' : 'Tạo mới'}
+                    <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
+                      <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Tạo mới'}
                     </CButton>
-                    <CButton type="reset" size="sm" color="danger" onClick={handleReset} className="ml-5">
+                    <CButton type="reset" size="lg" color="danger" onClick={handleReset} className="ml-5">
                       <CIcon name="cil-ban" /> Xóa nhập liệu
                     </CButton>
                   </CFormGroup>

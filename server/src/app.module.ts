@@ -52,6 +52,9 @@ import { UserTypeModule } from './module/user-type.module';
 import { WardsModule } from './module/wards.module';
 import { UserTokenModule } from './module/user-token.module';
 import { BranchModule } from './module/branch.module';
+import { ProductBrandModule } from './module/product-brand.module';
+
+import { PromotionProductModule } from './module/promotion-product.module';
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
 // jhipster-needle-add-service-module-to-main-import - JHipster will import service modules here, do not remove
@@ -109,7 +112,9 @@ import { BranchModule } from './module/branch.module';
     UserTypeModule,
     WardsModule,
     UserTokenModule,
-    BranchModule
+    BranchModule,
+    ProductBrandModule,
+    PromotionProductModule
     // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
   ],
   controllers: [

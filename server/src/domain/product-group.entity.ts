@@ -3,6 +3,9 @@ import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne
 import { BaseEntity } from './base/base.entity';
 
 import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
+import Product from './product.entity';
+import PromotionItem from './promotion-item.entity';
+import ProductBrand from './product-brand.entity';
 
 /**
  * A ProductGroup.
@@ -10,22 +13,18 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
 @Entity('product_group')
 export default class ProductGroup extends BaseEntity {
   @Column({ name: 'name', length: 255, nullable: true })
-  name: string;
+  name?: string;
 
   @Column({ name: 'description', length: 512, nullable: true })
-  description: string;
+  description?: string;
 
-  @Column({ type: 'integer', name: 'created_at', nullable: true })
-  createdAt: number;
+  @OneToMany(type => Product, other => other.productGroup)
+  product? : Product[]
 
-  @Column({ name: 'created_by', length: 255, nullable: true })
-  createdBy: string;
+  @OneToMany(type => PromotionItem, other => other.productGroup)
+  promotionItem? : PromotionItem[]
 
-  @Column({ type: 'integer', name: 'updated_at', nullable: true })
-  updatedAt: number;
-
-  @Column({ name: 'updated_by', length: 255, nullable: true })
-  updatedBy: string;
-
+  @ManyToOne(type => ProductBrand)
+  productBrand: ProductBrand;
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

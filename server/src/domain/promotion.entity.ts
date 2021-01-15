@@ -3,17 +3,21 @@ import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne
 import { BaseEntity } from './base/base.entity';
 
 import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
+import PromotionItem from './promotion-item.entity';
+import CustomerType from './customer-type.entity';
+import Product from './product.entity';
+import PromotionProduct from './promotion-product.entity';
 
 /**
  * A Promotion.
  */
 @Entity('promotion')
 export default class Promotion extends BaseEntity {
-  @Column({ type: 'integer', name: 'start_time', nullable: true })
-  startTime: number;
+  @Column({ name: 'start_time', nullable: true })
+  startTime: string;
 
-  @Column({ type: 'integer', name: 'end_time', nullable: true })
-  endTime: number;
+  @Column({ name: 'end_time', nullable: true })
+  endTime: string;
 
   @Column({ name: 'name', length: 255, nullable: true })
   name: string;
@@ -22,16 +26,28 @@ export default class Promotion extends BaseEntity {
   description: string;
 
   @Column({ type: 'bigint', name: 'total_revenue', nullable: true })
-  totalRevenue: number;
-
-  @Column({ type: 'integer', name: 'customer_target_type', nullable: true })
-  customerTargetType: number;
+  totalRevenue?: number;
 
   @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+  siteId?: number;
+
+  @Column({ type: 'boolean', name: 'isLock', nullable: true })
+  isLock: boolean;
 
   @Column({ name: 'image', length: 255, nullable: true })
-  image: string;
+  image?: string;
+
+  @OneToMany(type => Promotion, other => other.promotionItem)
+  promotionItem? : PromotionItem[]
+
+  @OneToMany(type => Product, other => other.promotion)
+  product? : Product[]
+
+  @OneToMany(type => PromotionProduct, other => other.promotion)
+  promotionProduct? : PromotionProduct[]
+
+  @ManyToOne(type => CustomerType, other => other.promotion)
+  customerType?: CustomerType
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

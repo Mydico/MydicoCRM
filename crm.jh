@@ -1,5 +1,4 @@
 entity CustomerToken {
-	id Integer required,
 	type Boolean,
 	token String maxlength(255),
 	tokenHash String maxlength(255),
@@ -8,9 +7,7 @@ entity CustomerToken {
 	updatedAt Integer,
 	customerId Integer required
 }
-
 entity Promotion {
-	id Integer required,
 	startTime Integer,
 	endTime Integer,
 	name String maxlength(255),
@@ -24,9 +21,7 @@ entity Promotion {
 	siteId Integer,
 	image String maxlength(255)
 }
-
 entity Attribute {
-	id Integer required,
 	name String maxlength(255),
 	createdAt Integer,
 	createdBy Integer,
@@ -35,18 +30,14 @@ entity Attribute {
 	isDel Boolean,
 	siteId Integer
 }
-
 entity AttributeMap {
-	id Integer required,
 	createdAt Integer,
 	createdBy Integer,
 	updatedAt Integer,
 	updatedBy Integer,
 	siteId Integer
 }
-
 entity AttributeValue {
-	id Integer required,
 	name String required maxlength(255),
 	productId Integer,
 	createdAt Integer,
@@ -56,9 +47,7 @@ entity AttributeValue {
 	isDel Boolean,
 	siteId Integer
 }
-
 entity Bill {
-	id Integer required,
 	customerId Integer required,
 	orderId Integer required,
 	storeId Integer required,
@@ -75,9 +64,7 @@ entity Bill {
 	saleId Integer,
 	siteId Integer
 }
-
 entity City {
-	id Integer required,
 	name String maxlength(255),
 	createdAt Integer,
 	createdBy Integer,
@@ -87,16 +74,13 @@ entity City {
 	storeId Integer,
 	codIds String maxlength(250)
 }
-
 entity Codlog {
-	id Integer required,
 	transportId Integer,
 	content String maxlength(255),
 	time Integer,
 	orderId Integer,
 	siteId Integer
 }
-
 entity Customer {
 	name String maxlength(255),
 	tel String maxlength(100),
@@ -123,16 +107,16 @@ entity Customer {
 	earlyDebt Integer,
 	siteId Integer
 }
-
 entity Branch {
 	name String maxlength(255),
 	code String maxlength(255),
 	desc String maxlength(255),
-	isDel Boolean,
-}
+	isDel Boolean, }
 
 relationship ManyToOne {
-		Customer{city} to City
+		Customer {city
+}
+to City
 		Customer{branch} to Branch
     Customer{district} to District
     Customer{ward} to Wards
@@ -149,9 +133,7 @@ relationship ManyToOne {
 relationship ManyToMany {
 	Customer{user} to User{customer}
 }
-
 entity CustomerAdvisory {
-	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
 	createdAt Integer,
@@ -161,9 +143,7 @@ entity CustomerAdvisory {
 	isDel Boolean,
 	siteId Integer
 }
-
 entity CustomerCall {
-	id Integer required,
 	/** trạng thái (đã chốt đơn, chưa chốt yêu cầu) */
 	statusId Integer,
 	/** ghi chú */
@@ -176,9 +156,7 @@ entity CustomerCall {
 	isDel Boolean,
 	siteId Integer
 }
-
 entity CustomerCategory {
-	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
 	createdAt Integer,
@@ -188,16 +166,12 @@ entity CustomerCategory {
 	isDel Boolean,
 	siteId Integer
 }
-
 entity CustomerMap {
-	id Integer required,
 	customerId Integer,
 	userId Integer,
 	siteId Integer
 }
-
 entity CustomerRequest {
-	id Integer required,
 	name String maxlength(255),
 	tel String maxlength(100),
 	node String maxlength(255),
@@ -212,9 +186,7 @@ entity CustomerRequest {
 	status Boolean,
 	siteId Integer
 }
-
 entity CustomerSkin {
-	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
 	createdAt Integer,
@@ -224,9 +196,7 @@ entity CustomerSkin {
 	isDel Boolean,
 	siteId Integer
 }
-
 entity CustomerStatus {
-	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
 	createdAt Integer,
@@ -236,16 +206,13 @@ entity CustomerStatus {
 	isDel Boolean,
 	siteId Integer
 }
-
 /** VIEW */
 entity CustomerTemp {
 	name String maxlength(255),
 	tel String maxlength(100),
 	address String maxlength(255)
 }
-
 entity CustomerType {
-	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
 	createdAt Integer,
@@ -255,9 +222,7 @@ entity CustomerType {
 	isDel Boolean,
 	siteId Integer
 }
-
 entity District {
-	id Integer required,
 	name String maxlength(255),
 	createdAt Integer,
 	createdBy Integer,
@@ -267,9 +232,7 @@ entity District {
 	storeId Integer,
 	codIds String maxlength(250)
 }
-
 entity Fanpage {
-	id Integer required,
 	name String maxlength(255),
 	link String maxlength(255),
 	createdAt Integer,
@@ -280,14 +243,11 @@ entity Fanpage {
 	code String maxlength(255),
 	siteId Integer
 }
-
 entity Migration {
 	version String required maxlength(180),
 	applyTime Integer
 }
-
 entity Order {
-	id Integer required,
 	createdAt Integer,
 	createdBy Integer,
 	updatedAt Integer,
@@ -317,9 +277,7 @@ entity Order {
 	reduceMoney Integer,
 	siteId Integer
 }
-
 entity OrderDetails {
-	id Integer required,
 	createdAt Integer,
 	createdBy Integer,
 	updatedAt Integer,
@@ -335,9 +293,7 @@ entity OrderDetails {
 	priceReal Double,
 	siteId Integer
 }
-
 entity OrderPush {
-	id Integer required,
 	orderId Integer,
 	transportId Integer,
 	repon String maxlength(255),
@@ -351,9 +307,7 @@ entity OrderPush {
 	status Integer,
 	siteId Integer
 }
-
 entity Product {
-	id Integer required,
 	name String required maxlength(255),
 	image String maxlength(255),
 	desc String maxlength(255),
@@ -371,9 +325,15 @@ entity Product {
 	/** Giá gốc của sản phẩm danh cho đại lý tính theo đơn vị của sản phẩm */
 	agentPrice Integer
 }
-
+entity PromotionProduct {
+	buy Integer,
+	gift Integer,
+}
+relationship ManyToOne {
+	PromotionProduct{product} to Product
+	PromotionProduct{promotion} to Promotion
+}
 entity ProductDetails {
-	id Integer required,
 	barcode String maxlength(255),
 	createdAt Integer,
 	createdBy Integer,
@@ -382,19 +342,19 @@ entity ProductDetails {
 	isDel Boolean,
 	name String maxlength(250)
 }
-
 entity ProductGroup {
-	id Integer required,
 	name String maxlength(255),
-	description String maxlength(512),
-	createdAt Integer,
-	createdBy String maxlength(255),
-	updatedAt Integer,
-	updatedBy String maxlength(255)
+	description String maxlength(512)
 }
-
+entity ProductBrand {
+	name String maxlength(255),
+	description String maxlength(512)
+}
+relationship ManyToOne {
+	Product{productBrand} to ProductBrand
+	ProductGroup{productBrand} to ProductBrand
+}
 entity ProductGroupMap {
-	id Integer required,
 	groupId Integer required,
 	productId Integer required,
 	createdAt Integer,
@@ -402,9 +362,7 @@ entity ProductGroupMap {
 	updatedAt Integer,
 	updatedBy String maxlength(255)
 }
-
 entity ProductQuantity {
-	id Integer required,
 	quantity Integer required,
 	createdAt Integer,
 	createdBy Integer,
@@ -412,9 +370,7 @@ entity ProductQuantity {
 	updatedBy Integer,
 	isDel Boolean
 }
-
 entity PromotionCustomerLevel {
-	id Integer required,
 	customerId Integer,
 	promotionId Integer,
 	promotionItemId Integer,
@@ -423,9 +379,7 @@ entity PromotionCustomerLevel {
 	createdAt Integer,
 	siteId Integer
 }
-
 entity PromotionItem {
-	id Integer required,
 	name String maxlength(255),
 	totalMoney Long,
 	reducePercent Integer,
@@ -436,9 +390,7 @@ entity PromotionItem {
 	updatedAt Integer,
 	siteId Integer
 }
-
 entity Receipt {
-	id Integer required,
 	customerId Integer required,
 	/** mã phiếu thu (số phiếu thu) */
 	code String maxlength(255),
@@ -458,9 +410,7 @@ entity Receipt {
 	storeInputId Integer,
 	siteId Integer
 }
-
 entity ReportCustomerCategoryDate {
-	id Integer required,
 	/** báo cáo ngày */
 	date Integer required,
 	/** nhóm khách hàng */
@@ -473,9 +423,7 @@ entity ReportCustomerCategoryDate {
 	createdAt Integer,
 	updatedAt Integer
 }
-
 entity ReportDate {
-	id Integer required,
 	/** báo cáo ngày */
 	date Integer required,
 	/** chi nhánh */
@@ -489,9 +437,7 @@ entity ReportDate {
 	updatedAt Integer,
 	teamId Integer
 }
-
 entity Site {
-	id Integer required,
 	name String maxlength(255),
 	address String maxlength(255),
 	createdAt Integer,
@@ -499,9 +445,7 @@ entity Site {
 	updatedAt Integer,
 	updatedBy String maxlength(255)
 }
-
 entity SiteMapDomain {
-	id Integer required,
 	siteId Integer,
 	domain String maxlength(255),
 	createdAt Integer,
@@ -509,9 +453,7 @@ entity SiteMapDomain {
 	updatedAt Integer,
 	updatedBy String maxlength(255)
 }
-
 entity Store {
-	id Integer required,
 	name String required maxlength(255),
 	address String maxlength(255),
 	tel String maxlength(100),
@@ -523,9 +465,7 @@ entity Store {
 	transportId Integer,
 	siteId Integer
 }
-
 entity StoreInput {
-	id Integer required,
 	createdAt Integer,
 	createdBy Integer,
 	updatedAt Integer,
@@ -542,17 +482,13 @@ entity StoreInput {
 	note String maxlength(255),
 	siteId Integer
 }
-
 entity StoreInputDetails {
-	id Integer required,
 	quantity Integer,
 	isDel Boolean,
 	price Integer,
 	siteId Integer
 }
-
 entity Transaction {
-	id Integer required,
 	customerId Integer required,
 	orderId Integer,
 	storeId Integer,
@@ -581,9 +517,7 @@ entity Transaction {
 	receiptId Integer,
 	siteId Integer
 }
-
 entity Transport {
-	id Integer required,
 	name String maxlength(255),
 	desc String maxlength(255),
 	createdAt Integer,
@@ -593,9 +527,7 @@ entity Transport {
 	isDel Boolean,
 	siteId Integer
 }
-
 entity TransportLog {
-	id Integer required,
 	/** User vận chuyển đơn hàng */
 	userId Integer required,
 	customerId Integer required,
@@ -612,9 +544,7 @@ entity TransportLog {
 	updatedBy String maxlength(255),
 	siteId Integer
 }
-
 entity User {
-	id Integer required,
 	username String maxlength(250),
 	fullName String maxlength(250),
 	email String maxlength(250),
@@ -631,9 +561,7 @@ entity User {
 	storeId Integer,
 	siteId Integer
 }
-
 entity UserDeviceToken {
-	id Integer required,
 	/** id user management */
 	userId Integer required,
 	/** token nhận notify push theo từng device */
@@ -641,9 +569,7 @@ entity UserDeviceToken {
 	createdAt Integer,
 	updatedAt Integer
 }
-
 entity UserNotify {
-	id Integer required,
 	userId Integer,
 	title String maxlength(255),
 	content String maxlength(255),
@@ -654,16 +580,12 @@ entity UserNotify {
 	type Integer,
 	referenceId Integer required
 }
-
 entity UserRole {
-	id Integer required,
 	name String required maxlength(255),
 	permission String required maxlength(255),
 	siteId Integer
 }
-
 entity UserTeam {
-	id Integer required,
 	name String maxlength(255),
 	/** id user là leader */
 	leaderId Integer,
@@ -674,9 +596,7 @@ entity UserTeam {
 	isDel Boolean,
 	siteId Integer
 }
-
 entity UserType {
-	id Integer required,
 	name String maxlength(255),
 	percent Integer,
 	createdAt Integer,
@@ -686,9 +606,7 @@ entity UserType {
 	isDel Boolean,
 	siteId Integer
 }
-
 entity Wards {
-	id Integer required,
 	name String maxlength(255),
 	createdAt Integer,
 	createdBy Integer,
@@ -696,9 +614,7 @@ entity Wards {
 	updatedBy Integer,
 	isDel Boolean
 }
-
 entity UserToken {
-	id Integer required,
 	type Boolean,
 	token String maxlength(255),
 	tokenHash String maxlength(255),
@@ -707,99 +623,72 @@ entity UserToken {
 	updatedAt Integer,
 	userId Integer required
 }
-
-
-
 // Relations
 relationship ManyToOne {
 	Attribute{product} to Product
 }
-
 relationship ManyToOne {
 	AttributeMap{detail required} to ProductDetails
 }
-
 relationship ManyToOne {
 	AttributeMap{value required} to AttributeValue
 }
-
 relationship ManyToOne {
 	AttributeValue{attribute} to Attribute
 }
-
 relationship ManyToOne {
 	CustomerRequest{product} to Product
 }
-
 relationship ManyToOne {
 	CustomerRequest{type} to CustomerType
 }
-
 relationship ManyToOne {
 	CustomerRequest{fanpage} to Fanpage
 }
-
 relationship ManyToOne {
 	District{city} to City
 }
-
 relationship ManyToOne {
 	OrderDetails{order} to Order
 }
-
 relationship ManyToOne {
 	ProductDetails{product required} to Product
 }
-
 relationship ManyToOne {
 	ProductQuantity{store required} to Store
 }
-
 relationship ManyToOne {
 	ProductQuantity{detail required} to ProductDetails
 }
-
 relationship ManyToOne {
 	Store{city} to City
 }
-
 relationship ManyToOne {
 	Store{district} to District
 }
-
 relationship ManyToOne {
 	Store{wards} to Wards
 }
-
 relationship ManyToOne {
 	StoreInput{storeOutput} to Store
 }
-
 relationship ManyToOne {
 	StoreInput{storeInput} to Store
 }
-
 relationship ManyToOne {
 	StoreInputDetails{nhapkho required} to StoreInput
 }
-
 relationship ManyToOne {
 	StoreInputDetails{chitiet required} to ProductDetails
 }
-
 // relationship ManyToOne {
 // 	User{role} to UserRole
 // }
-
 relationship ManyToOne {
 	Wards{district} to District
 }
-
-
-
 // Options
 service * with serviceClass
 paginate * with pagination
 dto * with mapstruct
 filter *
-

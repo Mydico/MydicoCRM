@@ -21,7 +21,7 @@ const CustomerType = props => {
   const customerTypes = useSelector(selectAll);
   useEffect(() => {
     dispatch(getCustomerType({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
-  }, [activePage]);
+  }, [activePage, size]);
 
   const toggleDetails = index => {
     const position = details.indexOf(index);
@@ -103,14 +103,14 @@ const CustomerType = props => {
           tableFilter
           cleaner
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [20, 30, 50] }}
-          itemsPerPage={20}
+          itemsPerPage={size}
           hover
           sorter
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
           onPageChange={val => console.log('new page:', val)}
           onPagesChange={val => console.log('new pages:', val)}
-          onPaginationChange={val => console.log('new pagination:', val)}
+          onPaginationChange={val => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
           onTableFilterChange={val => console.log('new table filter:', val)}
@@ -172,7 +172,7 @@ const CustomerType = props => {
         />
         <CPagination
           activePage={activePage}
-          pages={Math.floor(initialState.totalItem / 20) + 1}
+          pages={Math.floor(initialState.totalItem / size) + 1}
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>

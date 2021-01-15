@@ -94,8 +94,9 @@ const EditCustomer = props => {
   const history = useHistory();
   const [selectedCity, setSelectedCity] = useState(null);
   const [initValues, setInitValues] = useState(null);
-  const { selectEntities } = globalizedCustomerSelectors;
-  const customer = useSelector(selectEntities);
+  const { selectById } = globalizedCustomerSelectors;
+  const customer = useSelector(state => selectById(state, props.match.params.id));
+
   useEffect(() => {
     dispatch(getDetailCustomer(props.match.params.id));
     dispatch(getCity());
@@ -104,8 +105,8 @@ const EditCustomer = props => {
   }, []);
 
   useEffect(() => {
-    if (customer[props.match.params.id]) {
-      const temp = { ...customer[props.match.params.id] };
+    if (customer) {
+      const temp = { ...customer };
       temp.city = temp.city.id;
       temp.district = temp.district?.id;
       temp.branch = temp.branch.id;
@@ -140,7 +141,7 @@ const EditCustomer = props => {
         typeCode = founded[0].code;
       }
     }
-    delete values.code
+    delete values.code;
     dispatch(updateCustomer(values));
     resetForm();
   };
@@ -148,7 +149,7 @@ const EditCustomer = props => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       toastRef.current.addToast();
-      history.goBack()
+      history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
@@ -388,7 +389,7 @@ const EditCustomer = props => {
               </CRow>
               <CFormGroup className="d-flex justify-content-center">
                 <CButton type="submit" color="primary" disabled={initialState.loading}>
-                  <CIcon name="cil-scrubber" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
+                  <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
                 </CButton>
               </CFormGroup>
             </CForm>

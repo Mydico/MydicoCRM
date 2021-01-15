@@ -1,16 +1,24 @@
-import { combineReducers } from '@reduxjs/toolkit'
+import { combineReducers } from '@reduxjs/toolkit';
 import authenticateReducer from '../../views/pages/login/authenticate.reducer';
 import appReducer from '../../App.reducer';
 import customerReducer from '../../views/pages/customer/customer.reducer';
 import customerStatusReducer from '../../views/pages/customer/CustomerStatus/customer-status.reducer';
 import customerTypeReducer from '../../views/pages/customer/CustomerType/customer-type.reducer';
+import productReducer from '../../views/pages/product/ProductList/product.reducer';
+import productGroupReducer from '../../views/pages/product/ProductGroup/product-group.reducer';
+import productBrandReducer from '../../views/pages/product/ProductBrand/product-brand.reducer';
+import promotionReducer from '../../views/pages/sales/Promotion/promotion.reducer';
 
 const rootReducer = combineReducers({
   authentication: authenticateReducer,
   app: appReducer,
   customer: customerReducer,
   customerStatus: customerStatusReducer,
-  customerType: customerTypeReducer
-})
+  customerType: customerTypeReducer,
+  product: productReducer,
+  productGroup: productGroupReducer,
+  productBrand: productBrandReducer,
+  promotion: promotionReducer,
+});
 
-export default rootReducer
+export default rootReducer;

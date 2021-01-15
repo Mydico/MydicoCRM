@@ -20,8 +20,8 @@ const Customer = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomerBirthday({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
-  }, [activePage]);
+    dispatch(getCustomerBirthday({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+  }, [activePage, size]);
 
   const { selectAll } = globalizedCustomerSelectors;
   const customers = useSelector(selectAll);
@@ -77,7 +77,9 @@ const Customer = props => {
     }
   };
   const [currentItems, setCurrentItems] = useState([]);
-  const csvContent = computedItems(customers).map(item => Object.values(item).join(',')).join('\n');
+  const csvContent = computedItems(customers)
+    .map(item => Object.values(item).join(','))
+    .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {
     history.push(`${props.match.url}new`);
@@ -94,10 +96,7 @@ const Customer = props => {
   return (
     <CCard>
       <CCardHeader>
-        <CIcon name="cil-grid" /> Danh sách khách hàng
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateCustomer}>
-          <CIcon name="cil-plus" /> Thêm mới khách hàng
-        </CButton>
+        <CIcon name="cil-grid" /> Danh sách khách hàng sinh nhật 7 ngày tới
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
@@ -110,14 +109,14 @@ const Customer = props => {
           tableFilter
           cleaner
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [20, 30, 50] }}
-          itemsPerPage={20}
+          itemsPerPage={size}
           hover
           sorter
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
           onPageChange={val => console.log('new page:', val)}
           onPagesChange={val => console.log('new pages:', val)}
-          onPaginationChange={val => console.log('new pagination:', val)}
+          onPaginationChange={val => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
           onTableFilterChange={val => console.log('new table filter:', val)}
@@ -208,7 +207,7 @@ const Customer = props => {
         />
         <CPagination
           activePage={activePage}
-          pages={Math.floor(initialState.totalItem / 20) + 1}
+          pages={Math.floor(initialState.totalItem / size) + 1}
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
