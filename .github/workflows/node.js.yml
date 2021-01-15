@@ -31,7 +31,7 @@ jobs:
 
     steps:
     - name: SSH and deploy node app
-      uses: dzungdinh94/ssh-action@master
+      uses: dzungdinh94/MydicoCRM@master
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
