@@ -91,6 +91,24 @@ export default [
     ],
   },
   {
+    _tag: 'CSidebarNavDropdown',
+    name: 'Quản lý kho',
+    route: '/warehouse',
+    icon: 'cil-puzzle',
+    _children: [
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Kho hàng',
+        to: '/warehouse/',
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Sản phẩm',
+        to: '/warehouse/product/',
+      },
+    ],
+  },
+  {
     _tag: 'CSidebarNavDivider'
   },
   {

@@ -92,6 +92,7 @@ const CreatePromotion = () => {
     startTime: new Date(),
     startTime: new Date(),
     isLock: false,
+    status: PromotionStatus[0].value
   });
   const { selectAll } = globalizedcustomerTypeSelectors;
   const customerType = useSelector(selectAll);
@@ -253,6 +254,24 @@ const CreatePromotion = () => {
                     <CLabel variant="custom-checkbox" htmlFor="isLock">
                       Khóa chương trình
                     </CLabel>
+                  </CFormGroup>
+                  <CFormGroup>
+                    <CLabel htmlFor="password">Trạng thái</CLabel>
+                    <CSelect
+                      custom
+                      name="status"
+                      id="status"
+                      value={values.status}
+                      onChange={e => {
+                        setFieldValue('status', e.target.value);
+                      }}
+                    >
+                      {PromotionStatus.map(item => (
+                          <option key={item.value} value={item.value}>
+                            {item.title}
+                          </option>
+                        ))}
+                    </CSelect>
                   </CFormGroup>
                 </CCol>
                 <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3" onClick={onAddProduct}>

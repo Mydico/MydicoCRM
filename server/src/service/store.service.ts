@@ -7,7 +7,7 @@ import { StoreRepository } from '../repository/store.repository';
 const relationshipNames = [];
 relationshipNames.push('city');
 relationshipNames.push('district');
-relationshipNames.push('wards');
+relationshipNames.push('ward');
 
 @Injectable()
 export class StoreService {

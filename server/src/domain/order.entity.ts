@@ -3,18 +3,24 @@ import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne
 import { BaseEntity } from './base/base.entity';
 
 import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
+import Customer from './customer.entity';
+import City from './city.entity';
+import District from './district.entity';
+import Wards from './wards.entity';
+import Store from './store.entity';
+import Promotion from './promotion.entity';
+import { OrderStatus } from './enumeration/order-status';
 
 /**
  * A Order.
  */
-@Entity('mdc_order')
+@Entity('order')
 export default class Order extends BaseEntity {
-
   @Column({ type: 'boolean', name: 'is_del', nullable: true })
   isDel: boolean;
 
-  @Column({ type: 'integer', name: 'customer_id', nullable: true })
-  customerId: number;
+  @ManyToOne(type => Customer, customer => customer.order, { cascade: true })
+  customer: Customer;
 
   @Column({ name: 'customer_name', length: 255, nullable: true })
   customerName: string;
@@ -22,26 +28,29 @@ export default class Order extends BaseEntity {
   @Column({ name: 'customer_tel', length: 255, nullable: true })
   customerTel: string;
 
-  @Column({ type: 'integer', name: 'city_id', nullable: true })
-  cityId: number;
+  @ManyToOne(type => City)
+  city: City;
 
-  @Column({ type: 'integer', name: 'district_id', nullable: true })
-  districtId: number;
+  @ManyToOne(type => District)
+  district: District;
 
-  @Column({ type: 'integer', name: 'wards_id', nullable: true })
-  wardsId: number;
+  @ManyToOne(type => Wards)
+  wards: Wards;
 
   @Column({ name: 'address', length: 255, nullable: true })
   address: string;
 
+  @Column({ name: 'code', length: 255, nullable: true })
+  code: string;
+
   @Column({ name: 'cod_code', length: 255, nullable: true })
   codCode: string;
 
-  @Column({ type: 'integer', name: 'status', nullable: true })
-  status: number;
+  @Column({ type: 'simple-enum', name: 'status', enum: OrderStatus, default: OrderStatus.ACTIVE })
+  status: OrderStatus;
 
-  @Column({ type: 'integer', name: 'store_id', nullable: true })
-  storeId: number;
+  @ManyToOne(type => Store, store => store.order, { cascade: true })
+  store?: Store;
 
   @Column({ type: 'integer', name: 'transport_id', nullable: true })
   transportId: number;
@@ -67,8 +76,8 @@ export default class Order extends BaseEntity {
   @Column({ type: 'boolean', name: 'push_status', nullable: true })
   pushStatus: boolean;
 
-  @Column({ type: 'integer', name: 'promotion_id', nullable: true })
-  promotionId: number;
+  @ManyToOne(type => Promotion, promotion => promotion.order, { cascade: true })
+  promotion: Promotion;
 
   @Column({ type: 'integer', name: 'promotion_item_id', nullable: true })
   promotionItemId: number;

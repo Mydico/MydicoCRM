@@ -89,8 +89,8 @@ const EditPromotion = props => {
   const initialValues = useRef({
     name: '',
     description: '',
-    startTime: new Date(),
-    startTime: new Date(),
+    startTime: new Date().toISOString(),
+    endTime: new Date().toISOString(),
     isLock: false,
     customerType: null,
   });
@@ -188,162 +188,175 @@ const EditPromotion = props => {
             isValid,
             handleReset,
             setTouched,
-          }) => (
-            <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
-              <CRow>
-                <CCol lg="6">
-                  <CFormGroup>
-                    <CLabel htmlFor="lastName">Tên chương trình bán hàng</CLabel>
-                    <CInput
-                      type="text"
-                      name="name"
-                      id="name"
-                      placeholder="Tên chương trình bán hàng"
-                      autoComplete="name"
-                      valid={errors?.name?.length > 5 || null}
-                      invalid={errors.name}
-                      required
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.name}
-                    />
-                    <CInvalidFeedback>{errors.name}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="userName">Mô tả</CLabel>
-                    <CTextarea
-                      type="text"
-                      name="description"
-                      id="description"
-                      placeholder="Mô tả"
-                      autoComplete="description"
-                      valid={errors.description || null}
-                      invalid={touched.description && !!errors.description}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.description}
-                    />
-                    <CInvalidFeedback>{errors.description}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="customerType">Đối tượng khách hàng áp dụng</CLabel>
-                    <CSelect
-                      custom
-                      name="customerType"
-                      id="customerType"
-                      value={values.customerType?.id}
-                      onChange={e => {
-                        setFieldValue('customerType', e.target.value);
-                      }}
-                    >
-                      {customerType &&
-                        customerType.map(item => (
-                          <option key={item.id} value={item.id}>
-                            {item.name}
-                          </option>
-                        ))}
-                    </CSelect>
-                    <CInvalidFeedback>{errors.customerType}</CInvalidFeedback>
-                  </CFormGroup>
-                </CCol>
-                <CCol lg="6">
-                  <CFormGroup>
-                    <CLabel htmlFor="password">Thời gian bắt đầu</CLabel>
-                    <CInput type="date" id="startTime" name="startTime" onChange={handleChange} placeholder="Thời gian bắt đầu" />
-                    <CInvalidFeedback className="d-block">{errors.startTime}</CInvalidFeedback>
-                  </CFormGroup>
+          }) => {
+            console.log(values);
+            return (
+              <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
+                <CRow>
+                  <CCol lg="6">
+                    <CFormGroup>
+                      <CLabel htmlFor="lastName">Tên chương trình bán hàng</CLabel>
+                      <CInput
+                        type="text"
+                        name="name"
+                        id="name"
+                        placeholder="Tên chương trình bán hàng"
+                        autoComplete="name"
+                        valid={errors?.name?.length > 5 || null}
+                        invalid={errors.name}
+                        required
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.name}
+                      />
+                      <CInvalidFeedback>{errors.name}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="userName">Mô tả</CLabel>
+                      <CTextarea
+                        type="text"
+                        name="description"
+                        id="description"
+                        placeholder="Mô tả"
+                        autoComplete="description"
+                        valid={errors.description || null}
+                        invalid={touched.description && !!errors.description}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.description}
+                      />
+                      <CInvalidFeedback>{errors.description}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="customerType">Đối tượng khách hàng áp dụng</CLabel>
+                      <CSelect
+                        custom
+                        name="customerType"
+                        id="customerType"
+                        value={values.customerType?.id}
+                        onChange={e => {
+                          setFieldValue('customerType', e.target.value);
+                        }}
+                      >
+                        {customerType &&
+                          customerType.map(item => (
+                            <option key={item.id} value={item.id}>
+                              {item.name}
+                            </option>
+                          ))}
+                      </CSelect>
+                      <CInvalidFeedback>{errors.customerType}</CInvalidFeedback>
+                    </CFormGroup>
+                  </CCol>
+                  <CCol lg="6">
+                    <CFormGroup>
+                      <CLabel htmlFor="password">Thời gian bắt đầu</CLabel>
+                      <CInput
+                        type="date"
+                        id="startTime"
+                        name="startTime"
+                        defaultValue={values.startTime.split("T")[0]}
+                        onChange={handleChange}
+                        placeholder="Thời gian bắt đầu"
+                      />
+                      <CInvalidFeedback className="d-block">{errors.startTime}</CInvalidFeedback>
+                    </CFormGroup>
 
-                  <CFormGroup>
-                    <CLabel htmlFor="password">Thời gian kết thúc</CLabel>
-                    <CInput type="date" id="endTime" name="endTime" onChange={handleChange} placeholder="Thời gian kết thúc" />
-                    <CInvalidFeedback className="d-block">{errors.endTime}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup variant="custom-checkbox" className="pb-3">
-                    <CInputCheckbox
-                      custom
-                      id="isLock"
-                      name="isLock"
-                      valid={!errors.isLock}
-                      invalid={touched.isLock && !!errors.isLock}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <CLabel variant="custom-checkbox" htmlFor="isLock">
-                      Khóa chương trình
-                    </CLabel>
-                  </CFormGroup>
-                </CCol>
-                <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3" onClick={onAddProduct}>
-                  <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-                  Thêm sản phẩm
-                </CButton>
-                <CCol lg="12">
-                  {productList.map((item, index) => {
-                    return (
-                      <CFormGroup key={index} className="mt-3">
-                        <CRow>
-                          <CCol lg="4">
-                            <CLabel htmlFor="password">Sản phẩm</CLabel>
-                            <Select
-                              defaultValue={{
-                                id: item.product?.id || '',
-                                label: `${item.product?.code || ''}-${item.product?.name || ''}`,
-                              }}
-                              onChange={event => onSelectedProduct(event, index)}
-                              options={products.map(item => ({
-                                value: item.id,
-                                label: `${item.code}-${item.name}`,
-                              }))}
-                            />
-                          </CCol>
-                          <CCol lg="4">
-                            <CLabel htmlFor="password">Mua</CLabel>
-                            <CInput
-                              type="number"
-                              name="buy"
-                              id="buy"
-                              placeholder="Dung tích"
-                              autoComplete="buy"
-                              onChange={event => onChangeProductPromotion(event.target.value, index, 'buy')}
-                              invalid={!productList[index].buy}
-                              valid={productList[index].buy}
-                              onBlur={handleBlur}
-                              value={productList[index].buy}
-                            />
-                            {!productList[index].buy && <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>}
-                          </CCol>
-                          <CCol lg="4">
-                            <CLabel htmlFor="password">Tặng</CLabel>
-                            <CInput
-                              type="number"
-                              name="gift"
-                              id="gift"
-                              placeholder="Dung tích"
-                              autoComplete="gift"
-                              onChange={event => onChangeProductPromotion(event.target.value, index, 'gift')}
-                              invalid={!productList[index].gift}
-                              valid={productList[index].gift}
-                              onBlur={handleBlur}
-                              value={productList[index].gift}
-                            />
-                            {!productList[index].gift && <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>}
-                          </CCol>
-                        </CRow>
-                      </CFormGroup>
-                    );
-                  })}
-                </CCol>
-              </CRow>
-              <CFormGroup className="d-flex justify-content-center">
-                <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
-                  <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Lưu lại'}
-                </CButton>
-                <CButton type="reset" size="lg" color="danger" onClick={handleReset} className="ml-5">
-                  <CIcon name="cil-ban" /> Xóa nhập liệu
-                </CButton>
-              </CFormGroup>
-            </CForm>
-          )}
+                    <CFormGroup>
+                      <CLabel htmlFor="password">Thời gian kết thúc</CLabel>
+                      <CInput type="date" id="endTime" name="endTime" defaultValue={values.endTime.split("T")[0]} onChange={handleChange} placeholder="Thời gian kết thúc" />
+                      <CInvalidFeedback className="d-block">{errors.endTime}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup variant="custom-checkbox" className="pb-3">
+                      <CInputCheckbox
+                        custom
+                        id="isLock"
+                        name="isLock"
+                        valid={!errors.isLock}
+                        invalid={touched.isLock && !!errors.isLock}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <CLabel variant="custom-checkbox" htmlFor="isLock">
+                        Khóa chương trình
+                      </CLabel>
+                    </CFormGroup>
+                  </CCol>
+                  <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3" onClick={onAddProduct}>
+                    <CIcon name={'cilArrowCircleRight'} className="mr-2" />
+                    Thêm sản phẩm
+                  </CButton>
+                  <CCol lg="12">
+                    {productList &&
+                      productList.map((item, index) => {
+                        return (
+                          <CFormGroup key={index} className="mt-3">
+                            <CRow>
+                              <CCol lg="4">
+                                <CLabel htmlFor="password">Sản phẩm</CLabel>
+                                <Select
+                                  defaultValue={{
+                                    id: item.product?.id || '',
+                                    label: `${item.product?.code || ''}-${item.product?.name || ''}`,
+                                  }}
+                                  onChange={event => onSelectedProduct(event, index)}
+                                  options={products.map(item => ({
+                                    value: item.id,
+                                    label: `${item.code}-${item.name}`,
+                                  }))}
+                                />
+                              </CCol>
+                              <CCol lg="4">
+                                <CLabel htmlFor="password">Mua</CLabel>
+                                <CInput
+                                  type="number"
+                                  name="buy"
+                                  id="buy"
+                                  placeholder="Dung tích"
+                                  autoComplete="buy"
+                                  onChange={event => onChangeProductPromotion(event.target.value, index, 'buy')}
+                                  invalid={!productList[index].buy}
+                                  valid={productList[index].buy}
+                                  onBlur={handleBlur}
+                                  value={productList[index].buy}
+                                />
+                                {!productList[index].buy && <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>}
+                              </CCol>
+                              <CCol lg="4">
+                                <CLabel htmlFor="password">Tặng</CLabel>
+                                <CInput
+                                  type="number"
+                                  name="gift"
+                                  id="gift"
+                                  placeholder="Dung tích"
+                                  autoComplete="gift"
+                                  onChange={event => onChangeProductPromotion(event.target.value, index, 'gift')}
+                                  invalid={!productList[index].gift}
+                                  valid={productList[index].gift}
+                                  onBlur={handleBlur}
+                                  value={productList[index].gift}
+                                />
+                                {!productList[index].gift && (
+                                  <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>
+                                )}
+                              </CCol>
+                            </CRow>
+                          </CFormGroup>
+                        );
+                      })}
+                  </CCol>
+                </CRow>
+                <CFormGroup className="d-flex justify-content-center">
+                  <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
+                    <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Lưu lại'}
+                  </CButton>
+                  <CButton type="reset" size="lg" color="danger" onClick={handleReset} className="ml-5">
+                    <CIcon name="cil-ban" /> Xóa nhập liệu
+                  </CButton>
+                </CFormGroup>
+              </CForm>
+            );
+          }}
         </Formik>
       </CCardBody>
     </CCard>

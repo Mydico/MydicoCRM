@@ -84,7 +84,7 @@ export const getDistrict = createAsyncThunk('api/districts', async (params, thun
 });
 
 
-export const getWard = createAsyncThunk('api/wards', async (params = { page: 0, size: 20, sort: 'code,asc' }, thunkAPI) => {
+export const getWard = createAsyncThunk('api/wards', async (params, thunkAPI) => {
   try {
     const result = await axios.get('api/wards', { params: params });
     return result.data

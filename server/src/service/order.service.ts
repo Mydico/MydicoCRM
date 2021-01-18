@@ -5,6 +5,9 @@ import Order from '../domain/order.entity';
 import { OrderRepository } from '../repository/order.repository';
 
 const relationshipNames = [];
+relationshipNames.push('city')
+relationshipNames.push('district')
+relationshipNames.push('wards')
 
 @Injectable()
 export class OrderService {

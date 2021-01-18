@@ -22,9 +22,8 @@ export class WardsService {
     return await this.wardsRepository.findOne(options);
   }
 
-  async findAndCount(options: FindManyOptions<Wards>): Promise<[Wards[], number]> {
-    options.relations = relationshipNames;
-    return await this.wardsRepository.findAndCount(options);
+  async findAndCount(options: FindManyOptions<Wards>): Promise<Wards[]> {
+    return await this.wardsRepository.find(options);
   }
 
   async save(wards: Wards): Promise<Wards | undefined> {

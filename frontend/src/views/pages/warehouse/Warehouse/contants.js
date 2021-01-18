@@ -33,17 +33,17 @@ export const UnitType = [
   },
 ];
 
-export const PromotionStatus = [
+export const WarehouseStatus = [
   {
-    title: 'ĐANG HOẠT ĐỘNG',
+    title: 'ACTIVE',
     value: 'ACTIVE',
   },
   {
-    title: 'KHÔNG HOẠT ĐỘNG',
+    title: 'INACTIVE',
     value: 'INACTIVE',
   },
   {
-    title: 'ĐÃ XÓA',
+    title: 'DELETED',
     value: 'DELETED',
   },
 ];

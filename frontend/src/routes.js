@@ -28,6 +28,10 @@ const Promotion = React.lazy(() => import('./views/pages/sales/Promotion/Promoti
 const CreatePromotion = React.lazy(() => import('./views/pages/sales/Promotion/CreatePromotion'));
 const EditPromotion = React.lazy(() => import('./views/pages/sales/Promotion/EditPromotion'));
 
+const Warehouse = React.lazy(() => import('./views/pages/warehouse/Warehouse/Warehouse'));
+const CreateWarehouse = React.lazy(() => import('./views/pages/warehouse/Warehouse/CreateWarehouse'));
+const EditWarehouse = React.lazy(() => import('./views/pages/warehouse/Warehouse/EditWarehouse'));
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -54,6 +58,9 @@ const routes = [
   { path: '/promotion', name: 'Chương trình bán hàng', component: Promotion, exact: true },
   { path: '/promotion/:id/edit', name: 'Chỉnh sửa Chương trình bán hàng', component: EditPromotion },
   { path: '/promotion/new', name: 'Thêm mới Chương trình bán hàng', component: CreatePromotion },
+  { path: '/warehouse', name: 'Kho hàng', component: Warehouse, exact: true },
+  { path: '/warehouse/:id/edit', name: 'Chỉnh sửa kho hàng', component: EditWarehouse },
+  { path: '/warehouse/new', name: 'Thêm mới kho hàng', component: CreateWarehouse },
 ];
 
 export default routes;

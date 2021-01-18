@@ -8,6 +8,7 @@ import productReducer from '../../views/pages/product/ProductList/product.reduce
 import productGroupReducer from '../../views/pages/product/ProductGroup/product-group.reducer';
 import productBrandReducer from '../../views/pages/product/ProductBrand/product-brand.reducer';
 import promotionReducer from '../../views/pages/sales/Promotion/promotion.reducer';
+import warehouseReducer from '../../views/pages/warehouse/Warehouse/warehouse.reducer';
 
 const rootReducer = combineReducers({
   authentication: authenticateReducer,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   productGroup: productGroupReducer,
   productBrand: productBrandReducer,
   promotion: promotionReducer,
+  warehouse: warehouseReducer,
 });
 
 export default rootReducer;

@@ -27,12 +27,11 @@ export class WardsController {
   })
   async getAll(@Req() req: Request): Promise<Wards[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const [results, count] = await this.wardsService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder()
+    const results = await this.wardsService.findAndCount({
+      where: {
+        district: req.query.district || ''
+      }
     });
-    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
     return results;
   }
 

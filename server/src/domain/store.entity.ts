@@ -7,6 +7,9 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
 import City from './city.entity';
 import District from './district.entity';
 import Wards from './wards.entity';
+import Product from './product.entity';
+import Order from './order.entity';
+import { StoreStatus } from './enumeration/store-status';
 
 /**
  * A Store.
@@ -22,7 +25,8 @@ export default class Store extends BaseEntity {
   @Column({ name: 'tel', length: 100, nullable: true })
   tel: string;
 
-
+  @Column({ name: 'code', length: 100, nullable: false })
+  code: string;
 
   @Column({ type: 'boolean', name: 'is_del', nullable: true })
   isDel: boolean;
@@ -33,6 +37,15 @@ export default class Store extends BaseEntity {
   @Column({ type: 'integer', name: 'site_id', nullable: true })
   siteId: number;
 
+  @Column({ type: 'simple-enum', name: 'status', enum: StoreStatus, default: StoreStatus.ACTIVE })
+  status?: StoreStatus;
+
+  @OneToMany(type => Order, other => other.store)
+  order? : Order[]
+
+  @OneToMany(type => Product, other =>other.store)
+  product: Product[];
+
   @ManyToOne(type => City)
   city: City;
 
@@ -40,7 +53,7 @@ export default class Store extends BaseEntity {
   district: District;
 
   @ManyToOne(type => Wards)
-  wards: Wards;
+  ward: Wards;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

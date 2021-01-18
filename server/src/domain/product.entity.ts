@@ -2,13 +2,13 @@
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 import { UnitType } from './enumeration/unit';
 import { ProductStatus } from './enumeration/product-status';
 import ProductGroup from './product-group.entity';
 import Promotion from './promotion.entity';
 import ProductBrand from './product-brand.entity';
 import PromotionProduct from './promotion-product.entity';
+import Store from './store.entity';
 
 /**
  * A Product.
@@ -61,6 +61,9 @@ export default class Product extends BaseEntity {
 
   @ManyToOne(type => Promotion, promotion => promotion.product, { cascade: true })
   promotion?: Promotion;
+
+  @ManyToOne(type => Store, store => store.product, { cascade: true })
+  store?: Store;
 
   @OneToMany(type => PromotionProduct, other => other.product)
   promotionProduct? : PromotionProduct[]
