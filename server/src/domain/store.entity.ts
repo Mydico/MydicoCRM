@@ -10,6 +10,7 @@ import Wards from './wards.entity';
 import Product from './product.entity';
 import Order from './order.entity';
 import { StoreStatus } from './enumeration/store-status';
+import OrderDetails from './order-details.entity';
 
 /**
  * A Store.
@@ -40,8 +41,8 @@ export default class Store extends BaseEntity {
   @Column({ type: 'simple-enum', name: 'status', enum: StoreStatus, default: StoreStatus.ACTIVE })
   status?: StoreStatus;
 
-  @OneToMany(type => Order, other => other.store)
-  order? : Order[]
+  @OneToMany(type => OrderDetails, other => other.store)
+  orderDetail? : OrderDetails[]
 
   @OneToMany(type => Product, other =>other.store)
   product: Product[];

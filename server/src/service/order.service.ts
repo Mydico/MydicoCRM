@@ -8,6 +8,8 @@ const relationshipNames = [];
 relationshipNames.push('city')
 relationshipNames.push('district')
 relationshipNames.push('wards')
+relationshipNames.push('customer')
+relationshipNames.push('orderDetails')
 
 @Injectable()
 export class OrderService {

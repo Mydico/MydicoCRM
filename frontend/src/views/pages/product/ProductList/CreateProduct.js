@@ -49,10 +49,10 @@ const validate = getValidationSchema => {
 };
 
 export const mappingStatus = {
-  ACTIVE:"ĐANG HOẠT ĐỘNG",
-  INACTIVE: "KHÔNG HOẠT ĐỘNG",
-  DELETED: "ĐÃ XÓA"
-}
+  ACTIVE: 'ĐANG HOẠT ĐỘNG',
+  INACTIVE: 'KHÔNG HOẠT ĐỘNG',
+  DELETED: 'ĐÃ XÓA',
+};
 
 const getErrorsFromValidationError = validationError => {
   const FIRST_ERROR = 0;
@@ -113,6 +113,7 @@ const CreateProduct = () => {
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/đ/g, 'd')
       .replace(/Đ/g, 'D');
+    values.code = `${values.code}${values.volume}`;
     dispatch(creatingProduct(values));
     resetForm();
   };
@@ -120,7 +121,9 @@ const CreateProduct = () => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       toastRef.current.addToast();
-      history.goBack();
+      setTimeout(() => {
+        history.goBack();
+      }, 500);
     }
   }, [initialState.updatingSuccess]);
 
@@ -158,7 +161,8 @@ const CreateProduct = () => {
                       disabled
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={`${values.name?.trim()
+                      value={`${values.name
+                        ?.trim()
                         .split(' ')
                         .map(string => string[0])
                         .join('')
@@ -166,7 +170,7 @@ const CreateProduct = () => {
                         .normalize('NFD')
                         .replace(/[\u0300-\u036f]/g, '')
                         .replace(/đ/g, 'd')
-                        .replace(/Đ/g, 'D')}${values.volume?values.volume:''}`}
+                        .replace(/Đ/g, 'D')}${values.volume ? values.volume : ''}`}
                     />
                   </CFormGroup>
                   <CFormGroup>
@@ -194,13 +198,13 @@ const CreateProduct = () => {
                       id="contactName"
                       placeholder="Mô tả"
                       autoComplete="contactName"
-                      valid={errors.desc || null}
-                      invalid={touched.desc && !!errors.desc}
+                      valid={errors.description || null}
+                      invalid={touched.description && !!errors.description}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.desc}
+                      value={values.description}
                     />
-                    <CInvalidFeedback>{errors.desc}</CInvalidFeedback>
+                    <CInvalidFeedback>{errors.description}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="productGroup">Loại sản phẩm</CLabel>

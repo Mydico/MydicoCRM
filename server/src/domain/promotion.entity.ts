@@ -9,6 +9,7 @@ import Product from './product.entity';
 import PromotionProduct from './promotion-product.entity';
 import Order from './order.entity';
 import { PromotionStatus } from './enumeration/promotion-status';
+import { PromotionType } from './enumeration/promotion-type';
 
 /**
  * A Promotion.
@@ -42,14 +43,17 @@ export default class Promotion extends BaseEntity {
   @Column({ type: 'simple-enum', name: 'status', enum: PromotionStatus, default: PromotionStatus.ACTIVE })
   status?: PromotionStatus;
 
-  @OneToMany(type => Order, other => other.promotion)
-  order? : Order[]
+  @Column({ type: 'simple-enum', name: 'type', enum: PromotionType, default: PromotionType.SHORTTERM })
+  type?: PromotionType;
 
-  @OneToMany(type => Promotion, other => other.promotionItem)
-  promotionItem? : PromotionItem[]
+  @OneToMany(type => Order, other => other.promotion)
+  orders? : Order[]
+
+  @OneToMany(type => PromotionItem, other => other.promotion)
+  promotionItems? : PromotionItem[]
 
   @OneToMany(type => Product, other => other.promotion)
-  product? : Product[]
+  products? : Product[]
 
   @OneToMany(type => PromotionProduct, other => other.promotion)
   promotionProduct? : PromotionProduct[]

@@ -10,6 +10,7 @@ import Wards from './wards.entity';
 import Store from './store.entity';
 import Promotion from './promotion.entity';
 import { OrderStatus } from './enumeration/order-status';
+import OrderDetails from './order-details.entity';
 
 /**
  * A Order.
@@ -21,12 +22,6 @@ export default class Order extends BaseEntity {
 
   @ManyToOne(type => Customer, customer => customer.order, { cascade: true })
   customer: Customer;
-
-  @Column({ name: 'customer_name', length: 255, nullable: true })
-  customerName: string;
-
-  @Column({ name: 'customer_tel', length: 255, nullable: true })
-  customerTel: string;
 
   @ManyToOne(type => City)
   city: City;
@@ -46,11 +41,8 @@ export default class Order extends BaseEntity {
   @Column({ name: 'cod_code', length: 255, nullable: true })
   codCode: string;
 
-  @Column({ type: 'simple-enum', name: 'status', enum: OrderStatus, default: OrderStatus.ACTIVE })
+  @Column({ type: 'simple-enum', name: 'status', enum: OrderStatus, default: OrderStatus.WAITING })
   status: OrderStatus;
-
-  @ManyToOne(type => Store, store => store.order, { cascade: true })
-  store?: Store;
 
   @Column({ type: 'integer', name: 'transport_id', nullable: true })
   transportId: number;
@@ -76,8 +68,11 @@ export default class Order extends BaseEntity {
   @Column({ type: 'boolean', name: 'push_status', nullable: true })
   pushStatus: boolean;
 
-  @ManyToOne(type => Promotion, promotion => promotion.order, { cascade: true })
+  @ManyToOne(type => Promotion, promotion => promotion.orders, { cascade: true })
   promotion: Promotion;
+
+  @OneToMany(type => OrderDetails, orderDetails => orderDetails.order, { cascade: true })
+  orderDetails: OrderDetails;
 
   @Column({ type: 'integer', name: 'promotion_item_id', nullable: true })
   promotionItemId: number;

@@ -19,6 +19,19 @@ export class PromotionProductService {
     return await this.promotionProductRepository.findOne(id, options);
   }
 
+  async findManyByManyId(ids: []): Promise<[PromotionProduct[], number]> {
+    if (ids.length > 0) {
+      const result = await this.promotionProductRepository
+        .createQueryBuilder('PromotionProduct')
+        .leftJoinAndSelect('PromotionProduct.product', 'product')
+        .where('PromotionProduct.id IN (:authors)', { authors: ids })
+        .orderBy('PromotionProduct.createdDate')
+        .getManyAndCount();
+      return result;
+    }
+    return [[], 0];
+  }
+
   async findByfields(options: FindOneOptions<PromotionProduct>): Promise<PromotionProduct | undefined> {
     return await this.promotionProductRepository.findOne(options);
   }

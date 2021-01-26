@@ -17,11 +17,10 @@ import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
+import { creatingBranch } from './customer-branch.api';
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
-import { getDetailProductGroup, updateProductGroup } from './product-group.api';
-import { fetching, globalizedproductGroupsSelectors, reset } from './product-group.reducer';
-import { setTimeout } from 'core-js';
+import { fetching } from './customer-branch.reducer';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = function (values) {
@@ -69,21 +68,9 @@ const validateForm = errors => {
   });
 };
 
-const touchAll = (setTouched, errors) => {
-  setTouched({
-    code: true,
-    lastName: true,
-    userName: true,
-    email: true,
-    password: true,
-    confirmPassword: true,
-    accept: true,
-  });
-  validateForm(errors);
-};
 
-const CreateProductGroup = props => {
-  const { initialState } = useSelector(state => state.productGroup);
+const CreateBranch = () => {
+  const { initialState } = useSelector(state => state.branch);
   const initialValues = {
     name: '',
     description: '',
@@ -91,41 +78,37 @@ const CreateProductGroup = props => {
   const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectById } = globalizedproductGroupsSelectors;
-  const productGroups = useSelector(state => selectById(state, props.match.params.id));
-  const [initValues, setInitValues] = useState(null);
-
-  useEffect(() => {
-    dispatch(getDetailProductGroup(props.match.params.id));
-  }, []);
-
-  useEffect(() => {
-    setInitValues(productGroups);
-  }, [productGroups]);
 
   const onSubmit = (values, { setSubmitting, setErrors }) => {
     dispatch(fetching());
-    dispatch(updateProductGroup(values));
+    values.code = values.name
+    .trim()
+    .split(' ')
+    .map(string => string[0])
+    .join('')
+    .replaceAll(' ', '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D');
+    dispatch(creatingBranch(values));
   };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
       toastRef.current.addToast();
-      dispatch(reset());
-      setTimeout(() => {
-        history.goBack();
-      }, 1000);
+      history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Lưu thông tin thành công" />
+      <Toaster ref={toastRef} message="Tạo mới chi nhánh thành công" />
       <CCardHeader>
-        <span className="h2">Chỉnh sửa</span>
+        <span className="h2">Thêm mới</span>
       </CCardHeader>
       <CCardBody>
-        <Formik initialValues={initValues || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
+        <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
           {({
             values,
             errors,
@@ -144,13 +127,38 @@ const CreateProductGroup = props => {
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
                 <CCol lg="6">
-                  <CFormGroup>
-                    <CLabel htmlFor="lastName">Tên nhóm sản phẩm</CLabel>
+                <CFormGroup>
+                    <CLabel htmlFor="lastName">Mã chi nhánh</CLabel>
                     <CInput
                       type="text"
                       name="name"
                       id="name"
-                      placeholder="Tên nhóm sản phẩm"
+                      placeholder="Tên chi nhánh"
+                      autoComplete="family-name"
+                      valid={!errors.name}
+                      invalid={touched.name && !!errors.name}
+                      disabled
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={`${values.name
+                        ?.trim()
+                        .split(' ')
+                        .map(string => string[0])
+                        .join('')
+                        .replaceAll(' ', '')
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/đ/g, 'd')}`}
+                    />
+                    <CInvalidFeedback>{errors.name}</CInvalidFeedback>
+                  </CFormGroup>
+                  <CFormGroup>
+                    <CLabel htmlFor="lastName">Tên chi nhánh</CLabel>
+                    <CInput
+                      type="text"
+                      name="name"
+                      id="name"
+                      placeholder="Tên chi nhánh"
                       autoComplete="family-name"
                       valid={!errors.name}
                       invalid={touched.name && !!errors.name}
@@ -179,8 +187,11 @@ const CreateProductGroup = props => {
                     <CInvalidFeedback>{errors.description}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup className="d-flex justify-content-center">
-                    <CButton type="submit" color="primary" disabled={initialState.loading}>
-                      <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
+                    <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
+                      <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Tạo mới'}
+                    </CButton>
+                    <CButton type="reset" size="lg" color="danger" onClick={handleReset} className="ml-5">
+                      <CIcon name="cil-ban" /> Xóa nhập liệu
                     </CButton>
                   </CFormGroup>
                 </CCol>
@@ -193,4 +204,4 @@ const CreateProductGroup = props => {
   );
 };
 
-export default CreateProductGroup;
+export default CreateBranch;

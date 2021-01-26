@@ -9,6 +9,9 @@ import productGroupReducer from '../../views/pages/product/ProductGroup/product-
 import productBrandReducer from '../../views/pages/product/ProductBrand/product-brand.reducer';
 import promotionReducer from '../../views/pages/sales/Promotion/promotion.reducer';
 import warehouseReducer from '../../views/pages/warehouse/Warehouse/warehouse.reducer';
+import productWarehouseReducer from '../../views/pages/warehouse/Product/product-warehouse.reducer';
+import orderReducer from '../../views/pages/sales/Orders/order.reducer';
+import branchReducer from '../../views/pages/customer/CustomerBranch/customer-branch.reducer';
 
 const rootReducer = combineReducers({
   authentication: authenticateReducer,
@@ -16,11 +19,14 @@ const rootReducer = combineReducers({
   customer: customerReducer,
   customerStatus: customerStatusReducer,
   customerType: customerTypeReducer,
+  branch: branchReducer,
   product: productReducer,
   productGroup: productGroupReducer,
   productBrand: productBrandReducer,
   promotion: promotionReducer,
   warehouse: warehouseReducer,
+  productWarehouse: productWarehouseReducer,
+  order: orderReducer
 });
 
 export default rootReducer;

@@ -1,10 +1,11 @@
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingPromotion, creatingPromotionStatus, creatingPromotionType, getBranches, getCity, getPromotion, getPromotionBirthday, getPromotionStatus, getPromotionType, getDetailPromotion, getDistrict, getWard, updatePromotion } from './promotion.api';
+import { creatingPromotion, creatingPromotionStatus, creatingPromotionType, getBranches, getCity, getPromotion, getPromotionBirthday, getPromotionStatus, getPromotionType, getDetailPromotion, getDistrict, getWard, updatePromotion, getPromotionProduct } from './promotion.api';
 
 const initialState = {
   loading: false,
   updatingSuccess: false,
   totalItem: 0,
+  products: []
 };
 
 export const promotionsAdapter = createEntityAdapter({
@@ -50,6 +51,10 @@ const slice = createSlice({
     [getPromotion.fulfilled]: (state, action) => {
       promotionsAdapter.setAll(state, action.payload.data);
       state.initialState.totalItem = action.payload.total
+      state.initialState.loading = false;
+    },
+    [getPromotionProduct.fulfilled]: (state, action) => {
+      state.initialState.products = action.payload.total
       state.initialState.loading = false;
     },
     [getPromotion.rejected]: (state, action) => {

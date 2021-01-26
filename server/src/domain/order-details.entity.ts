@@ -3,6 +3,8 @@ import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne
 import { BaseEntity } from './base/base.entity';
 
 import Order from './order.entity';
+import Product from './product.entity';
+import Store from './store.entity';
 
 /**
  * A OrderDetails.
@@ -10,15 +12,11 @@ import Order from './order.entity';
 @Entity('order_details')
 export default class OrderDetails extends BaseEntity {
 
-
   @Column({ type: 'boolean', name: 'is_del', nullable: true })
   isDel: boolean;
 
-  @Column({ type: 'integer', name: 'product_id', nullable: true })
-  productId: number;
-
-  @Column({ type: 'integer', name: 'detail_id', nullable: true })
-  detailId: number;
+  @ManyToOne(type => Product, promotion => promotion, { cascade: true })
+  product: Product;
 
   @Column({ type: 'integer', name: 'quantity', nullable: true })
   quantity: number;
@@ -26,8 +24,8 @@ export default class OrderDetails extends BaseEntity {
   @Column({ type: 'double', name: 'price', nullable: true })
   price: number;
 
-  @Column({ type: 'integer', name: 'store_id', nullable: true })
-  storeId: number;
+  @ManyToOne(type => Store, promotion => promotion, { cascade: true })
+  store: Store;
 
   @Column({ type: 'double', name: 'price_total', nullable: true })
   priceTotal: number;

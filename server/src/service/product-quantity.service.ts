@@ -6,7 +6,7 @@ import { ProductQuantityRepository } from '../repository/product-quantity.reposi
 
 const relationshipNames = [];
 relationshipNames.push('store');
-relationshipNames.push('detail');
+relationshipNames.push('product');
 
 @Injectable()
 export class ProductQuantityService {

@@ -1,5 +1,5 @@
 export enum OrderStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  DELETED = 'DELETED'
+  WAITING = 'WAITING',
+  APPROVED = 'APPROVED',
+  CREATE_COD = 'CREATE_COD'
 }

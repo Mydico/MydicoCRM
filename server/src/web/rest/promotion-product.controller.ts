@@ -36,6 +36,20 @@ export class PromotionProductController {
     return results;
   }
 
+  @Get('/many')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: PromotionProduct
+  })
+  async getAllAtOnce(@Req() req: Request): Promise<PromotionProduct[]> {
+    console.log(req.query.ids)
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const [results, count] = await this.promotionProductService.findManyByManyId(JSON.parse(req.query.ids));
+    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+    return results;
+  }
+
   @Get('/:id')
   @Roles(RoleType.USER)
   @ApiResponse({

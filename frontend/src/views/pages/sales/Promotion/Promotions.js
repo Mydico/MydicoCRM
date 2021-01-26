@@ -48,6 +48,7 @@ const Promotion = props => {
       return {
         ...item,
         customerType: item.customerType?.name || '',
+        description: item.description.length > 10 ? `${item.description.substring(0, 250)}...` : item.description,
       };
     });
   };
@@ -115,9 +116,9 @@ const Promotion = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      setPrimary(false)
+      setPrimary(false);
       dispatch(getPromotion());
-      dispatch(reset())
+      dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
 

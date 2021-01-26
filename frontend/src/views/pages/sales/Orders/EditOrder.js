@@ -17,10 +17,11 @@ import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingProductGroup } from './product-group.api';
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
-import { fetching } from './product-group.reducer';
+import { getDetailOrder, updateOrder } from './order.api';
+import { fetching, globalizedOrdersSelectors, reset } from './order.reducer';
+import { setTimeout } from 'core-js';
 
 const validationSchema = function (values) {
   return Yup.object().shape({
@@ -67,42 +68,63 @@ const validateForm = errors => {
   });
 };
 
-const CreateProductGroup = () => {
-  const { initialState } = useSelector(state => state.productGroup);
+const touchAll = (setTouched, errors) => {
+  setTouched({
+    code: true,
+    lastName: true,
+    userName: true,
+    email: true,
+    password: true,
+    confirmPassword: true,
+    accept: true,
+  });
+  validateForm(errors);
+};
+
+const CreateOrder = props => {
+  const { initialState } = useSelector(state => state.order);
   const initialValues = {
-    code: '',
     name: '',
     description: '',
   };
   const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
+  const { selectById } = globalizedOrdersSelectors;
+  const Orders = useSelector(state => selectById(state, props.match.params.id));
+  const [initValues, setInitValues] = useState(null);
+
+  useEffect(() => {
+    dispatch(getDetailOrder(props.match.params.id));
+  }, []);
+
+  useEffect(() => {
+    setInitValues(Orders);
+  }, [Orders]);
 
   const onSubmit = (values, { setSubmitting, setErrors }) => {
-    dispatch(fetching())
-    values.code = values.name
-      .trim()
-      .split(' ')
-      .map(string => string[0])
-      .join('');
-    dispatch(creatingProductGroup(values));
+    dispatch(fetching());
+    dispatch(updateOrder(values));
   };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
       toastRef.current.addToast();
-      history.goBack();
+      dispatch(reset());
+      setTimeout(() => {
+        history.goBack();
+      }, 1000);
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới khách hàng thành công" />
+      <Toaster ref={toastRef} message="Lưu thông tin thành công" />
       <CCardHeader>
-        <span className="h2">Thêm mới</span>
+        <span className="h2">Chỉnh sửa</span>
       </CCardHeader>
       <CCardBody>
-        <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
+        <Formik initialValues={initValues || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
           {({
             values,
             errors,
@@ -127,7 +149,7 @@ const CreateProductGroup = () => {
                       type="text"
                       name="name"
                       id="name"
-                      placeholder="Tên loại"
+                      placeholder="Tên nhóm sản phẩm"
                       autoComplete="family-name"
                       valid={!errors.name}
                       invalid={touched.name && !!errors.name}
@@ -138,7 +160,6 @@ const CreateProductGroup = () => {
                     />
                     <CInvalidFeedback>{errors.name}</CInvalidFeedback>
                   </CFormGroup>
-
                   <CFormGroup>
                     <CLabel htmlFor="userName">Mô tả</CLabel>
                     <CInput
@@ -157,11 +178,8 @@ const CreateProductGroup = () => {
                     <CInvalidFeedback>{errors.description}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup className="d-flex justify-content-center">
-                    <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
-                      <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Tạo mới'}
-                    </CButton>
-                    <CButton type="reset" size="lg" color="danger" onClick={handleReset} className="ml-5">
-                      <CIcon name="cil-ban" /> Xóa nhập liệu
+                    <CButton type="submit" color="primary" disabled={initialState.loading}>
+                      <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
                     </CButton>
                   </CFormGroup>
                 </CCol>
@@ -174,4 +192,4 @@ const CreateProductGroup = () => {
   );
 };
 
-export default CreateProductGroup;
+export default CreateOrder;

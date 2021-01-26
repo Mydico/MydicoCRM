@@ -8,8 +8,8 @@ import { PromotionProductService } from './promotion-product.service';
 const relationshipNames = [];
 // relationshipNames.push('product');
 relationshipNames.push('customerType');
-// relationshipNames.push('promotionItem');
-
+relationshipNames.push('promotionItems');
+relationshipNames.push('promotionProduct')
 @Injectable()
 export class PromotionService {
   logger = new Logger('PromotionService');

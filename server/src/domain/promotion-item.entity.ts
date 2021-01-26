@@ -27,7 +27,7 @@ export default class PromotionItem extends BaseEntity {
   productGroup?: ProductGroup;
 
 
-  @ManyToOne(type => Promotion, promotion => promotion.promotionItem, { cascade: true })
+  @ManyToOne(type => Promotion, promotion => promotion.promotionItems, { cascade: true })
   promotion?: Promotion;
 
 

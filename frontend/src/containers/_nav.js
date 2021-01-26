@@ -57,6 +57,11 @@ export default [
       },
       {
         _tag: 'CSidebarNavItem',
+        name: 'Chi nhánh',
+        to: '/customer/branch',
+      },
+      {
+        _tag: 'CSidebarNavItem',
         name: 'Trạng thái',
         to: '/customer/status',
       },
@@ -92,6 +97,13 @@ export default [
   },
   {
     _tag: 'CSidebarNavDropdown',
+    name: 'Quản lý Tài chính',
+    route: '/apps',
+    icon: 'cil-layers',
+    _children: []
+  },
+  {
+    _tag: 'CSidebarNavDropdown',
     name: 'Quản lý kho',
     route: '/warehouse',
     icon: 'cil-puzzle',
@@ -103,8 +115,8 @@ export default [
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'Sản phẩm',
-        to: '/warehouse/product/',
+        name: 'Trong kho',
+        to: '/inwarehouse/',
       },
     ],
   },
@@ -158,7 +170,7 @@ export default [
           {
             _tag: 'CSidebarNavItem',
             name: 'Invoice',
-            to: '/apps/invoicing/invoice',
+            to: '/invoice',
             badge: {
               color: 'danger',
               text: 'PRO'

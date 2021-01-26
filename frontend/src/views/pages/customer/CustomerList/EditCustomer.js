@@ -17,10 +17,20 @@ import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingCustomer, getBranches, getCity, getCustomerType, getDetailCustomer, getDistrict, updateCustomer } from '../customer.api';
+import {
+  creatingCustomer,
+  getBranches,
+  getCity,
+  getCustomerStatus,
+  getCustomerType,
+  getDetailCustomer,
+  getDistrict,
+  updateCustomer,
+} from '../customer.api';
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedCustomerSelectors } from '../customer.reducer';
+import Select from 'react-select';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = function (values) {
@@ -86,6 +96,7 @@ const EditCustomer = props => {
     address: '',
     branch: null,
     type: null,
+    status: null,
     createdYear: '',
     obclubJoinTime: '',
   };
@@ -101,6 +112,7 @@ const EditCustomer = props => {
     dispatch(getDetailCustomer(props.match.params.id));
     dispatch(getCity());
     dispatch(getCustomerType());
+    dispatch(getCustomerStatus());
     dispatch(getBranches());
   }, []);
 
@@ -111,16 +123,14 @@ const EditCustomer = props => {
       temp.district = temp.district?.id;
       temp.branch = temp.branch.id;
       temp.type = temp.type.id;
+      temp.status = temp.status.id;
       setInitValues(temp);
     }
   }, [customer]);
 
   useEffect(() => {
     if (selectedCity) {
-      const founded = initialState.cities.filter(item => item.id === selectedCity);
-      if (founded.length > 0) {
-        dispatch(getDistrict({ city: founded[0].code }));
-      }
+      dispatch(getDistrict({ city: selectedCity }));
     }
   }, [selectedCity]);
 
@@ -277,41 +287,40 @@ const EditCustomer = props => {
                     <CCol md={6}>
                       <CFormGroup>
                         <CLabel htmlFor="password">Tỉnh thành</CLabel>
-                        <CSelect
-                          custom
+                        <Select
                           name="city"
-                          id="city"
-                          value={values.city}
                           onChange={e => {
-                            setFieldValue('city', e.target.value);
-                            setSelectedCity(e.target.value);
+                            const founded = initialState.cities.filter(item => item.code === e.value);
+                            if (founded.length > 0) {
+                              setFieldValue('city', founded[0].id);
+                              setSelectedCity(e.value);
+                            }
                           }}
-                        >
-                          <option key={0} value={null}>
-                            Chọn tỉnh thành
-                          </option>
-                          {initialState.cities.map(item => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}
-                            </option>
-                          ))}
-                        </CSelect>
+                          defaultValue={values.city}
+                          placeholder="Chọn thành phố"
+                          options={initialState.cities.map(item => ({
+                            value: item.code,
+                            label: item.name,
+                          }))}
+                        />
                         <CInvalidFeedback className="d-block">{errors.city}</CInvalidFeedback>
                       </CFormGroup>
                     </CCol>
                     <CCol md={6}>
                       <CFormGroup>
                         <CLabel htmlFor="password">Quận huyện</CLabel>
-                        <CSelect custom name="district" id="district" value={values.district} onChange={handleChange}>
-                          <option key={0} value={null}>
-                            Chọn Quận huyện
-                          </option>
-                          {initialState.districts.map(item => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}
-                            </option>
-                          ))}
-                        </CSelect>
+                        <Select
+                          name="district"
+                          onChange={e => {
+                            setFieldValue('district', e.value);
+                          }}
+                          defaultValue={values.district}
+                          placeholder="Chọn Quận huyện"
+                          options={initialState.districts.map(item => ({
+                            value: item.id,
+                            label: item.name,
+                          }))}
+                        />
                         <CInvalidFeedback className="d-block">{errors.districts}</CInvalidFeedback>
                       </CFormGroup>
                     </CCol>
@@ -344,6 +353,20 @@ const EditCustomer = props => {
                       ))}
                     </CSelect>
                     <CInvalidFeedback className="d-block">{errors.type}</CInvalidFeedback>
+                  </CFormGroup>
+                  <CFormGroup>
+                    <CLabel htmlFor="code">Trạng thái</CLabel>
+                    <CSelect custom name="status" id="status" value={values.status} onChange={handleChange}>
+                      <option key={0} value={null}>
+                        Chọn trạng thái
+                      </option>
+                      {initialState.status.map(item => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </CSelect>
+                    <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="code">Chi nhánh</CLabel>

@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import Branch from '../domain/branch.entity';
 import { BranchRepository } from '../repository/branch.repository';
+import { increment_alphanumeric_str } from './utils/normalizeString';
 
 const relationshipNames = [];
 
@@ -27,6 +28,12 @@ export class BranchService {
   }
 
   async save(branch: Branch): Promise<Branch | undefined> {
+    const foundedCustomer = await this.branchRepository.find({ code: Like(`%${branch.code}%`) });
+    if (foundedCustomer.length > 0) {
+      foundedCustomer.sort((a, b) => a.createdDate.valueOf() - b.createdDate.valueOf());
+      const res = increment_alphanumeric_str(foundedCustomer[foundedCustomer.length - 1].code);
+      branch.code = res;
+    }
     return await this.branchRepository.save(branch);
   }
 

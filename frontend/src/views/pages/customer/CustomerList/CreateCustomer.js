@@ -17,9 +17,9 @@ import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingCustomer, getBranches, getCity, getCustomerType, getDistrict } from '../customer.api';
+import { creatingCustomer, getBranches, getCity, getCustomerStatus, getCustomerType, getDistrict } from '../customer.api';
 import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
+import Select from 'react-select';
 import { useHistory } from 'react-router-dom';
 import { fetching } from '../customer.reducer';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -73,7 +73,6 @@ const validateForm = errors => {
   });
 };
 
-
 const CreateCustomer = () => {
   const { initialState } = useSelector(state => state.customer);
   const initialValues = {
@@ -100,6 +99,7 @@ const CreateCustomer = () => {
     dispatch(getCity());
     dispatch(getCustomerType());
     dispatch(getBranches());
+    dispatch(getCustomerStatus());
   }, []);
 
   useEffect(() => {
@@ -139,7 +139,7 @@ const CreateCustomer = () => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       toastRef.current.addToast();
-      history.goBack()
+      history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
@@ -264,43 +264,38 @@ const CreateCustomer = () => {
                     <CCol md={6}>
                       <CFormGroup>
                         <CLabel htmlFor="password">Tỉnh thành</CLabel>
-                        <CSelect
-                          custom
+                        <Select
                           name="city"
-                          id="city"
                           onChange={e => {
-                            const founded = initialState.cities.filter(item => item.code === e.target.value);
+                            const founded = initialState.cities.filter(item => item.code === e.value);
                             if (founded.length > 0) {
                               setFieldValue('city', founded[0].id);
-                              setSelectedCity(e.target.value);
+                              setSelectedCity(e.value);
                             }
                           }}
-                        >
-                          <option key={0} value={null}>
-                            Chọn tỉnh thành
-                          </option>
-                          {initialState.cities.map(item => (
-                            <option key={item.id} value={item.code}>
-                              {item.name}
-                            </option>
-                          ))}
-                        </CSelect>
+                          placeholder="Chọn thành phố"
+                          options={initialState.cities.map(item => ({
+                            value: item.code,
+                            label: item.name,
+                          }))}
+                        />
                         <CInvalidFeedback className="d-block">{errors.city}</CInvalidFeedback>
                       </CFormGroup>
                     </CCol>
                     <CCol md={6}>
                       <CFormGroup>
                         <CLabel htmlFor="password">Quận huyện</CLabel>
-                        <CSelect custom name="district" id="district" onChange={handleChange}>
-                          <option key={0} value={null}>
-                            Chọn Quận huyện
-                          </option>
-                          {initialState.districts.map(item => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}
-                            </option>
-                          ))}
-                        </CSelect>
+                        <Select
+                          name="district"
+                          onChange={e => {
+                            setFieldValue('district', e.value);
+                          }}
+                          placeholder="Chọn Quận huyện"
+                          options={initialState.districts.map(item => ({
+                            value: item.id,
+                            label: item.name,
+                          }))}
+                        />
                         <CInvalidFeedback className="d-block">{errors.districts}</CInvalidFeedback>
                       </CFormGroup>
                     </CCol>
@@ -342,6 +337,20 @@ const CreateCustomer = () => {
                       </option>
                       {initialState.branch.map(item => (
                         <option key={item.id} value={item.code}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </CSelect>
+                    <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
+                  </CFormGroup>
+                  <CFormGroup>
+                    <CLabel htmlFor="code">Trạng thái</CLabel>
+                    <CSelect custom name="status" id="status" onChange={handleChange}>
+                      <option key={0} value={null}>
+                        Chọn trạng thái
+                      </option>
+                      {initialState.status.map(item => (
+                        <option key={item.id} value={item.id}>
                           {item.name}
                         </option>
                       ))}

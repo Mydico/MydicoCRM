@@ -9,6 +9,7 @@ import Promotion from './promotion.entity';
 import ProductBrand from './product-brand.entity';
 import PromotionProduct from './promotion-product.entity';
 import Store from './store.entity';
+import OrderDetails from './order-details.entity';
 
 /**
  * A Product.
@@ -59,7 +60,7 @@ export default class Product extends BaseEntity {
   @ManyToOne(type => ProductBrand)
   productBrand: ProductBrand;
 
-  @ManyToOne(type => Promotion, promotion => promotion.product, { cascade: true })
+  @ManyToOne(type => Promotion, promotion => promotion.products, { cascade: true })
   promotion?: Promotion;
 
   @ManyToOne(type => Store, store => store.product, { cascade: true })
@@ -67,6 +68,9 @@ export default class Product extends BaseEntity {
 
   @OneToMany(type => PromotionProduct, other => other.product)
   promotionProduct? : PromotionProduct[]
+
+  @OneToMany(type => OrderDetails, other => other.product)
+  orderDetail? : OrderDetails[]
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }
