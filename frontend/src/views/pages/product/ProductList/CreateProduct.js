@@ -12,6 +12,7 @@ import {
   CInput,
   CRow,
   CSelect,
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -26,8 +27,10 @@ import { useHistory } from 'react-router-dom';
 import { fetching, globalizedProductSelectors } from './product.reducer';
 import { globalizedproductGroupsSelectors } from '../ProductGroup/product-group.reducer';
 import { ProductStatus, UnitType } from './contants';
-import { currencyFormat } from '../../../../shared/utils/normalize';
-
+import 'react-dropzone-uploader/dist/styles.css';
+import Dropzone from 'react-dropzone-uploader';
+import Thumb from './Thumb';
+import './styles.css';
 const validationSchema = function (values) {
   return Yup.object().shape({
     name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
@@ -74,10 +77,13 @@ const findFirstError = (formName, hasError) => {
   }
 };
 
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
+const dropzoneStyle = {
+  width: '100%',
+  height: 'auto',
+  borderWidth: 2,
+  borderColor: 'rgb(102, 102, 102)',
+  borderStyle: 'dashed',
+  borderRadius: 5,
 };
 
 const CreateProduct = () => {
@@ -85,6 +91,7 @@ const CreateProduct = () => {
   const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
+  const images = useRef([]);
   const { selectAll } = globalizedproductGroupsSelectors;
   const productGroup = useSelector(selectAll);
   const initialValues = {
@@ -95,6 +102,7 @@ const CreateProduct = () => {
     agentPrice: 0,
     status: 'ACTIVE',
     unit: 'Cái',
+    image: [],
   };
   useEffect(() => {
     dispatch(getProductGroup());
@@ -114,10 +122,24 @@ const CreateProduct = () => {
       .replace(/đ/g, 'd')
       .replace(/Đ/g, 'D');
     values.code = `${values.code}${values.volume}`;
+    values.image = JSON.stringify(images.current);
     dispatch(creatingProduct(values));
     resetForm();
   };
 
+  const getUploadParams = () => {
+    return { url: 'http://localhost:8082/api/files' };
+  };
+
+  const handleChangeStatus = ({ meta, file, xhr }, status) => {
+    if (status === 'done') {
+      const response = JSON.parse(xhr.response);
+      const arr = [...images.current];
+      arr.push(response[0].url);
+      images.current = arr;
+    }
+  };
+  
   useEffect(() => {
     if (initialState.updatingSuccess) {
       toastRef.current.addToast();
@@ -130,7 +152,9 @@ const CreateProduct = () => {
   return (
     <CCard>
       <Toaster ref={toastRef} message="Tạo mới sản phẩm thành công" />
-      <CCardHeader>Thêm mới sản phẩm</CCardHeader>
+      <CCardHeader>
+        <CCardTitle>Thêm mới sản phẩm</CCardTitle>
+      </CCardHeader>
       <CCardBody>
         <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
           {({
@@ -319,6 +343,57 @@ const CreateProduct = () => {
                   </CFormGroup>
                 </CCol>
               </CRow>
+              <CFormGroup>
+                <Dropzone
+                  getUploadParams={getUploadParams}
+                  onChangeStatus={handleChangeStatus}
+                  accept="image/*,audio/*,video/*"
+                  inputLabel="Upload Ảnh"
+                  inputContent="Kéo thả hình ảnh hoặc bấm để chọn ảnh"
+                  submitButtonContent="Hoàn thành"
+                  inputWithFilesContent="Thêm file"
+                />
+                {/* <div className="form-group">
+                    <label>Upload ảnh</label>
+                    <Dropzone
+                      style={dropzoneStyle}
+                      accept="image/*"
+                      onDrop={acceptedFiles => {
+                        // do nothing if no files
+                        if (acceptedFiles.length === 0) {
+                          return;
+                        }
+                        console.log(acceptedFiles)
+
+                        // on drop we add to the existing files
+                        setFieldValue('image', values.image.concat(acceptedFiles));
+                      }}
+                    >
+                      {({ getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject }) => {
+                        const additionalClass = isDragAccept ? 'accept' : isDragReject ? 'reject' : '';
+
+                        return (
+                          <div
+                            {...getRootProps({
+                              className: `dropzone ${additionalClass}`,
+                            })}
+                          >
+                            <input {...getInputProps()} />
+
+                            {values.image.length > 0 ? (
+                              values.image?.map((file, i) => <Thumb key={i} file={file} />)
+                            ) : (
+                              <div>
+                                <span>{isDragActive ? '📂' : '📁'}</span>
+                                <p>Kéo thả hình ảnh hoặc bấm để chọn ảnh</p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }}
+                    </Dropzone>
+                  </div> */}
+              </CFormGroup>
               <CFormGroup className="d-flex justify-content-center">
                 <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
                   <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Tạo mới'}

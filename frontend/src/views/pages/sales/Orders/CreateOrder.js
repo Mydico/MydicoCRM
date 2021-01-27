@@ -114,7 +114,7 @@ const CreateOrder = props => {
 
   useEffect(() => {
     dispatch(getCustomer());
-    dispatch(getPromotion());
+    dispatch(getPromotion({ isLock: 0 }));
     dispatch(getWarehouse());
   }, []);
 
@@ -125,8 +125,8 @@ const CreateOrder = props => {
   const onSubmit = (values, { setSubmitting, setErrors }) => {
     values.code = Math.random().toString(36).substr(2, 9);
     if (!values.address) values.address = selectedCustomer.address;
-    values.customer = selectedCustomer
-    values.promotion = selectedPromotion
+    values.customer = selectedCustomer;
+    values.promotion = selectedPromotion;
     values.orderDetails = productList;
     toOrderInvoice(values);
     // dispatch(creatingOrder(values));

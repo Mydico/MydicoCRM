@@ -48,7 +48,7 @@ const Promotion = props => {
       return {
         ...item,
         customerType: item.customerType?.name || '',
-        description: item.description.length > 10 ? `${item.description.substring(0, 250)}...` : item.description,
+        description: item.description?.length > 10 ? `${item.description.substring(0, 250)}...` : item.description,
       };
     });
   };
