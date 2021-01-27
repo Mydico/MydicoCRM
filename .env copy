@@ -1,6 +1,0 @@
-NODE_ENV=prod
-Database=dcul6h5qlgoqce
-User=lmtouldrvvodif
-Port=5432
-Password=2c5cc4d699f7f3b034f79ded6aa0b52f47a9c723bd2f7c03e7adfb2526bc16ff
-DATABASE_URL=postgres://lmtouldrvvodif:2c5cc4d699f7f3b034f79ded6aa0b52f47a9c723bd2f7c03e7adfb2526bc16ff@ec2-54-237-135-248.compute-1.amazonaws.com:5432/dcul6h5qlgoqce

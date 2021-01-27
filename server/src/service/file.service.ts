@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FileType } from '../domain/enumeration/file-type';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
 import File from '../domain/file.entity';
 import { FileRepository } from '../repository/file.repository';
@@ -43,15 +44,16 @@ export class FileService {
     return await this.fileRepository.remove(file);
   }
 
-  async upload(files: any[], login): Promise<any> {
-    let filetypes = /doc|docx|xls|xlsx|pdf|audio/;
+  async upload(files: any[]): Promise<any> {
+    let filetypes = /peg|jpg|png/;
     if (files) {
       let saveFiles = files.map(f => {
         let file = new File();
-        file.createdBy = login
+        file.createdBy = 'admin'
         file.name = f.filename
         file.url = DOMAIN_NAME + 'images/' + f.filename
         file.volume = f.size
+        file.type = FileType.IMAGE
         return file
       })
       return await this.fileRepository.save(saveFiles)

@@ -30,6 +30,8 @@ server/dist
 *.pydevproject
 .project
 .metadata
+/server/uploads
+/server/documents
 tmp/
 tmp/**/*
 *.tmp

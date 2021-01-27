@@ -34,7 +34,7 @@ export default class Promotion extends BaseEntity {
   @Column({ type: 'integer', name: 'site_id', nullable: true })
   siteId?: number;
 
-  @Column({ type: 'boolean', name: 'isLock', nullable: true })
+  @Column({ type: 'boolean', name: 'isLock', nullable: false, default: false })
   isLock: boolean;
 
   @Column({ name: 'image', length: 255, nullable: true })

@@ -30,9 +30,7 @@ import { FileService } from '../../service/file.service';
 import { DOMAIN_NAME } from '../../utils/constants/app.constsants';
 
 @Controller('api/files')
-@UseGuards(AuthGuard)
 @UseInterceptors(LoggingInterceptor)
-@ApiBearerAuth()
 @ApiUseTags('files')
 export class FileController {
   logger = new Logger('FileController');
@@ -145,7 +143,7 @@ export class FileController {
     let currentUser = req.user as User;
     (async () => {
       const arr = [];
-      const fileTypeRegex = /|doc|docx|xls|pdf|xlsx/;
+      const fileTypeRegex =  /jpeg|jpg|png|xml|csv|webp|bitmap|doc|docx|xls|pdf|xlsx|mp3|/;
       files.forEach(file => {
         if (!fileTypeRegex.test(file.mimetype)) arr.push(file.path);
       });
@@ -156,7 +154,7 @@ export class FileController {
       };
       await resizeOptimizeImages(options);
     })();
-    return await this.fileService.upload(files, currentUser.login);
+    return await this.fileService.upload(files);
   }
 
   @PostMethod('/ck-editor/upload')

@@ -53,6 +53,7 @@ import { WardsModule } from './module/wards.module';
 import { UserTokenModule } from './module/user-token.module';
 import { BranchModule } from './module/branch.module';
 import { ProductBrandModule } from './module/product-brand.module';
+import { FileModule } from './module/file.module';
 
 import { PromotionProductModule } from './module/promotion-product.module';
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
@@ -70,6 +71,7 @@ import { PromotionProductModule } from './module/promotion-product.module';
     AttributeValueModule,
     BillModule,
     CityModule,
+    FileModule,
     CodlogModule,
     CustomerModule,
     CustomerAdvisoryModule,

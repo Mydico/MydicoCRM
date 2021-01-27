@@ -9,6 +9,7 @@ import * as express from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
 import helmet from 'helmet';
+import { mkdirSync } from 'fs';
 
 const logger: Logger = new Logger('Main');
 const port = process.env.NODE_SERVER_PORT || config.get('server.port');
@@ -31,13 +32,17 @@ async function bootstrap(): Promise<void> {
   );
 
   const staticClientPath = path.join(__dirname, '../dist/classes/static');
+  const staticFilePath = path.join(__dirname, '../uploads');
   if (fs.existsSync(staticClientPath)) {
     app.use(express.static(staticClientPath));
     logger.log(`Serving static client resources on ${staticClientPath}`);
   } else {
     logger.log(`No client it has been found`);
   }
-
+  if (fs.existsSync(staticFilePath)) {
+    app.use('/images', express.static(staticFilePath));
+    logger.log(`Serving static file resources on ${staticFilePath}`);
+  } else mkdirSync(staticFilePath);
   setupSwagger(app);
 
   await app.listen(port);
