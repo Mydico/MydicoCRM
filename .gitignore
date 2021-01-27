@@ -32,11 +32,13 @@ server/dist
 .metadata
 /server/uploads
 /server/documents
+/server/.env
 tmp/
 tmp/**/*
 *.tmp
 *.bak
 *.swp
+
 *~.nib
 local.properties
 .classpath
