@@ -1,6 +1,6 @@
 import React, { Component, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch, BrowserRouter } from 'react-router-dom';
 import './scss/style.scss';
 import PrivateRoute from './shared/auth/private-route';
 import { getSession } from './views/pages/login/authenticate.reducer';
@@ -29,7 +29,7 @@ export const App = props => {
     dispatch(getSession())
   }, []);
   return (
-    <HashRouter>
+    <BrowserRouter>
       <React.Suspense fallback={loading}>
         <Switch>
           <Route exact path="/login" name="Login Page" render={props => <Login {...props} />} />
@@ -39,7 +39,7 @@ export const App = props => {
           <PrivateRoute path="/" component={TheLayout} />
         </Switch>
       </React.Suspense>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 

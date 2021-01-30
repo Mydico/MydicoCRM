@@ -48,7 +48,6 @@ export const Toaster = React.forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     addToast() {
-      console.log('call toast');
       setToasts([...toasts, { position, autohide: autohide && autohideValue, closeButton, fade }]);
     },
   }));

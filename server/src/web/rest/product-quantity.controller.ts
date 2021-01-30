@@ -39,7 +39,7 @@ export class ProductQuantityController {
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
       where: {
-        ...filter
+        ...filter,
       }
     });
     HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));

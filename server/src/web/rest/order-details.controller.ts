@@ -18,6 +18,27 @@ export class OrderDetailsController {
 
   constructor(private readonly orderDetailsService: OrderDetailsService) {}
 
+  @Get('/order')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: OrderDetails
+  })
+  async getByOrderId(@Req() req: Request): Promise<OrderDetails[]> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const [results, count] = await this.orderDetailsService.findAndCountByOrderId({
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+      where: {
+        order: req.query.orderId
+      }
+    });
+    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+    return results;
+  }
+
   @Get('/')
   @Roles(RoleType.USER)
   @ApiResponse({

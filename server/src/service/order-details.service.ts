@@ -6,6 +6,8 @@ import { OrderDetailsRepository } from '../repository/order-details.repository';
 
 const relationshipNames = [];
 relationshipNames.push('order');
+relationshipNames.push('product');
+relationshipNames.push('store');
 
 @Injectable()
 export class OrderDetailsService {
@@ -20,6 +22,11 @@ export class OrderDetailsService {
 
   async findByfields(options: FindOneOptions<OrderDetails>): Promise<OrderDetails | undefined> {
     return await this.orderDetailsRepository.findOne(options);
+  }
+
+  async findAndCountByOrderId(options: FindManyOptions<OrderDetails>): Promise<[OrderDetails[], number]> {
+    options.relations = relationshipNames;
+    return await this.orderDetailsRepository.findAndCount(options);
   }
 
   async findAndCount(options: FindManyOptions<OrderDetails>): Promise<[OrderDetails[], number]> {

@@ -89,6 +89,7 @@ const CreateOrder = props => {
   const initialValues = {
     customer: null,
     promotion: null,
+    orderDetails: [],
     code: '',
     note: '',
     address: '',
@@ -106,6 +107,7 @@ const CreateOrder = props => {
   const warehouses = useSelector(selectAllWarehouse);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
 
+  const [initFormState, setInitFormState] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -116,7 +118,24 @@ const CreateOrder = props => {
     dispatch(getCustomer());
     dispatch(getPromotion({ isLock: 0 }));
     dispatch(getWarehouse());
+    const existOrder = localStorage.getItem('order');
+    try {
+      const data = JSON.parse(existOrder);
+      if (Object.keys(data).length > 0) {
+        setInitFormState(data);
+      }
+    } catch (e) {}
   }, []);
+
+  useEffect(() => {
+    if (initFormState) {
+      setSelectedCustomer(initFormState.customer);
+      setSelectedPromotion(initFormState.promotion);
+      setSelectedWarehouse(initFormState.store);
+      setProductList(initFormState.orderDetails);
+      console.log(initFormState);
+    }
+  }, [initFormState]);
 
   const toOrderInvoice = data => {
     history.push({ pathname: `${props.match.url}/invoice`, state: data });
@@ -126,8 +145,10 @@ const CreateOrder = props => {
     values.code = Math.random().toString(36).substr(2, 9);
     if (!values.address) values.address = selectedCustomer.address;
     values.customer = selectedCustomer;
+    values.store = selectedWarehouse;
     values.promotion = selectedPromotion;
     values.orderDetails = productList;
+    localStorage.setItem('order', JSON.stringify(values));
     toOrderInvoice(values);
     // dispatch(creatingOrder(values));
   };
@@ -160,12 +181,9 @@ const CreateOrder = props => {
     }
   };
 
-  const onSelectWarehouse = ({ value }) => {
-    const arr = warehouses.filter(customer => customer.id === value);
-    if (arr.length === 1) {
-      setSelectedWarehouse(arr[0]);
-      setIsSelectedWarehouse(true);
-    }
+  const onSelectWarehouse = value => {
+    setSelectedWarehouse(value);
+    setIsSelectedWarehouse(true);
   };
 
   useEffect(() => {
@@ -212,21 +230,19 @@ const CreateOrder = props => {
     copyArr.splice(index, 1);
     setProductList(copyArr);
   };
-  useEffect(() => {
-    console.log(promotionState);
-  }, [promotionState]);
+  useEffect(() => {}, [promotionState]);
 
-  useEffect(() => {
-    if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
-      history.goBack();
-    }
-  }, [initialState.updatingSuccess]);
+  // useEffect(() => {
+  //   if (initialState.updatingSuccess) {
+  //     toastRef.current.addToast();
+  //     history.goBack();
+  //   }
+  // }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
       <Toaster ref={toastRef} message="Tạo mới khách hàng thành công" />
-      <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
+      <Formik initialValues={initFormState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
         {({
           values,
           errors,
@@ -261,6 +277,10 @@ const CreateOrder = props => {
                             onChange={item => {
                               setFieldValue('customer', { id: item.value });
                               onSelectCustomer(item);
+                            }}
+                            value={{
+                              value: values.customer?.id,
+                              label: values.customer?.name,
                             }}
                             options={customers.map(item => ({
                               value: item.id,
@@ -328,6 +348,10 @@ const CreateOrder = props => {
                               setFieldValue('promotion', { id: item.value });
                               onSelectPromotion(item);
                             }}
+                            value={{
+                              value: values.promotion?.id,
+                              label: values.promotion?.name,
+                            }}
                             name="promotion"
                             options={promotions.map(item => ({
                               value: item.id,
@@ -373,9 +397,16 @@ const CreateOrder = props => {
                       <CCol sm={4}>
                         <CLabel htmlFor="lastName">Chọn Kho</CLabel>
                         <Select
-                          onChange={onSelectWarehouse}
+                          onChange={item => {
+                            setFieldValue('store', item.value);
+                            onSelectWarehouse(item.value);
+                          }}
+                          value={{
+                            value: values.store,
+                            label: values.store?.name,
+                          }}
                           options={warehouses.map(item => ({
-                            value: item.id,
+                            value: item,
                             label: `${item.name}`,
                           }))}
                         />
@@ -435,11 +466,15 @@ const CreateOrder = props => {
                     </thead>
                     <tbody>
                       {productList.map((item, index) => {
+                        console.log(item)
                         return (
                           <tr key={index}>
                             <td>
                               <Select
-                                defaultValue={productList[index]?.id}
+                                value={{
+                                  value: item.product?.id,
+                                  label: item.product?.name,
+                                }}
                                 onChange={event => onSelectedProduct(event, index)}
                                 menuPortalTarget={document.body}
                                 options={productInWarehouses.map(item => ({

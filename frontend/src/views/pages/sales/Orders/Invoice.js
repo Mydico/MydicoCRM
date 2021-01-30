@@ -29,6 +29,7 @@ const Invoice = props => {
       toastRef.current.addToast();
       dispatch(reset());
       setTimeout(() => {
+        localStorage.setItem('order', JSON.stringify({}));
         history.push('/order');
       }, 1000);
     }
@@ -160,10 +161,15 @@ const Invoice = props => {
                   </tr>
                 </tbody>
               </Table>
-              <CButton type="submit" size="lg" className="btn btn-success" onClick={onCreateOrder}>
-                Tạo đơn hàng
-              </CButton>
             </CCol>
+          </CRow>
+          <CRow className="d-flex justify-content-between mr-5">
+            <CButton size="lg" className="btn btn-secondary" onClick={() => history.goBack()}>
+              Quay lại
+            </CButton>
+            <CButton type="submit" size="lg" className="btn btn-success mr-5" onClick={onCreateOrder}>
+              Tạo đơn hàng
+            </CButton>
           </CRow>
         </CCardBody>
       </CCard>

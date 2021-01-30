@@ -37,6 +37,9 @@ const EditOrder = React.lazy(() => import('./views/pages/sales/Orders/EditOrder'
 
 const Promotion = React.lazy(() => import('./views/pages/sales/Promotion/Promotions'));
 const CreatePromotion = React.lazy(() => import('./views/pages/sales/Promotion/CreatePromotion'));
+const CreateLongTermPromotion = React.lazy(() => import('./views/pages/sales/Promotion/CreateLongTermPromotion'));
+const EditLongTermPromotion = React.lazy(() => import('./views/pages/sales/Promotion/EditLongTermPromotion'));
+
 const EditPromotion = React.lazy(() => import('./views/pages/sales/Promotion/EditPromotion'));
 
 const Warehouse = React.lazy(() => import('./views/pages/warehouse/Warehouse/Warehouse'));
@@ -75,8 +78,10 @@ const routes = [
   { path: '/product/brand/new/', name: 'Thêm mới', component: CreateProductBrand },
   { path: '/product/brand/:id/edit/', name: 'Chỉnh sửa', component: EditProductBrand },
   { path: '/promotion/', name: 'Chương trình bán hàng', component: Promotion, exact: true },
-  { path: '/promotion/:id/edit/', name: 'Chỉnh sửa Chương trình bán hàng', component: EditPromotion },
-  { path: '/promotion/new/', name: 'Thêm mới Chương trình bán hàng', component: CreatePromotion },
+  { path: '/promotion/:id/edit/', name: 'Chỉnh sửa ', component: EditPromotion },
+  { path: '/promotion/new/longterm', name: 'Thêm mới', component: CreateLongTermPromotion },
+  { path: '/promotion/:id/longterm', name: 'Chỉnh sửa', component: EditLongTermPromotion },
+  { path: '/promotion/new/', name: 'Thêm mới', component: CreatePromotion },
   { path: '/order/', name: 'Đơn hàng', component: Order, exact: true },
   { path: '/order/:id/edit/', name: 'Chỉnh sửa Đơn hàng', component: EditOrder },
   { path: '/order/new/invoice/', name: 'Xác nhận', component: OrderInvoice },

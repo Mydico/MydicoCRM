@@ -11,6 +11,7 @@ import Store from './store.entity';
 import Promotion from './promotion.entity';
 import { OrderStatus } from './enumeration/order-status';
 import OrderDetails from './order-details.entity';
+import PromotionItem from './promotion-item.entity';
 
 /**
  * A Order.
@@ -75,7 +76,7 @@ export default class Order extends BaseEntity {
   orderDetails: OrderDetails;
 
   @Column({ type: 'integer', name: 'promotion_item_id', nullable: true })
-  promotionItemId: number;
+  promotionItem: PromotionItem;
 
   @Column({ type: 'integer', name: 'real_money', nullable: true })
   realMoney: number;

@@ -1,0 +1,7 @@
+export const OrderStatus = {
+  WAITING: 'WAITING',
+  APPROVED: 'APPROVED',
+  CREATE_COD: 'CREATE_COD',
+  CANCEL : 'CANCEL',
+  DELETED : 'DELETED',
+};

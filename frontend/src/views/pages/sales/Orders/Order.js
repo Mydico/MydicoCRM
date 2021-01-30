@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getOrder } from './order.api';
+import { getOrder, updateOrder } from './order.api';
 import { globalizedOrdersSelectors, reset } from './order.reducer';
 import { useHistory } from 'react-router-dom';
+import { OrderStatus } from './order-status';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 const getBadge = status => {
   switch (status) {
     case 'ACTIVE':
@@ -21,8 +24,9 @@ const getBadge = status => {
 };
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
-  APPROVED : 'ĐÃ DUYỆT',
-  CREATE_COD : 'ĐÃ TẠO VẬN ĐƠN'
+  APPROVED: 'ĐÃ DUYỆT',
+  CREATE_COD: 'ĐÃ TẠO VẬN ĐƠN',
+  CANCEL: 'ĐÃ HỦY',
 };
 const Order = props => {
   const [details, setDetails] = useState([]);
@@ -43,14 +47,15 @@ const Order = props => {
   }, [activePage]);
 
   const computedItems = items => {
-    console.log(items);
     return items.map(item => {
       return {
         ...item,
         customerName: item.customer?.contactName,
         tel: item.customer?.tel,
         quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
-        total: item.orderDetails?.reduce((sum, current) => sum + current.priceTotal, 0).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }),
+        total: item.orderDetails
+          ?.reduce((sum, current) => sum + current.priceTotal, 0)
+          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }),
       };
     });
   };
@@ -74,18 +79,23 @@ const Order = props => {
       _style: { width: '1%' },
       filter: false,
     },
-    { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
-    { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
-    { key: 'tel', label: 'Số điện thoại', _style: { width: '15%' } },
-    { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '15%' } },
-    { key: 'total', label: 'Tiền thanh toán', _style: { width: '15%' } },
-    { key: 'createdBy', label: 'Người tạo', _style: { width: '15%' } },
-    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '15%' } },
     {
       key: 'show_details',
-      label: '',
+      label: 'Xem chi tiết',
       _style: { width: '1%' },
+      filter: false,
+    },
+    { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
+    { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
+    { key: 'tel', label: 'Số điện thoại', _style: { width: '10%' } },
+    { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' } },
+    { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
+    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
+    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+    {
+      key: 'action',
+      label: '',
+      _style: { width: '30%' },
       filter: false,
     },
   ];
@@ -98,6 +108,8 @@ const Order = props => {
         return 'info';
       case 'WAITING':
         return 'warning';
+      case 'CANCEL':
+        return 'danger';
       default:
         return 'primary';
     }
@@ -114,6 +126,196 @@ const Order = props => {
 
   const toEditOrder = typeId => {
     history.push(`${props.match.url}/${typeId}/edit`);
+  };
+
+  useEffect(() => {
+    if (initialState.updatingSuccess) {
+      dispatch(getOrder());
+      dispatch(reset());
+    }
+  }, [initialState.updatingSuccess]);
+
+  const approveOrder = order => () => {
+    order.status = OrderStatus.APPROVED;
+    dispatch(updateOrder(order));
+  };
+
+  const cancelOrder = order => () => {
+    order.status = OrderStatus.CANCEL;
+    dispatch(updateOrder(order));
+  };
+
+  const deleteOrder = order => () => {
+    order.status = OrderStatus.DELETED;
+    dispatch(updateOrder(order));
+  };
+
+  const createCodOrder = order => () => {
+    order.status = OrderStatus.CREATE_COD;
+    dispatch(updateOrder(order));
+  };
+
+  const approveAlert = item => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn duyệt đơn hàng này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: approveOrder(item),
+        },
+        {
+          label: 'Hủy',
+        },
+      ],
+    });
+  };
+
+  const cancelAlert = item => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn hủy đơn hàng này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: cancelOrder(item),
+        },
+        {
+          label: 'Hủy',
+        },
+      ],
+    });
+  };
+
+  const deleteAlert = item => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn xóa đơn hàng này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: deleteOrder(item),
+        },
+        {
+          label: 'Hủy',
+        },
+      ],
+    });
+  };
+
+  const codAlert = item => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn tạo vận đơn cho đơn hàng này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: createCodOrder(item),
+        },
+        {
+          label: 'Hủy',
+        },
+      ],
+    });
+  };
+  const renderButtonStatus = item => {
+    switch (item.status) {
+      case OrderStatus.WAITING:
+        return (
+          <CRow>
+            <CButton
+              onClick={() => {
+                approveAlert(item);
+              }}
+              color="success"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              DUYỆT ĐƠN HÀNG
+            </CButton>
+            <CButton
+              onClick={() => {
+                cancelAlert(item);
+              }}
+              color="danger"
+              variant="outline"
+              shape="square"
+              size="sm"
+            >
+              HỦY ĐƠN HÀNG
+            </CButton>
+          </CRow>
+        );
+      case OrderStatus.APPROVED:
+        return (
+          <CRow>
+            <CButton
+              onClick={() => {
+                codAlert(item);
+              }}
+              color="primary"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              TẠO VẬN ĐƠN
+            </CButton>
+            <CButton
+              onClick={() => {
+                toEditOrder(item.id);
+              }}
+              color="warning"
+              variant="outline"
+              shape="square"
+              size="sm"
+            >
+              <CIcon name="cil-pencil" />
+              CHỈNH SỬA
+            </CButton>
+          </CRow>
+        );
+      case OrderStatus.CREATE_COD:
+        return (
+          <CButton color="info" variant="outline" shape="square" size="sm">
+            XEM VẬN ĐƠN
+          </CButton>
+        );
+      case OrderStatus.CANCEL:
+        return (
+          <CRow>
+            <CButton
+              onClick={() => {
+                toEditOrder(item.id);
+              }}
+              color="warning"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              <CIcon name="cil-pencil" />
+              CHỈNH SỬA
+            </CButton>
+            <CButton
+              onClick={() => {
+                deleteAlert(item);
+              }}
+              color="secondary"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              XÓA ĐƠN
+            </CButton>
+          </CRow>
+        );
+      default:
+        break;
+    }
   };
 
   return (
@@ -157,21 +359,11 @@ const Order = props => {
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
+            createdDate: item => <td>{item.createdDate.substr(0, 10)}</td>,
+
             show_details: item => {
               return (
                 <td className="py-2 d-flex">
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    className="mr-3"
-                    onClick={() => {
-                      toEditOrder(item.id);
-                    }}
-                  >
-                    <CIcon name="cil-pencil" />
-                  </CButton>
                   <CButton
                     color="primary"
                     variant="outline"
@@ -186,6 +378,9 @@ const Order = props => {
                 </td>
               );
             },
+            action: item => {
+              return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
+            },
             details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
@@ -194,14 +389,41 @@ const Order = props => {
                     <CRow>
                       <CCol lg="6">
                         <dl className="row">
-                          <dt className="col-sm-4">Tên đơn hàngg:</dt>
-                          <dd className="col-sm-8">{item.name}</dd>
+                          <dt className="col-sm-4">Mã đơn hàngg:</dt>
+                          <dd className="col-sm-8">{item.code}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-4">Tên khách hàng:</dt>
+                          <dd className="col-sm-8">{item.customerName}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-4">Số điện thoại:</dt>
+                          <dd className="col-sm-8">{item.tel}</dd>
                         </dl>
                       </CCol>
                       <CCol lg="6">
                         <dl className="row">
                           <dt className="col-sm-3">Mô tả:</dt>
                           <dd className="col-sm-9">{item.description}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-4">Tên đơn hàngg:</dt>
+                          <dd className="col-sm-8">{item.name}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-4">Tên đơn hàngg:</dt>
+                          <dd className="col-sm-8">{item.name}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-4">Tên đơn hàngg:</dt>
+                          <dd className="col-sm-8">{item.name}</dd>
+                        </dl>                        <dl className="row">
+                          <dt className="col-sm-4">Tên đơn hàngg:</dt>
+                          <dd className="col-sm-8">{item.name}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-4">Tên đơn hàngg:</dt>
+                          <dd className="col-sm-8">{item.name}</dd>
                         </dl>
                       </CCol>
                     </CRow>

@@ -72,6 +72,7 @@ const Promotion = props => {
       filter: false,
     },
     { key: 'name', label: 'Tên chương trình bán hàng', _style: { width: '20%' } },
+    { key: 'type', label: 'Loại chương trình', _style: { width: '15%' } },
     { key: 'startTime', label: 'Thời gian bắt đầu', _style: { width: '15%' } },
     { key: 'endTime', label: 'Thời gian kết thúc', _style: { width: '15%' } },
     { key: 'customerType', label: 'Đối tượng áp dụng', _style: { width: '15%' } },
@@ -95,6 +96,15 @@ const Promotion = props => {
         return 'success';
     }
   };
+
+  const getBadgeType = status => {
+    switch (status) {
+      case 'SHORTTERM':
+        return 'info';
+      default:
+        return 'primary';
+    }
+  };
   const [currentItems, setCurrentItems] = useState([]);
   const csvContent = computedItems(Promotions)
     .map(item => Object.values(item).join(','))
@@ -103,9 +113,14 @@ const Promotion = props => {
   const toCreatePromotion = () => {
     history.push(`${props.match.url}new`);
   };
-
+  const toCreateLongTermPromotion = () => {
+    history.push(`${props.match.url}new/longterm`);
+  };
   const toEditPromotion = userId => {
     history.push(`${props.match.url}${userId}/edit`);
+  };
+  const toEditLongTermPromotion = userId => {
+    history.push(`${props.match.url}${userId}/longterm`);
   };
 
   const onFilterColumn = value => {
@@ -131,7 +146,10 @@ const Promotion = props => {
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách chương trình bán hàng
         <CButton color="success" variant="outline" className="ml-3" onClick={toCreatePromotion}>
-          <CIcon name="cil-plus" /> Thêm mới chương trình bán hàng
+          <CIcon name="cil-plus" /> Thêm mới chương trình ngắn hạn
+        </CButton>
+        <CButton color="info" variant="outline" className="ml-3" onClick={toCreateLongTermPromotion}>
+          <CIcon name="cil-plus" /> Thêm mới chương trình dài hạn
         </CButton>
       </CCardHeader>
       <CCardBody>
@@ -164,6 +182,11 @@ const Promotion = props => {
                 <CBadge color={getBadge(item.isLock)}>{item.isLock ? 'Đã khóa' : 'Đang mở'}</CBadge>
               </td>
             ),
+            type: item => (
+              <td>
+                <CBadge color={getBadgeType(item.type)}>{item.type === 'SHORTTERM' ? 'NGẮN HẠN' : 'DÀI HẠN'}</CBadge>
+              </td>
+            ),
             show_details: item => {
               return (
                 <td className="d-flex py-2">
@@ -174,7 +197,7 @@ const Promotion = props => {
                     size="sm"
                     className="mr-3"
                     onClick={() => {
-                      toEditPromotion(item.id);
+                      item.type === 'SHORTTERM' ? toEditPromotion(item.id) : toEditLongTermPromotion(item.id);
                     }}
                   >
                     <CIcon name="cil-pencil" />

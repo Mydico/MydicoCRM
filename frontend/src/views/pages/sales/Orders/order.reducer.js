@@ -1,10 +1,11 @@
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingOrder } from './order.api';
+import { creatingOrder, getOrderDetail } from './order.api';
 import { getOrder, getDetailOrder, updateOrder } from './order.api';
 
 const initialState = {
   loading: false,
   updatingSuccess: false,
+  orderDetails: [],
 };
 
 export const orderAdapter = createEntityAdapter({
@@ -19,11 +20,11 @@ const slice = createSlice({
   initialState: orderAdapter.getInitialState({ initialState }),
   reducers: {
     fetching(state) {
-      state.initialState.loading = true
+      state.initialState.loading = true;
     },
     reset(state) {
-      state.initialState.loading = false
-      state.initialState.updatingSuccess = false
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = false;
     },
     orderAddOne: orderAdapter.addOne,
     orderAddMany: orderAdapter.addMany,
@@ -36,12 +37,16 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDetailOrder.fulfilled]: (state, action) => {
-      orderAdapter.addOne(state, action.payload)
+      orderAdapter.addOne(state, action.payload);
+      state.initialState.loading = false;
+    },
+    [getOrderDetail.fulfilled]: (state, action) => {
+      state.initialState.orderDetails = action.payload;
       state.initialState.loading = false;
     },
     [getOrder.fulfilled]: (state, action) => {
       orderAdapter.setAll(state, action.payload.data);
-      state.initialState.totalItem = action.payload.total
+      state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
     [updateOrder.fulfilled]: (state, action) => {
@@ -52,6 +57,6 @@ const slice = createSlice({
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions
+export const { fetching, reset } = slice.actions;
 
 export const globalizedOrdersSelectors = orderAdapter.getSelectors(state => state.order);

@@ -128,7 +128,7 @@ const CreateProduct = () => {
   };
 
   const getUploadParams = () => {
-    return { url: 'http://localhost:8082/api/files' };
+    return { url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/' : 'http://103.121.91.142:8082/' };
   };
 
   const handleChangeStatus = ({ meta, file, xhr }, status) => {
@@ -353,46 +353,6 @@ const CreateProduct = () => {
                   submitButtonContent="Hoàn thành"
                   inputWithFilesContent="Thêm file"
                 />
-                {/* <div className="form-group">
-                    <label>Upload ảnh</label>
-                    <Dropzone
-                      style={dropzoneStyle}
-                      accept="image/*"
-                      onDrop={acceptedFiles => {
-                        // do nothing if no files
-                        if (acceptedFiles.length === 0) {
-                          return;
-                        }
-                        console.log(acceptedFiles)
-
-                        // on drop we add to the existing files
-                        setFieldValue('image', values.image.concat(acceptedFiles));
-                      }}
-                    >
-                      {({ getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject }) => {
-                        const additionalClass = isDragAccept ? 'accept' : isDragReject ? 'reject' : '';
-
-                        return (
-                          <div
-                            {...getRootProps({
-                              className: `dropzone ${additionalClass}`,
-                            })}
-                          >
-                            <input {...getInputProps()} />
-
-                            {values.image.length > 0 ? (
-                              values.image?.map((file, i) => <Thumb key={i} file={file} />)
-                            ) : (
-                              <div>
-                                <span>{isDragActive ? '📂' : '📁'}</span>
-                                <p>Kéo thả hình ảnh hoặc bấm để chọn ảnh</p>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      }}
-                    </Dropzone>
-                  </div> */}
               </CFormGroup>
               <CFormGroup className="d-flex justify-content-center">
                 <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>

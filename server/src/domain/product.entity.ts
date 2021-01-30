@@ -19,7 +19,7 @@ export default class Product extends BaseEntity {
   @Column({ name: 'name', length: 255 })
   name: string;
 
-  @Column({ name: 'image', nullable: true })
+  @Column({ name: 'image', nullable: true, type: "text"  })
   image: string;
 
   @Column({ name: 'description', length: 255, nullable: true })

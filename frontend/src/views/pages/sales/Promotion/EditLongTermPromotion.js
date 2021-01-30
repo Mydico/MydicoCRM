@@ -31,8 +31,8 @@ import { currencyFormat } from '../../../../shared/utils/normalize';
 import { getCustomerType } from '../../customer/CustomerType/customer-type.api';
 import { globalizedcustomerTypeSelectors } from '../../customer/CustomerType/customer-type.reducer';
 import Select from 'react-select';
-import { getProduct } from '../../product/ProductList/product.api';
-import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import { globalizedproductGroupsSelectors } from '../../product/ProductGroup/product-group.reducer';
+import { getProductGroup } from '../../product/ProductGroup/product-group.api';
 
 const validationSchema = function (values) {
   return Yup.object().shape({
@@ -96,26 +96,26 @@ const EditPromotion = props => {
   });
   const { selectAll } = globalizedcustomerTypeSelectors;
   const customerType = useSelector(selectAll);
-  const { selectAll: selectAllProduct } = globalizedProductSelectors;
-  const products = useSelector(selectAllProduct);
+  const { selectAll: selectAllProductGroup } = globalizedproductGroupsSelectors;
+  const productGroups = useSelector(selectAllProductGroup);
   const { selectById } = globalizedPromotionSelectors;
   const promotion = useSelector(state => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
     dispatch(getCustomerType());
-    dispatch(getProduct());
+    dispatch(getProductGroup());
     dispatch(getDetailPromotion(props.match.params.id));
   }, []);
 
   useEffect(() => {
     if (promotion) {
       setInitValues(promotion);
-      setProductList(promotion.promotionProduct);
+      setPromotionItemList(promotion.promotionItems);
     }
   }, [promotion]);
 
-  const [productList, setProductList] = useState([]);
+  const [promotionItemList, setPromotionItemList] = useState([]);
 
   useEffect(() => {
     if (customerType.length > 0) {
@@ -124,32 +124,27 @@ const EditPromotion = props => {
   }, [customerType]);
 
   const onAddProduct = () => {
-    const data = { product: { id: '' }, buy: 0, gift: 0 };
-    setProductList([...productList, data]);
+    const data = { name: "", totalMoney: 0, reducePercent: 0, productGroup : {} };
+    setPromotionItemList([...promotionItemList, data]);
   };
 
   const onSelectedProduct = (item, index) => {
-    const copyArr = JSON.parse(JSON.stringify(productList));
-    const foundedIndex = copyArr.findIndex(product => product.product.id === item.value);
-    if (foundedIndex >= 0) {
-      copyArr.splice(index, 1);
-    } else {
-      copyArr[index].product = { id: item.value };
-    }
-    setProductList(copyArr);
+    const copyArr = JSON.parse(JSON.stringify(promotionItemList));
+    copyArr[index].productGroup = { id: item.value };
+    setPromotionItemList(copyArr);
   };
 
   const onChangeProductPromotion = (value, index, type) => {
-    const copyArr = [...productList];
+    const copyArr = JSON.parse(JSON.stringify(promotionItemList));
     copyArr[index][type] = value;
-    setProductList(copyArr);
+    setPromotionItemList(copyArr);
   };
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
     dispatch(fetching());
     values = JSON.parse(JSON.stringify(values));
     if (!values.customerType) values.customerType = initialValues.current.customerType;
-    values.promotionProduct = productList;
+    values.promotionItems = promotionItemList;
     dispatch(updatePromotion(values));
     resetForm();
   };
@@ -165,7 +160,7 @@ const EditPromotion = props => {
     <CCard>
       <Toaster ref={toastRef} message="Tạo mới chương trình bán hàng thành công" />
       <CCardHeader class="card-header">
-        <CCardTitle>Chỉnh sửa chương trình bán hàng</CCardTitle>
+        <CCardTitle>Chỉnh sửa chương trình dài hạn</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik
@@ -291,67 +286,83 @@ const EditPromotion = props => {
                   </CCol>
                   <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3" onClick={onAddProduct}>
                     <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-                    Thêm sản phẩm
+                    Thêm doanh số
                   </CButton>
                   <CCol lg="12">
-                    {productList &&
-                      productList.map((item, index) => {
-                        console.log(item)
-                        return (
-                          <CFormGroup key={index} className="mt-3">
-                            <CRow>
-                              <CCol lg="4">
-                                <CLabel htmlFor="password">Sản phẩm</CLabel>
-                                <Select
-                                  defaultValue={{
-                                    value: item.product?.id,
-                                    label:`${item.product?.code}-${item.product?.name}`
-                                  }}
-                                  onChange={event => onSelectedProduct(event, index)}
-                                  options={products.map(item => ({
-                                    value: item.id,
-                                    label: `${item.code}-${item.name}`,
-                                  }))}
-                                />
-                              </CCol>
-                              <CCol lg="4">
-                                <CLabel htmlFor="password">Mua</CLabel>
-                                <CInput
-                                  type="number"
-                                  name="buy"
-                                  id="buy"
-                                  placeholder="Dung tích"
-                                  autoComplete="buy"
-                                  onChange={event => onChangeProductPromotion(event.target.value, index, 'buy')}
-                                  invalid={!productList[index].buy}
-                                  valid={productList[index].buy}
-                                  onBlur={handleBlur}
-                                  value={productList[index].buy}
-                                />
-                                {!productList[index].buy && <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>}
-                              </CCol>
-                              <CCol lg="4">
-                                <CLabel htmlFor="password">Tặng</CLabel>
-                                <CInput
-                                  type="number"
-                                  name="gift"
-                                  id="gift"
-                                  placeholder="Dung tích"
-                                  autoComplete="gift"
-                                  onChange={event => onChangeProductPromotion(event.target.value, index, 'gift')}
-                                  invalid={!productList[index].gift}
-                                  valid={productList[index].gift}
-                                  onBlur={handleBlur}
-                                  value={productList[index].gift}
-                                />
-                                {!productList[index].gift && (
-                                  <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>
-                                )}
-                              </CCol>
-                            </CRow>
-                          </CFormGroup>
-                        );
-                      })}
+                    {promotionItemList.map((item, index) => (
+                      <CFormGroup key={index} className="mt-3">
+                        <CRow>
+                          <CCol lg="3">
+                            <CLabel htmlFor="password">Tên doanh số</CLabel>
+                            <CInput
+                              type="text"
+                              name="name"
+                              id="name"
+                              placeholder="Tên doanh số"
+                              autoComplete="name"
+                              onChange={event => onChangeProductPromotion(event.target.value, index, 'name')}
+                              invalid={!promotionItemList[index].name}
+                              valid={promotionItemList[index].name}
+                              onBlur={handleBlur}
+                              value={promotionItemList[index].name}
+                            />
+                            {!promotionItemList[index].name && <CInvalidFeedback className="d-block">Tên không để trống</CInvalidFeedback>}
+                          </CCol>
+                          <CCol lg="3">
+                            <CLabel htmlFor="password">Mức doanh thu(đơn vị: triệu đồng)</CLabel>
+                            <CInput
+                              type="number"
+                              name="totalMoney"
+                              id="totalMoney"
+                              min={0}
+                              placeholder="Mức doanh thu"
+                              autoComplete="totalMoney"
+                              onChange={event => onChangeProductPromotion(event.target.value, index, 'totalMoney')}
+                              invalid={!promotionItemList[index].totalMoney}
+                              valid={promotionItemList[index].totalMoney}
+                              onBlur={handleBlur}
+                              value={promotionItemList[index].totalMoney}
+                            />
+                            {!promotionItemList[index].totalMoney && (
+                              <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>
+                            )}
+                          </CCol>
+                          <CCol lg="3">
+                            <CLabel htmlFor="password">Chiết khấu(đơn vị: %)</CLabel>
+                            <CInput
+                              type="number"
+                              name="reducePercent"
+                              id="reducePercent"
+                              min={0}
+                              placeholder="Chiết khấu"
+                              autoComplete="reducePercent"
+                              onChange={event => onChangeProductPromotion(event.target.value, index, 'reducePercent')}
+                              invalid={promotionItemList[index].reducePercent < 0}
+                              valid={promotionItemList[index].reducePercent}
+                              onBlur={handleBlur}
+                              value={promotionItemList[index].reducePercent}
+                            />
+                            {promotionItemList[index].reducePercent < 0 && (
+                              <CInvalidFeedback className="d-block">Giá trị phải lớn hơn hoặc bằng 0</CInvalidFeedback>
+                            )}
+                          </CCol>
+                          <CCol lg="3">
+                            <CLabel htmlFor="password">Nhóm sản phẩm</CLabel>
+                            <Select
+                              defaultValue={{
+                                value: item.productGroup?.id,
+                                label: `${item.productGroup?.name}`,
+                              }}
+                              onChange={event => onSelectedProduct(event, index)}
+                              options={productGroups.map(item => ({
+                                value: item.id,
+                                label: `${item.name}`,
+                              }))}
+                            />
+                          </CCol>
+                        </CRow>
+                      </CFormGroup>
+                    ))}
                   </CCol>
                 </CRow>
                 <CFormGroup className="d-flex justify-content-center">

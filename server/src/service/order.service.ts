@@ -10,6 +10,7 @@ relationshipNames.push('district')
 relationshipNames.push('wards')
 relationshipNames.push('customer')
 relationshipNames.push('orderDetails')
+relationshipNames.push('promotion')
 
 @Injectable()
 export class OrderService {

@@ -3,8 +3,8 @@ import axios from 'axios';
 
 export const getDetailOrder = createAsyncThunk('api/detail/orders', async (userId, thunkAPI) => {
   try {
-    const result = await axios.get('api/orders/'+ userId);
-    return result.data
+    const result = await axios.get('api/orders/' + userId);
+    return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
@@ -13,16 +13,25 @@ export const getDetailOrder = createAsyncThunk('api/detail/orders', async (userI
 export const creatingOrder = createAsyncThunk('api/create/orders', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/orders', body);
-    return result.data
+    return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
 
-export const updateOrder = createAsyncThunk('api/create/orders', async (body, thunkAPI) => {
+export const updateOrder = createAsyncThunk('api/update/orders', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/orders', body);
-    return result.data
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const getOrderDetail = createAsyncThunk('api/get/order-detail', async (orderId, thunkAPI) => {
+  try {
+    const result = await axios.get('api/order-details/order', { params: { orderId } });
+    return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
@@ -36,5 +45,3 @@ export const getOrder = createAsyncThunk('api/orders', async (params = { page: 0
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
-
-

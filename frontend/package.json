@@ -41,6 +41,7 @@
     "parse-link-header": "^1.0.1",
     "react": "^16.13.1",
     "react-app-polyfill": "^1.0.6",
+    "react-confirm-alert": "^2.7.0",
     "react-dom": "^16.13.1",
     "react-dropzone": "^11.2.4",
     "react-dropzone-uploader": "^2.11.0",
