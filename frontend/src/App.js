@@ -29,7 +29,7 @@ export const App = props => {
     dispatch(getSession())
   }, []);
   return (
-    <BrowserRouter>
+    <HashRouter>
       <React.Suspense fallback={loading}>
         <Switch>
           <Route exact path="/login" name="Login Page" render={props => <Login {...props} />} />
@@ -39,7 +39,7 @@ export const App = props => {
           <PrivateRoute path="/" component={TheLayout} />
         </Switch>
       </React.Suspense>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 

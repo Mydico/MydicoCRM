@@ -18,7 +18,7 @@ npm-debug.log.*
 # Node Server NestJS
 ######################
 server/dist
-
+server/.env
 ######################
 # SASS
 ######################
@@ -38,7 +38,7 @@ tmp/**/*
 *.tmp
 *.bak
 *.swp
-
+*.env
 *~.nib
 local.properties
 .classpath
