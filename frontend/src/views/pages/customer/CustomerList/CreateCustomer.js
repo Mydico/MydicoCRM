@@ -30,8 +30,6 @@ const validationSchema = function (values) {
     name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
     tel: Yup.string().matches(phoneRegExp, 'Số điện thoại không đúng').required('Số điện thoại không để trống'),
     city: Yup.string().nullable(true).required('Thành phố không để trống'),
-    type: Yup.string().nullable(true).required('Loại khách hàng không để trống'),
-    branch: Yup.string().nullable(true).required('Chi nhánh không để trống'),
   });
 };
 
@@ -118,19 +116,13 @@ const CreateCustomer = () => {
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/đ/g, 'd')
       .replace(/Đ/g, 'D');
-    values.code = normalizeCode;
+    values.code = `${normalizeCode}-001`;
 
-    if (values.branch) {
-      const founded = initialState.branch.filter(item => item.code === values.branch);
-      if (founded.length > 0) {
-        values.branch = founded[0].id;
-      }
+    if (!values.branch) {
+      values.branch = initialState.branch[0].id;
     }
-    if (values.type) {
-      const founded = initialState.type.filter(item => item.code === values.type);
-      if (founded.length > 0) {
-        values.type = founded[0].id;
-      }
+    if (!values.type) {
+      values.type = initialState.type[0].id;
     }
     dispatch(creatingCustomer(values));
     resetForm();
@@ -317,7 +309,14 @@ const CreateCustomer = () => {
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="code">Loại khách hàng</CLabel>
-                    <CSelect custom name="ccmonth" name="type" id="type" onChange={handleChange}>
+                    <CSelect
+                      custom
+                      name="ccmonth"
+                      name="type"
+                      value={values.type || initialState.type[0]?.code}
+                      id="type"
+                      onChange={handleChange}
+                    >
                       <option key={0} value={null}>
                         Chọn loại khách hàng
                       </option>
@@ -331,7 +330,7 @@ const CreateCustomer = () => {
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="code">Chi nhánh</CLabel>
-                    <CSelect custom name="branch" id="branch" onChange={handleChange}>
+                    <CSelect custom name="branch" id="branch" value={values.branch || initialState.branch[0]?.code} onChange={handleChange}>
                       <option key={0} value={null}>
                         Chọn chi nhánh
                       </option>
@@ -345,7 +344,7 @@ const CreateCustomer = () => {
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="code">Trạng thái</CLabel>
-                    <CSelect custom name="status" id="status" onChange={handleChange}>
+                    <CSelect custom name="status" id="status" value={values.status || initialState.status[0]?.id} onChange={handleChange}>
                       <option key={0} value={null}>
                         Chọn trạng thái
                       </option>
@@ -355,7 +354,7 @@ const CreateCustomer = () => {
                         </option>
                       ))}
                     </CSelect>
-                    <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
+                    <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="createdYear">Năm thành lập</CLabel>
