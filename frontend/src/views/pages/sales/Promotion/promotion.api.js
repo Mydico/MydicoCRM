@@ -21,6 +21,15 @@ export const getDetailPromotion = createAsyncThunk('api/detail/promotions', asyn
   }
 });
 
+export const getDetailProductPromotion = createAsyncThunk('api/detail/product-promotions', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/promotion-products/', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const getPromotionProduct = createAsyncThunk('api/product/promotions', async (ids, thunkAPI) => {
   try {
     const result = await axios.get('api/promotion-products/many', { params: { ids: JSON.stringify(ids) } });

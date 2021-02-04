@@ -4,7 +4,8 @@ import { HashRouter, Route, Switch, BrowserRouter } from 'react-router-dom';
 import './scss/style.scss';
 import PrivateRoute from './shared/auth/private-route';
 import { getSession } from './views/pages/login/authenticate.reducer';
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const loading = (
   <div className="pt-3 text-center">
     <div className="sk-spinner sk-spinner-pulse"></div>
@@ -24,12 +25,14 @@ const Page404 = React.lazy(() => import('./views/pages/page404/Page404'));
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'));
 
 export const App = props => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getSession())
+    dispatch(getSession());
   }, []);
   return (
     <HashRouter>
+      <ToastContainer position={toast.POSITION.TOP_LEFT} className="toastify-container" toastClassName="toastify-toast" />
+
       <React.Suspense fallback={loading}>
         <Switch>
           <Route exact path="/login" name="Login Page" render={props => <Login {...props} />} />

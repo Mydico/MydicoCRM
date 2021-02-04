@@ -1,6 +1,5 @@
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingCustomerType } from '../customer.api';
-import { getCustomerType, getDetailCustomerType, updateCustomerType } from './customer-type.api';
+import { getCustomerType, getDetailCustomerType, updateCustomerType,creatingCustomerType } from './customer-type.api';
 
 const initialState = {
   loading: false,
@@ -32,7 +31,13 @@ const slice = createSlice({
   },
   extraReducers: {
     [creatingCustomerType.fulfilled]: (state, action) => {
+      console.log(action)
       state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [creatingCustomerType.rejected]: (state, action) => {
+      console.log(action)
+      state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
     [getDetailCustomerType.fulfilled]: (state, action) => {

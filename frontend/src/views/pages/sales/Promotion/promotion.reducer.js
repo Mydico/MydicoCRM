@@ -1,18 +1,19 @@
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingPromotion, creatingPromotionStatus, creatingPromotionType, getBranches, getCity, getPromotion, getPromotionBirthday, getPromotionStatus, getPromotionType, getDetailPromotion, getDistrict, getWard, updatePromotion, getPromotionProduct } from './promotion.api';
+import { creatingPromotion, creatingPromotionStatus, creatingPromotionType, getBranches, getCity, getPromotion, getPromotionBirthday, getPromotionStatus, getPromotionType, getDetailPromotion, getDistrict, getWard, updatePromotion, getPromotionProduct, getDetailProductPromotion } from './promotion.api';
 
 const initialState = {
   loading: false,
   updatingSuccess: false,
   totalItem: 0,
-  products: []
+  products: [],
+  promotionProducts: []
 };
 
 export const promotionsAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
   selectId: promotion => promotion.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.name.localeCompare(b.name),
+  sortComparer: (a, b) => a.createdDate.localeCompare(b.createdDate),
 });
 
 const slice = createSlice({
@@ -23,8 +24,7 @@ const slice = createSlice({
       state.initialState.loading = true
     },
     reset(state) {
-      state.initialState.loading = false
-      state.initialState.updatingSuccess = false
+      state.initialState = initialState
     },
     promotionsAddOne: promotionsAdapter.addOne,
     promotionsAddMany: promotionsAdapter.addMany,
@@ -54,7 +54,11 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getPromotionProduct.fulfilled]: (state, action) => {
-      state.initialState.products = action.payload.total
+      state.initialState.products = action.payload
+      state.initialState.loading = false;
+    },
+    [getDetailProductPromotion.fulfilled]: (state, action) => {
+      state.initialState.promotionProducts = action.payload
       state.initialState.loading = false;
     },
     [getPromotion.rejected]: (state, action) => {

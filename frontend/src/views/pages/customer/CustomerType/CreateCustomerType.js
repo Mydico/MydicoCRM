@@ -80,11 +80,6 @@ const CreateCustomerType = () => {
 
   const onSubmit = (values, { setSubmitting, setErrors }) => {
     dispatch(fetching())
-    values.code = values.name
-      .trim()
-      .split(' ')
-      .map(string => string[0])
-      .join('');
     dispatch(creatingCustomerType(values));
   };
 
@@ -129,15 +124,10 @@ const CreateCustomerType = () => {
                       id="code"
                       placeholder="Tên loại"
                       autoComplete="family-name"
-                      disabled
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.name
-                        .trim()
-                        .split(' ')
-                        .map(string => string[0])
-                        .join('')}
+                      value={values.code}
                     />
                     <CInvalidFeedback>{errors.code}</CInvalidFeedback>
                   </CFormGroup>
@@ -177,10 +167,10 @@ const CreateCustomerType = () => {
                     <CInvalidFeedback>{errors.description}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup className="d-flex justify-content-center">
-                    <CButton type="submit" size="sm" color="primary" disabled={initialState.loading}>
+                    <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
                       <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Tạo mới'}
                     </CButton>
-                    <CButton type="reset" size="sm" color="danger" onClick={handleReset} className="ml-5">
+                    <CButton type="reset" size="lg" color="danger" onClick={handleReset} className="ml-5">
                       <CIcon name="cil-ban" /> Xóa nhập liệu
                     </CButton>
                   </CFormGroup>

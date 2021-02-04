@@ -14,7 +14,7 @@ import {
   CSelect,
   CCardTitle,
   CTextarea,
-  CInputCheckbox,
+  CInputCheckbox
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -34,11 +34,13 @@ import Select from 'react-select';
 import { getProduct } from '../../product/ProductList/product.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống'),
+    endTime: Yup.string().required('Ngày kết thúc không để trống')
   });
 };
 
@@ -59,7 +61,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -138,7 +140,7 @@ const CreatePromotion = () => {
     dispatch(fetching());
     values.customerType = values.current?.customerType;
     values.promotionProduct = productList;
-    values.type="SHORTTERM"
+    values.type = 'SHORTTERM';
     dispatch(creatingPromotion(values));
     resetForm();
   };
@@ -149,6 +151,12 @@ const CreatePromotion = () => {
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
+
+  const onRemoveProduct = index => {
+    const copyArr = [...productList];
+    copyArr.splice(index, 1);
+    setProductList(copyArr);
+  };
 
   return (
     <CCard>
@@ -171,7 +179,7 @@ const CreatePromotion = () => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -268,10 +276,10 @@ const CreatePromotion = () => {
                       }}
                     >
                       {PromotionStatus.map(item => (
-                          <option key={item.value} value={item.value}>
-                            {item.title}
-                          </option>
-                        ))}
+                        <option key={item.value} value={item.value}>
+                          {item.title}
+                        </option>
+                      ))}
                     </CSelect>
                   </CFormGroup>
                 </CCol>
@@ -282,7 +290,7 @@ const CreatePromotion = () => {
                 <CCol lg="12">
                   {productList.map((item, index) => (
                     <CFormGroup key={index} className="mt-3">
-                      <CRow>
+                      <CRow className="d-flex align-items-center">
                         <CCol lg="4">
                           <CLabel htmlFor="password">Sản phẩm</CLabel>
                           <Select
@@ -290,7 +298,7 @@ const CreatePromotion = () => {
                             onChange={event => onSelectedProduct(event, index)}
                             options={products.map(item => ({
                               value: item.id,
-                              label: `${item.code}-${item.name}`,
+                              label: `${item.code}-${item.name}`
                             }))}
                           />
                         </CCol>
@@ -310,7 +318,7 @@ const CreatePromotion = () => {
                           />
                           {!productList[index].buy && <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>}
                         </CCol>
-                        <CCol lg="4">
+                        <CCol lg="3">
                           <CLabel htmlFor="password">Tặng</CLabel>
                           <CInput
                             type="number"
@@ -325,6 +333,11 @@ const CreatePromotion = () => {
                             value={productList[index].gift}
                           />
                           {!productList[index].gift && <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>}
+                        </CCol>
+                        <CCol lg="1">
+                          <CButton color="danger" variant="outline" shape="square" size="sm" onClick={() => onRemoveProduct(index)}>
+                            <CIcon name="cilXCircle" />
+                          </CButton>
                         </CCol>
                       </CRow>
                     </CFormGroup>

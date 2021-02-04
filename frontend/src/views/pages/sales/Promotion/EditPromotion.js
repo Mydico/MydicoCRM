@@ -303,7 +303,7 @@ const EditPromotion = props => {
                               <CCol lg="4">
                                 <CLabel htmlFor="password">Sản phẩm</CLabel>
                                 <Select
-                                  defaultValue={{
+                                  value={{
                                     value: item.product?.id,
                                     label:`${item.product?.code}-${item.product?.name}`
                                   }}
