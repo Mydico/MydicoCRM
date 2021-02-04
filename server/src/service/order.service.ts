@@ -28,6 +28,7 @@ export class OrderService {
   }
 
   async findAndCount(options: FindManyOptions<Order>): Promise<[Order[], number]> {
+    
     options.relations = relationshipNames;
     return await this.orderRepository.findAndCount(options);
   }

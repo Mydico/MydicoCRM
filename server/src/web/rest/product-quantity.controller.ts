@@ -34,14 +34,15 @@ export class ProductQuantityController {
         filter[item] = Like(`%${req.query[item]}%`);
       }
     });
-    const [results, count] = await this.productQuantityService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: {
-        ...filter,
-      }
-    });
+    // const [results, count] = await this.productQuantityService.findAndCount({
+    //   skip: +pageRequest.page * pageRequest.size,
+    //   take: +pageRequest.size,
+    //   order: pageRequest.sort.asOrder(),
+    //   where: {
+    //     ...filter,
+    //   }
+    // });
+    const [results, count] = await this.productQuantityService.findAndCount(pageRequest, req);
     HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
     return results;
   }

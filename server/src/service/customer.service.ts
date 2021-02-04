@@ -33,14 +33,16 @@ export class CustomerService {
     return await this.customerRepository.findOne(options);
   }
 
-
   async findAndCount(options: FindManyOptions<Customer>): Promise<[Customer[], number]> {
     options.relations = relationshipNames;
     return await this.customerRepository.findAndCount(options);
   }
 
   async save(customer: Customer): Promise<Customer | undefined> {
-    const foundedCustomer = await this.customerRepository.find({ code: Like(`%${customer.code}%`) });
+    const splitLength = customer.code.split('-').length;
+    const foundedCustomer = await this.customerRepository.find({
+      code: Like(`%${customer.code.split('-')[splitLength > 0 ? splitLength - 1 : splitLength]}%`)
+    });
     if (foundedCustomer.length > 0) {
       foundedCustomer.sort((a, b) => a.createdDate.valueOf() - b.createdDate.valueOf());
       const res = increment_alphanumeric_str(foundedCustomer[foundedCustomer.length - 1].code);

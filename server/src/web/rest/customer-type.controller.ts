@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Post as PostMethod,
+  Put,
+  UseGuards,
+  Req,
+  UseInterceptors,
+  HttpException,
+  HttpStatus
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import CustomerType from '../../domain/customer-type.entity';
@@ -67,9 +81,39 @@ export class CustomerTypeController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async post(@Req() req: Request, @Body() customerType: CustomerType): Promise<CustomerType> {
-    const created = await this.customerTypeService.save(customerType);
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerType', created.id);
-    return created;
+    // const exists = await this.customerTypeService.checkExist(customerType);
+    // console.log(exists)
+    // if (exists[0].exists)
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.CONFLICT,
+    //       error: 'Duplicate resource'
+    //     },
+    //     HttpStatus.CONFLICT
+    //   );
+    try {
+      const created = await this.customerTypeService.save(customerType);
+      HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerType', created.id);
+      return created;
+    } catch (error) {
+      if (error.message.includes('Duplicate entry')) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.CONFLICT,
+            error: 'Duplicate resource'
+          },
+          HttpStatus.CONFLICT
+        );
+      } else {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Internal Server Error'
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
+      }
+    }
   }
 
   @Put('/')
