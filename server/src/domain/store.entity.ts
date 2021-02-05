@@ -47,6 +47,9 @@ export default class Store extends BaseEntity {
   @OneToMany(type => Product, other =>other.store)
   product: Product[];
 
+  @OneToMany(type => Order, other =>other.store)
+  order: Order[];
+
   @ManyToOne(type => City)
   city: City;
 

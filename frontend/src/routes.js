@@ -50,6 +50,8 @@ const ProductWarehouse = React.lazy(() => import('./views/pages/warehouse/Produc
 const CreateProductWarehouse = React.lazy(() => import('./views/pages/warehouse/Product/CreateProductWarehouse'));
 const EditProductWarehouse = React.lazy(() => import('./views/pages/warehouse/Product/EditProductWarehouse'));
 
+const Bill = React.lazy(() => import('./views/pages/warehouse/Bill/Bill'));
+
 // https:/github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -90,6 +92,7 @@ const routes = [
   { path: '/warehouse/:id/edit/', name: 'Chỉnh sửa kho hàng', component: EditWarehouse },
   { path: '/warehouse/new/', name: 'Thêm mới kho hàng', component: CreateWarehouse },
   { path: '/inwarehouse/', name: 'Sản phẩm trong kho', component: ProductWarehouse, exact: true },
+  { path: '/bill/', name: 'Vận đơn', component: Bill, exact: true },
 ];
 
 export default routes;

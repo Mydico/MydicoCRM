@@ -30,20 +30,8 @@ export class OrderController {
   async getAll(@Req() req: Request): Promise<Order[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
-    Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort') {
-        filter[item] = Like(`%${req.query[item]}%`);
-      }
-    });
-    const [results, count] = await this.orderService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: {
-        ...filter,
-        status: Not(OrderStatus.DELETED)
-      }
-    });
+
+    const [results, count] = await this.orderService.findAndCount(pageRequest, req);
     HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
     return results;
   }

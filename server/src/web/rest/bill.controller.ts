@@ -27,11 +27,7 @@ export class BillController {
   })
   async getAll(@Req() req: Request): Promise<Bill[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const [results, count] = await this.billService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder()
-    });
+    const [results, count] = await this.billService.findAndCount(pageRequest, req);
     HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
     return results;
   }

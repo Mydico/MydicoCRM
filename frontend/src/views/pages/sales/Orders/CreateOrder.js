@@ -147,9 +147,7 @@ const CreateOrder = props => {
   };
 
   const onSubmit = (values, { setSubmitting, setErrors }) => {
-    values.code = Math.random()
-      .toString(36)
-      .substr(2, 9);
+    values.code = Math.floor(Math.random()*90000) + 10000;
     if (!values.address) values.address = selectedCustomer.address;
     values.customer = selectedCustomer;
     values.store = selectedWarehouse;
@@ -532,7 +530,7 @@ const CreateOrder = props => {
                                 menuPortalTarget={document.body}
                                 options={productInWarehouses.map(item => ({
                                   value: item.product.id,
-                                  label: `${item.product.productBrand.name}-${item.product.name}-${item.product.volume}`
+                                  label: `${item.product.productBrand?.name}-${item.product.name}-${item.product.volume}`
                                 }))}
                               />
                             </td>

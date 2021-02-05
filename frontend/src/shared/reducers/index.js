@@ -12,6 +12,7 @@ import warehouseReducer from '../../views/pages/warehouse/Warehouse/warehouse.re
 import productWarehouseReducer from '../../views/pages/warehouse/Product/product-warehouse.reducer';
 import orderReducer from '../../views/pages/sales/Orders/order.reducer';
 import branchReducer from '../../views/pages/customer/CustomerBranch/customer-branch.reducer';
+import billReducer from '../../views/pages/warehouse/Bill/bill.reducer';
 
 const rootReducer = combineReducers({
   authentication: authenticateReducer,
@@ -26,7 +27,8 @@ const rootReducer = combineReducers({
   promotion: promotionReducer,
   warehouse: warehouseReducer,
   productWarehouse: productWarehouseReducer,
-  order: orderReducer
+  order: orderReducer,
+  bill: billReducer
 });
 
 export default rootReducer;

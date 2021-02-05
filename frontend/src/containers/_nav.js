@@ -115,8 +115,13 @@ export default [
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'Trong kho',
+        name: 'Sản phẩm trong kho',
         to: '/inwarehouse/',
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Vận đơn',
+        to: '/bill/',
       },
     ],
   },

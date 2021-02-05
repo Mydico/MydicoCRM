@@ -18,7 +18,6 @@ export class CustomerTypeService {
   }
 
   async checkExist(customerType: CustomerType):  Promise<any> {
-    console.log(await this.customerTypeRepository.query(`SELECT EXISTS(SELECT * FROM customer_type WHERE code = \'DL\' );`, [customerType.code]))
     return await this.customerTypeRepository.query(`SELECT EXISTS(SELECT 1 FROM customer_type WHERE code = ? );`, [customerType.code]);
   }
 
