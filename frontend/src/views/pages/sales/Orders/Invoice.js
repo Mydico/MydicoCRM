@@ -81,7 +81,6 @@ const Invoice = props => {
               <tr>
                 <th className="center">#</th>
                 <th>Tên sản phẩm</th>
-                <th>Mô tả</th>
                 <th className="center">Số lượng</th>
                 <th className="right">Đơn giá</th>
                 <th className="right">Chiết khấu(%)</th>
@@ -94,7 +93,6 @@ const Invoice = props => {
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{item.product?.name}</td>
-                    <td>{item.product?.description}</td>
                     <td>{item.quantity}</td>
 
                     <td>{item.product?.price}</td>

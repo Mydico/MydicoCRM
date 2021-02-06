@@ -8,6 +8,7 @@ import { Request } from 'express';
 import { BillService } from './bill.service';
 import Bill from '../domain/bill.entity';
 import { OrderStatus } from '../domain/enumeration/order-status';
+import { CreateBillDTO } from './dto/bill-dto';
 
 const relationshipNames = [];
 relationshipNames.push('city');
@@ -64,7 +65,7 @@ export class OrderService {
       bill.code = `VD-${created.code}`;
       bill.customer = created.customer;
       bill.order = created;
-      // bill.store = created.store;
+      bill.store = created.store;
       console.log(bill)
       await this.billService.save(bill);
     }

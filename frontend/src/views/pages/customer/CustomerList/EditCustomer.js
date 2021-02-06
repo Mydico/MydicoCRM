@@ -123,7 +123,7 @@ const EditCustomer = props => {
       temp.district = temp.district?.id;
       temp.branch = temp.branch.id;
       temp.type = temp.type.id;
-      temp.status = temp.status.id;
+      temp.status = temp.status?.id;
       setInitValues(temp);
     }
   }, [customer]);
