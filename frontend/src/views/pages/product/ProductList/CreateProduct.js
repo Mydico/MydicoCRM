@@ -12,7 +12,7 @@ import {
   CInput,
   CRow,
   CSelect,
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -31,11 +31,17 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Dropzone from 'react-dropzone-uploader';
 import Thumb from './Thumb';
 import './styles.css';
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
-    price: Yup.number().min(1000, `Giá tiền phải lớn hơn 1.000đ`).required('Giá tiền không để trống'),
-    agentPrice: Yup.number().min(1000, `Giá tiền phải lớn hơn 1.000đ`).required('Giá tiền không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
+    price: Yup.number()
+      .min(1000, `Giá tiền phải lớn hơn 1.000đ`)
+      .required('Giá tiền không để trống'),
+    agentPrice: Yup.number()
+      .min(1000, `Giá tiền phải lớn hơn 1.000đ`)
+      .required('Giá tiền không để trống')
   });
 };
 
@@ -54,7 +60,7 @@ const validate = getValidationSchema => {
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
 
 const getErrorsFromValidationError = validationError => {
@@ -62,7 +68,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -83,7 +89,7 @@ const dropzoneStyle = {
   borderWidth: 2,
   borderColor: 'rgb(102, 102, 102)',
   borderStyle: 'dashed',
-  borderRadius: 5,
+  borderRadius: 5
 };
 
 const CreateProduct = () => {
@@ -102,7 +108,7 @@ const CreateProduct = () => {
     agentPrice: 0,
     status: 'ACTIVE',
     unit: 'Cái',
-    image: [],
+    image: []
   };
   useEffect(() => {
     dispatch(getProductGroup());
@@ -110,7 +116,13 @@ const CreateProduct = () => {
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
     dispatch(fetching());
-    if (!values.productGroup) values.productGroup = productGroup[0].id;
+    if (!values.productGroup) {
+      values.productBrand = productGroup[0].productBrand.id;
+      values.productGroup = productGroup[0].id;
+    } else {
+      values.productBrand = values.productGroup.productBrand.id;
+    }
+
     values.code = values.name
       .trim()
       .split(' ')
@@ -123,6 +135,7 @@ const CreateProduct = () => {
       .replace(/Đ/g, 'D');
     values.code = `${values.code}${values.volume}`;
     values.image = JSON.stringify(images.current);
+
     dispatch(creatingProduct(values));
     resetForm();
   };
@@ -139,7 +152,7 @@ const CreateProduct = () => {
       images.current = arr;
     }
   };
-  
+
   useEffect(() => {
     if (initialState.updatingSuccess) {
       toastRef.current.addToast();
@@ -170,7 +183,7 @@ const CreateProduct = () => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

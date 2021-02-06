@@ -14,32 +14,29 @@ import { BillStatus } from './enumeration/bill-status';
 @Entity('bill')
 export default class Bill extends BaseEntity {
 
-  @OneToOne(() => Customer)
-  @JoinColumn()
+  @ManyToOne(type => Customer, customer => customer.bill, { cascade: true })
   customer: Customer;
 
   // @ManyToOne(type => Store, store => store.product, { cascade: true })
   // store?: Store;
-  @OneToOne(() => Order)
-  @JoinColumn()
+  @ManyToOne(type => Order, order => order.bill, { cascade: true })
   order: Order;
 
 
-  @OneToOne(() => Store)
-  @JoinColumn()
+  @ManyToOne(type => Store, store => store.bill, { cascade: true })
   store: Store;
 
   /**
    * 0 : khởi tạo chờ duyệt, -1 : hủy duyệt, 1: duyệt đơn và xuất kho, trừ số lượng trong kho (không hủy được nữa), 2 : đang vận chuyển , 3 : giao thành công (tạo công nợ cho khách), 4 : khách hủy đơn (phải tạo dơn nhập lại hàng vào kho)
    */
   @Column({ type: 'simple-enum', name: 'status', enum: BillStatus, default: BillStatus.CREATED })
-  status: BillStatus;
+  status?: BillStatus;
 
   @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
+  isDel?: boolean;
 
   @Column({ name: 'note', length: 255, nullable: true })
-  note: string;
+  note?: string;
 
   /**
    * mã vận đơn
@@ -48,10 +45,10 @@ export default class Bill extends BaseEntity {
   code: string;
 
   @Column({ type: 'integer', name: 'sale_id', nullable: true })
-  saleId: number;
+  saleId?: number;
 
   @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+  siteId?: number;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

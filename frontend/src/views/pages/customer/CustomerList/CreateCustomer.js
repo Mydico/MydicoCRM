@@ -107,7 +107,7 @@ const CreateCustomer = () => {
   }, [selectedCity]);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
-    dispatch(fetching());
+    dispatch(fetching())
     const code = `${values.branch ? values.branch : initialState.branch[0]?.code}-${
       values.type ? values.type : initialState.type[0]?.code
     }-${values.name.replaceAll(' ', '')}`;
@@ -120,9 +120,13 @@ const CreateCustomer = () => {
 
     if (!values.branch) {
       values.branch = initialState.branch[0].id;
+    }else{
+      values.branch = initialState.branch.filter(item => item.code === values.branch)[0].id
     }
     if (!values.type) {
       values.type = initialState.type[0].id;
+    }else{
+      values.type = initialState.type.filter(item => item.code === values.type)[0].id
     }
     dispatch(creatingCustomer(values));
     resetForm();

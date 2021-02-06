@@ -16,6 +16,7 @@ relationshipNames.push('wards');
 relationshipNames.push('customer');
 relationshipNames.push('orderDetails');
 relationshipNames.push('promotion');
+relationshipNames.push('store');
 
 @Injectable()
 export class OrderService {
@@ -57,12 +58,14 @@ export class OrderService {
 
   async save(order: Order): Promise<Order | undefined> {
     const created = await this.orderRepository.save(order);
+    console.log(created)
     if (created.status === OrderStatus.CREATE_COD) {
       const bill = new Bill();
       bill.code = `VD-${created.code}`;
       bill.customer = created.customer;
-      bill.order = { id: created.id };
-      bill.store = created.store;
+      bill.order = created;
+      // bill.store = created.store;
+      console.log(bill)
       await this.billService.save(bill);
     }
 

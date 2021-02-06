@@ -17,6 +17,7 @@ import Branch from './branch.entity';
 import { User } from './user.entity';
 import { ApiModelProperty } from '@nestjs/swagger';
 import Order from './order.entity';
+import Bill from './bill.entity';
 
 /**
  * A Customer.
@@ -97,6 +98,10 @@ export default class Customer extends BaseEntity {
 
   @OneToMany(type => Order, other => other.customer)
   order? : Order[]
+
+  @OneToMany(type => Bill, other => other.customer)
+  bill? : Bill[]
+
 
   @ManyToOne(type => City)
   city?: City;

@@ -41,6 +41,10 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [creatingCustomer.rejected]: (state, action) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
     [updateCustomer.fulfilled]: (state, action) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;

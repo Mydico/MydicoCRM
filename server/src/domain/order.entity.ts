@@ -11,6 +11,7 @@ import Promotion from './promotion.entity';
 import { OrderStatus } from './enumeration/order-status';
 import OrderDetails from './order-details.entity';
 import PromotionItem from './promotion-item.entity';
+import Bill from './bill.entity';
 
 /**
  * A Order.
@@ -76,6 +77,9 @@ export default class Order extends BaseEntity {
 
   @OneToMany(type => OrderDetails, orderDetails => orderDetails.order, { cascade: true })
   orderDetails?: OrderDetails;
+
+  @OneToMany(type => Bill, bill => bill.order)
+  bill?: Bill;
 
   @Column({ type: 'integer', name: 'promotion_item_id', nullable: true })
   promotionItem?: PromotionItem;

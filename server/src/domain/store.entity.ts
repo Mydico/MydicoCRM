@@ -11,6 +11,7 @@ import Product from './product.entity';
 import Order from './order.entity';
 import { StoreStatus } from './enumeration/store-status';
 import OrderDetails from './order-details.entity';
+import Bill from './bill.entity';
 
 /**
  * A Store.
@@ -49,6 +50,9 @@ export default class Store extends BaseEntity {
 
   @OneToMany(type => Order, other =>other.store)
   order: Order[];
+
+  @OneToMany(type => Bill, other => other.store)
+  bill? : Bill[]
 
   @ManyToOne(type => City)
   city: City;

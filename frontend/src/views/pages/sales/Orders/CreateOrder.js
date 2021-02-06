@@ -214,6 +214,7 @@ const CreateOrder = props => {
 
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
+    copyArr[index].rawQuantity = target.value;
     if (Array.isArray(promotionState.promotionProducts)) {
       const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
       if (founded.length > 0) {
@@ -221,11 +222,10 @@ const CreateOrder = props => {
           const ratio = founded[0].gift / founded[0].buy;
           const gift = Math.floor(target.value * ratio);
           copyArr[index].gift = gift;
-          copyArr[index].quantity = Number(gift) + Number(target.value);
         }
       }
     }
-    copyArr[index].rawQuantity = target.value;
+    copyArr[index].quantity = Number(copyArr[index].gift) + Number(target.value);
     copyArr[index].priceTotal = copyArr[index].product.price * copyArr[index].quantity;
     setProductList(copyArr);
   };
