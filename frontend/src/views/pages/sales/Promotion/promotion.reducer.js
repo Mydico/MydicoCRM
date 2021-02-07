@@ -45,7 +45,7 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDetailPromotion.fulfilled]: (state, action) => {
-      promotionsAdapter.addOne(state, action.payload)
+      promotionsAdapter.setAll(state, [action.payload])
       state.initialState.loading = false;
     },
     [getPromotion.fulfilled]: (state, action) => {

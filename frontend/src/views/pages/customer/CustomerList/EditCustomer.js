@@ -11,7 +11,7 @@ import {
   CLabel,
   CInput,
   CRow,
-  CSelect,
+  CSelect
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -25,7 +25,7 @@ import {
   getCustomerType,
   getDetailCustomer,
   getDistrict,
-  updateCustomer,
+  updateCustomer
 } from '../customer.api';
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
@@ -33,14 +33,26 @@ import { fetching, globalizedCustomerSelectors } from '../customer.reducer';
 import Select from 'react-select';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    contactName: Yup.string().min(5, `Tên liên lạc phải lớn hơn 5 kí tự`).required('Tên liên lạc không để trống'),
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
-    tel: Yup.string().matches(phoneRegExp, 'Số điện thoại không đúng').required('Số điện thoại không để trống'),
-    city: Yup.string().nullable(true).required('Thành phố không để trống'),
-    type: Yup.string().nullable(true).required('Loại khách hàng không để trống'),
-    branch: Yup.string().nullable(true).required('Chi nhánh không để trống'),
+    contactName: Yup.string()
+      .min(5, `Tên liên lạc phải lớn hơn 5 kí tự`)
+      .required('Tên liên lạc không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
+    tel: Yup.string()
+      .matches(phoneRegExp, 'Số điện thoại không đúng')
+      .required('Số điện thoại không để trống'),
+    city: Yup.string()
+      .nullable(true)
+      .required('Thành phố không để trống'),
+    type: Yup.string()
+      .nullable(true)
+      .required('Loại khách hàng không để trống'),
+    branch: Yup.string()
+      .nullable(true)
+      .required('Chi nhánh không để trống')
   });
 };
 
@@ -61,7 +73,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -98,7 +110,7 @@ const EditCustomer = props => {
     type: null,
     status: null,
     createdYear: '',
-    obclubJoinTime: '',
+    obclubJoinTime: ''
   };
   const toastRef = useRef();
   const dispatch = useDispatch();
@@ -119,8 +131,8 @@ const EditCustomer = props => {
   useEffect(() => {
     if (customer) {
       const temp = { ...customer };
-      temp.city = temp.city.id;
-      temp.district = temp.district?.id;
+      temp.city = temp.city;
+      temp.district = temp.district;
       temp.branch = temp.branch.id;
       temp.type = temp.type.id;
       temp.status = temp.status?.id;
@@ -182,241 +194,250 @@ const EditCustomer = props => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
-          }) => (
-            <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
-              <CRow>
-                <CCol lg="6">
-                  <CFormGroup>
-                    <CLabel htmlFor="code">Mã khách hàng</CLabel>
-                    <CInput
-                      type="text"
-                      name="code"
-                      id="code"
-                      placeholder="Mã khách hàng"
-                      disabled
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={
-                        values.code ||
-                        `${values.branch ? values.branch : initialState.branch[0]?.code}-${
-                          values.type ? values.type : initialState.type[0]?.code
-                        }-${values.name
-                          .replaceAll(' ', '')
-                          .normalize('NFD')
-                          .replace(/[\u0300-\u036f]/g, '')
-                          .replace(/đ/g, 'd')
-                          .replace(/Đ/g, 'D')}`
-                      }
-                    />
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="lastName">Tên cửa hàng/đại lý</CLabel>
-                    <CInput
-                      type="text"
-                      name="name"
-                      id="name"
-                      placeholder="Tên cửa hàng/đại lý"
-                      autoComplete="family-name"
-                      valid={errors.name || null}
-                      invalid={touched.name && !!errors.name}
-                      required
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.name}
-                    />
-                    <CInvalidFeedback>{errors.name}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="userName">Người liên lạc</CLabel>
-                    <CInput
-                      type="text"
-                      name="contactName"
-                      id="contactName"
-                      placeholder="Người liên lạc"
-                      autoComplete="contactName"
-                      valid={errors.contactName || null}
-                      invalid={touched.contactName && !!errors.contactName}
-                      required
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.contactName}
-                    />
-                    <CInvalidFeedback>{errors.contactName}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="tel">Số điện thoại</CLabel>
-                    <CInput
-                      type="tel"
-                      name="tel"
-                      id="tel"
-                      placeholder="Số điện thoại"
-                      autoComplete="phone"
-                      valid={errors.tel || null}
-                      invalid={touched.tel && !!errors.tel}
-                      required
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.tel}
-                    />
-                    <CInvalidFeedback>{errors.tel}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel>Ngày tháng năm sinh</CLabel>
-                    <CInput type="date" id="dateOfBirth" name="dateOfBirth" onChange={handleChange} placeholder="Ngày tháng năm sinh" />
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="email">Email</CLabel>
-                    <CInput
-                      type="email"
-                      name="email"
-                      id="email"
-                      placeholder="Email"
-                      autoComplete="email"
-                      valid={errors.email || null}
-                      invalid={touched.email && !!errors.email}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.email}
-                    />
-                    <CInvalidFeedback>{errors.email}</CInvalidFeedback>
-                  </CFormGroup>
-                </CCol>
-                <CCol lg="6">
-                  <CRow>
-                    <CCol md={6}>
-                      <CFormGroup>
-                        <CLabel htmlFor="password">Tỉnh thành</CLabel>
-                        <Select
-                          name="city"
-                          onChange={e => {
-                            const founded = initialState.cities.filter(item => item.code === e.value);
-                            if (founded.length > 0) {
-                              setFieldValue('city', founded[0].id);
-                              setSelectedCity(e.value);
-                            }
-                          }}
-                          defaultValue={values.city}
-                          placeholder="Chọn thành phố"
-                          options={initialState.cities.map(item => ({
-                            value: item.code,
-                            label: item.name,
-                          }))}
-                        />
-                        <CInvalidFeedback className="d-block">{errors.city}</CInvalidFeedback>
-                      </CFormGroup>
-                    </CCol>
-                    <CCol md={6}>
-                      <CFormGroup>
-                        <CLabel htmlFor="password">Quận huyện</CLabel>
-                        <Select
-                          name="district"
-                          onChange={e => {
-                            setFieldValue('district', e.value);
-                          }}
-                          defaultValue={values.district}
-                          placeholder="Chọn Quận huyện"
-                          options={initialState.districts.map(item => ({
-                            value: item.id,
-                            label: item.name,
-                          }))}
-                        />
-                        <CInvalidFeedback className="d-block">{errors.districts}</CInvalidFeedback>
-                      </CFormGroup>
-                    </CCol>
-                  </CRow>
-                  <CFormGroup>
-                    <CLabel htmlFor="userName">Địa chỉ</CLabel>
-                    <CInput
-                      type="text"
-                      name="address"
-                      id="address"
-                      placeholder="Địa chỉ"
-                      autoComplete="address"
-                      onChange={handleChange}
-                      valid={errors.address || null}
-                      onBlur={handleBlur}
-                      value={values.address}
-                    />
-                    <CInvalidFeedback>{errors.address}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="code">Loại khách hàng</CLabel>
-                    <CSelect custom name="ccmonth" name="type" id="type" value={values.type} onChange={handleChange}>
-                      <option key={0} value={null}>
-                        Chọn loại khách hàng
-                      </option>
-                      {initialState.type.map(item => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
+            setTouched
+          }) => {
+            console.log(values)
+            return (
+              <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
+                <CRow>
+                  <CCol lg="6">
+                    <CFormGroup>
+                      <CLabel htmlFor="code">Mã khách hàng</CLabel>
+                      <CInput
+                        type="text"
+                        name="code"
+                        id="code"
+                        placeholder="Mã khách hàng"
+                        disabled
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={
+                          values.code ||
+                          `${values.branch ? values.branch : initialState.branch[0]?.code}-${
+                            values.type ? values.type : initialState.type[0]?.code
+                          }-${values.name
+                            .replaceAll(' ', '')
+                            .normalize('NFD')
+                            .replace(/[\u0300-\u036f]/g, '')
+                            .replace(/đ/g, 'd')
+                            .replace(/Đ/g, 'D')}`
+                        }
+                      />
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="lastName">Tên cửa hàng/đại lý</CLabel>
+                      <CInput
+                        type="text"
+                        name="name"
+                        id="name"
+                        placeholder="Tên cửa hàng/đại lý"
+                        autoComplete="family-name"
+                        valid={errors.name || null}
+                        invalid={touched.name && !!errors.name}
+                        required
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.name}
+                      />
+                      <CInvalidFeedback>{errors.name}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="userName">Người liên lạc</CLabel>
+                      <CInput
+                        type="text"
+                        name="contactName"
+                        id="contactName"
+                        placeholder="Người liên lạc"
+                        autoComplete="contactName"
+                        valid={errors.contactName || null}
+                        invalid={touched.contactName && !!errors.contactName}
+                        required
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.contactName}
+                      />
+                      <CInvalidFeedback>{errors.contactName}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="tel">Số điện thoại</CLabel>
+                      <CInput
+                        type="tel"
+                        name="tel"
+                        id="tel"
+                        placeholder="Số điện thoại"
+                        autoComplete="phone"
+                        valid={errors.tel || null}
+                        invalid={touched.tel && !!errors.tel}
+                        required
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.tel}
+                      />
+                      <CInvalidFeedback>{errors.tel}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel>Ngày tháng năm sinh</CLabel>
+                      <CInput type="date" id="dateOfBirth" name="dateOfBirth" onChange={handleChange} placeholder="Ngày tháng năm sinh" />
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="email">Email</CLabel>
+                      <CInput
+                        type="email"
+                        name="email"
+                        id="email"
+                        placeholder="Email"
+                        autoComplete="email"
+                        valid={errors.email || null}
+                        invalid={touched.email && !!errors.email}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.email}
+                      />
+                      <CInvalidFeedback>{errors.email}</CInvalidFeedback>
+                    </CFormGroup>
+                  </CCol>
+                  <CCol lg="6">
+                    <CRow>
+                      <CCol md={6}>
+                        <CFormGroup>
+                          <CLabel htmlFor="password">Tỉnh thành</CLabel>
+                          <Select
+                            name="city"
+                            onChange={e => {
+                              const founded = initialState.cities.filter(item => item.code === e.value);
+                              if (founded.length > 0) {
+                                setFieldValue('city', founded[0].id);
+                                setSelectedCity(e.value);
+                              }
+                            }}
+                            value={{
+                              value: values.city?.code,
+                              label: values.city?.name
+                            }}
+                            placeholder="Chọn thành phố"
+                            options={initialState.cities.map(item => ({
+                              value: item.code,
+                              label: item.name
+                            }))}
+                          />
+                          <CInvalidFeedback className="d-block">{errors.city}</CInvalidFeedback>
+                        </CFormGroup>
+                      </CCol>
+                      <CCol md={6}>
+                        <CFormGroup>
+                          <CLabel htmlFor="password">Quận huyện</CLabel>
+                          <Select
+                            name="district"
+                            onChange={e => {
+                              setFieldValue('district', e.value);
+                            }}
+                            value={{
+                              value: values.district?.code,
+                              label: values.district?.name
+                            }}
+                            placeholder="Chọn Quận huyện"
+                            options={initialState.districts.map(item => ({
+                              value: item.id,
+                              label: item.name
+                            }))}
+                          />
+                          <CInvalidFeedback className="d-block">{errors.districts}</CInvalidFeedback>
+                        </CFormGroup>
+                      </CCol>
+                    </CRow>
+                    <CFormGroup>
+                      <CLabel htmlFor="userName">Địa chỉ</CLabel>
+                      <CInput
+                        type="text"
+                        name="address"
+                        id="address"
+                        placeholder="Địa chỉ"
+                        autoComplete="address"
+                        onChange={handleChange}
+                        valid={errors.address || null}
+                        onBlur={handleBlur}
+                        value={values.address}
+                      />
+                      <CInvalidFeedback>{errors.address}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="code">Loại khách hàng</CLabel>
+                      <CSelect custom name="ccmonth" name="type" id="type" value={values.type} onChange={handleChange}>
+                        <option key={0} value={null}>
+                          Chọn loại khách hàng
                         </option>
-                      ))}
-                    </CSelect>
-                    <CInvalidFeedback className="d-block">{errors.type}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="code">Trạng thái</CLabel>
-                    <CSelect custom name="status" id="status" value={values.status} onChange={handleChange}>
-                      <option key={0} value={null}>
-                        Chọn trạng thái
-                      </option>
-                      {initialState.status.map(item => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
+                        {initialState.type.map(item => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                      </CSelect>
+                      <CInvalidFeedback className="d-block">{errors.type}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="code">Trạng thái</CLabel>
+                      <CSelect custom name="status" id="status" value={values.status} onChange={handleChange}>
+                        <option key={0} value={null}>
+                          Chọn trạng thái
                         </option>
-                      ))}
-                    </CSelect>
-                    <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="code">Chi nhánh</CLabel>
-                    <CSelect custom name="branch" id="branch" value={values.branch} onChange={handleChange}>
-                      <option key={0} value={null}>
-                        Chọn chi nhánh
-                      </option>
-                      {initialState.branch.map(item => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
+                        {initialState.status.map(item => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                      </CSelect>
+                      <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="code">Chi nhánh</CLabel>
+                      <CSelect custom name="branch" id="branch" value={values.branch} onChange={handleChange}>
+                        <option key={0} value={null}>
+                          Chọn chi nhánh
                         </option>
-                      ))}
-                    </CSelect>
-                    <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="createdYear">Năm thành lập</CLabel>
-                    <CInput
-                      type="text"
-                      name="createdYear"
-                      id="createdYear"
-                      placeholder="năm thành lập"
-                      autoComplete="createdYear"
-                      onChange={handleChange}
-                      valid={errors.createdYear || null}
-                      onBlur={handleBlur}
-                      value={values.createdYear}
-                    />
-                    <CInvalidFeedback>{errors.createdYear}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="email">Ngày tham gia ObClub</CLabel>
-                    <CInput
-                      type="date"
-                      id="obclubJoinTime"
-                      name="obclubJoinTime"
-                      onChange={handleChange}
-                      placeholder="Ngày tháng năm sinh"
-                    />
-                    <CInvalidFeedback>{errors.obclubJoinTime}</CInvalidFeedback>
-                  </CFormGroup>
-                </CCol>
-              </CRow>
-              <CFormGroup className="d-flex justify-content-center">
-                <CButton type="submit" color="primary" disabled={initialState.loading}>
-                  <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
-                </CButton>
-              </CFormGroup>
-            </CForm>
-          )}
+                        {initialState.branch.map(item => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                      </CSelect>
+                      <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="createdYear">Năm thành lập</CLabel>
+                      <CInput
+                        type="text"
+                        name="createdYear"
+                        id="createdYear"
+                        placeholder="năm thành lập"
+                        autoComplete="createdYear"
+                        onChange={handleChange}
+                        valid={errors.createdYear || null}
+                        onBlur={handleBlur}
+                        value={values.createdYear}
+                      />
+                      <CInvalidFeedback>{errors.createdYear}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="email">Ngày tham gia ObClub</CLabel>
+                      <CInput
+                        type="date"
+                        id="obclubJoinTime"
+                        name="obclubJoinTime"
+                        onChange={handleChange}
+                        placeholder="Ngày tháng năm sinh"
+                      />
+                      <CInvalidFeedback>{errors.obclubJoinTime}</CInvalidFeedback>
+                    </CFormGroup>
+                  </CCol>
+                </CRow>
+                <CFormGroup className="d-flex justify-content-center">
+                  <CButton type="submit" color="primary" disabled={initialState.loading}>
+                    <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
+                  </CButton>
+                </CFormGroup>
+              </CForm>
+            );
+          }}
         </Formik>
       </CCardBody>
     </CCard>

@@ -14,7 +14,7 @@ import {
   CSelect,
   CCardTitle,
   CTextarea,
-  CInputCheckbox,
+  CInputCheckbox
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -34,11 +34,13 @@ import Select from 'react-select';
 import { getProduct } from '../../product/ProductList/product.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống'),
+    endTime: Yup.string().required('Ngày kết thúc không để trống')
   });
 };
 
@@ -59,7 +61,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -81,7 +83,7 @@ const validateForm = errors => {
 };
 
 const EditPromotion = props => {
-  const { initialState } = useSelector(state => state.promotion);
+  const { initialState, entities } = useSelector(state => state.promotion);
   const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -92,7 +94,7 @@ const EditPromotion = props => {
     startTime: new Date().toISOString(),
     endTime: new Date().toISOString(),
     isLock: false,
-    customerType: null,
+    customerType: null
   });
   const { selectAll } = globalizedcustomerTypeSelectors;
   const customerType = useSelector(selectAll);
@@ -109,11 +111,13 @@ const EditPromotion = props => {
   }, []);
 
   useEffect(() => {
+    console.log(promotion)
     if (promotion) {
       setInitValues(promotion);
-      setProductList(promotion.promotionProduct);
+      console.log(JSON.parse(JSON.stringify(promotion.promotionProduct)))
+      setProductList(JSON.parse(JSON.stringify(promotion.promotionProduct)));
     }
-  }, [promotion]);
+  }, [entities]);
 
   const [productList, setProductList] = useState([]);
 
@@ -187,7 +191,7 @@ const EditPromotion = props => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => {
             console.log(values);
             return (
@@ -296,7 +300,7 @@ const EditPromotion = props => {
                   <CCol lg="12">
                     {productList &&
                       productList.map((item, index) => {
-                        console.log(item)
+                        console.log(item);
                         return (
                           <CFormGroup key={index} className="mt-3">
                             <CRow>
@@ -305,12 +309,12 @@ const EditPromotion = props => {
                                 <Select
                                   value={{
                                     value: item.product?.id,
-                                    label:`${item.product?.code}-${item.product?.name}`
+                                    label: `${item.product?.code}-${item.product?.name}`
                                   }}
                                   onChange={event => onSelectedProduct(event, index)}
                                   options={products.map(item => ({
                                     value: item.id,
-                                    label: `${item.code}-${item.name}`,
+                                    label: `${item.code}-${item.name}`
                                   }))}
                                 />
                               </CCol>

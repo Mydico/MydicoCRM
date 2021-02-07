@@ -138,7 +138,6 @@ const CreateOrder = props => {
       setSelectedPromotion(initFormState.promotion);
       setSelectedWarehouse(initFormState.store);
       setProductList(initFormState.orderDetails);
-      console.log(initFormState);
     }
   }, [initFormState]);
 
@@ -147,7 +146,7 @@ const CreateOrder = props => {
   };
 
   const onSubmit = (values, { setSubmitting, setErrors }) => {
-    values.code = Math.floor(Math.random()*90000) + 10000;
+    // values.code = Math.floor(Math.random() * 90000) + 10000;
     if (!values.address) values.address = selectedCustomer.address;
     values.customer = selectedCustomer;
     values.store = selectedWarehouse;
@@ -176,13 +175,10 @@ const CreateOrder = props => {
     const arr = productInWarehouses.filter(product => product.product.id === value);
     if (arr.length === 1) {
       const copyArr = [...productList];
-      const foundedIndex = copyArr.findIndex(product => product.product.id === value);
-      if (foundedIndex >= 0) {
-        copyArr.splice(index, 1);
-      } else {
-        copyArr[index].product = arr[0].product;
-      }
+      copyArr[index].priceReal = arr[0].product.price;
+      copyArr[index].product = arr[0].product;
       setProductList(copyArr);
+      onChangeQuantity({ target: { value: 1 } }, index);
     }
   };
 
@@ -205,7 +201,7 @@ const CreateOrder = props => {
 
   const onAddProduct = () => {
     if (selectedWarehouse?.id) {
-      const data = { product: {}, quantity: 1, reducePercent: 0, gift: 0, rawQuantity: 1, store: { id: selectedWarehouse.id } };
+      const data = { product: {}, quantity: 1, reducePercent: 0, priceReal: 0, store: { id: selectedWarehouse.id } };
       setProductList([...productList, data]);
     } else {
       setIsSelectedWarehouse(false);
@@ -214,19 +210,38 @@ const CreateOrder = props => {
 
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
-    copyArr[index].rawQuantity = target.value;
+    copyArr[index].quantity = target.value;
+    copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
     if (Array.isArray(promotionState.promotionProducts)) {
       const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
       if (founded.length > 0) {
-        if (target.value > founded[0].buy) {
+        if (target.value >= founded[0].buy) {
           const ratio = founded[0].gift / founded[0].buy;
           const gift = Math.floor(target.value * ratio);
-          copyArr[index].gift = gift;
+          const existExtraProductIndex = copyArr.findIndex(item => item.followIndex === index);
+          if (existExtraProductIndex != -1) {
+            copyArr[existExtraProductIndex].quantity = gift;
+          } else {
+            const extraProduct = {
+              product: copyArr[index].product,
+              quantity: gift,
+              priceReal: copyArr[index].product.price,
+              reducePercent: 100,
+              store: { id: selectedWarehouse.id },
+              followIndex: index
+            };
+            copyArr.splice(index + 1, 0, extraProduct);
+          }
         }
       }
     }
-    copyArr[index].quantity = Number(copyArr[index].gift) + Number(target.value);
-    copyArr[index].priceTotal = copyArr[index].product.price * copyArr[index].quantity;
+    setProductList(copyArr);
+  };
+
+  const onChangePrice = ({ target }, index) => {
+    const copyArr = JSON.parse(JSON.stringify(productList));
+    copyArr[index].priceReal = target.value;
+    copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
     setProductList(copyArr);
   };
 
@@ -234,31 +249,18 @@ const CreateOrder = props => {
     const copyArr = [...productList];
     copyArr[index].reducePercent = target.value;
     copyArr[index].priceTotal =
-      copyArr[index].product?.price * copyArr[index].quantity -
-      (copyArr[index].product?.price * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
+      copyArr[index].priceReal * copyArr[index].quantity -
+      (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
 
     setProductList(copyArr);
   };
-
-  // useEffect(() => {
-  //   if (showProductPromotion) {
-  //     dispatch(getDetailProductPromotion({ promotion: selectedPromotion.id }));
-  //   }
-  // }, [showProductPromotion]);
 
   const onRemoveProduct = index => {
     const copyArr = [...productList];
     copyArr.splice(index, 1);
     setProductList(copyArr);
   };
-  useEffect(() => {}, [promotionState]);
 
-  // useEffect(() => {
-  //   if (initialState.updatingSuccess) {
-  //     toastRef.current.addToast();
-  //     history.goBack();
-  //   }
-  // }, [initialState.updatingSuccess]);
   return (
     <CCard>
       <Toaster ref={toastRef} message="Tạo mới khách hàng thành công" />
@@ -508,12 +510,12 @@ const CreateOrder = props => {
                       <tr>
                         <th>Sản phẩm</th>
                         <th>Đơn vị</th>
+                        <th>Dung tích</th>
                         <th>Số lượng</th>
-                        <th>Số lượng cộng thêm(chương trình khuyến mãi)</th>
-                        <th>Tổng số lượng</th>
                         <th>Đơn giá</th>
                         <th>Thành tiền</th>
                         <th>Chiết khấu</th>
+                        <th>Thanh toán</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -535,31 +537,42 @@ const CreateOrder = props => {
                               />
                             </td>
                             <td>{item.product?.unit}</td>
+                            <td>{item.product?.volume}</td>
                             <td style={{ width: 100 }}>
-                              <CInput
-                                type="number"
-                                min={1}
-                                name="code"
-                                id="code"
-                                onChange={event => onChangeQuantity(event, index)}
-                                onBlur={handleBlur}
-                                value={item.rawQuantity}
-                              />
+                              {item.followIndex >= 0 ? (
+                                item.quantity
+                              ) : (
+                                <CInput
+                                  type="number"
+                                  min={1}
+                                  name="code"
+                                  id="code"
+                                  onChange={event => onChangeQuantity(event, index)}
+                                  onBlur={handleBlur}
+                                  value={item.quantity}
+                                />
+                              )}
                             </td>
-                            <td style={{ width: 200 }}>{item?.gift}</td>
-                            <td>{item?.quantity}</td>
                             <td>
-                              {(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                              {
+                                <CInput
+                                  type="number"
+                                  min={1}
+                                  name="code"
+                                  id="code"
+                                  onChange={event => onChangePrice(event, index)}
+                                  onBlur={handleBlur}
+                                  value={item?.priceReal}
+                                />
+                              }
                             </td>
                             <td>
-                              {(
-                                item.product?.price * item.quantity -
-                                (item.product?.price * item.quantity * item.reducePercent) / 100
-                              ).toLocaleString('it-IT', {
+                              {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                                 style: 'currency',
                                 currency: 'VND'
                               }) || ''}
                             </td>
+
                             <td style={{ width: 100 }}>
                               <CInput
                                 type="number"
@@ -569,6 +582,15 @@ const CreateOrder = props => {
                                 onBlur={handleBlur}
                                 value={item.reducePercent}
                               />
+                            </td>
+                            <td>
+                              {(
+                                item.priceReal * item.quantity -
+                                (item.priceReal * item.quantity * item.reducePercent) / 100
+                              ).toLocaleString('it-IT', {
+                                style: 'currency',
+                                currency: 'VND'
+                              }) || ''}
                             </td>
                             <td style={{ width: 100 }}>
                               <CButton
@@ -632,11 +654,17 @@ const CreateOrder = props => {
                         <tbody>
                           <tr>
                             <td className="left">
+                              <strong>Tổng số lượng</strong>
+                            </td>
+                            <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
+                          </tr>
+                          <tr>
+                            <td className="left">
                               <strong>Tổng tiền</strong>
                             </td>
                             <td className="right">
                               {productList
-                                .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
+                                .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                             </td>
                           </tr>
@@ -647,7 +675,7 @@ const CreateOrder = props => {
                             <td className="right">
                               {productList
                                 .reduce(
-                                  (sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100,
+                                  (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100,
                                   0
                                 )
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
@@ -663,8 +691,8 @@ const CreateOrder = props => {
                                   .reduce(
                                     (sum, current) =>
                                       sum +
-                                      (current.product?.price * current.quantity -
-                                        (current.product?.price * current.quantity * current.reducePercent) / 100),
+                                      (current.priceReal * current.quantity -
+                                        (current.priceReal * current.quantity * current.reducePercent) / 100),
                                     0
                                   )
                                   .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}

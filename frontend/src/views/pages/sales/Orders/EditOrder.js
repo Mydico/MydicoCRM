@@ -6,13 +6,13 @@ import {
   CCardBody,
   CCol,
   CForm,
-  CInvalidFeedback,
+  CCollapse,
   CCardTitle,
   CLabel,
   CInput,
   CRow,
   CFormGroup,
-  CTextarea,
+  CTextarea
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Form, Formik } from 'formik';
@@ -26,7 +26,7 @@ import Select from 'react-select';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { getCustomer } from '../../customer/customer.api';
 import { globalizedPromotionSelectors } from '../Promotion/promotion.reducer';
-import { getPromotion, getPromotionProduct } from '../Promotion/promotion.api';
+import { getDetailProductPromotion, getPromotion, getPromotionProduct } from '../Promotion/promotion.api';
 import { globalizedWarehouseSelectors } from '../../warehouse/Warehouse/warehouse.reducer';
 import { getWarehouse } from '../../warehouse/Warehouse/warehouse.api';
 import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
@@ -34,10 +34,14 @@ import { getProductWarehouse } from '../../warehouse/Product/product-warehouse.a
 import { FormFeedback, Table } from 'reactstrap';
 import { OrderStatus } from './order-status';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    customer: Yup.object().required('Khách hàng  không để trống').nullable(),
-    promotion: Yup.object().required('Chương trình bán hàng không để trống').nullable(),
+    customer: Yup.object()
+      .required('Khách hàng  không để trống')
+      .nullable(),
+    promotion: Yup.object()
+      .required('Chương trình bán hàng không để trống')
+      .nullable()
   });
 };
 
@@ -58,7 +62,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -80,7 +84,7 @@ const validateForm = errors => {
 };
 const mappingType = {
   SHORTTERM: 'Ngắn hạn',
-  LONGTERM: 'Dài hạn',
+  LONGTERM: 'Dài hạn'
 };
 
 const EditOrder = props => {
@@ -94,7 +98,7 @@ const EditOrder = props => {
     code: '',
     note: '',
     address: '',
-    status: OrderStatus.WAITING,
+    status: OrderStatus.WAITING
   };
   const toastRef = useRef();
   const dispatch = useDispatch();
@@ -115,6 +119,7 @@ const EditOrder = props => {
   const [productList, setProductList] = useState([]);
   const [initValuesState, setInitValuesState] = useState(null);
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
+  const [showProductPromotion, setShowProductPromotion] = useState(false);
 
   useEffect(() => {
     dispatch(getPromotion({ isLock: 0 }));
@@ -125,6 +130,7 @@ const EditOrder = props => {
   useEffect(() => {
     if (order) {
       setInitValuesState(order);
+      dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
       dispatch(getOrderDetail(props.match.params.id));
     }
   }, [order]);
@@ -133,7 +139,7 @@ const EditOrder = props => {
     if (Array.isArray(initialState.orderDetails)) {
       setProductList(initialState.orderDetails);
       if (initialState.orderDetails.length > 0) {
-        setSelectedWarehouse(initialState.orderDetails[0].store)
+        setSelectedWarehouse(initialState.orderDetails[0].store);
         dispatch(getProductWarehouse({ store: initialState.orderDetails[0].store.id }));
       }
     }
@@ -160,15 +166,16 @@ const EditOrder = props => {
     const arr = productInWarehouses.filter(product => product.product.id === value);
     if (arr.length === 1) {
       const copyArr = [...productList];
+      copyArr[index].priceReal = arr[0].product.price;
       copyArr[index].product = arr[0].product;
       setProductList(copyArr);
+      onChangeQuantity({ target: { value: 1 } }, index);
     }
   };
 
   useEffect(() => {
     if (selectedPromotion?.id) {
-      const arr = selectedPromotion.promotionProduct.map(item => item.id);
-      dispatch(getPromotionProduct(arr));
+      dispatch(getDetailProductPromotion({ promotion: selectedPromotion.id }));
     }
   }, [selectedPromotion]);
 
@@ -188,18 +195,48 @@ const EditOrder = props => {
   };
 
   const onChangeQuantity = ({ target }, index) => {
-    const copyArr = JSON.parse(JSON.stringify(productList));
+    const copyArr = [...productList];
     copyArr[index].quantity = target.value;
-    copyArr[index].priceTotal = copyArr[index].product.price * copyArr[index].quantity;
+    copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
+    if (Array.isArray(promotionState.promotionProducts)) {
+      const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
+      if (founded.length > 0) {
+        if (target.value >= founded[0].buy) {
+          const ratio = founded[0].gift / founded[0].buy;
+          const gift = Math.floor(target.value * ratio);
+          const existExtraProductIndex = copyArr.findIndex(item => item.followIndex === index);
+          if (existExtraProductIndex != -1) {
+            copyArr[existExtraProductIndex].quantity = gift;
+          } else {
+            const extraProduct = {
+              product: copyArr[index].product,
+              quantity: gift,
+              reducePercent: 100,
+              priceReal: copyArr[index].product.price,
+              store: { id: selectedWarehouse.id },
+              followIndex: index
+            };
+            copyArr.splice(index + 1, 0, extraProduct);
+          }
+        }
+      }
+    }
+    setProductList(copyArr);
+  };
+
+  const onChangePrice = ({ target }, index) => {
+    const copyArr = JSON.parse(JSON.stringify(productList));
+    copyArr[index].priceReal = target.value;
+    copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
     setProductList(copyArr);
   };
 
   const onChangeReducePercent = ({ target }, index) => {
-    const copyArr = JSON.parse(JSON.stringify(productList));
+    const copyArr = [...productList];
     copyArr[index].reducePercent = target.value;
     copyArr[index].priceTotal =
-      copyArr[index].product?.price * copyArr[index].quantity -
-      (copyArr[index].product?.price * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
+      copyArr[index].priceReal * copyArr[index].quantity -
+      (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
 
     setProductList(copyArr);
   };
@@ -246,7 +283,7 @@ const EditOrder = props => {
           isSubmitting,
           isValid,
           handleReset,
-          setTouched,
+          setTouched
         }) => {
           console.log(errors);
           return (
@@ -311,17 +348,17 @@ const EditOrder = props => {
                           <CLabel htmlFor="lastName">Chọn chương trình bán hàng</CLabel>
                           <Select
                             onChange={item => {
-                              setFieldValue('promotion', item.value);
+                              setFieldValue('promotion', { id: item.value, name: item.label });
                               onSelectPromotion(item);
                             }}
-                            name="promotion"
                             value={{
                               value: values.promotion?.id,
-                              label: values.promotion?.name,
+                              label: values.promotion?.name
                             }}
+                            name="promotion"
                             options={promotions.map(item => ({
-                              value: item,
-                              label: `${item.name}`,
+                              value: item.id,
+                              label: `${item.name}`
                             }))}
                           />
                         </CCol>
@@ -332,24 +369,54 @@ const EditOrder = props => {
                       <CCol lg="6">
                         <dl className="row">
                           <dt className="col-sm-3">Tên chương trình:</dt>
-                          <dd className="col-sm-9">{values.promotion?.name}</dd>
+                          <dd className="col-sm-9">{selectedPromotion?.name}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Ngày bắt đầu:</dt>
-                          <dd className="col-sm-9">{values.promotion?.startTime}</dd>
+                          <dd className="col-sm-9">{selectedPromotion?.startTime}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Sản phẩm áp dụng</dt>
                         </dl>
                       </CCol>
                       <CCol lg="6">
                         <dl className="row">
                           <dt className="col-sm-3">Ngày kết thúc:</dt>
-                          <dd className="col-sm-9">{values.promotion?.endTime}</dd>
+                          <dd className="col-sm-9">{selectedPromotion?.endTime}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Loại chương trình:</dt>
-                          <dd className="col-sm-9">{mappingType[values.promotion?.type]}</dd>
+                          <dd className="col-sm-9">{mappingType[selectedPromotion?.type]}</dd>
                         </dl>
                       </CCol>
                     </CRow>
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      onClick={() => {
+                        setShowProductPromotion(!showProductPromotion);
+                      }}
+                    >
+                      <CIcon name="cilZoom" /> Xem sản phẩm áp dụng
+                    </CButton>
+                    <CCollapse show={showProductPromotion}>
+                      <CCardBody>
+                        <h5>Thông tin sản phẩm khuyến mại</h5>
+                        <CRow>
+                          <CCol lg="6">
+                            {Array.isArray(promotionState.promotionProducts) &&
+                              promotionState.promotionProducts.map((item, index) => (
+                                <dl className="row">
+                                  <dt className="col-sm-4">{`${item.product.name}`}</dt>
+                                  <dd className="col-sm-8">{`Mua ${item.buy} Tặng ${item.gift}`}</dd>
+                                </dl>
+                              ))}
+                          </CCol>
+                        </CRow>
+                      </CCardBody>
+                    </CCollapse>
                   </CCardBody>
                 </CCard>
               </CCol>
@@ -364,10 +431,17 @@ const EditOrder = props => {
                         <CCol sm={4}>
                           <CLabel htmlFor="lastName">Chọn Kho</CLabel>
                           <Select
-                            onChange={onSelectWarehouse}
+                            onChange={item => {
+                              setFieldValue('store', item.value);
+                              onSelectWarehouse(item.value);
+                            }}
+                            value={{
+                              value: values.store,
+                              label: values.store?.name
+                            }}
                             options={warehouses.map(item => ({
-                              value: item.id,
-                              label: `${item.name}`,
+                              value: item,
+                              label: `${item.name}`
                             }))}
                           />
                           {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
@@ -407,6 +481,7 @@ const EditOrder = props => {
                   </CCard>
                 </CCol>
               )}
+
               <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
                 <CIcon name={'cilArrowCircleRight'} className="mr-2" />
                 Thêm sản phẩm
@@ -418,58 +493,69 @@ const EditOrder = props => {
                       <tr>
                         <th>Sản phẩm</th>
                         <th>Đơn vị</th>
+                        <th>Dung tích</th>
                         <th>Số lượng</th>
                         <th>Đơn giá</th>
-                        <th>Giá thực tế</th>
-                        <th>Đơn giá * Số lượng</th>
                         <th>Thành tiền</th>
                         <th>Chiết khấu</th>
+                        <th>Thanh toán</th>
                       </tr>
                     </thead>
                     <tbody>
                       {productList.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>
+                            <td style={{ width: 300 }}>
                               <Select
+                                value={{
+                                  value: item.product?.id,
+                                  label: item.product?.name
+                                }}
                                 onChange={event => onSelectedProduct(event, index)}
                                 menuPortalTarget={document.body}
-                                value={{
-                                  value: productList[index]?.product?.id,
-                                  label: productList[index]?.product?.name,
-                                }}
                                 options={productInWarehouses.map(item => ({
                                   value: item.product.id,
-                                  label: `${item.product.code}-${item.product.name}`,
+                                  label: `${item.product.productBrand?.name}-${item.product.name}-${item.product.volume}`
                                 }))}
                               />
                             </td>
                             <td>{item.product?.unit}</td>
+                            <td>{item.product?.volume}</td>
                             <td style={{ width: 100 }}>
-                              <CInput
-                                type="number"
-                                min={1}
-                                name="code"
-                                id="code"
-                                onChange={event => onChangeQuantity(event, index)}
-                                onBlur={handleBlur}
-                                value={item.quantity}
-                              />
+                              {item.followIndex >= 0 ? (
+                                item.quantity
+                              ) : (
+                                <CInput
+                                  type="number"
+                                  min={1}
+                                  name="code"
+                                  id="code"
+                                  onChange={event => onChangeQuantity(event, index)}
+                                  onBlur={handleBlur}
+                                  value={item.quantity}
+                                />
+                              )}
                             </td>
-                            <td>{item.product?.price?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
-
                             <td>
-                              {(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                              {
+                                <CInput
+                                  type="number"
+                                  min={1}
+                                  name="code"
+                                  id="code"
+                                  onChange={event => onChangePrice(event, index)}
+                                  onBlur={handleBlur}
+                                  value={item?.priceReal}
+                                />
+                              }
                             </td>
                             <td>
-                              {(
-                                item.product?.price * item.quantity -
-                                (item.product?.price * item.quantity * item.reducePercent) / 100
-                              ).toLocaleString('it-IT', {
+                              {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                                 style: 'currency',
-                                currency: 'VND',
+                                currency: 'VND'
                               }) || ''}
                             </td>
+
                             <td style={{ width: 100 }}>
                               <CInput
                                 type="number"
@@ -479,6 +565,15 @@ const EditOrder = props => {
                                 onBlur={handleBlur}
                                 value={item.reducePercent}
                               />
+                            </td>
+                            <td>
+                              {(
+                                item.priceReal * item.quantity -
+                                (item.priceReal * item.quantity * item.reducePercent) / 100
+                              ).toLocaleString('it-IT', {
+                                style: 'currency',
+                                currency: 'VND'
+                              }) || ''}
                             </td>
                             <td style={{ width: 100 }}>
                               <CButton
@@ -542,11 +637,17 @@ const EditOrder = props => {
                         <tbody>
                           <tr>
                             <td className="left">
+                              <strong>Tổng số lượng</strong>
+                            </td>
+                            <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
+                          </tr>
+                          <tr>
+                            <td className="left">
                               <strong>Tổng tiền</strong>
                             </td>
                             <td className="right">
                               {productList
-                                .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
+                                .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                             </td>
                           </tr>
@@ -556,10 +657,7 @@ const EditOrder = props => {
                             </td>
                             <td className="right">
                               {productList
-                                .reduce(
-                                  (sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100,
-                                  0
-                                )
+                                .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                             </td>
                           </tr>
@@ -573,8 +671,8 @@ const EditOrder = props => {
                                   .reduce(
                                     (sum, current) =>
                                       sum +
-                                      (current.product?.price * current.quantity -
-                                        (current.product?.price * current.quantity * current.reducePercent) / 100),
+                                      (current.priceReal * current.quantity -
+                                        (current.priceReal * current.quantity * current.reducePercent) / 100),
                                     0
                                   )
                                   .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
@@ -585,8 +683,7 @@ const EditOrder = props => {
                       </Table>
                       <CFormGroup className="d-flex justify-content-center">
                         <CButton type="submit" size="lg" className="btn btn-success">
-                          <CIcon name="cil-save" className="mr-3" />
-                          {'Lưu lại'}
+                          {'Tiếp tục'} <CIcon name="cilArrowRight" />
                         </CButton>
                       </CFormGroup>
                     </CCol>

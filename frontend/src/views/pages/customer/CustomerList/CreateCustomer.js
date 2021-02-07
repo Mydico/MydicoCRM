@@ -110,13 +110,13 @@ const CreateCustomer = () => {
     dispatch(fetching())
     const code = `${values.branch ? values.branch : initialState.branch[0]?.code}-${
       values.type ? values.type : initialState.type[0]?.code
-    }-${values.name.replaceAll(' ', '')}`;
+    }${values.name.replaceAll(' ', '')}`;
     const normalizeCode = code
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/đ/g, 'd')
       .replace(/Đ/g, 'D');
-    values.code = `${normalizeCode}-001`;
+    values.code = `${normalizeCode}`;
 
     if (!values.branch) {
       values.branch = initialState.branch[0].id;

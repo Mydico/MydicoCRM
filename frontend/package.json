@@ -40,6 +40,7 @@
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "formik": "^2.2.6",
+    "immer": "^8.0.1",
     "node-sass": "^4.14.1",
     "parse-link-header": "^1.0.1",
     "react": "^16.13.1",
