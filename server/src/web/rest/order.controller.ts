@@ -9,6 +9,7 @@ import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { Like, Not } from 'typeorm';
 import { OrderStatus } from '../../domain/enumeration/order-status';
+import { User } from '../../domain/user.entity';
 
 @Controller('api/orders')
 @UseGuards(AuthGuard, RolesGuard)
@@ -29,8 +30,6 @@ export class OrderController {
   })
   async getAll(@Req() req: Request): Promise<Order[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = {};
-
     const [results, count] = await this.orderService.findAndCount(pageRequest, req);
     HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
     return results;
@@ -57,6 +56,8 @@ export class OrderController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async post(@Req() req: Request, @Body() order: Order): Promise<Order> {
+    const currentUser = req.user as User
+    order.createdBy = currentUser.login
     const created = await this.orderService.save(order);
     HeaderUtil.addEntityCreatedHeaders(req.res, 'Order', created.id);
     return created;
@@ -72,6 +73,8 @@ export class OrderController {
   })
   async put(@Req() req: Request, @Body() order: Order): Promise<Order> {
     HeaderUtil.addEntityCreatedHeaders(req.res, 'Order', order.id);
+    const currentUser = req.user as User
+    order.lastModifiedBy = currentUser.login
     return await this.orderService.update(order);
   }
 

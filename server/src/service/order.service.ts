@@ -50,7 +50,7 @@ export class OrderService {
       .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
       .leftJoinAndSelect('orderDetails.product', 'product')
       .where(queryString)
-      .orderBy('Order.createdDate')
+      .orderBy('Order.createdDate','DESC')
       .skip(pageRequest.page * pageRequest.size)
       .take(pageRequest.size)
       .getManyAndCount();
@@ -58,15 +58,19 @@ export class OrderService {
   }
 
   async save(order: Order): Promise<Order | undefined> {
+    const count = await this.orderRepository
+      .createQueryBuilder('order')
+      .select('DISTINCT()')
+      .getCount();
+    order.code = `${count + 1}`;
     const created = await this.orderRepository.save(order);
-    console.log(created)
     if (created.status === OrderStatus.CREATE_COD) {
       const bill = new Bill();
       bill.code = `VD-${created.code}`;
       bill.customer = created.customer;
       bill.order = created;
       bill.store = created.store;
-      console.log(bill)
+      bill.createdBy = created.lastModifiedBy
       await this.billService.save(bill);
     }
 

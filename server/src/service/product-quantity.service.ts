@@ -25,16 +25,23 @@ export class ProductQuantityService {
     return await this.productQuantityRepository.findOne(options);
   }
 
-  async findAndCount(pageRequest: PageRequest,req: Request): Promise<[ProductQuantity[], number]> {
+  async findAndCount(pageRequest: PageRequest, req: Request): Promise<[ProductQuantity[], number]> {
     // options.relations = relationshipNames;
-    return await this.productQuantityRepository.createQueryBuilder('ProductQuantity')
-    .leftJoinAndSelect('ProductQuantity.product','product')
-    .leftJoinAndSelect('product.productBrand','productBrand')
-    .where('ProductQuantity.store = (:storeId)', { storeId: req.query.store })
-    .orderBy('ProductQuantity.createdDate')
-    .skip(pageRequest.page * pageRequest.size)
-    .take(pageRequest.size)
-    .getManyAndCount();
+    let queryString = '';
+    Object.keys(req.query).forEach((item, index) => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+        queryString += `ProductQuantity.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'OR '}`;
+      }
+    });
+    return await this.productQuantityRepository
+      .createQueryBuilder('ProductQuantity')
+      .leftJoinAndSelect('ProductQuantity.product', 'product')
+      .leftJoinAndSelect('product.productBrand', 'productBrand')
+      .where(queryString)
+      .orderBy('ProductQuantity.createdDate', 'DESC')
+      .skip(pageRequest.page * pageRequest.size)
+      .take(pageRequest.size)
+      .getManyAndCount();
     // return await this.productQuantityRepository.findAndCount(options);
   }
 

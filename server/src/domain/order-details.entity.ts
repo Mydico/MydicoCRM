@@ -21,7 +21,7 @@ export default class OrderDetails extends BaseEntity {
   @Column({ type: 'integer', name: 'quantity', nullable: true })
   quantity: number;
 
-  @Column({ type: 'double', name: 'price', nullable: true })
+  @Column({ type: 'bigint', name: 'price', nullable: true })
   price: number;
 
   @ManyToOne(type => Store, promotion => promotion, { cascade: true })
