@@ -1,38 +1,18 @@
 export const resourceDesc = {
-  address: 'địa điểm',
   department: 'đơn vị',
-  facilityType: 'loại cơ sở',
-  facilityhistories: 'lịch sử cơ sở',
-  facilities: 'cơ sở',
-  feedback: 'nhận xét đánh giá',
   file: 'tập tin',
-  idpapertype: 'loại giấy tùy thân',
-  idpaper: 'giấy tờ tùy thân',
-  investigationfacility: 'cơ sở trong thanh tra',
-  investigationhistories: 'lịch sử thanh tra',
-  investigationresult: 'kết quả thanh tra',
-  investigationuser: 'người tham gia đợt thanh tra',
-  investigation: 'đợt điều tra',
-  license: 'giấy phép',
-  newsType: 'Loại tin tức',
-  newstypehistories: 'lịch sử loại tin tức',
-  newshistories: 'lịch sử tin tức',
-  news: 'Tin tức',
   notification: 'thông báo',
   permissionGroups: 'nhóm quyền',
   permissiontypes: 'Loại quyền',
   permission: 'quyền',
-  producttype: 'loại sản phẩm',
-  position: 'chức vụ',
   product: 'sản phẩm',
   users: 'Người dùng',
   authorities: '',
   register: 'Đăng ký',
   'current-user': 'người dùng đang đăng nhập',
-  mobile: 'ứng dụng di động',
-
   activate: 'kích hoạt',
-
+  'order-detail': 'chi tiết đơn hàng',
+  orders: 'đơn hàng',
   account: 'Tài khoản',
 
   'change-password': 'Đổi mật khẩu',
@@ -43,7 +23,7 @@ export const resourceDesc = {
 
   ':login': 'bằng tên đăng nhập',
 
-  departments: 'đơn vị, đơn vị',
+  departments: 'đơn vị',
 
   'report-subjects': 'chủ đề đóng góp',
 
@@ -108,40 +88,34 @@ export const resourceDesc = {
   receiver: 'người tiếp nhận',
 
   addresses: 'địa chỉ',
-
+  bills: 'vận đơn',
   'investigation-histories': 'lịch sử thanh tra',
-
+  branches: 'chi nhánh khách hàng',
   'investigation-results': 'kết quả thanh tra',
-
+  'product-brands': 'nhãn hiệu sản phẩm',
   positions: 'Chức vụ',
-
+  customer: 'khách hàng',
   permissions: 'quyền',
+  branch: 'chi nhánh',
   management: 'quản lý',
   info: 'thông tin',
   authenticate: 'xác thực danh tính',
   'api-docs-json': 'api docs',
   'api-docs': 'api docs',
   v2: 'v2',
-  'permission-group-associates': 'quyền liên quan',
-
-  'permission-groups': 'nhóm quyền',
-
-  'news-histories': 'lịch sử tin tức',
-
-  'news-type-histories': 'lịch sử loại tin tức',
-
-  'facility-histories': 'lịch sử cơ sở',
-
-  'facility-type-histories': 'lịch sử loại cơ sở',
-
-  'product-histories': 'lịch sử sản phẩm',
-
-  'product-type-histories': 'lịch sử loại sản phẩm',
-
-  'contribute-report-histories': 'lịch sử ý kiến đóng góp',
-
+  'permission-group': 'nhóm quyền',
   'permission-types': 'loại quyền',
-  'department-histories': 'lịch sử đơn vị'
+  'customer-types': 'loại khách hàng',
+  customers: 'khách hàng',
+  'permission-groups': 'nhóm quyền',
+  'product-groups': 'nhóm sản phẩm',
+  promotions: 'chương trình bán hàng',
+  'user-types': 'loại người dùng',
+  'customer-categories':"Loại khách hàng",
+  'user-roles':"chức vụ",
+  'stores':"kho hàng",
+  'user-teams': 'đội nhóm',
+  'transports':"vận chuyển"
 };
 
 export const actionDesc = {
@@ -168,18 +142,48 @@ export const blackList = [
   'histories',
   'associates',
   'associations',
+  'input',
   'utils',
+  'report',
+  'token',
+  'site',
+  'attribute',
+  'log',
+  'promotion-products',
+  'promotion-items',
+  'promotion-customer-levels',
+  'requests',
+  'fanpages',
+  'temps',
+  'receipts',
+  'notifies',
+  'skins',
+  'transaction',
+  'map',
+  'details',
+  'advisories',
+  'request',
+  'customer-tokens',
+  'product-details',
+  'product-group-maps',
+  'product-quantities',
   'register',
+  'wards',
   'v2',
+  'districts',
+  'cities',
   'authenticate',
   'mobile',
   'active',
+  'migrations',
   'users/departments/users',
   'users/selected/department',
   'authorities',
   'activate',
   'info',
   'extra',
+  'order-details',
+  'attribute-maps',
   'user-depart-positions',
   'licenses',
   '/account/reset-password',

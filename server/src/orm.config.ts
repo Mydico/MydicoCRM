@@ -1,4 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConnectionOptions } from 'typeorm/connection/ConnectionOptions';
 
 const commonConf = {
   SYNCRONIZE: false,
@@ -21,7 +22,15 @@ let ormconfig: TypeOrmModuleOptions = {
   cli: commonConf.CLI,
   migrationsRun: commonConf.MIGRATIONS_RUN
 };
-
+let roleBDConfig: ConnectionOptions = {
+  type: 'mysql',
+  database: process.env.DATABASE_NAME,
+  url: process.env.DATABASE_URL,
+  host: 'localhost',
+  port: 3306,
+  username: process.env.USERNAME,
+  password: process.env.PASSWORD
+}
 if (process.env.NODE_ENV === 'prod') {
   ormconfig = {
     name: 'default',
@@ -55,4 +64,4 @@ if (process.env.NODE_ENV === 'dev') {
   };
 }
 
-export { ormconfig };
+export { ormconfig, roleBDConfig };

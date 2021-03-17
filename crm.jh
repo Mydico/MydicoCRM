@@ -329,9 +329,57 @@ entity PromotionProduct {
 	buy Integer,
 	gift Integer,
 }
+enum DepartmentStatus {
+    ACTIVE, INACTIVE, DELETED
+}
+entity Department {
+	name String,
+	status DepartmentStatus,
+}
 relationship ManyToOne {
 	PromotionProduct{product} to Product
 	PromotionProduct{promotion} to Promotion
+}
+enum PermissionStatus {
+    PUBLIC, NONEPUBLIC
+}
+entity Permission {
+    description String
+    action String
+    type String
+    typeName String
+    resource String
+		status PermissionStatus
+}
+
+entity PermissionType {
+    description String
+    name String
+    status PermissionGroupStatus
+}
+
+enum PermissionGroupStatus {
+    ACTIVE, INACTIVE, DELETED
+}
+entity PermissionGroup {
+    name String
+    note String
+    status PermissionGroupStatus
+}
+
+entity PermissionGroupHistory {
+    description String
+}
+
+entity PermissionGroupAssociate {
+  	resource String
+    action String
+    type String
+    description String
+}
+relationship ManyToMany {
+    PermissionGroup{user} to User{permissionGroup}
+    PermissionGroup{permissionGroupAssociate} to PermissionGroupAssociate{permissionGroup}
 }
 entity ProductDetails {
 	barcode String maxlength(255),

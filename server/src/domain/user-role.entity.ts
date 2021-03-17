@@ -3,6 +3,8 @@ import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne
 import { BaseEntity } from './base/base.entity';
 
 import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
+import { User } from './user.entity';
+import PermissionGroup from './permission-group.entity';
 
 /**
  * A UserRole.
@@ -12,11 +14,16 @@ export default class UserRole extends BaseEntity {
   @Column({ name: 'name', length: 255 })
   name: string;
 
-  @Column({ name: 'permission', length: 255 })
-  permission: string;
+  @ManyToMany(type => User, other => other.roles)
+  @JoinTable({
+    name: 'position_user',
+    joinColumn: { name: 'user_role_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' }
+  })
+  users?: User[];
 
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+  @ManyToMany(type => PermissionGroup, other => other.roles)
+  permissionGroups?: PermissionGroup[];
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

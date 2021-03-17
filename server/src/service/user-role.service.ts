@@ -5,6 +5,7 @@ import UserRole from '../domain/user-role.entity';
 import { UserRoleRepository } from '../repository/user-role.repository';
 
 const relationshipNames = [];
+relationshipNames.push('permissionGroups');
 
 @Injectable()
 export class UserRoleService {

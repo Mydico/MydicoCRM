@@ -13,6 +13,10 @@ import productWarehouseReducer from '../../views/pages/warehouse/Product/product
 import orderReducer from '../../views/pages/sales/Orders/order.reducer';
 import branchReducer from '../../views/pages/customer/CustomerBranch/customer-branch.reducer';
 import billReducer from '../../views/pages/warehouse/Bill/bill.reducer';
+import userReducer from '../../views/pages/user/UserList/user.reducer';
+import userRoleReducer from '../../views/pages/user/UserRole/user-roles.reducer';
+import departmentReducer from '../../views/pages/user/UserDepartment/department.reducer';
+import permissionReducer from '../../views/pages/user/UserPermission/permission.reducer';
 
 const rootReducer = combineReducers({
   authentication: authenticateReducer,
@@ -28,7 +32,11 @@ const rootReducer = combineReducers({
   warehouse: warehouseReducer,
   productWarehouse: productWarehouseReducer,
   order: orderReducer,
-  bill: billReducer
+  bill: billReducer,
+  user: userReducer,
+  userRole: userRoleReducer,
+  department: departmentReducer,
+  permission: permissionReducer
 });
 
 export default rootReducer;

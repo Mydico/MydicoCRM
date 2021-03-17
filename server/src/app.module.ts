@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import * as path from 'path';
 import { AuthModule } from './module/auth.module';
-import { ormconfig } from './orm.config';
+import { ormconfig, roleBDConfig } from './orm.config';
 import { CustomerTokenModule } from './module/customer-token.module';
 import { PromotionModule } from './module/promotion.module';
 import { AttributeModule } from './module/attribute.module';
@@ -54,8 +55,14 @@ import { UserTokenModule } from './module/user-token.module';
 import { BranchModule } from './module/branch.module';
 import { ProductBrandModule } from './module/product-brand.module';
 import { FileModule } from './module/file.module';
-
+import { RoleModule } from './module/role.module';
 import { PromotionProductModule } from './module/promotion-product.module';
+import { DepartmentModule } from './module/department.module';
+import { PermissionModule } from './module/permission.module';
+import { PermissionTypeModule } from './module/permission-type.module';
+import { PermissionGroupModule } from './module/permission-group.module';
+import { PermissionGroupHistoryModule } from './module/permission-group-history.module';
+import { PermissionGroupAssociateModule } from './module/permission-group-associate.module';
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
 // jhipster-needle-add-service-module-to-main-import - JHipster will import service modules here, do not remove
@@ -63,6 +70,7 @@ import { PromotionProductModule } from './module/promotion-product.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(ormconfig),
+    RoleModule.forRootAsync(roleBDConfig, path.join(__dirname, '/acl-model.conf')),
     AuthModule,
     CustomerTokenModule,
     PromotionModule,
@@ -116,7 +124,13 @@ import { PromotionProductModule } from './module/promotion-product.module';
     UserTokenModule,
     BranchModule,
     ProductBrandModule,
-    PromotionProductModule
+    PromotionProductModule,
+    DepartmentModule,
+    PermissionModule,
+    PermissionTypeModule,
+    PermissionGroupModule,
+    PermissionGroupHistoryModule,
+    PermissionGroupAssociateModule
     // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
   ],
   controllers: [

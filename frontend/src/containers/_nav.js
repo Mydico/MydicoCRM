@@ -135,28 +135,28 @@ export default [
   {
     _tag: 'CSidebarNavDropdown',
     name: 'Quản lý người dùng',
-    route: '/pages',
+    route: '/user',
     icon: 'cil-star',
     _children: [
       {
         _tag: 'CSidebarNavItem',
-        name: 'Login',
-        to: '/login',
+        name: 'Danh sách',
+        to: '/user/',
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'Register',
-        to: '/register',
+        name: 'Phân quyền',
+        to: '/permission/',
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'Error 404',
-        to: '/404',
+        name: 'Chức vụ',
+        to: '/user-role/',
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'Error 500',
-        to: '/500',
+        name: 'Chi nhánh',
+        to: '/department/',
       },
     ],
   },

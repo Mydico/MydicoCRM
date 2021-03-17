@@ -61,7 +61,7 @@ export const Toaster = React.forwardRef((props, ref) => {
   })();
 
   return (
-    <CCard ref={ref}>
+    <CCard ref={ref} className="">
       <CCardBody>
         <CContainer>
           <CRow >

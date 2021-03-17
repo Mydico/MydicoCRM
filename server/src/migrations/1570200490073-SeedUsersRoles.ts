@@ -15,7 +15,6 @@ export class SeedUsersRoles1570200490073 implements MigrationInterface {
     email: 'system@localhost.it',
     imageUrl: '',
     activated: true,
-    langKey: 'en',
     createdBy: 'system',
     lastModifiedBy: 'system'
   };
@@ -28,7 +27,6 @@ export class SeedUsersRoles1570200490073 implements MigrationInterface {
     email: 'anonymoususer@localhost.it',
     imageUrl: '',
     activated: true,
-    langKey: 'en',
     createdBy: 'system',
     lastModifiedBy: 'system'
   };
@@ -41,7 +39,6 @@ export class SeedUsersRoles1570200490073 implements MigrationInterface {
     email: 'admin@localhost.it',
     imageUrl: '',
     activated: true,
-    langKey: 'en',
     createdBy: 'system',
     lastModifiedBy: 'system'
   };
@@ -54,7 +51,6 @@ export class SeedUsersRoles1570200490073 implements MigrationInterface {
     email: 'user@localhost.it',
     imageUrl: '',
     activated: true,
-    langKey: 'en',
     createdBy: 'system',
     lastModifiedBy: 'system'
   };

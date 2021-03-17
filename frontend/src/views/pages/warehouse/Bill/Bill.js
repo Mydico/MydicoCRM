@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
+import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination, CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBill, updateBill } from './bill.api';
@@ -37,6 +37,7 @@ const Bill = props => {
   const { initialState } = useSelector(state => state.bill);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
+  const [modal, setModal] = useState(true)
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -297,7 +298,8 @@ const Bill = props => {
           <CRow>
             <CButton
               onClick={() => {
-                alertAction(item, supplyWaitingBill, 'Bạn có chắc chắn muốn gán vận đơn này?');
+                setModal(true)
+                // alertAction(item, supplyWaitingBill, 'Bạn có chắc chắn muốn gán vận đơn này?');
               }}
               color="primary"
               variant="outline"
@@ -565,6 +567,25 @@ const Bill = props => {
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
+      <CModal show={modal} onClose={() => setModal(!modal)} size="lg">
+        <CModalHeader closeButton>
+          <CModalTitle>Modal title</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
+          in culpa qui officia deserunt mollit anim id est laborum.
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="primary" onClick={() => setModal(!modal)}>
+            Do Something
+          </CButton>{' '}
+          <CButton color="secondary" onClick={() => setModal(!modal)}>
+            Cancel
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </CCard>
   );
 };

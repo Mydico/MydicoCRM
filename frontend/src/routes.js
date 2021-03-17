@@ -50,6 +50,22 @@ const ProductWarehouse = React.lazy(() => import('./views/pages/warehouse/Produc
 const CreateProductWarehouse = React.lazy(() => import('./views/pages/warehouse/Product/CreateProductWarehouse'));
 const EditProductWarehouse = React.lazy(() => import('./views/pages/warehouse/Product/EditProductWarehouse'));
 
+const User = React.lazy(() => import('./views/pages/user/UserList/user'));
+const CreateUser = React.lazy(() => import('./views/pages/user/UserList/create-user'));
+const EditUser = React.lazy(() => import('./views/pages/user/UserList/edit-user'));
+
+const UserRole = React.lazy(() => import('./views/pages/user/UserRole/user-roles'));
+const CreateUserRole = React.lazy(() => import('./views/pages/user/UserRole/create-user-role'));
+const EditUserRole = React.lazy(() => import('./views/pages/user/UserRole/edit-user-role'));
+
+const Department = React.lazy(() => import('./views/pages/user/UserDepartment/departments'));
+const CreateDepartment = React.lazy(() => import('./views/pages/user/UserDepartment/create-department'));
+const EditDepartment = React.lazy(() => import('./views/pages/user/UserDepartment/edit-department'));
+
+const Permission = React.lazy(() => import('./views/pages/user/UserPermission/permission'));
+const CreatePermission = React.lazy(() => import('./views/pages/user/UserPermission/create-permission'));
+const EditPermission = React.lazy(() => import('./views/pages/user/UserPermission/edit-permission'));
+
 const Bill = React.lazy(() => import('./views/pages/warehouse/Bill/Bill'));
 
 // https:/github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -92,7 +108,19 @@ const routes = [
   { path: '/warehouse/:id/edit/', name: 'Chỉnh sửa kho hàng', component: EditWarehouse },
   { path: '/warehouse/new/', name: 'Thêm mới kho hàng', component: CreateWarehouse },
   { path: '/inwarehouse/', name: 'Sản phẩm trong kho', component: ProductWarehouse, exact: true },
-  { path: '/bill/', name: 'Vận đơn', component: Bill, exact: true },
+  { path: '/user/', name: 'Người dùng', component: User, exact: true },
+  { path: '/user/:id/edit', name: 'Chỉnh sửa', component: EditUser },
+  { path: '/user/new', name: 'Tạo mới', component: CreateUser},
+  { path: '/user-role/', name: 'chức vụ', component: UserRole, exact: true },
+  { path: '/user-role/:id/edit', name: 'Chỉnh sửa', component: EditUserRole },
+  { path: '/user-role/new', name: 'Tạo mới', component: CreateUserRole},
+  { path: '/department/', name: 'chi nhánh', component: Department, exact: true },
+  { path: '/department/:id/edit', name: 'Chỉnh sửa', component: EditDepartment },
+  { path: '/department/new', name: 'Tạo mới', component: CreateDepartment},
+  { path: '/permission/', name: 'nhóm quyền', component: Permission, exact: true },
+  { path: '/permission/:id/edit', name: 'Chỉnh sửa', component: EditPermission },
+  { path: '/permission/new', name: 'Tạo mới', component: CreatePermission},
+  { path: '/bill/', name: 'Vận đơn', component: Bill },
 ];
 
 export default routes;

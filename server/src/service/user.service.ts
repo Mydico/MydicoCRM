@@ -3,7 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../domain/user.entity';
 import { UserRepository } from '../repository/user.repository';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
-
+const relationshipNames = [];
+// relationshipNames.push('departPositions');
+relationshipNames.push('roles');
+relationshipNames.push('departments');
+relationshipNames.push('authorities');
+relationshipNames.push('permissionGroups');
+// relationshipNames.push('permissionGroups.permissionGroupAssociates');
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(UserRepository) private userRepository: UserRepository) {}
@@ -14,18 +20,19 @@ export class UserService {
   }
 
   async findByfields(options: FindOneOptions<User>): Promise<User | undefined> {
-    options.relations = ['authorities'];
+    options.relations = relationshipNames
     const result = await this.userRepository.findOne(options);
     return this.flatAuthorities(result);
   }
 
   async find(options: FindManyOptions<User>): Promise<User | undefined> {
+    options.relations = relationshipNames
     const result = await this.userRepository.findOne(options);
     return this.flatAuthorities(result);
   }
 
   async findAndCount(options: FindManyOptions<User>): Promise<[User[], number]> {
-    options.relations = ['authorities'];
+    options.relations = relationshipNames
     const resultList = await this.userRepository.findAndCount(options);
     const users: User[] = [];
     if (resultList && resultList[0]) {

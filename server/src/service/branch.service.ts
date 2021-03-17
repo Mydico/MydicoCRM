@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import Branch from '../domain/branch.entity';
 import { BranchRepository } from '../repository/branch.repository';
-import { increment_alphanumeric_str } from './utils/normalizeString';
+import { increment_alphanumeric_str, decrement_alphanumeric_str } from './utils/normalizeString';
 
 const relationshipNames = [];
 
