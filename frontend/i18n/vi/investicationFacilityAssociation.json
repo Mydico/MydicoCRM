@@ -1,0 +1,25 @@
+{
+  "attpApp": {
+    "investicationFacilityAssociation": {
+      "home": {
+        "title": "Investication Facility Associations",
+        "createLabel": "Thêm mới một Investication Facility Association",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Investication Facility Association",
+        "notFound": "No Investication Facility Associations found"
+      },
+      "created": "Một Investication Facility Association mới được tạo với định danh {{ param }}",
+      "updated": "Một Investication Facility Association cập nhật với định danh {{ param }}",
+      "deleted": "Một Investication Facility Association đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Investication Facility Association {{ id }}?"
+      },
+      "detail": {
+        "title": "Investication Facility Association"
+      },
+      "startInstant": "Start Instant",
+      "endInstant": "End Instant",
+      "investigation": "Investigation",
+      "facility": "Facility"
+    }
+  }
+}

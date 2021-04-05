@@ -1,0 +1,9 @@
+{
+  "attpApp": {
+    "InvestigationRole": {
+      "null": "",
+      "LEADER": "LEADER",
+      "MEMBER": "MEMBER"
+    }
+  }
+}

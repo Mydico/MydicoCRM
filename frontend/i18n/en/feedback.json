@@ -1,0 +1,39 @@
+{
+  "attpApp": {
+    "feedback": {
+      "home": {
+        "title": "Feedbacks",
+        "createLabel": "Create a new Feedback",
+        "createOrEditLabel": "Create or edit a Feedback",
+        "notFound": "No Feedbacks found",
+        "total": "Total",
+        "search": " ",
+        "filter": "Filter"
+      },
+      "operation": "Operation",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "citizen": "Citizen",
+      "created": "A new Feedback is created with identifier {{ param }}",
+      "updated": "A Feedback is updated with identifier {{ param }}",
+      "deleted": "A Feedback is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Feedback {{ id }}?"
+      },
+      "detail": {
+        "title": "Feedback"
+      },
+      "content": "Content",
+      "status": {
+        "CREATED": "Created"
+      },
+      "feedback": "Feedback",
+      "product": "Product",
+      "issuer": "Issuer",
+      "handler": "Handler",
+      "department": "Department",
+      "facility": "Facility",
+      "responder": "Responder"
+    }
+  }
+}

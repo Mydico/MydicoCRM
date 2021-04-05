@@ -6,6 +6,7 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
 
 import StoreInput from './store-input.entity';
 import ProductDetails from './product-details.entity';
+import Product from './product.entity';
 
 /**
  * A StoreInputDetails.
@@ -13,22 +14,19 @@ import ProductDetails from './product-details.entity';
 @Entity('store_input_details')
 export default class StoreInputDetails extends BaseEntity {
   @Column({ type: 'integer', name: 'quantity', nullable: true })
-  quantity: number;
+  quantity?: number;
 
-  @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
-
-  @Column({ type: 'integer', name: 'price', nullable: true })
-  price: number;
+  @Column({ type: 'bigint', name: 'price', nullable: true })
+  price?: number;
 
   @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+  siteId?: number;
 
   @ManyToOne(type => StoreInput)
-  nhapkho: StoreInput;
+  storeInput: StoreInput;
 
-  @ManyToOne(type => ProductDetails)
-  chitiet: ProductDetails;
+  @ManyToOne(type => Product)
+  product: Product;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

@@ -20,6 +20,11 @@
         {
             "fieldName": "resource",
             "fieldType": "String"
+        },
+        {
+            "fieldName": "status",
+            "fieldType": "PermissionStatus",
+            "fieldValues": "PUBLIC,NONEPUBLIC"
         }
     ],
     "relationships": [],

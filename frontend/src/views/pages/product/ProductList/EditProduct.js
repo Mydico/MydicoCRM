@@ -109,7 +109,7 @@ const EditProduct = props => {
       try {
         temp.image = JSON.parse(product.image);
       } catch (e) {}
-      const arrRequest = temp.image.map(image => fetch(image));
+      const arrRequest = temp.image?.map(image => fetch(image));
       Promise.all(arrRequest).then(arrRes => {
         const arr = arrRes.map(res => {
           return res?.arrayBuffer().then(buf => {

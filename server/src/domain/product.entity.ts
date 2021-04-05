@@ -36,7 +36,7 @@ export default class Product extends BaseEntity {
   /**
    * Giá gốc của sản phẩm tính theo đơn vị của sản phẩm
    */
-  @Column({ type: 'integer', name: 'price', nullable: true })
+  @Column({ type: 'bigint', name: 'price', nullable: true })
   price: number;
 
   @Column({ type: 'integer', name: 'volume', nullable: true })

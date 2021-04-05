@@ -1,0 +1,61 @@
+{
+  "attpApp": {
+    "product": {
+      "btn": {
+        "edit": "Sửa thông tin",
+        "holdProduct": "Thu hồi công bố sản phẩm",
+        "approveFacility": "Công bố Sản phẩm",
+        "processFacility": "Hủy công bố Sản phẩm",
+        "viewHisotry": "Xem lịch sử"
+      },
+      "home": {
+        "title": "Danh sách sản phẩm",
+        "createLabel": "Thêm mới",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Product",
+        "notFound": "No Products found",
+        "search": "Tìm kiếm",
+        "total": "Tổng",
+        "firstTitleButton": "Công bố sản phẩm",
+        "secondTitleButton": "Hủy công bố sản phẩm",
+        "filter": "Lọc"
+      },
+      "created": "Một Product mới được tạo với định danh {{ param }}",
+      "updated": "Một Product cập nhật với định danh {{ param }}",
+      "deleted": "Một Product đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Product {{ id }}?"
+      },
+      "detail": {
+        "title": "Product"
+      },
+      "infoFacility": "Thông tin Cơ sở SXKD DV",
+      "code": "Mã sản phẩm",
+      "placeholderCode": "Nhập mã sản phẩm...",
+      "placeholderType": "Chọn Loại sản phẩm...",
+      "placeholderName": "Nhập tên sản phẩm...",
+      "nameField": "Tên sản phẩm",
+      "name": "Mã - Tên sản phẩm",
+      "material": "Thành phần",
+      "expireInstant": "Thời hạn sử dụng ",
+      "packagingMethod": "Quy cách đóng gói",
+      "avatar": "Ảnh đại diện",
+      "productAvatar": "Ảnh thông tin sản phẩm",
+      "status": "Trạng thái",
+      "facility": "Cơ sở",
+      "createdDate": "Ngày gửi",
+      "publishDate": "Ngày công bố",
+      "approver": "Người duyệt",
+      "action": "Hành động",
+      "createdBy": "Người tạo",
+      "description": "Mô tả",
+      "type": "Loại sản phẩm",
+      "selectFile": "Chọn file",
+      "codeFile": "Mã nhãn",
+      "select": "Chọn",
+      "placeholderMaterial": "Nhập thành phần...",
+      "submitFormCreated": "Ghi lại và thêm tiếp",
+      "submitFormWaiting": "Gửi duyệt và công bố",
+      "id": "Mã"
+    }
+  }
+}

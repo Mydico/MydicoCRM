@@ -1,0 +1,22 @@
+{
+  "attpApp": {
+    "idPaperType": {
+      "home": {
+        "title": "Id Paper Types",
+        "createLabel": "Thêm mới một Id Paper Type",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Id Paper Type",
+        "notFound": "No Id Paper Types found"
+      },
+      "created": "Một Id Paper Type mới được tạo với định danh {{ param }}",
+      "updated": "Một Id Paper Type cập nhật với định danh {{ param }}",
+      "deleted": "Một Id Paper Type đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Id Paper Type {{ id }}?"
+      },
+      "detail": {
+        "title": "Id Paper Type"
+      },
+      "name": "Name"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "attpApp": {
+    "groupPermission": {
+      "null": "",
+      "CREATED": "CREATED",
+      "APPROVE": "APPROVE",
+      "REJECT": "REJECT",
+      "name": "Name",
+      "note": "Note",
+      "home": {
+        "title": "Group Permission",
+        "createLabel": "Create a new Group Permission",
+        "createOrEditLabel": "Create or edit a Group Permission",
+        "notFound": "No Group Permission found"
+      }
+    }
+  }
+}

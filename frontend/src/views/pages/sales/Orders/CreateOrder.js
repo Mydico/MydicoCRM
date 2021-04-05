@@ -280,7 +280,6 @@ const CreateOrder = props => {
           handleReset,
           setTouched
         }) => {
-          console.log(errors);
           return (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CCol xs="12" sm="6" md="12">

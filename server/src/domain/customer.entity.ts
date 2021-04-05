@@ -18,6 +18,7 @@ import { User } from './user.entity';
 import { ApiModelProperty } from '@nestjs/swagger';
 import Order from './order.entity';
 import Bill from './bill.entity';
+import StoreInput from './store-input.entity';
 
 /**
  * A Customer.
@@ -102,6 +103,8 @@ export default class Customer extends BaseEntity {
   @OneToMany(type => Bill, other => other.customer)
   bill? : Bill[]
 
+  @OneToMany(type => StoreInput, other => other.customer)
+  storeInput? : StoreInput[]
 
   @ManyToOne(type => City)
   city?: City;

@@ -7,6 +7,7 @@ import Order from './order.entity';
 import Customer from './customer.entity';
 import Store from './store.entity';
 import { BillStatus } from './enumeration/bill-status';
+import { User } from './user.entity';
 
 /**
  * A Bill.
@@ -16,6 +17,9 @@ export default class Bill extends BaseEntity {
 
   @ManyToOne(type => Customer, customer => customer.bill, { cascade: true })
   customer: Customer;
+
+  @ManyToOne(type => User, user => user.bill, { cascade: true })
+  transporter: User;
 
   // @ManyToOne(type => Store, store => store.product, { cascade: true })
   // store?: Store;

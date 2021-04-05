@@ -1,0 +1,24 @@
+{
+  "attpApp": {
+    "investigationHistory": {
+      "home": {
+        "title": "Investigation Histories",
+        "createLabel": "Thêm mới một Investigation History",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Investigation History",
+        "notFound": "No Investigation Histories found"
+      },
+      "created": "Một Investigation History mới được tạo với định danh {{ param }}",
+      "updated": "Một Investigation History cập nhật với định danh {{ param }}",
+      "deleted": "Một Investigation History đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Investigation History {{ id }}?"
+      },
+      "detail": {
+        "title": "Investigation History"
+      },
+      "description": "Description",
+      "creator": "Creator",
+      "investId": "Invest Id"
+    }
+  }
+}

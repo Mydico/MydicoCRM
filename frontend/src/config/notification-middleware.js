@@ -5,7 +5,8 @@ const statusError = {
   400: 'Bạn đã nhập dữ liệu không đúng',
   403: 'Bạn không có quyền thực hiện hành động này',
   409: 'Dữ liệu đã tồn tại trên hệ thống.',
-  500: 'Lỗi hệ thống. Vui lòng thử lại'
+  500: 'Lỗi hệ thống. Vui lòng thử lại',
+  422: 'Lỗi hệ thống. Vui lòng thử lại'
 };
 
 const successMessageMapping = {
@@ -43,7 +44,7 @@ export default () => next => action => {
     if (action.payload && action.payload.statusCode === 200) {
       ToastSuccess(statusError[action.payload.statusCode]);
     } else {
-      ToastError(statusError[action.payload.statusCode]);
+      ToastError(action.payload.message || statusError[action.payload.statusCode]);
     }
   }
 

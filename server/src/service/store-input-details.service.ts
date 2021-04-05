@@ -5,8 +5,8 @@ import StoreInputDetails from '../domain/store-input-details.entity';
 import { StoreInputDetailsRepository } from '../repository/store-input-details.repository';
 
 const relationshipNames = [];
-relationshipNames.push('nhapkho');
-relationshipNames.push('chitiet');
+relationshipNames.push('store');
+relationshipNames.push('product');
 
 @Injectable()
 export class StoreInputDetailsService {
@@ -29,6 +29,10 @@ export class StoreInputDetailsService {
   }
 
   async save(storeInputDetails: StoreInputDetails): Promise<StoreInputDetails | undefined> {
+    return await this.storeInputDetailsRepository.save(storeInputDetails);
+  }
+
+  async saveMany(storeInputDetails: StoreInputDetails[]): Promise<StoreInputDetails[] | undefined> {
     return await this.storeInputDetailsRepository.save(storeInputDetails);
   }
 

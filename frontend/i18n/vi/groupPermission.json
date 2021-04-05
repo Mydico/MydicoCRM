@@ -1,0 +1,30 @@
+{
+  "attpApp": {
+    "groupPermission": {
+      "null": "",
+      "CREATED": "CREATED",
+      "APPROVE": "APPROVE",
+      "REJECT": "REJECT",
+      "name": "Tên nhóm quyền",
+      "note": "Ghi chú",
+      "permission": "Nhóm chức năng",
+      "createdBy": "Người tạo",
+      "status": "Trạng thái",
+      "ACTIVE": "Đang hoạt động",
+      "INACTIVE": "Không hoạt động",
+      "DELETED": "Đã xóa",
+      "operation": "Thao tác",
+      "permissionSelect": "Chọn nhóm chức năng",
+      "permissionList": "Danh sách chức năng",
+      "permissionConfig": "Danh sách quyền đã thiết lập",
+      "home": {
+        "title": "Group Permission",
+        "createLabel": "Thêm mới một Group Permission",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Group Permission",
+        "notFound": "No Group Permission found",
+        "filter": "Lọc",
+        "total": "Tổng"
+      }
+    }
+  }
+}

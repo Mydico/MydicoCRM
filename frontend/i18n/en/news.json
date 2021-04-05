@@ -1,0 +1,64 @@
+{
+  "attpApp": {
+    "news": {
+      "home": {
+        "title": "News",
+        "total": "Total",
+        "filter": "Filter",
+        "action": "Action",
+        "search": "Search",
+        "createLabel": "Create News",
+        "createOrEditLabel": "Create or edit a News",
+        "editLabel": "Edit News",
+        "notFound": "No News found"
+      },
+      "btn": {
+        "edit": "Edit News",
+        "withdraw": "Revoke submitted",
+        "approve": "Approve",
+        "public": "Public News",
+        "history": "View History",
+        "update": "Update content",
+        "cancel": "Cancel"
+      },
+      "dialog": {
+        "withdraw": "Revoke the submission and approval of news",
+        "approve": "Approve News content",
+        "update": "Update News content",
+        "accept": "Accept",
+        "reject": "Reject",
+        "reason": "Reject Reason",
+        "btn": {
+          "withdraw": "Revoke",
+          "approve": "Send",
+          "update": "Save"
+        }
+      },
+      "created": "A new News is created with identifier {{ param }}",
+      "updated": "A News is updated with identifier {{ param }}",
+      "deleted": "A News is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete News {{ id }}?"
+      },
+      "detail": {
+        "title": "News"
+      },
+      "history": {
+        "title": "News History",
+        "time": "Time",
+        "modifier": "Modifier",
+        "content": "Content"
+      },
+      "newsType": "News Type",
+      "title": "Title",
+      "content": "Content",
+      "shortContent": "Short content",
+      "url": "Url",
+      "status": "Status",
+      "isNews": "Is News",
+      "creator": "Creator",
+      "approver": "Approver",
+      "lastModifiedDate": "Modified date"
+    }
+  }
+}

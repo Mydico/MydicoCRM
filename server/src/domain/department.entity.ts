@@ -4,6 +4,7 @@ import { BaseEntity } from './base/base.entity';
 
 import { DepartmentStatus } from './enumeration/department-status';
 import PermissionGroup from './permission-group.entity';
+import Store from './store.entity';
 import { User } from './user.entity';
 
 /**
@@ -24,6 +25,9 @@ export default class Department extends BaseEntity {
     inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' }
   })
   users?: User[];
+
+  @OneToMany(type => Store, store => store.department, { cascade: true })
+  stores?: Store[];
 
   @ManyToMany(type => PermissionGroup, other => other.departments)
   permissionGroups?: PermissionGroup[];

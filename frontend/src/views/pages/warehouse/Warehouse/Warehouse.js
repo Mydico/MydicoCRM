@@ -34,9 +34,7 @@ const Warehouse = props => {
     return items.map(item => {
       return {
         ...item,
-        ward: item.ward?.name,
-        district: item.district?.name,
-        city: item.city?.name,
+        department: item.department?.name || ''
       };
     });
   };
@@ -63,7 +61,7 @@ const Warehouse = props => {
     { key: 'name', label: 'Tên kho', _style: { width: '15%' } },
     { key: 'address', label: 'Địa chỉ', _style: { width: '15%' } },
     { key: 'tel', label: 'Số điện thoại', _style: { width: '15%' } },
-    { key: 'transport', label: 'Đơn vị vận chuyển', _style: { width: '15%' } },
+    { key: 'department', label: 'Chi nhánh', _style: { width: '15%' } },
     { key: 'status', label: 'Trạng thái', _style: { width: '15%' } },
     {
       key: 'show_details',

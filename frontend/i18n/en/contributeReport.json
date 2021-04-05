@@ -1,0 +1,59 @@
+{
+  "attpApp": {
+    "contributeReport": {
+      "home": {
+        "title": "Contribute Reports",
+        "total": "Total",
+        "filter": "Filter",
+        "createLabel": "Create a new Contribute Report",
+        "proceedLabel": "Proceed",
+        "createOrEditLabel": "Create or edit a Contribute Report",
+        "notFound": "No Contribute Reports found"
+      },
+      "created": "A new Contribute Report is created with identifier {{ param }}",
+      "updated": "A Contribute Report is updated with identifier {{ param }}",
+      "deleted": "A Contribute Report is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Contribute Report {{ id }}?"
+      },
+      "detail": {
+        "title": "Contribute Report Detail",
+        "reportInformation": "Contribute report detail information",
+        "handleInformation": "Contribute report handle information",
+        "sendNotificationToCitizen": "Send notification to citizen"
+      },
+      "history": {
+        "title": "Contribute Report History",
+        "time": "Time"
+      },
+      "statusTypes": {
+        "WAITING": "Waiting",
+        "PROCESSED": "Processed",
+        "PROCESSEDWITHRESPONSE": "Processed with response",
+        "REJECT": "Reject"
+      },
+      "selectHandle": "Select a user",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "address": "Address",
+      "citizen": "Citizen",
+      "handleContent": "Handle Content",
+      "type": "Type",
+      "title": "Title",
+      "content": "Content",
+      "product": "Product",
+      "facility": "Facility",
+      "sentTime": "Sent Time",
+      "handleTime": "Handle Time",
+      "organization": "Organization",
+      "receiver": "Receiver",
+      "receive": "Receive",
+      "handler": "Handler",
+      "operation": "Operation",
+      "check": "Check",
+      "status": "Status",
+      "department": "Department",
+      "file": "File"
+    }
+  }
+}

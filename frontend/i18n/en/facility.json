@@ -1,0 +1,99 @@
+{
+  "attpApp": {
+    "facility": {
+      "home": {
+        "title": "Facilities",
+        "createLabel": "Create a new Facility",
+        "createOrEditLabel": "Create or edit a Facility",
+        "notFound": "No Facilities found"
+      },
+      "created": "A new Facility is created with identifier {{ param }}",
+      "updated": "A Facility is updated with identifier {{ param }}",
+      "deleted": "A Facility is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Facility {{ id }}?"
+      },
+      "detail": {
+        "title": "View detail Facility"
+      },
+      "name": "Name",
+      "aliasName": "Alias Name",
+      "engName": "Eng Name",
+      "taxNumber": "Tax Number",
+      "address": "Address",
+      "addressCoor": "Address Coor",
+      "lic": "Lic",
+      "idPaper": "Id Paper",
+      "owner": "Owner",
+      "type": "Type",
+      "phone": "Phone",
+      "createdBy": "createdBy",
+      "state": "state",
+      "status": "status",
+      "action": "action",
+      "licDetail": {
+        "number": "number GCN/GP",
+        "date": "date GCN/GP đủ điều kiện",
+        "approver": "approver",
+        "profile": "profile"
+      },
+      "placeHolder": {
+        "facilityType": "facilityType",
+        "name": "name...",
+        "aliasName": "aliasName...",
+        "engName": "engName...",
+        "taxNumber": "taxNumber...",
+        "address": "address...",
+        "addressCoor": "addressCoor...",
+        "idPaper": "idPaper",
+        "owner": "owner...",
+        "phone": "phone...",
+        "number": "number...",
+        "issueAddress": "issueAddress...",
+        "fax": " fax...",
+        "license": {
+          "number": "number GCN/GP...",
+          "file": "file",
+          "approver": "approver"
+        },
+        "update": {
+          "onlTitle": "Add online",
+          "excelTitle": "add by excel",
+          "info": "info",
+          "name": "Name*",
+          "aliasName": "aliasName",
+          "engName": "engName",
+          "taxNumber": "taxNumber",
+          "address": "address",
+          "addressCoor": "addressCoor",
+          "lic": "License",
+          "idPaper": "IdentifierPaper",
+          "owner": "owner*",
+          "type": "type*",
+          "phone": "phone*",
+          "createdBy": "createdBy",
+          "state": "state",
+          "status": "status",
+          "idPaperDetail": {
+            "number": "input number",
+            "issueDate": "issueDate",
+            "issueAddress": "issueAddress",
+            "phone": "phone*",
+            "fax": "FAX"
+          },
+          "license": {
+            "title": "License information",
+            "number": "number GCN/GP",
+            "issueDate": "Date GCN/GP ",
+            "expireDate": "expireDate",
+            "file": "File"
+          },
+          "action": {
+            "submit-approve": "Submit Approve",
+            "submit": "Submit"
+          }
+        }
+      }
+    }
+  }
+}

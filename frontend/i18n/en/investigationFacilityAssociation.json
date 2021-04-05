@@ -1,0 +1,25 @@
+{
+  "attpApp": {
+    "investigationFacilityAssociation": {
+      "home": {
+        "title": "Investigation Facility Associations",
+        "createLabel": "Create a new Investigation Facility Association",
+        "createOrEditLabel": "Create or edit a Investigation Facility Association",
+        "notFound": "No Investigation Facility Associations found"
+      },
+      "created": "A new Investigation Facility Association is created with identifier {{ param }}",
+      "updated": "A Investigation Facility Association is updated with identifier {{ param }}",
+      "deleted": "A Investigation Facility Association is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Investigation Facility Association {{ id }}?"
+      },
+      "detail": {
+        "title": "Investigation Facility Association"
+      },
+      "startInstant": "Start Instant",
+      "endInstant": "End Instant",
+      "investigation": "Investigation",
+      "facility": "Facility"
+    }
+  }
+}

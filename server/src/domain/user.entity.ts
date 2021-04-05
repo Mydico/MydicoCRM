@@ -1,5 +1,5 @@
 import { Authority } from './authority.entity';
-import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { config } from '../config';
@@ -7,6 +7,8 @@ import { EncryptionTransformer } from 'typeorm-encrypted';
 import UserRole from './user-role.entity';
 import Department from './department.entity';
 import PermissionGroup from './permission-group.entity';
+import Bill from './bill.entity';
+import StoreInput from './store-input.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -41,6 +43,12 @@ export class User extends BaseEntity {
   
   @ManyToMany(type => Department, department => department.users)
   departments?: Department[];
+
+  @OneToMany(type => Bill, other => other.transporter)
+  bill? : Bill[]
+
+  @OneToMany(type => StoreInput, other => other.approver)
+  storeInput? : StoreInput[]
 
   @ManyToMany(type => PermissionGroup, other => other.users)
   permissionGroups?: PermissionGroup[];

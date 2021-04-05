@@ -8,6 +8,7 @@ import { PageRequest } from '../domain/base/pagination.entity';
 
 const relationshipNames = [];
 relationshipNames.push('customer')
+relationshipNames.push('transporter')
 relationshipNames.push('order')
 relationshipNames.push('store')
 
@@ -39,6 +40,7 @@ export class BillService {
     return await this.billRepository
       .createQueryBuilder('Bill')
       .leftJoinAndSelect('Bill.customer', 'customer')
+      .leftJoinAndSelect('Bill.transporter', 'transporter')
       .leftJoinAndSelect('Bill.store', 'store')
       .leftJoinAndSelect('Bill.order', 'order')
       .leftJoinAndSelect('order.orderDetails', 'orderDetails')

@@ -1,0 +1,24 @@
+{
+  "attpApp": {
+    "investicationUserAssociation": {
+      "home": {
+        "title": "Investication User Associations",
+        "createLabel": "Create a new Investication User Association",
+        "createOrEditLabel": "Create or edit a Investication User Association",
+        "notFound": "No Investication User Associations found"
+      },
+      "created": "A new Investication User Association is created with identifier {{ param }}",
+      "updated": "A Investication User Association is updated with identifier {{ param }}",
+      "deleted": "A Investication User Association is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Investication User Association {{ id }}?"
+      },
+      "detail": {
+        "title": "Investication User Association"
+      },
+      "role": "Role",
+      "investigation": "Investigation",
+      "user": "User"
+    }
+  }
+}

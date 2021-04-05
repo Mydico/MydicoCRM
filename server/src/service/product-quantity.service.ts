@@ -21,8 +21,9 @@ export class ProductQuantityService {
     return await this.productQuantityRepository.findOne(id, options);
   }
 
-  async findByfields(options: FindOneOptions<ProductQuantity>): Promise<ProductQuantity | undefined> {
-    return await this.productQuantityRepository.findOne(options);
+  async findByfields(options: FindOneOptions<ProductQuantity>): Promise<ProductQuantity[]> {
+    options.relations =  relationshipNames;
+    return await this.productQuantityRepository.find(options);
   }
 
   async findAndCount(pageRequest: PageRequest, req: Request): Promise<[ProductQuantity[], number]> {
@@ -36,6 +37,7 @@ export class ProductQuantityService {
     return await this.productQuantityRepository
       .createQueryBuilder('ProductQuantity')
       .leftJoinAndSelect('ProductQuantity.product', 'product')
+      .leftJoinAndSelect('ProductQuantity.store', 'store')
       .leftJoinAndSelect('product.productBrand', 'productBrand')
       .where(queryString)
       .orderBy('ProductQuantity.createdDate', 'DESC')
@@ -47,6 +49,10 @@ export class ProductQuantityService {
 
   async save(productQuantity: ProductQuantity): Promise<ProductQuantity | undefined> {
     return await this.productQuantityRepository.save(productQuantity);
+  }
+
+  async saveMany(productQuantities: ProductQuantity[]): Promise<ProductQuantity[] | undefined> {
+    return await this.productQuantityRepository.save(productQuantities);
   }
 
   async update(productQuantity: ProductQuantity): Promise<ProductQuantity | undefined> {

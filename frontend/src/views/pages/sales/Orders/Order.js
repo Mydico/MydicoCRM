@@ -428,7 +428,7 @@ const Order = props => {
                               <td>{item.product?.description}</td>
                               <td>{item.quantity}</td>
 
-                              <td>{item.product?.price}</td>
+                              <td>{item.product?.price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                               <td>{item.reducePercent}%</td>
                               <td>
                                 {(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
@@ -455,6 +455,12 @@ const Order = props => {
                       <CCol lg="4" sm="5" className="ml-auto">
                         <Table className="table-clear">
                           <tbody>
+                            <tr>
+                              <td className="left">
+                                <strong>Tổng số lượng</strong>
+                              </td>
+                              <td className="right">{item?.orderDetails.reduce((sum, current) => sum + current.quantity, 0) || ''}</td>
+                            </tr>
                             <tr>
                               <td className="left">
                                 <strong>Tổng tiền</strong>

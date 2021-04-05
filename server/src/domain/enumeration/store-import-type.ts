@@ -1,0 +1,7 @@
+export enum StoreImportType {
+  NEW = 'NEW',
+  RETURN = 'RETURN',
+  IMPORT_FROM_STORE = 'IMPORT_FROM_STORE',
+  EXPORT = 'EXPORT',
+  EXPORT_TO_PROVIDER = 'EXPORT_TO_PROVIDER'
+}

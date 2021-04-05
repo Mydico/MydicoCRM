@@ -1,5 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination, CModal, CModalHeader, CModalBody, CModalFooter, CModalTitle } from '@coreui/react';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  CCardBody,
+  CBadge,
+  CButton,
+  CCollapse,
+  CDataTable,
+  CCard,
+  CCardHeader,
+  CRow,
+  CCol,
+  CPagination,
+  CModal,
+  CModalHeader,
+  CModalBody,
+  CModalFooter,
+  CModalTitle,
+  CLabel
+} from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBill, updateBill } from './bill.api';
@@ -9,6 +26,10 @@ import { Table } from 'reactstrap';
 import { BillStatus } from './bill-status';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import Select from 'react-select';
+import { getUser } from '../../user/UserList/user.api';
+import { globalizedUserSelectors } from '../../user/UserList/user.reducer';
+
 const getBadge = status => {
   switch (status) {
     case 'ACTIVE':
@@ -33,20 +54,23 @@ const mappingStatus = {
   SUCCESS: 'GIAO THÀNH CÔNG'
 };
 const Bill = props => {
+  const selectedBill = useRef(null);
+  const selectedTransporter = useRef(null);
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.bill);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
-  const [modal, setModal] = useState(true)
+  const [modal, setModal] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(getBill());
     dispatch(reset());
+    dispatch(getUser());
   }, []);
   const { selectAll } = globalizedBillsSelectors;
+  const { selectAll: selectUserAll } = globalizedUserSelectors;
   const bills = useSelector(selectAll);
-
+  const users = useSelector(selectUserAll);
   useEffect(() => {
     dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
   }, [activePage]);
@@ -56,6 +80,7 @@ const Bill = props => {
       return {
         ...item,
         customerName: `${item.customer?.contactName} \n ${item.customer?.address}`,
+        transporter: `${item.transporter?.login || 'Chưa có'}`,
         tel: item.customer?.tel,
         quantity: item.order.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
         total: item.order.orderDetails
@@ -92,8 +117,9 @@ const Bill = props => {
     },
     { key: 'code', label: 'Mã vận đơn', _style: { width: '10%' } },
     { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
+    { key: 'transporter', label: 'Người vận chuyển', _style: { width: '10%' } },
     { key: 'tel', label: 'Số điện thoại', _style: { width: '10%' } },
-    { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' } },
+    { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '5%' } },
     { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
     { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
     { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
@@ -130,7 +156,9 @@ const Bill = props => {
   };
 
   const onFilterColumn = value => {
-    dispatch(getBill({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (value) {
+      dispatch(getBill({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    }
   };
 
   const toEditBill = typeId => {
@@ -140,6 +168,7 @@ const Bill = props => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       dispatch(getBill());
+      setModal(false);
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
@@ -160,8 +189,12 @@ const Bill = props => {
   };
 
   const shippingBill = bill => () => {
-    bill.status = BillStatus.SHIPPING;
-    dispatch(updateBill(bill));
+    dispatch(
+      updateBill({
+        id: bill.id,
+        status: BillStatus.SHIPPING
+      })
+    );
   };
 
   const successBill = bill => () => {
@@ -248,21 +281,6 @@ const Bill = props => {
     });
   };
 
-  const codAlert = item => {
-    confirmAlert({
-      title: 'Xác nhận',
-      message: 'Bạn có chắc chắn muốn tạo vận đơn cho vận đơn này?',
-      buttons: [
-        {
-          label: 'Đồng ý',
-          onClick: createCodBill(item)
-        },
-        {
-          label: 'Hủy'
-        }
-      ]
-    });
-  };
   const renderButtonStatus = item => {
     switch (item.status) {
       case BillStatus.CREATED:
@@ -298,7 +316,8 @@ const Bill = props => {
           <CRow>
             <CButton
               onClick={() => {
-                setModal(true)
+                setModal(true);
+                selectedBill.current = item;
                 // alertAction(item, supplyWaitingBill, 'Bạn có chắc chắn muốn gán vận đơn này?');
               }}
               color="primary"
@@ -371,6 +390,14 @@ const Bill = props => {
         );
       default:
         break;
+    }
+  };
+
+  const onSaveTransporter = () => {
+    if (selectedBill.current && selectedTransporter.current) {
+      selectedBill.current.transporter = selectedTransporter.current;
+      selectedBill.current.status = BillStatus.SUPPLY_WAITING;
+      dispatch(updateBill(selectedBill.current));
     }
   };
 
@@ -569,20 +596,28 @@ const Bill = props => {
       </CCardBody>
       <CModal show={modal} onClose={() => setModal(!modal)} size="lg">
         <CModalHeader closeButton>
-          <CModalTitle>Modal title</CModalTitle>
+          <CModalTitle>Chọn người vận chuyển</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-          enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-          in culpa qui officia deserunt mollit anim id est laborum.
+          <CLabel htmlFor="userName">Người vận chuyển</CLabel>
+          <Select
+            name="department"
+            onChange={e => {
+              selectedTransporter.current = e.value;
+            }}
+            placeholder="Chọn người vận chuyển"
+            options={users.map(item => ({
+              value: item,
+              label: `${item.login}-${item.firstName}-${item.lastName}-${item.phone}`
+            }))}
+          />
         </CModalBody>
         <CModalFooter>
-          <CButton color="primary" onClick={() => setModal(!modal)}>
-            Do Something
+          <CButton color="primary" onClick={onSaveTransporter}>
+            Lưu lại
           </CButton>{' '}
           <CButton color="secondary" onClick={() => setModal(!modal)}>
-            Cancel
+            Hủy
           </CButton>
         </CModalFooter>
       </CModal>

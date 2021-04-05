@@ -7,6 +7,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import { In, Like } from 'typeorm';
 
 @Controller('api/stores')
 @UseGuards(AuthGuard, RolesGuard)
@@ -27,11 +28,19 @@ export class StoreController {
   })
   async getAll(@Req() req: Request): Promise<Store[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const [results, count] = await this.storeService.findAndCount({
+    const filter = {};
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+        filter[item] = Like(`%${req.query[item]}%`);
+      }
+    });
+    const options = {
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
-      order: pageRequest.sort.asOrder()
-    });
+      order: pageRequest.sort.asOrder(),
+      ...filter
+    };
+    const [results, count] = await this.storeService.findAndCount(options, req);
     HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
     return results;
   }

@@ -1,0 +1,13 @@
+{
+  "attpApp": {
+    "NewsStatus": {
+      "": "",
+      "PENDING": "PENDING",
+      "APPROVED": "APPROVED",
+      "REJECTED": "REJECTED",
+      "CREATED": "CREATED",
+      "PUBLIC": "PUBLIC",
+      "DELETED": "DELETED"
+    }
+  }
+}

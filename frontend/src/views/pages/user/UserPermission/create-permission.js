@@ -106,20 +106,19 @@ const CreatePermissionGroups = () => {
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
     let arrPermission = [];
-    try{
-    selectedPermission.forEach(selectPer => {
-      if (selectPer.permissions) {
-        arrPermission = arrPermission.concat(selectPer.permissions);
-      }
-    });
-    if (arrPermission.length === 0) return;
-    if (selectedPermission.map(permission => permission.permissions).reduce((prev, current) => [...prev, ...current], []).length === 0)
-      return;
-    values.permissions = arrPermission;
-  }catch(e) {
-    console.log(e)
-
-  }
+    try {
+      selectedPermission.forEach(selectPer => {
+        if (selectPer.permissions) {
+          arrPermission = arrPermission.concat(selectPer.permissions);
+        }
+      });
+      if (arrPermission.length === 0) return;
+      if (selectedPermission.map(permission => permission.permissions).reduce((prev, current) => [...prev, ...current], []).length === 0)
+        return;
+      values.permissions = arrPermission;
+    } catch (e) {
+      console.log(e);
+    }
     dispatch(fetching());
     dispatch(creatingPermissionGroups(values));
     resetForm();
@@ -179,8 +178,8 @@ const CreatePermissionGroups = () => {
 
         setSelectedPermission([...selectedPermission, selectedPermissionObj]);
       }
-    }else if (values && Array.isArray(values) && values.length == 0){
-      setSelectedPermission(values);
+    } else if (values && Array.isArray(values) && values.length == 0) {
+      setSelectedPermission([...selectedPermission, values]);
     } else {
       const arr = [...selectedPermission];
       const findEmpty = arr.findIndex(item => item.permissions.length === 0);

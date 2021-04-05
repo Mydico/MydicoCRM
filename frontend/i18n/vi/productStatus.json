@@ -1,0 +1,12 @@
+{
+  "attpApp": {
+    "ProductStatus": {
+      "CREATED": "Mới tạo",
+      "WAITING": "Chờ công bố",
+      "REJECT": "Không công bố",
+      "PUBLIC": "Đã cấp phép ATTP",
+      "DELETED": "Đã xóa",
+      "WQC": "Chờ công bố"
+    }
+  }
+}

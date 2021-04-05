@@ -143,6 +143,7 @@ const EditUser = props => {
   }, [initialState.updatingSuccess]);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+    values = JSON.parse(JSON.stringify(values))
     values.roles = selectedRoles;
     values.departments = selectedDepartment;
     values.permissionGroups = selectedGroupPermission;

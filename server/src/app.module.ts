@@ -63,6 +63,8 @@ import { PermissionTypeModule } from './module/permission-type.module';
 import { PermissionGroupModule } from './module/permission-group.module';
 import { PermissionGroupHistoryModule } from './module/permission-group-history.module';
 import { PermissionGroupAssociateModule } from './module/permission-group-associate.module';
+import { StoreHistoryModule } from './module/store-history.module';
+import { ProviderModule } from './module/provider.module';
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
 // jhipster-needle-add-service-module-to-main-import - JHipster will import service modules here, do not remove
@@ -130,7 +132,9 @@ import { PermissionGroupAssociateModule } from './module/permission-group-associ
     PermissionTypeModule,
     PermissionGroupModule,
     PermissionGroupHistoryModule,
-    PermissionGroupAssociateModule
+    PermissionGroupAssociateModule,
+    StoreHistoryModule,
+    ProviderModule
     // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
   ],
   controllers: [

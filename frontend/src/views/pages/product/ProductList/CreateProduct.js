@@ -29,7 +29,6 @@ import { globalizedproductGroupsSelectors } from '../ProductGroup/product-group.
 import { ProductStatus, UnitType } from './contants';
 import 'react-dropzone-uploader/dist/styles.css';
 import Dropzone from 'react-dropzone-uploader';
-import Thumb from './Thumb';
 import './styles.css';
 const validationSchema = function(values) {
   return Yup.object().shape({

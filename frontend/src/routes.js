@@ -46,9 +46,26 @@ const Warehouse = React.lazy(() => import('./views/pages/warehouse/Warehouse/War
 const CreateWarehouse = React.lazy(() => import('./views/pages/warehouse/Warehouse/CreateWarehouse'));
 const EditWarehouse = React.lazy(() => import('./views/pages/warehouse/Warehouse/EditWarehouse'));
 
+const Provider = React.lazy(() => import('./views/pages/warehouse/Provider/provider'));
+const CreateProvider = React.lazy(() => import('./views/pages/warehouse/Provider/create-provider'));
+const EditProvider = React.lazy(() => import('./views/pages/warehouse/Provider/edit-provider'));
+
+const WarehouseImport = React.lazy(() => import('./views/pages/warehouse/Import/warehouse-import'));
+const CreateWarehouseImport = React.lazy(() => import('./views/pages/warehouse/Import/create-warehouse-import'));
+const CreateWarehouseReturn = React.lazy(() => import('./views/pages/warehouse/Import/create-warehouse-return'));
+const EditWarehouseImport = React.lazy(() => import('./views/pages/warehouse/Import/edit-warehouse-import'));
+const EditWarehouseReturn = React.lazy(() => import('./views/pages/warehouse/Import/edit-warehouse-return'));
+
+const WarehouseExport = React.lazy(() => import('./views/pages/warehouse/Export/warehouse-export'));
+const CreateWarehouseExport = React.lazy(() => import('./views/pages/warehouse/Export/create-warehouse-export'));
+const EditWarehouseExport = React.lazy(() => import('./views/pages/warehouse/Export/edit-warehouse-export'));
+const CreateWarehouseExportProvider = React.lazy(() => import('./views/pages/warehouse/Export/create-warehouse-export-provider'));
+const EditWarehouseExportProvider = React.lazy(() => import('./views/pages/warehouse/Export/edit-warehouse-export-provider'));
+
+const StoreHistory = React.lazy(() => import('./views/pages/warehouse/History/warehouse-history'));
+
 const ProductWarehouse = React.lazy(() => import('./views/pages/warehouse/Product/ProductWarehouse'));
-const CreateProductWarehouse = React.lazy(() => import('./views/pages/warehouse/Product/CreateProductWarehouse'));
-const EditProductWarehouse = React.lazy(() => import('./views/pages/warehouse/Product/EditProductWarehouse'));
+
 
 const User = React.lazy(() => import('./views/pages/user/UserList/user'));
 const CreateUser = React.lazy(() => import('./views/pages/user/UserList/create-user'));
@@ -104,9 +121,23 @@ const routes = [
   { path: '/order/:id/edit/', name: 'Chỉnh sửa Đơn hàng', component: EditOrder },
   { path: '/order/new/invoice/', name: 'Xác nhận', component: OrderInvoice },
   { path: '/order/new/', name: 'Thêm mới Đơn hàng', component: CreateOrder },
+  { path: '/provider/', name: 'Nhà cung cấp', component: Provider, exact: true },
+  { path: '/provider/new/', name: 'Tạo mới Nhà cung cấp', component: CreateProvider },
+  { path: '/provider/:id/edit/', name: 'Chỉnh sửa Nhà cung cấp', component: EditProvider },
   { path: '/warehouse/', name: 'Kho hàng', component: Warehouse, exact: true },
+  { path: '/warehouse/histories/', name: 'Lịch sử xuất nhập kho', component: StoreHistory, exact: true },
   { path: '/warehouse/:id/edit/', name: 'Chỉnh sửa kho hàng', component: EditWarehouse },
   { path: '/warehouse/new/', name: 'Thêm mới kho hàng', component: CreateWarehouse },
+  { path: '/warehouse/export', name: 'Phiếu xuất kho', component: WarehouseExport, exact: true },
+  { path: '/warehouse/export/:id/edit/', name: 'Chỉnh sửa phiếu xuất kho', component: EditWarehouseExport },
+  { path: '/warehouse/export/new/', name: 'Thêm mới phiếu xuất kho', component: CreateWarehouseExport },
+  { path: '/warehouse/export/provider/:id/edit', name: 'Chỉnh sửa phiếu xuất kho cho nhà cung cấp', component: EditWarehouseExportProvider },
+  { path: '/warehouse/export/provider/new', name: 'Thêm mới phiếu xuất kho cho nhà cung cấp', component: CreateWarehouseExportProvider },
+  { path: '/warehouse/import', name: 'Phiếu nhập kho', component: WarehouseImport, exact: true },
+  { path: '/warehouse/import/:id/edit/', name: 'Chỉnh sửa phiếu nhập kho', component: EditWarehouseImport },
+  { path: '/warehouse/import/new/', name: 'Thêm mới phiếu nhập kho', component: CreateWarehouseImport },
+  { path: '/warehouse/import/return/:id/edit/', name: 'Chỉnh sửa phiếu trả hàng', component: EditWarehouseReturn },
+  { path: '/warehouse/import/return/new/', name: 'Thêm mới phiếu trả hàng', component: CreateWarehouseReturn },
   { path: '/inwarehouse/', name: 'Sản phẩm trong kho', component: ProductWarehouse, exact: true },
   { path: '/user/', name: 'Người dùng', component: User, exact: true },
   { path: '/user/:id/edit', name: 'Chỉnh sửa', component: EditUser },

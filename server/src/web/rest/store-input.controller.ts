@@ -7,6 +7,9 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import { User } from '../../domain/user.entity';
+import { StoreImportStatus } from '../../domain/enumeration/store-import-status';
+import { Like } from 'typeorm';
 
 @Controller('api/store-inputs')
 @UseGuards(AuthGuard, RolesGuard)
@@ -18,6 +21,31 @@ export class StoreInputController {
 
   constructor(private readonly storeInputService: StoreInputService) {}
 
+  @Get('/export')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: StoreInput
+  })
+  async getAllExport(@Req() req: Request): Promise<StoreInput[]> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter = {};
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+        filter[item] = Like(`%${req.query[item]}%`);
+      }
+    });
+    const [results, count] = await this.storeInputService.findAndCountExport({
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+      ...filter
+    });
+    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+    return results;
+  }
+
   @Get('/')
   @Roles(RoleType.USER)
   @ApiResponse({
@@ -27,10 +55,17 @@ export class StoreInputController {
   })
   async getAll(@Req() req: Request): Promise<StoreInput[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter = {};
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+        filter[item] = Like(`%${req.query[item]}%`);
+      }
+    });
     const [results, count] = await this.storeInputService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
-      order: pageRequest.sort.asOrder()
+      order: pageRequest.sort.asOrder(),
+      ...filter
     });
     HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
     return results;
@@ -57,6 +92,8 @@ export class StoreInputController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async post(@Req() req: Request, @Body() storeInput: StoreInput): Promise<StoreInput> {
+    let currentUser = req.user as User;
+    storeInput.createdBy = currentUser.login;
     const created = await this.storeInputService.save(storeInput);
     HeaderUtil.addEntityCreatedHeaders(req.res, 'StoreInput', created.id);
     return created;
@@ -72,6 +109,10 @@ export class StoreInputController {
   })
   async put(@Req() req: Request, @Body() storeInput: StoreInput): Promise<StoreInput> {
     HeaderUtil.addEntityCreatedHeaders(req.res, 'StoreInput', storeInput.id);
+    if(storeInput.status === StoreImportStatus.APPROVED){
+      let currentUser = req.user as User;
+      storeInput.approver = currentUser;
+    }
     return await this.storeInputService.update(storeInput);
   }
 

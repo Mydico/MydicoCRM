@@ -1,0 +1,10 @@
+{
+  "attpApp": {
+    "InvestigationStatus": {
+      "null": "",
+      "NEW": "NEW",
+      "APPROVE": "APPROVE",
+      "REJECT": "REJECT"
+    }
+  }
+}

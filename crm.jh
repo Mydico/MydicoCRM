@@ -514,10 +514,6 @@ entity Store {
 	siteId Integer
 }
 entity StoreInput {
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
 	isDel Boolean,
 	summary String maxlength(255),
 	/** Kiểu nhập kho : 0 - Nhập mới, 1 - Nhập trả  */
@@ -529,6 +525,26 @@ entity StoreInput {
 	totalMoney Integer,
 	note String maxlength(255),
 	siteId Integer
+}
+
+entity StoreHistory {
+	quantity Integer
+	note String
+}
+
+entity Provider {
+	name String
+	address String
+	phone String
+}
+relationship ManyToOne {
+	StoreHistory{product} to Product
+	StoreHistory{store} to Store
+	Provider{storeInput} to StoreInput
+}
+relationship ManyToOne {
+	StoreHistory{product} to Product
+	StoreHistory{store} to Store
 }
 entity StoreInputDetails {
 	quantity Integer,

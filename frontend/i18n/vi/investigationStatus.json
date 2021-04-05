@@ -1,0 +1,14 @@
+{
+  "attpApp": {
+    "InvestigationStatus": {
+      "null": "",
+      "NEW": "Mới tạo",
+      "APPROVE": "Chấp thuận",
+      "REJECT": "Từ chối",
+      "ACTIVE": "Đang hoạt động",
+      "PROCESSING": "Đang xử lý",
+      "FINISHED": "Đã có kết luận",
+      "DELETED": "Đã xóa"
+    }
+  }
+}

@@ -12,7 +12,7 @@ import {
   CInput,
   CRow,
   CSelect,
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -25,15 +25,18 @@ import { current } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseSelectors } from './warehouse.reducer';
 import { WarehouseStatus, UnitType } from './contants';
-import { currencyFormat } from '../../../../shared/utils/normalize';
+import Select from 'react-select';
 import { getCity, getDistrict, getWard } from '../../customer/customer.api';
+import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
+import { getDepartment } from '../../user/UserDepartment/department.api';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
-    city: Yup.string().nullable(true).required('Thành phố không để trống'),
-    district: Yup.string().nullable(true).required('Quận huyện không để trống'),
-    ward: Yup.string().nullable(true).required('Phường xã không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
+    department: Yup.object()
+      .required('Thành phố không để trống'),
   });
 };
 
@@ -52,7 +55,7 @@ const validate = getValidationSchema => {
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
 
 const getErrorsFromValidationError = validationError => {
@@ -60,7 +63,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -81,19 +84,21 @@ const validateForm = errors => {
   });
 };
 
-const EditWarehouse = (props) => {
+const EditWarehouse = props => {
   const { initialState } = useSelector(state => state.warehouse);
   const { initialState: customerInitialState } = useSelector(state => state.customer);
+  const { selectAll } = globalizedDepartmentSelectors;
 
   const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
+  const departments = useSelector(selectAll);
 
   const initialValues = useRef({
     code: '',
     name: '',
     address: '',
-    tel: '',
+    tel: ''
   });
   const [selectedCity, setSelectedCity] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
@@ -101,7 +106,9 @@ const EditWarehouse = (props) => {
   const warehouse = useSelector(state => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    dispatch(getDepartment());
+  }, []);
 
   useEffect(() => {
     setInitValues(warehouse);
@@ -173,7 +180,7 @@ const EditWarehouse = (props) => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -233,104 +240,23 @@ const EditWarehouse = (props) => {
                     />
                     <CInvalidFeedback>{errors.address}</CInvalidFeedback>
                   </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="password">Đơn vị vận chuyển</CLabel>
-                    <CSelect custom name="transport" id="transport">
-                      {/* <option key={0} value={null}>
-                        Chọn tỉnh thành
-                      </option>
-                      {customerInitialState.cities.map(item => (
-                        <option key={item.id} value={item.code}>
-                          {item.name}
-                        </option>
-                      ))} */}
-                    </CSelect>
-                    <CInvalidFeedback className="d-block">{errors.transport}</CInvalidFeedback>
-                  </CFormGroup>
                 </CCol>
                 <CCol lg="6">
                   <CFormGroup>
-                    <CLabel htmlFor="password">Tỉnh thành</CLabel>
-                    <CSelect
-                      custom
-                      name="city"
-                      id="city"
-                      value={values.city?.id}
-                      onChange={e => {
-                        const founded = customerInitialState.cities.filter(item => item.code === e.target.value);
-                        if (founded.length > 0) {
-                          setFieldValue('city', founded[0].id);
-                          setSelectedCity(e.target.value);
-                        }
+                    <CLabel htmlFor="password">Chọn chi nhánh</CLabel>
+                    <Select
+                      name="department"
+                      onChange={item => {
+                        setFieldValue('department', item.value);
                       }}
-                    >
-                      <option key={0} value={null}>
-                        Chọn tỉnh thành
-                      </option>
-                      {customerInitialState.cities.map(item => (
-                        <option key={item.id} value={item.code}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </CSelect>
-                    <CInvalidFeedback className="d-block">{errors.city}</CInvalidFeedback>
+                      placeholder="Chọn chi nhánh"
+                      options={departments.map(item => ({
+                        value: item,
+                        label: `${item.name}`
+                      }))}
+                    />
+                    <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
                   </CFormGroup>
-
-                  <CRow>
-                    <CCol md={6}>
-                      <CFormGroup>
-                        <CLabel htmlFor="password">Quận huyện</CLabel>
-                        <CSelect
-                          custom
-                          name="district"
-                          id="district"
-                          value={values.district?.id}
-                          onChange={e => {
-                            const founded = customerInitialState.districts.filter(item => item.code === e.target.value);
-                            if (founded.length > 0) {
-                              setFieldValue('district', founded[0].id);
-                              setSelectedDistrict(e.target.value);
-                            }
-                          }}
-                        >
-                          <option key={0} value={null}>
-                            Chọn Quận huyện
-                          </option>
-                          {customerInitialState.districts.map(item => (
-                            <option key={item.id} value={item.code}>
-                              {item.name}
-                            </option>
-                          ))}
-                        </CSelect>
-                        <CInvalidFeedback className="d-block">{errors.district}</CInvalidFeedback>
-                      </CFormGroup>
-                    </CCol>
-                    <CCol md={6}>
-                      <CFormGroup>
-                        <CLabel htmlFor="password">Xã phường</CLabel>
-                        <CSelect
-                          custom
-                          name="ward"
-                          id="ward"
-                          value={values.ward?.id}
-                          onChange={e => {
-                            const founded = customerInitialState.wards.filter(item => item.code === e.target.value);
-                            if (founded.length > 0) setFieldValue('ward', founded[0].id);
-                          }}
-                        >
-                          <option key={0} value={null}>
-                            Chọn Xã phường
-                          </option>
-                          {customerInitialState.wards.map(item => (
-                            <option key={item.id} value={item.code}>
-                              {item.name}
-                            </option>
-                          ))}
-                        </CSelect>
-                        <CInvalidFeedback className="d-block">{errors.ward}</CInvalidFeedback>
-                      </CFormGroup>
-                    </CCol>
-                  </CRow>
                   <CFormGroup>
                     <CLabel htmlFor="userName">Số điện thoại</CLabel>
                     <CInput

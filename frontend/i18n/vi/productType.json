@@ -1,0 +1,23 @@
+{
+  "attpApp": {
+    "productType": {
+      "home": {
+        "title": "Quản lý Loại sản phẩm",
+        "createLabel": "Thêm mới một Product Type",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Product Type",
+        "notFound": "No Product Types found"
+      },
+      "created": "Một Product Type mới được tạo với định danh {{ param }}",
+      "updated": "Một Product Type cập nhật với định danh {{ param }}",
+      "deleted": "Một Product Type đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Product Type {{ id }}?"
+      },
+      "detail": {
+        "title": "Product Type"
+      },
+      "name": "Name",
+      "description": "Description"
+    }
+  }
+}

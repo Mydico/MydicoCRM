@@ -1,0 +1,24 @@
+{
+  "attpApp": {
+    "permission": {
+      "home": {
+        "title": "Permissions",
+        "createLabel": "Thêm mới một Permission",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Permission",
+        "notFound": "No Permissions found"
+      },
+      "created": "Một Permission mới được tạo với định danh {{ param }}",
+      "updated": "Một Permission cập nhật với định danh {{ param }}",
+      "deleted": "Một Permission đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Permission {{ id }}?"
+      },
+      "detail": {
+        "title": "Permission"
+      },
+      "description": "Description",
+      "action": "Action",
+      "resource": "Resource"
+    }
+  }
+}

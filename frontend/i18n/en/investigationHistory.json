@@ -1,0 +1,24 @@
+{
+  "attpApp": {
+    "investigationHistory": {
+      "home": {
+        "title": "Investigation Histories",
+        "createLabel": "Create a new Investigation History",
+        "createOrEditLabel": "Create or edit a Investigation History",
+        "notFound": "No Investigation Histories found"
+      },
+      "created": "A new Investigation History is created with identifier {{ param }}",
+      "updated": "A Investigation History is updated with identifier {{ param }}",
+      "deleted": "A Investigation History is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Investigation History {{ id }}?"
+      },
+      "detail": {
+        "title": "Investigation History"
+      },
+      "description": "Description",
+      "creator": "Creator",
+      "investId": "Invest Id"
+    }
+  }
+}

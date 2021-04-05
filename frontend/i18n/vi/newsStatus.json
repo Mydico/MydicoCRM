@@ -1,0 +1,13 @@
+{
+  "attpApp": {
+    "NewsStatus": {
+      "": "",
+      "PENDING": "Chờ duyệt",
+      "APPROVED": "Đã duyệt",
+      "REJECTED": "Không duyệt",
+      "CREATED": "Mới tạo",
+      "PUBLIC": "Đang hiển thị",
+      "DELETED": "Đã xóa"
+    }
+  }
+}

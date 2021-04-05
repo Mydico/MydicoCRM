@@ -1,0 +1,82 @@
+{
+  "attpApp": {
+    "investigation": {
+      "home": {
+        "title": "Investigations",
+        "createLabel": "Create new",
+        "createOrEditLabel": "Create or edit a Investigation",
+        "notFound": "No Investigations found",
+        "total": "Total",
+        "search": "Search",
+        "filter": "Filter"
+      },
+      "created": "A new Investigation is created with identifier {{ param }}",
+      "updated": "A Investigation is updated with identifier {{ param }}",
+      "deleted": "A Investigation is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Investigation {{ id }}?"
+      },
+      "detail": {
+        "title": "Investigation",
+        "newTitle": "Create new investigation",
+        "code": "Investigation code",
+        "listPremises": "List of investigated premises",
+        "premises": "Premises",
+        "address": "Address",
+        "listMembers": "List of investigating members",
+        "unit": "Unit",
+        "selectFileDoc": "Select file or document",
+        "selectFile": "Select file",
+        "notice": "Image and document files are allowed",
+        "closeButton": "Close",
+        "confirmButton": "Confirm",
+        "allow": "Reporting images and documents are allowed",
+        "here": "Here",
+        "fileName": "File name",
+        "fileSize": "File size",
+        "fileTime": "Time must be converted to dd/mm/yy/hhmm format",
+        "comment": "Investigating results and comments",
+        "document": "Documents",
+        "updateTitle": "Update investigating results",
+        "investigationHistory": "Investigation history",
+        "investigationInfo": "Investigation information",
+        "contentInvestigation": "Investigation content",
+        "handlingLog": "Handling logs",
+        "changesHistory": "Changes",
+        "personInCharge": "Person In Charge",
+        "content": "Content",
+        "namePosition": "Name - Position",
+        "noInfo": "No Data Avaiable",
+        "pickPremises": "Choose premises to investigate",
+        "search": "Search by Type, Investigation Unit, Facility Type, Code, Investigation name, Investigated Premises",
+        "startingTime": "Starting time",
+        "finishingTime": "Finishing time",
+        "pickMembers": "Choose investigating members",
+        "name": "Name",
+        "position": "Position",
+        "role": "Role",
+        "searchMembers": {
+          "search": "Search investigating members"
+        },
+        "warningPopupMembers": "You need to choose at least one member to proceed",
+        "warningPopupPremises": "You need to choose at least one premises to proceed"
+      },
+      "phone": "Phone",
+      "type": "Type",
+      "code": "Code",
+      "name": "Name",
+      "description": "Description",
+      "status": "Status",
+      "resultDescription": "Result Description",
+      "results": "Results",
+      "approver": "Approver",
+      "file": "File",
+      "action": "Action",
+      "index": "No.",
+      "investigated": "Investigated Premises",
+      "time": "Time",
+      "period": "(Start-Finish)",
+      "SCHEDULE": "Schedule"
+    }
+  }
+}

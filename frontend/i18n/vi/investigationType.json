@@ -1,0 +1,9 @@
+{
+  "attpApp": {
+    "InvestigationType": {
+      "null": "",
+      "IMMEDIATE": "Đột xuất",
+      "SCHEDULE": "Định kỳ"
+    }
+  }
+}

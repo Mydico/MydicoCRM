@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Post as PostMethod,
+  Put,
+  UseGuards,
+  Req,
+  UseInterceptors,
+  HttpException,
+  HttpStatus
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import Order from '../../domain/order.entity';
@@ -56,8 +70,8 @@ export class OrderController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async post(@Req() req: Request, @Body() order: Order): Promise<Order> {
-    const currentUser = req.user as User
-    order.createdBy = currentUser.login
+    const currentUser = req.user as User;
+    order.createdBy = currentUser.login;
     const created = await this.orderService.save(order);
     HeaderUtil.addEntityCreatedHeaders(req.res, 'Order', created.id);
     return created;
@@ -73,8 +87,12 @@ export class OrderController {
   })
   async put(@Req() req: Request, @Body() order: Order): Promise<Order> {
     HeaderUtil.addEntityCreatedHeaders(req.res, 'Order', order.id);
-    const currentUser = req.user as User
-    order.lastModifiedBy = currentUser.login
+    const currentUser = req.user as User;
+    order.lastModifiedBy = currentUser.login;
+    const canExport = await this.orderService.canExportStore(order);
+    if(!canExport){
+      throw new HttpException('Sản phẩm trong kho không đủ để tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
     return await this.orderService.update(order);
   }
 

@@ -1,0 +1,18 @@
+{
+  "home": {
+    "title": "Welcome, ATTP Management System",
+    "subtitle": "This is your homepage",
+    "logged": {
+      "message": "You are logged in as user \"{{username}}\"."
+    },
+    "question": "If you have any question",
+    "link": {
+      "homepage": "Solidtech homepage",
+      "stackoverflow": "Solidtech on Stack Overflow",
+      "bugtracker": "NHipster bug tracker",
+      "chat": "NHipster public chat room"
+    },
+    "like": "If you like Solidtech, don't forget to give us a star on",
+    "github": "GitHub"
+  }
+}

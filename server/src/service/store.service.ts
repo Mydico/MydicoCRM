@@ -1,13 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
+import { FindManyOptions, FindOneOptions, In } from 'typeorm';
 import Store from '../domain/store.entity';
 import { StoreRepository } from '../repository/store.repository';
+import { Request } from 'express';
 
 const relationshipNames = [];
-relationshipNames.push('city');
-relationshipNames.push('district');
-relationshipNames.push('ward');
+relationshipNames.push('department');
 
 @Injectable()
 export class StoreService {
@@ -24,8 +23,11 @@ export class StoreService {
     return await this.storeRepository.findOne(options);
   }
 
-  async findAndCount(options: FindManyOptions<Store>): Promise<[Store[], number]> {
+  async findAndCount(options: FindManyOptions<Store>, req: Request): Promise<[Store[], number]> {
     options.relations = relationshipNames;
+    if (req.query.department) {
+      options.where = { department: In(JSON.parse(req.query.department)) };
+    }
     return await this.storeRepository.findAndCount(options);
   }
 

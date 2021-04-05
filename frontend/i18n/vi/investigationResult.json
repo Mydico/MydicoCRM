@@ -1,0 +1,25 @@
+{
+  "attpApp": {
+    "investigationResult": {
+      "home": {
+        "title": "Investigation Results",
+        "createLabel": "Thêm mới một Investigation Result",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Investigation Result",
+        "notFound": "No Investigation Results found"
+      },
+      "created": "Một Investigation Result mới được tạo với định danh {{ param }}",
+      "updated": "Một Investigation Result cập nhật với định danh {{ param }}",
+      "deleted": "Một Investigation Result đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Investigation Result {{ id }}?"
+      },
+      "detail": {
+        "title": "Investigation Result"
+      },
+      "result": "Result",
+      "status": "Status",
+      "file": "File",
+      "investigation": "Investigation"
+    }
+  }
+}

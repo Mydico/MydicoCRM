@@ -14,7 +14,7 @@ export default class ProductQuantity extends BaseEntity {
   quantity: number;
 
   @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
+  isDel?: boolean;
 
   @ManyToOne(type => Store)
   store: Store;

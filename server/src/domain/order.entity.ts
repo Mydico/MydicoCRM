@@ -76,7 +76,7 @@ export default class Order extends BaseEntity {
   promotion?: Promotion;
 
   @OneToMany(type => OrderDetails, orderDetails => orderDetails.order, { cascade: true })
-  orderDetails?: OrderDetails;
+  orderDetails?: OrderDetails[];
 
   @OneToMany(type => Bill, bill => bill.order)
   bill?: Bill;

@@ -1,0 +1,64 @@
+{
+  "attpApp": {
+    "news": {
+      "home": {
+        "title": "Quản lý tin tức",
+        "total": "Tổng",
+        "filter": "Lọc",
+        "action": "Thao tác",
+        "search": "Tìm kiếm",
+        "createLabel": "Thêm mới",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật News",
+        "editLabel": "Sửa nội dung tin tức",
+        "notFound": "No News found"
+      },
+      "btn": {
+        "edit": "Sửa tin tức",
+        "withdraw": "Thu hồi gửi duyệt",
+        "approve": "Duyệt tin tức",
+        "public": "Đăng tin tức",
+        "history": "Xem lịch sử",
+        "update": "Cập nhật nội dung",
+        "cancel": "Hủy"
+      },
+      "dialog": {
+        "withdraw": "Thu hồi thao tác Gửi duyệt nội dung Tin tức",
+        "approve": "Duyệt nội dung tin tức",
+        "update": "Cập nhật nội dung tin tức",
+        "accept": "Đồng ý",
+        "reject": "Từ chối",
+        "reason": "Lý do từ chối",
+        "btn": {
+          "withdraw": "Thu hồi",
+          "approve": "Gửi",
+          "update": "Ghi lại"
+        }
+      },
+      "created": "Một News mới được tạo với định danh {{ param }}",
+      "updated": "Một News cập nhật với định danh {{ param }}",
+      "deleted": "Một News đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa News {{ id }}?"
+      },
+      "detail": {
+        "title": "News"
+      },
+      "history": {
+        "title": "Lịch sử Tin tức",
+        "time": "Thời gian",
+        "modifier": "Người thực hiện",
+        "content": "Nội dung"
+      },
+      "newsType": "Loại tin tức",
+      "title": "Tiêu đề",
+      "content": "Nội dung",
+      "shortContent": "Nội dung tóm tắt",
+      "url": "Url",
+      "status": "Trạng thái",
+      "isNews": "Đánh dấu tin hot",
+      "creator": "Người tạo",
+      "approver": "Người duyệt",
+      "lastModifiedDate": "Ngày cập nhật"
+    }
+  }
+}

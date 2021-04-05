@@ -1,0 +1,25 @@
+{
+  "attpApp": {
+    "license": {
+      "home": {
+        "title": "Licenses",
+        "createLabel": "Thêm mới một License",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật License",
+        "notFound": "No Licenses found"
+      },
+      "created": "Một License mới được tạo với định danh {{ param }}",
+      "updated": "Một License cập nhật với định danh {{ param }}",
+      "deleted": "Một License đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa License {{ id }}?"
+      },
+      "detail": {
+        "title": "License"
+      },
+      "number": "Number",
+      "issueInstant": "Issue Instant",
+      "expireInstant": "Expire Instant",
+      "fileUrl": "File Url"
+    }
+  }
+}

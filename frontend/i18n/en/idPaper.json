@@ -1,0 +1,27 @@
+{
+  "attpApp": {
+    "idPaper": {
+      "home": {
+        "title": "Id Papers",
+        "createLabel": "Create a new Id Paper",
+        "createOrEditLabel": "Create or edit a Id Paper",
+        "notFound": "No Id Papers found"
+      },
+      "created": "A new Id Paper is created with identifier {{ param }}",
+      "updated": "A Id Paper is updated with identifier {{ param }}",
+      "deleted": "A Id Paper is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Id Paper {{ id }}?"
+      },
+      "detail": {
+        "title": "Id Paper"
+      },
+      "number": "Number",
+      "issueInstant": "Issue Instant",
+      "issueAddress": "Issue Address",
+      "phone": "Phone",
+      "fax": "Fax",
+      "type": "Type"
+    }
+  }
+}

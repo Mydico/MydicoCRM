@@ -1,0 +1,14 @@
+{
+  "attpApp": {
+    "FacilityTypeStatus": {
+      "null": "",
+      "ENABLE": "ĐANG HOẠT ĐỘNG",
+      "DISABLE": "KHÔNG HOẠT ĐỘNG",
+      "CREATED": "MỚI TẠO",
+      "WAITING": "CHỜ DUYỆT",
+      "APPROVED": "ĐÃ DUYỆT",
+      "REJECTED": "TỪ CHỐI",
+      "DELETED": "ĐÃ XÓA"
+    }
+  }
+}

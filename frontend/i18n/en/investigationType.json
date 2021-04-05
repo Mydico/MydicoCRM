@@ -1,0 +1,9 @@
+{
+  "attpApp": {
+    "InvestigationType": {
+      "null": "",
+      "IMMEDIATE": "IMMEDIATE",
+      "SCHEDULE": "SCHEDULE"
+    }
+  }
+}

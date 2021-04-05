@@ -1,0 +1,116 @@
+{
+  "attpApp": {
+    "facility": {
+      "home": {
+        "title": "Quản lý Cơ sở",
+        "createLabel": "Thêm mới",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Cơ sở",
+        "notFound": "Không tìm thấy Cơ sở"
+      },
+      "created": "Một Cơ sở mới được tạo với định danh {{ param }}",
+      "updated": "Một Cơ sở cập nhật với định danh {{ param }}",
+      "deleted": "Một Cơ sở đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Cơ sở {{ id }}?"
+      },
+      "detail": {
+        "title": "Xem chi tiết Cơ sở"
+      },
+      "name": "Tên Cơ sở",
+      "aliasName": "Tên Cơ sở viết tắt",
+      "engName": "Tên Tiếng Anh",
+      "taxNumber": "Mã số thuế",
+      "address": "Địa chỉ",
+      "addressCoor": "Địa chỉ",
+      "lic": "Thông tin cấp phép ATTP",
+      "idPaper": "Giấy tờ chứng thực cá nhân",
+      "owner": "Người đại diện",
+      "type": "Loại cơ sở",
+      "phone": "Số điện thoại",
+      "createdBy": "Người thực hiện",
+      "state": "Tình trạng",
+      "status": "Trạng thái",
+      "action": "Thao tác",
+      "createdAt": "Ngày tạo",
+      "licDetail": {
+        "number": "Số cấp GCN/GP",
+        "date": "Ngày cấp GCN/GP đủ điều kiện",
+        "approver": "Người duyệt",
+        "profile": "Hồ sơ"
+      },
+      "states": {
+        "ACTIVE": "Đang hoạt động",
+        "INACTIVE": "Không hoạt động"
+      },
+      "placeHolder": {
+        "facilityType": "Chọn Loại cơ sở",
+        "name": "Nhập tên Cơ sở...",
+        "aliasName": "Nhập tên Cơ sở viêt tắt...",
+        "engName": "Nhập tên Tiếng Anh...",
+        "taxNumber": "Nhập mã số thuế...",
+        "address": "Nhập địa chỉ hoặc chọn...",
+        "addressCoor": "Địa chỉ...",
+        "idPaper": "Giấy tờ chứng thực cá nhân",
+        "owner": "Nhập tên người đại diện...",
+        "phone": "Nhập số điện thoại...",
+        "number": "Nhập số giấy tờ...",
+        "issueAddress": "Nhập nơi cấp...",
+        "fax": "Nhập số fax...",
+        "license": {
+          "number": "Nhập số GCN/GP...",
+          "file": "Chọn tệp tin,file tài liệu",
+          "approver": "Chọn Người duyệt"
+        },
+        "refuseComment": "Nhập lý do từ chối..."
+      },
+      "update": {
+        "onlTitle": "Thêm mới Cơ sở trực tuyến",
+        "excelTitle": "Thêm mới Cơ sở bằng excel",
+        "info": "Thông tin Cơ sở",
+        "name": "Tên Cơ sở*",
+        "aliasName": "Tên Cơ sở viết tắt",
+        "engName": "Tên Tiếng Anh",
+        "taxNumber": "Mã số thuế",
+        "address": "Địa chỉ",
+        "addressCoor": "Địa chỉ",
+        "lic": "Thông tin cấp phép ATTP",
+        "idPaper": "Giấy tờ chứng thực ",
+        "owner": "Người đại diện*",
+        "type": "Loại cơ sở*",
+        "phone": "Số điện thoại",
+        "createdBy": "Người thực hiện",
+        "state": "Tình trạng",
+        "status": "Trạng thái",
+        "idPaperDetail": {
+          "number": "Nhập số giấy tờ",
+          "issueDate": "Ngày cấp",
+          "issueAddress": "Nơi cấp",
+          "phone": "Số điện thoại*",
+          "fax": "FAX"
+        },
+        "license": {
+          "title": "Thông tin cấp phép ATTP",
+          "number": "Số cấp GCN/GP",
+          "issueDate": "Ngày cấp GCN/GP đủ điều kiện",
+          "expireDate": "Ngày hết hạn",
+          "file": "Tài liệu cấp phép"
+        },
+        "action": {
+          "submit-approve": "Gửi duyệt",
+          "submit": "Ghi lại và thêm tiếp"
+        }
+      },
+      "withdraw": {
+        "title": "Thu hồi Cơ sở đã gửi duyệt",
+        "cancel": "Hủy thao tác",
+        "recovery": "Thu hồi"
+      },
+      "approve": {
+        "title": "Duyệt thông tin Cơ sở",
+        "refuseComment": "Lý do từ chối*"
+      },
+      "handleTitle": "Xử lý thông tin cấp phép Cơ sở",
+      "historyTitle": "Lịch sử Cơ sở cấp phép"
+    }
+  }
+}

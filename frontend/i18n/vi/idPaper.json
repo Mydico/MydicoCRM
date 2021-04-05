@@ -1,0 +1,27 @@
+{
+  "attpApp": {
+    "idPaper": {
+      "home": {
+        "title": "Id Papers",
+        "createLabel": "Thêm mới một Id Paper",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Id Paper",
+        "notFound": "No Id Papers found"
+      },
+      "created": "Một Id Paper mới được tạo với định danh {{ param }}",
+      "updated": "Một Id Paper cập nhật với định danh {{ param }}",
+      "deleted": "Một Id Paper đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Id Paper {{ id }}?"
+      },
+      "detail": {
+        "title": "Id Paper"
+      },
+      "number": "Number",
+      "issueInstant": "Issue Instant",
+      "issueAddress": "Issue Address",
+      "phone": "Phone",
+      "fax": "Fax",
+      "type": "Type"
+    }
+  }
+}

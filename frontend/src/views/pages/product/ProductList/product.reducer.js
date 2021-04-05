@@ -60,6 +60,9 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total
       state.initialState.loading = false;
     },
+    [getProduct.rejected]: (state, action) => {
+      state.initialState.loading = false;
+    },
     [getProductBirthday.fulfilled]: (state, action) => {
       productsAdapter.setAll(state, action.payload.data);
       state.initialState.totalItem = action.payload.total

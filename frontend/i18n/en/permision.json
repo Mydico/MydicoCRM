@@ -1,0 +1,24 @@
+{
+  "attpApp": {
+    "permision": {
+      "home": {
+        "title": "Permisions",
+        "createLabel": "Create a new Permision",
+        "createOrEditLabel": "Create or edit a Permision",
+        "notFound": "No Permisions found"
+      },
+      "created": "A new Permision is created with identifier {{ param }}",
+      "updated": "A Permision is updated with identifier {{ param }}",
+      "deleted": "A Permision is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Permision {{ id }}?"
+      },
+      "detail": {
+        "title": "Permision"
+      },
+      "name": "Name",
+      "description": "Description",
+      "position": "Position"
+    }
+  }
+}

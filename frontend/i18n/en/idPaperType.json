@@ -1,0 +1,22 @@
+{
+  "attpApp": {
+    "idPaperType": {
+      "home": {
+        "title": "Id Paper Types",
+        "createLabel": "Create a new Id Paper Type",
+        "createOrEditLabel": "Create or edit a Id Paper Type",
+        "notFound": "No Id Paper Types found"
+      },
+      "created": "A new Id Paper Type is created with identifier {{ param }}",
+      "updated": "A Id Paper Type is updated with identifier {{ param }}",
+      "deleted": "A Id Paper Type is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Id Paper Type {{ id }}?"
+      },
+      "detail": {
+        "title": "Id Paper Type"
+      },
+      "name": "Name"
+    }
+  }
+}

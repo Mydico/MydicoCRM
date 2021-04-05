@@ -5,6 +5,12 @@ import { BaseEntity } from './base/base.entity';
 import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 
 import Store from './store.entity';
+import { StoreImportStatus } from './enumeration/store-import-status';
+import Customer from './customer.entity';
+import { User } from './user.entity';
+import StoreInputDetails from './store-input-details.entity';
+import { StoreImportType } from './enumeration/store-import-type';
+import Provider from './provider.entity';
 
 /**
  * A StoreInput.
@@ -12,33 +18,20 @@ import Store from './store.entity';
 @Entity('store_input')
 export default class StoreInput extends BaseEntity {
 
+  @Column({ type: 'simple-enum', name: 'type', enum: StoreImportType, default: StoreImportType.NEW })
+  type?: StoreImportType;
 
-  @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
+  @Column({ type: 'simple-enum', name: 'status', enum: StoreImportStatus, default: StoreImportStatus.WAITING })
+  status?: StoreImportStatus;
 
-  @Column({ name: 'summary', length: 255, nullable: true })
-  summary: string;
+  @ManyToOne(type => Customer, customer => customer.storeInput, { cascade: true })
+  customer?: Customer;
 
-  /**
-   * Kiểu nhập kho : 0 - Nhập mới, 1 - Nhập trả
-   */
-  @Column({ type: 'integer', name: 'type', nullable: true })
-  type: number;
+  @Column({ type: 'bigint', name: 'totalMoney', nullable: true })
+  totalMoney?: number;
 
-  /**
-   * Trạng thái đơn nhập : 0 - Chưa duyệt, 1 - Đã duyệt, 2 - Hủy duyệt
-   */
-  @Column({ type: 'integer', name: 'status', nullable: true })
-  status: number;
-
-  @Column({ type: 'integer', name: 'customer_id', nullable: true })
-  customerId: number;
-
-  @Column({ type: 'integer', name: 'order_id', nullable: true })
-  orderId: number;
-
-  @Column({ type: 'integer', name: 'total_money', nullable: true })
-  totalMoney: number;
+  @ManyToOne(type => User, user => user.storeInput, { cascade: true })
+  approver?: User
 
   @Column({ name: 'note', length: 255, nullable: true })
   note: string;
@@ -46,11 +39,17 @@ export default class StoreInput extends BaseEntity {
   @Column({ type: 'integer', name: 'site_id', nullable: true })
   siteId: number;
 
-  @ManyToOne(type => Store)
-  storeOutput: Store;
+  @OneToMany(type => StoreInputDetails, other => other.storeInput)
+  storeInputDetails? : StoreInputDetails[]
 
   @ManyToOne(type => Store)
-  storeInput: Store;
+  store: Store;
+
+  @ManyToOne(type => Provider)
+  provider: Provider;
+
+  @ManyToOne(type => Store)
+  storeTransfer?: Store;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

@@ -12,6 +12,7 @@ import Order from './order.entity';
 import { StoreStatus } from './enumeration/store-status';
 import OrderDetails from './order-details.entity';
 import Bill from './bill.entity';
+import Department from './department.entity';
 
 /**
  * A Store.
@@ -30,8 +31,8 @@ export default class Store extends BaseEntity {
   @Column({ name: 'code', length: 100, nullable: false })
   code: string;
 
-  @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
+  @Column({ type: 'boolean', name: 'is_root', nullable: true })
+  isRoot: boolean;
 
   @Column({ type: 'integer', name: 'transport_id', nullable: true })
   transportId: number;
@@ -45,6 +46,9 @@ export default class Store extends BaseEntity {
   @OneToMany(type => OrderDetails, other => other.store)
   orderDetail? : OrderDetails[]
 
+  @ManyToOne(type => Department, other => other.stores)
+  department? : Department
+
   @OneToMany(type => Product, other =>other.store)
   product: Product[];
 
@@ -54,14 +58,6 @@ export default class Store extends BaseEntity {
   @OneToMany(type => Bill, other => other.store)
   bill? : Bill[]
 
-  @ManyToOne(type => City)
-  city: City;
-
-  @ManyToOne(type => District)
-  district: District;
-
-  @ManyToOne(type => Wards)
-  ward: Wards;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

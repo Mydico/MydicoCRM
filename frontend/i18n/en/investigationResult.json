@@ -1,0 +1,25 @@
+{
+  "attpApp": {
+    "investigationResult": {
+      "home": {
+        "title": "Investigation Results",
+        "createLabel": "Create a new Investigation Result",
+        "createOrEditLabel": "Create or edit a Investigation Result",
+        "notFound": "No Investigation Results found"
+      },
+      "created": "A new Investigation Result is created with identifier {{ param }}",
+      "updated": "A Investigation Result is updated with identifier {{ param }}",
+      "deleted": "A Investigation Result is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Investigation Result {{ id }}?"
+      },
+      "detail": {
+        "title": "Investigation Result"
+      },
+      "result": "Result",
+      "status": "Status",
+      "file": "File",
+      "investigation": "Investigation"
+    }
+  }
+}

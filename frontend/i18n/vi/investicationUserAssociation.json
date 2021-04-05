@@ -1,0 +1,24 @@
+{
+  "attpApp": {
+    "investicationUserAssociation": {
+      "home": {
+        "title": "Investication User Associations",
+        "createLabel": "Thêm mới một Investication User Association",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Investication User Association",
+        "notFound": "No Investication User Associations found"
+      },
+      "created": "Một Investication User Association mới được tạo với định danh {{ param }}",
+      "updated": "Một Investication User Association cập nhật với định danh {{ param }}",
+      "deleted": "Một Investication User Association đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Investication User Association {{ id }}?"
+      },
+      "detail": {
+        "title": "Investication User Association"
+      },
+      "role": "Role",
+      "investigation": "Investigation",
+      "user": "User"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "attpApp": {
+    "contributeReport": {
+      "home": {
+        "title": "Danh sách Ý kiến đóng góp",
+        "total": "Tổng",
+        "filter": "Lọc",
+        "createLabel": "Tạo đợt thanh tra",
+        "proceedLabel": "Xử lý",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Contribute Report",
+        "notFound": "No Contribute Reports found"
+      },
+      "created": "Một Contribute Report mới được tạo với định danh {{ param }}",
+      "updated": "Một Contribute Report cập nhật với định danh {{ param }}",
+      "deleted": "Một Contribute Report đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Contribute Report {{ id }}?"
+      },
+      "detail": {
+        "title": "Xem Chi Tiết Ý Kiến Đóng Góp",
+        "reportInformation": "Thông tin Ý kiến đóng góp",
+        "handleInformation": "Thông tin xử lý",
+        "sendNotificationToCitizen": "Gửi thông báo cho người dân"
+      },
+      "history": {
+        "title": "Lịch sử xử lý Ý kiến đóng góp",
+        "time": "Thời gian"
+      },
+      "statusTypes": {
+        "WAITING": "Chờ xử lý",
+        "PROCESSED": "Đã xử lý",
+        "PROCESSEDWITHRESPONSE": "Đã xử lý - Có phản hồi cho người dân",
+        "REJECT": "Không xử lý"
+      },
+      "selectHandle": "Chọn người xử lý",
+      "startDate": "Thời gian bắt đầu",
+      "endDate": "Thời gian kết thúc",
+      "address": "Địa Chỉ",
+      "citizen": "Người dân",
+      "handleContent": "Nội dung xử lý",
+      "type": "Loại",
+      "title": "Tiêu đề góp ý",
+      "content": "Nội dung Ý kiến đóng góp",
+      "product": "Sản phẩm",
+      "facility": "Cơ sở",
+      "sentTime": "Thời gian gửi",
+      "handleTime": "Thời gian xử lý",
+      "organization": "Cơ quan xử lý",
+      "receiver": "Người tiếp nhận",
+      "receive": "Tiếp nhận",
+      "handler": "Người xử lý",
+      "operation": "Thao tác",
+      "check": "Chọn",
+      "status": "Trạng thái",
+      "department": "Cơ quan quản lý",
+      "file": "Tệp đính kèm"
+    }
+  }
+}

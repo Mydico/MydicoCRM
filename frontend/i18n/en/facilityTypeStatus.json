@@ -1,0 +1,9 @@
+{
+  "attpApp": {
+    "FacilityTypeStatus": {
+      "null": "",
+      "ENABLE": "ENABLE",
+      "DISABLE": "DISABLE"
+    }
+  }
+}

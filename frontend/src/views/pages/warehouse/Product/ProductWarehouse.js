@@ -67,12 +67,12 @@ const ProductWarehouse = props => {
     { key: 'name', label: 'Tên sản phẩm', _style: { width: '15%' } },
     { key: 'store', label: 'Tên kho', _style: { width: '15%' } },
     { key: 'quantity', label: 'Số lượng', _style: { width: '15%' } },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '1%' },
-      filter: false,
-    },
+    // {
+    //   key: 'show_details',
+    //   label: '',
+    //   _style: { width: '1%' },
+    //   filter: false,
+    // },
   ];
 
   const getBadge = status => {

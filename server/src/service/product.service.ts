@@ -7,6 +7,8 @@ import { increment_alphanumeric_str } from './utils/normalizeString';
 
 const relationshipNames = [];
 relationshipNames.push('productGroup');
+relationshipNames.push('productBrand');
+
 @Injectable()
 export class ProductService {
   logger = new Logger('ProductService');

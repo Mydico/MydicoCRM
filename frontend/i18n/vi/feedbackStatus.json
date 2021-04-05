@@ -1,0 +1,12 @@
+{
+  "attpApp": {
+    "feedbackStatus": {
+      "null": "",
+      "CREATED": "Mới",
+      "WAITING ": "Chờ phản hồi",
+      "REJECT": "Từ chối phản hồi",
+      "PUBLIC": "Đã phản hồi",
+      "DELETED": "Đã xóa"
+    }
+  }
+}

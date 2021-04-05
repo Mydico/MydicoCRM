@@ -9,6 +9,7 @@ import productGroupReducer from '../../views/pages/product/ProductGroup/product-
 import productBrandReducer from '../../views/pages/product/ProductBrand/product-brand.reducer';
 import promotionReducer from '../../views/pages/sales/Promotion/promotion.reducer';
 import warehouseReducer from '../../views/pages/warehouse/Warehouse/warehouse.reducer';
+import warehouseImportReducer from '../../views/pages/warehouse/Import/warehouse-import.reducer';
 import productWarehouseReducer from '../../views/pages/warehouse/Product/product-warehouse.reducer';
 import orderReducer from '../../views/pages/sales/Orders/order.reducer';
 import branchReducer from '../../views/pages/customer/CustomerBranch/customer-branch.reducer';
@@ -17,6 +18,8 @@ import userReducer from '../../views/pages/user/UserList/user.reducer';
 import userRoleReducer from '../../views/pages/user/UserRole/user-roles.reducer';
 import departmentReducer from '../../views/pages/user/UserDepartment/department.reducer';
 import permissionReducer from '../../views/pages/user/UserPermission/permission.reducer';
+import warehouseHistoryReducer from '../../views/pages/warehouse/History/warehouse-history.reducer';
+import ProviderReducer from '../../views/pages/warehouse/Provider/provider.reducer';
 
 const rootReducer = combineReducers({
   authentication: authenticateReducer,
@@ -36,7 +39,10 @@ const rootReducer = combineReducers({
   user: userReducer,
   userRole: userRoleReducer,
   department: departmentReducer,
-  permission: permissionReducer
+  permission: permissionReducer,
+  warehouseImport: warehouseImportReducer,
+  storeHistory: warehouseHistoryReducer,
+  provider: ProviderReducer
 });
 
 export default rootReducer;

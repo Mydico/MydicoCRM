@@ -1,0 +1,12 @@
+{
+  "attpApp": {
+    "ProductStatus": {
+      "null": "",
+      "CREATED": "CREATED",
+      "REJECT": "REJECT",
+      "WAITING": "WAITING",
+      "PUBLIC": "PUBLIC",
+      "DELETED": "DELETED"
+    }
+  }
+}

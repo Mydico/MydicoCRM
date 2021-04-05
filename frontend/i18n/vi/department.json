@@ -1,0 +1,26 @@
+{
+  "attpApp": {
+    "department": {
+      "home": {
+        "title": "Đơn vị",
+        "createLabel": "Thêm mới phòng ban",
+        "editLabel": "Cập nhật phòng ban",
+        "notFound": "No Departments found",
+        "total": "Tổng"
+      },
+      "created": "Một Department mới được tạo với định danh {{ param }}",
+      "updated": "Một Department cập nhật với định danh {{ param }}",
+      "deleted": "Một Department đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Department {{ id }}?"
+      },
+      "detail": {
+        "title": "Department"
+      },
+      "code": "Code",
+      "name": "Name",
+      "parentCode": "Parent Code",
+      "user": "User"
+    }
+  }
+}

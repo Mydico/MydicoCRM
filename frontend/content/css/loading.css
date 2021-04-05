@@ -1,0 +1,76 @@
+@keyframes lds-pacman-1 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes lds-pacman-1 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.app-loading {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  top: 10em;
+  background-color: transparent;
+}
+.app-loading p {
+  display: block;
+  font-size: 1.17em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: normal;
+}
+
+.app-loading .lds-pacman {
+  position: relative;
+  margin: auto;
+  width: 200px !important;
+  height: 200px !important;
+  -webkit-transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+  transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+}
+
+.app-loading .lds-pacman > div:nth-child(1) {
+  position: absolute;
+  top: 50px;
+  left: 20px;
+  width: 200px;
+  height: 200px;
+  border: 16px solid transparent;
+  border-radius: 50%;
+  border-top: 16px solid transparent;
+  background-image: url('../images/logo.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.app-loading .lds-pacman > div:nth-child(2) {
+  position: absolute;
+  top: 40px;
+  left: 20px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #329d9c;
+  background: transparent;
+  -webkit-animation: lds-pacman-1 2s linear infinite;
+  animation: lds-pacman-1 2s linear infinite;
+}
