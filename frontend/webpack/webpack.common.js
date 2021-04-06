@@ -25,6 +25,12 @@ const getJSLoaderRule = env => {
       }
     },
     {
+      loader: `postcss-loader`,
+      options: {
+        options: {},
+      }
+    },
+    {
       loader: 'babel-loader',
       options: {
         presets: ['@babel/preset-env','@babel/preset-react']
