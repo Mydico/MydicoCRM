@@ -8,8 +8,9 @@ createFolderIfNotExist(out);
 createFolderIfNotExist(path.join(out, 'config'));
 
 shell.cp('-R', 'src/config/*.yml', 'dist/config');
+shell.cp('-R', 'src/*.conf', 'dist/');
 
-const clientDist = path.join(__dirname, '..', '..', 'target', 'classes');
+const clientDist = path.join(__dirname, '..', '..', 'frontend', 'target', 'classes');
 
 if (fs.existsSync(clientDist)) {
   shell.cp('-R', clientDist, out);
