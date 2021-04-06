@@ -32,14 +32,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, appOptions);
   app.use(
     helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: [`'self'`],
-          styleSrc: [`'self'`, `'unsafe-inline'`],
-          imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
-          scriptSrc: [`'self'`, `https: 'unsafe-inline'`]
-        }
-      }
+      contentSecurityPolicy: false,
     })
   );
   app.enableCors({
