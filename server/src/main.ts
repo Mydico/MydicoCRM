@@ -30,7 +30,18 @@ async function bootstrap(): Promise<void> {
 
   const appOptions = { cors: true };
   const app = await NestFactory.create(AppModule, appOptions);
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: [`'self'`],
+          styleSrc: [`'self'`, `'unsafe-inline'`],
+          imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
+          scriptSrc: [`'self'`, `https: 'unsafe-inline'`]
+        }
+      }
+    })
+  );
   app.enableCors({
     exposedHeaders: 'X-Total-Count'
   });
