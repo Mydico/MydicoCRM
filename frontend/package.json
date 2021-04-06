@@ -151,6 +151,7 @@
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
     "eject": "react-scripts eject",
+    "cleanup": "rimraf target/classes/static/",
     "zip": "git archive -o coreui-pro-react-admin-template-starter-v$npm_package_version.zip -9 HEAD",
     "zip-v2": "git archive -o coreui-pro-react-admin-template-starter-v2.zip -9 origin/v2",
     "webpack:dev": "npm run webpack-dev-server -- --config webpack/webpack.dev.js --inline --port=9060 --env.stats=minimal",
