@@ -140,7 +140,7 @@ const CreateProduct = () => {
   };
 
   const getUploadParams = () => {
-    return { url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/' : 'http://103.121.91.142:8082/' };
+    return { url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/' : 'http://localhost:8082/' };
   };
 
   const handleChangeStatus = ({ meta, file, xhr }, status) => {

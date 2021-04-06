@@ -4,7 +4,7 @@ const config = {
 
 export default config;
 
-export const SERVER_API_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:8082/' : 'http://103.121.91.142:8082/';
+export const SERVER_API_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:8082/' : 'http://localhost:8082/';
 
 export const AUTHORITIES = {
   ADMIN: 'ROLE_ADMIN',

@@ -131,7 +131,7 @@ const EditProduct = props => {
   };
 
   const getUploadParams = () => {
-    return { url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/api/files' : 'http://103.121.91.142:8082/api/files' };
+    return { url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/api/files' : 'http://localhost:8082/api/files' };
   };
 
   const handleChangeStatus = ({ meta, file, xhr }, status) => {
