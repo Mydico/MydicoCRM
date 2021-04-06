@@ -17,7 +17,7 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
   // devtool: 'source-map', // Enable source maps. Please note that this will slow down the build
   mode: ENV,
   entry: {
-    main: './src/index'
+    main: './src/index.js'
   },
   output: {
     path: utils.root('target/classes/static/'),
@@ -41,10 +41,9 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
             }
           },
           'css-loader',
-          'postcss-loader',
           {
             loader: 'sass-loader',
-            options: { implementation: require('sass') }
+            options: { implementation: sass }
           }
         ]
       }
@@ -70,10 +69,10 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
             toplevel: true
           },
           output: {
-              comments: false,
-              beautify: false,
-              indent_level: 2,
-              ecma: 6
+            comments: false,
+            beautify: false,
+            indent_level: 2,
+            ecma: 6
           },
           mangle: {
             keep_fnames: true,

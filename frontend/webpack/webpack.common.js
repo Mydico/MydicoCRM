@@ -15,21 +15,23 @@ const getJSLoaderRule = env => {
         cacheDirectory: path.resolve('target/cache-loader')
       }
     },
-    {
-      loader: 'thread-loader',
-      options: {
-        // There should be 1 cpu for the fork-ts-checker-webpack-plugin.
-        // The value may need to be adjusted (e.g. to 1) in some CI environments,
-        // as cpus() may report more cores than what are available to the build.
-        workers: require('os').cpus().length - 1
-      }
-    },
-    {
-      loader: `postcss-loader`,
-      options: {
-        options: {},
-      }
-    },
+    // {
+    //   loader: 'thread-loader',
+    //   options: {
+    //     // There should be 1 cpu for the fork-ts-checker-webpack-plugin.
+    //     // The value may need to be adjusted (e.g. to 1) in some CI environments,
+    //     // as cpus() may report more cores than what are available to the build.
+    //     workers: require('os').cpus().length - 1
+    //   }
+    // },
+    // {
+    //   loader: `postcss-loader`,
+    //   options: {
+    //     ident: 'postcss-scss',
+    //     syntax: 'postcss-scss',
+    //     plugins: () => [require('postcss-flexbugs-fixes')()]
+    //   }
+    // },
     {
       loader: 'babel-loader',
       options: {
@@ -50,7 +52,7 @@ module.exports = options => ({
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     modules: ['node_modules'],
-    alias: utils.mapTypescriptAliasToWebpackAlias()
+    // alias: utils.mapTypescriptAliasToWebpackAlias()
   },
   module: {
     rules: [
