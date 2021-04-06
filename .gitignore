@@ -40,6 +40,7 @@ tmp/**/*
 *.swp
 *.env
 *~.nib
+target
 local.properties
 .classpath
 .settings/

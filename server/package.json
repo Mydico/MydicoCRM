@@ -38,6 +38,7 @@
     "cloud-config-client": "1.4.2",
     "dotenv": "8.1.0",
     "eureka-js-client": "4.5.0",
+    "express-list-endpoints": "^5.0.0",
     "faker": "^5.1.0",
     "helmet": "^4.2.0",
     "js-yaml": "3.13.1",
