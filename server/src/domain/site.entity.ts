@@ -9,23 +9,23 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
  */
 @Entity('site')
 export default class Site extends BaseEntity {
-  @Column({ name: 'name', length: 255, nullable: true })
-  name: string;
+    @Column({ name: 'name', length: 255, nullable: true })
+    name: string;
 
-  @Column({ name: 'address', length: 255, nullable: true })
-  address: string;
+    @Column({ name: 'address', length: 255, nullable: true })
+    address: string;
 
-  @Column({ type: 'integer', name: 'created_at', nullable: true })
-  createdAt: number;
+    @Column({ type: 'integer', name: 'created_at', nullable: true })
+    createdAt: number;
 
-  @Column({ name: 'created_by', length: 255, nullable: true })
-  createdBy: string;
+    @Column({ name: 'created_by', length: 255, nullable: true })
+    createdBy: string;
 
-  @Column({ type: 'integer', name: 'updated_at', nullable: true })
-  updatedAt: number;
+    @Column({ type: 'integer', name: 'updated_at', nullable: true })
+    updatedAt: number;
 
-  @Column({ name: 'updated_by', length: 255, nullable: true })
-  updatedBy: string;
+    @Column({ name: 'updated_by', length: 255, nullable: true })
+    updatedBy: string;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

@@ -11,17 +11,17 @@ import Store from './store.entity';
  */
 @Entity('store_history')
 export default class StoreHistory extends BaseEntity {
-  @Column({ type: 'integer', name: 'quantity', nullable: true })
-  quantity: number;
+    @Column({ type: 'integer', name: 'quantity', nullable: true })
+    quantity: number;
 
-  @Column({ type: 'simple-enum', name: 'status', enum: StoreHistoryType, default: StoreHistoryType.IMPORT })
-  type: StoreHistoryType;
+    @Column({ type: 'simple-enum', name: 'status', enum: StoreHistoryType, default: StoreHistoryType.IMPORT })
+    type: StoreHistoryType;
 
-  @ManyToOne(type => Product)
-  product: Product;
+    @ManyToOne(type => Product)
+    product: Product;
 
-  @ManyToOne(type => Store)
-  store: Store;
+    @ManyToOne(type => Store)
+    store: Store;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

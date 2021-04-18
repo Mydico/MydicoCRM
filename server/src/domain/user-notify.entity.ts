@@ -9,32 +9,32 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
  */
 @Entity('user_notify')
 export default class UserNotify extends BaseEntity {
-  @Column({ type: 'integer', name: 'user_id', nullable: true })
-  userId: number;
+    @Column({ type: 'integer', name: 'user_id', nullable: true })
+    userId: number;
 
-  @Column({ name: 'title', length: 255, nullable: true })
-  title: string;
+    @Column({ name: 'title', length: 255, nullable: true })
+    title: string;
 
-  @Column({ name: 'content', length: 255, nullable: true })
-  content: string;
+    @Column({ name: 'content', length: 255, nullable: true })
+    content: string;
 
-  /**
+    /**
    * 0 - chưa đọc, 1 - đã đọc
    */
-  @Column({ type: 'integer', name: 'is_read', nullable: true })
-  isRead: number;
+    @Column({ type: 'integer', name: 'is_read', nullable: true })
+    isRead: number;
 
-  @Column({ type: 'integer', name: 'created_at', nullable: true })
-  createdAt: number;
+    @Column({ type: 'integer', name: 'created_at', nullable: true })
+    createdAt: number;
 
-  @Column({ type: 'integer', name: 'updated_at', nullable: true })
-  updatedAt: number;
+    @Column({ type: 'integer', name: 'updated_at', nullable: true })
+    updatedAt: number;
 
-  @Column({ type: 'integer', name: 'type', nullable: true })
-  type: number;
+    @Column({ type: 'integer', name: 'type', nullable: true })
+    type: number;
 
-  @Column({ type: 'integer', name: 'reference_id' })
-  referenceId: number;
+    @Column({ type: 'integer', name: 'reference_id' })
+    referenceId: number;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

@@ -11,21 +11,21 @@ import { AuthService } from '../../service/auth.service';
 @ApiBearerAuth()
 @ApiUseTags('auth-controller')
 export class AuthController {
-  logger = new Logger('AuthController');
+    logger = new Logger('AuthController');
 
-  constructor(private readonly authService: AuthService) {}
+    constructor(private readonly authService: AuthService) {}
 
-  @Get('/authorities')
-  @ApiOperation({ title: 'Get the list of user roles' })
-  @ApiResponse({
-    status: 200,
-    description: 'List all user roles',
-    type: 'string',
-    isArray: true
-  })
-  @Roles(RoleType.ADMIN)
-  getAuthorities(@Req() req: any): any {
-    const user: User = req.user;
-    return user.authorities;
-  }
+    @Get('/authorities')
+    @ApiOperation({ title: 'Get the list of user roles' })
+    @ApiResponse({
+        status: 200,
+        description: 'List all user roles',
+        type: 'string',
+        isArray: true,
+    })
+    @Roles(RoleType.ADMIN)
+    getAuthorities(@Req() req: any): any {
+        const user: User = req.user;
+        return user.authorities;
+    }
 }

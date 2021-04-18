@@ -98,9 +98,20 @@ export default [
   {
     _tag: 'CSidebarNavDropdown',
     name: 'Quản lý Tài chính',
-    route: '/apps',
+    route: '/finance',
     icon: 'cil-layers',
-    _children: []
+    _children: [
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Công nợ',
+        to: '/debt'
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Phiếu thu',
+        to: '/receipt'
+      }
+    ]
   },
   {
     _tag: 'CSidebarNavDropdown',
@@ -142,7 +153,7 @@ export default [
         _tag: 'CSidebarNavItem',
         name: 'Lịch sử xuất/nhập kho',
         to: '/warehouse/histories/'
-      },
+      }
     ]
   },
   {
@@ -165,11 +176,6 @@ export default [
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'Phân quyền',
-        to: '/permission/'
-      },
-      {
-        _tag: 'CSidebarNavItem',
         name: 'Chức vụ',
         to: '/user-role/'
       },
@@ -188,55 +194,8 @@ export default [
     _children: [
       {
         _tag: 'CSidebarNavDropdown',
-        name: 'Invoicing',
-        route: '/apps/invoicing',
-        icon: 'cil-spreadsheet',
-        _children: [
-          {
-            _tag: 'CSidebarNavItem',
-            name: 'Invoice',
-            to: '/invoice',
-            badge: {
-              color: 'danger',
-              text: 'PRO'
-            }
-          }
-        ]
-      },
-      {
-        _tag: 'CSidebarNavDropdown',
-        name: 'Email',
-        route: '/apps/email',
-        icon: 'cil-envelope-open',
-        _children: [
-          {
-            _tag: 'CSidebarNavItem',
-            name: 'Inbox',
-            to: '/apps/email/inbox',
-            badge: {
-              color: 'danger',
-              text: 'PRO'
-            }
-          },
-          {
-            _tag: 'CSidebarNavItem',
-            name: 'Message',
-            to: '/apps/email/message',
-            badge: {
-              color: 'danger',
-              text: 'PRO'
-            }
-          },
-          {
-            _tag: 'CSidebarNavItem',
-            name: 'Compose',
-            to: '/apps/email/compose',
-            badge: {
-              color: 'danger',
-              text: 'PRO'
-            }
-          }
-        ]
+        name: 'Phân quyền',
+        to: '/permission/'
       }
     ]
   }

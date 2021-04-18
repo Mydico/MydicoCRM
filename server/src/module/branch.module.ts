@@ -5,9 +5,9 @@ import { BranchRepository } from '../repository/branch.repository';
 import { BranchService } from '../service/branch.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BranchRepository])],
-  controllers: [BranchController],
-  providers: [BranchService],
-  exports: [BranchService]
+    imports: [TypeOrmModule.forFeature([BranchRepository])],
+    controllers: [BranchController],
+    providers: [BranchService],
+    exports: [BranchService],
 })
 export class BranchModule {}

@@ -20,6 +20,8 @@ import departmentReducer from '../../views/pages/user/UserDepartment/department.
 import permissionReducer from '../../views/pages/user/UserPermission/permission.reducer';
 import warehouseHistoryReducer from '../../views/pages/warehouse/History/warehouse-history.reducer';
 import ProviderReducer from '../../views/pages/warehouse/Provider/provider.reducer';
+import DebtReducer from '../../views/pages/finance/debt/debt.reducer';
+import ReceiptReducer from '../../views/pages/finance/receipt/receipt.reducer';
 
 const rootReducer = combineReducers({
   authentication: authenticateReducer,
@@ -42,7 +44,9 @@ const rootReducer = combineReducers({
   permission: permissionReducer,
   warehouseImport: warehouseImportReducer,
   storeHistory: warehouseHistoryReducer,
-  provider: ProviderReducer
+  provider: ProviderReducer,
+  debt: DebtReducer,
+  receipt: ReceiptReducer
 });
 
 export default rootReducer;

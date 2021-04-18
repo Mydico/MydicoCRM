@@ -37,7 +37,7 @@ export const login = createAsyncThunk('api/authenticate', async ({ username, pas
   }
 });
 
-export const getSession = createAsyncThunk('api/account', async thunkAPI => {
+export const  getSession = createAsyncThunk('api/account', async thunkAPI => {
   try {
     const accountResponse = await axios.get('api/account');
     return accountResponse.data;

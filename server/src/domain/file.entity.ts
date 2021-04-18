@@ -8,19 +8,19 @@ import { FileType } from './enumeration/file-type';
  */
 @Entity('file')
 export default class File extends BaseEntity {
-  @Column({ name: 'name', nullable: true })
-  name: string;
+    @Column({ name: 'name', nullable: true })
+    name: string;
 
-  @Column({ name: 'description', nullable: true })
-  description: string;
+    @Column({ name: 'description', nullable: true })
+    description: string;
 
-  @Column({ name: 'url', nullable: true })
-  url: string;
+    @Column({ name: 'url', nullable: true })
+    url: string;
 
-  @Column({ type: 'decimal', name: 'volume', precision: 10, scale: 2, nullable: true })
-  volume: number;
+    @Column({ type: 'decimal', name: 'volume', precision: 10, scale: 2, nullable: true })
+    volume: number;
 
-  @Column({ type: 'simple-enum', name: 'type', enum: FileType })
-  type: FileType;
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    @Column({ type: 'simple-enum', name: 'type', enum: FileType })
+    type: FileType;
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

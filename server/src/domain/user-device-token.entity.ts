@@ -9,23 +9,23 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
  */
 @Entity('user_device_token')
 export default class UserDeviceToken extends BaseEntity {
-  /**
+    /**
    * id user management
    */
-  @Column({ type: 'integer', name: 'user_id' })
-  userId: number;
+    @Column({ type: 'integer', name: 'user_id' })
+    userId: number;
 
-  /**
+    /**
    * token nhận notify push theo từng device
    */
-  @Column({ name: 'device_token', length: 255, nullable: true })
-  deviceToken: string;
+    @Column({ name: 'device_token', length: 255, nullable: true })
+    deviceToken: string;
 
-  @Column({ type: 'integer', name: 'created_at', nullable: true })
-  createdAt: number;
+    @Column({ type: 'integer', name: 'created_at', nullable: true })
+    createdAt: number;
 
-  @Column({ type: 'integer', name: 'updated_at', nullable: true })
-  updatedAt: number;
+    @Column({ type: 'integer', name: 'updated_at', nullable: true })
+    updatedAt: number;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

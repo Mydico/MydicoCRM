@@ -9,38 +9,38 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
  */
 @Entity('report_customer_category_date')
 export default class ReportCustomerCategoryDate extends BaseEntity {
-  /**
+    /**
    * báo cáo ngày
    */
-  @Column({ type: 'integer', name: 'date' })
-  date: number;
+    @Column({ type: 'integer', name: 'date' })
+    date: number;
 
-  /**
+    /**
    * nhóm khách hàng
    */
-  @Column({ type: 'integer', name: 'category_id', nullable: true })
-  categoryId: number;
+    @Column({ type: 'integer', name: 'category_id', nullable: true })
+    categoryId: number;
 
-  /**
+    /**
    * chi nhánh
    */
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+    @Column({ type: 'integer', name: 'site_id', nullable: true })
+    siteId: number;
 
-  @Column({ type: 'bigint', name: 'total_money', nullable: true })
-  totalMoney: number;
+    @Column({ type: 'bigint', name: 'total_money', nullable: true })
+    totalMoney: number;
 
-  @Column({ type: 'bigint', name: 'real_money', nullable: true })
-  realMoney: number;
+    @Column({ type: 'bigint', name: 'real_money', nullable: true })
+    realMoney: number;
 
-  @Column({ type: 'bigint', name: 'reduce_money', nullable: true })
-  reduceMoney: number;
+    @Column({ type: 'bigint', name: 'reduce_money', nullable: true })
+    reduceMoney: number;
 
-  @Column({ type: 'integer', name: 'created_at', nullable: true })
-  createdAt: number;
+    @Column({ type: 'integer', name: 'created_at', nullable: true })
+    createdAt: number;
 
-  @Column({ type: 'integer', name: 'updated_at', nullable: true })
-  updatedAt: number;
+    @Column({ type: 'integer', name: 'updated_at', nullable: true })
+    updatedAt: number;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

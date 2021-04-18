@@ -5,9 +5,9 @@ import { UserTokenRepository } from '../repository/user-token.repository';
 import { UserTokenService } from '../service/user-token.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserTokenRepository])],
-  controllers: [UserTokenController],
-  providers: [UserTokenService],
-  exports: [UserTokenService]
+    imports: [TypeOrmModule.forFeature([UserTokenRepository])],
+    controllers: [UserTokenController],
+    providers: [UserTokenService],
+    exports: [UserTokenService],
 })
 export class UserTokenModule {}

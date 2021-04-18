@@ -3,7 +3,7 @@ import { ApiModelProperty } from '@nestjs/swagger';
 
 @Entity('authority')
 export class Authority {
-  @ApiModelProperty({ example: 'ROLE_USER', description: 'User role' })
-  @PrimaryColumn()
-  name: string;
+    @ApiModelProperty({ example: 'ROLE_USER', description: 'User role' })
+    @PrimaryColumn()
+    name: string;
 }

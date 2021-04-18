@@ -5,9 +5,9 @@ import { SiteRepository } from '../repository/site.repository';
 import { SiteService } from '../service/site.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SiteRepository])],
-  controllers: [SiteController],
-  providers: [SiteService],
-  exports: [SiteService]
+    imports: [TypeOrmModule.forFeature([SiteRepository])],
+    controllers: [SiteController],
+    providers: [SiteService],
+    exports: [SiteService],
 })
 export class SiteModule {}

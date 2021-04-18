@@ -9,14 +9,14 @@ import { PermissionGroupStatus } from './enumeration/permission-group-status';
  */
 @Entity('permission_type')
 export default class PermissionType extends BaseEntity {
-  @Column({ name: 'description', nullable: true })
-  description: string;
+    @Column({ name: 'description', nullable: true })
+    description: string;
 
-  @Column({ name: 'name', nullable: true })
-  name: string;
+    @Column({ name: 'name', nullable: true })
+    name: string;
 
-  @Column({ type: 'enum', name: 'status', enum: PermissionGroupStatus })
-  status: PermissionGroupStatus;
+    @Column({ type: 'enum', name: 'status', enum: PermissionGroupStatus })
+    status: PermissionGroupStatus;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

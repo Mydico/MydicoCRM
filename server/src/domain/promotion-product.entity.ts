@@ -10,17 +10,17 @@ import Promotion from './promotion.entity';
  */
 @Entity('promotion_product')
 export default class PromotionProduct extends BaseEntity {
-  @Column({ type: 'integer', name: 'buy', nullable: true })
-  buy?: number;
+    @Column({ type: 'integer', name: 'buy', nullable: true })
+    buy?: number;
 
-  @Column({ type: 'integer', name: 'gift', nullable: true })
-  gift?: number;
+    @Column({ type: 'integer', name: 'gift', nullable: true })
+    gift?: number;
 
-  @ManyToOne(type => Product)
-  product?: Product;
+    @ManyToOne(type => Product)
+    product?: Product;
 
-  @ManyToOne(type => Promotion)
-  promotion?: Promotion;
+    @ManyToOne(type => Promotion)
+    promotion?: Promotion;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

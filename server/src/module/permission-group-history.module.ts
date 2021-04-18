@@ -5,9 +5,9 @@ import { PermissionGroupHistoryRepository } from '../repository/permission-group
 import { PermissionGroupHistoryService } from '../service/permission-group-history.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PermissionGroupHistoryRepository])],
-  controllers: [PermissionGroupHistoryController],
-  providers: [PermissionGroupHistoryService],
-  exports: [PermissionGroupHistoryService]
+    imports: [TypeOrmModule.forFeature([PermissionGroupHistoryRepository])],
+    controllers: [PermissionGroupHistoryController],
+    providers: [PermissionGroupHistoryService],
+    exports: [PermissionGroupHistoryService],
 })
 export class PermissionGroupHistoryModule {}

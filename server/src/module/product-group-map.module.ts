@@ -5,9 +5,9 @@ import { ProductGroupMapRepository } from '../repository/product-group-map.repos
 import { ProductGroupMapService } from '../service/product-group-map.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProductGroupMapRepository])],
-  controllers: [ProductGroupMapController],
-  providers: [ProductGroupMapService],
-  exports: [ProductGroupMapService]
+    imports: [TypeOrmModule.forFeature([ProductGroupMapRepository])],
+    controllers: [ProductGroupMapController],
+    providers: [ProductGroupMapService],
+    exports: [ProductGroupMapService],
 })
 export class ProductGroupMapModule {}

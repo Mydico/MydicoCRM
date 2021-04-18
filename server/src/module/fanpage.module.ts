@@ -5,9 +5,9 @@ import { FanpageRepository } from '../repository/fanpage.repository';
 import { FanpageService } from '../service/fanpage.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([FanpageRepository])],
-  controllers: [FanpageController],
-  providers: [FanpageService],
-  exports: [FanpageService]
+    imports: [TypeOrmModule.forFeature([FanpageRepository])],
+    controllers: [FanpageController],
+    providers: [FanpageService],
+    exports: [FanpageService],
 })
 export class FanpageModule {}

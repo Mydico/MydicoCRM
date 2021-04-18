@@ -25,8 +25,6 @@ import { current } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router-dom';
 import { fetching } from './warehouse-import.reducer';
 import Select from 'react-select';
-import { getDepartment } from '../../user/UserDepartment/department.api';
-import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
@@ -35,6 +33,9 @@ import { getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { getCustomer } from '../../customer/customer.api';
+import { currencyMask } from '../../../components/currency-input/currency-input';
+import MaskedInput from 'react-text-mask';
+
 const validationSchema = function(values) {
   console.log(values);
   return Yup.object().shape({
@@ -117,8 +118,7 @@ const CreateWarehouse = () => {
   };
 
   useEffect(() => {
-    const departArr = account.departments.map(item => item.id);
-    dispatch(getWarehouse({ department: JSON.stringify(departArr) }));
+    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
     dispatch(getProduct());
     dispatch(getCustomer());
   }, []);
@@ -150,7 +150,7 @@ const CreateWarehouse = () => {
 
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
-    copyArr[index].price = target.value;
+    copyArr[index].price = Number(target.value.replace(/\D/g, ''));
     setProductList(copyArr);
   };
 
@@ -160,7 +160,7 @@ const CreateWarehouse = () => {
       const copyArr = [...productList];
       copyArr[index].product = value;
       copyArr[index].quantity = 1;
-      copyArr[index].price = value.price;
+      copyArr[index].price = Number(value.price);
       setProductList(copyArr);
     }
   };
@@ -175,7 +175,7 @@ const CreateWarehouse = () => {
   };
 
   const onAddProduct = () => {
-    const data = { product: {}, quantity: 1 , reducePercent: 0};
+    const data = { product: {}, quantity: 1, reducePercent: 0 };
     setProductList([...productList, data]);
   };
 
@@ -373,13 +373,17 @@ const CreateWarehouse = () => {
                           </td>
                           <td>
                             {
-                              <CInput
-                                type="number"
-                                min={1}
-                                name="code"
-                                id="code"
+                              <MaskedInput
+                                mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
-                                value={item?.price}
+                                value={
+                                  typeof productList[index].price !== 'number'
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                        productList[index].price
+                                      )
+                                    : productList[index].price
+                                }
+                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
                           </td>
@@ -464,12 +468,9 @@ const CreateWarehouse = () => {
                             <strong>Tổng tiền chiết khấu</strong>
                           </td>
                           <td className="right">
-                          {productList
-                                .reduce(
-                                  (sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100,
-                                  0
-                                )
-                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                            {productList
+                              .reduce((sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100, 0)
+                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                           </td>
                         </tr>
                         <tr>
@@ -481,8 +482,7 @@ const CreateWarehouse = () => {
                               .reduce(
                                 (sum, current) =>
                                   sum +
-                                  (current.price * current.quantity -
-                                    (current.price * current.quantity * current.reducePercent) / 100),
+                                  (current.price * current.quantity - (current.price * current.quantity * current.reducePercent) / 100),
                                 0
                               )
                               .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}

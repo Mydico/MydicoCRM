@@ -5,9 +5,9 @@ import { CustomerTypeRepository } from '../repository/customer-type.repository';
 import { CustomerTypeService } from '../service/customer-type.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CustomerTypeRepository])],
-  controllers: [CustomerTypeController],
-  providers: [CustomerTypeService],
-  exports: [CustomerTypeService]
+    imports: [TypeOrmModule.forFeature([CustomerTypeRepository])],
+    controllers: [CustomerTypeController],
+    providers: [CustomerTypeService],
+    exports: [CustomerTypeService],
 })
 export class CustomerTypeModule {}

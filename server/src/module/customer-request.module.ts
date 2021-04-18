@@ -5,9 +5,9 @@ import { CustomerRequestRepository } from '../repository/customer-request.reposi
 import { CustomerRequestService } from '../service/customer-request.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CustomerRequestRepository])],
-  controllers: [CustomerRequestController],
-  providers: [CustomerRequestService],
-  exports: [CustomerRequestService]
+    imports: [TypeOrmModule.forFeature([CustomerRequestRepository])],
+    controllers: [CustomerRequestController],
+    providers: [CustomerRequestService],
+    exports: [CustomerRequestService],
 })
 export class CustomerRequestModule {}

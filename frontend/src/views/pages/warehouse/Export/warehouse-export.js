@@ -98,8 +98,8 @@ const WarehouseImport = props => {
   const toCreateWarehouseExportProvider = () => {
     history.push(`${props.match.url}/provider/new`);
   };
-  const toEditWarehouseExportProvider = () => {
-    history.push(`${props.match.url}/provider/new`);
+  const toEditWarehouseExportProvider = (userId) => {
+    history.push(`${props.match.url}/provider/${userId}/edit`);
   };
   const toEditWarehouseImport = userId => {
     history.push(`${props.match.url}/${userId}/edit`);

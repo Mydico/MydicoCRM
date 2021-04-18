@@ -9,33 +9,33 @@ relationshipNames.push('permissionGroups');
 
 @Injectable()
 export class UserRoleService {
-  logger = new Logger('UserRoleService');
+    logger = new Logger('UserRoleService');
 
-  constructor(@InjectRepository(UserRoleRepository) private userRoleRepository: UserRoleRepository) {}
+    constructor(@InjectRepository(UserRoleRepository) private userRoleRepository: UserRoleRepository) {}
 
-  async findById(id: string): Promise<UserRole | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.userRoleRepository.findOne(id, options);
-  }
+    async findById(id: string): Promise<UserRole | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.userRoleRepository.findOne(id, options);
+    }
 
-  async findByfields(options: FindOneOptions<UserRole>): Promise<UserRole | undefined> {
-    return await this.userRoleRepository.findOne(options);
-  }
+    async findByfields(options: FindOneOptions<UserRole>): Promise<UserRole | undefined> {
+        return await this.userRoleRepository.findOne(options);
+    }
 
-  async findAndCount(options: FindManyOptions<UserRole>): Promise<[UserRole[], number]> {
-    options.relations = relationshipNames;
-    return await this.userRoleRepository.findAndCount(options);
-  }
+    async findAndCount(options: FindManyOptions<UserRole>): Promise<[UserRole[], number]> {
+        options.relations = relationshipNames;
+        return await this.userRoleRepository.findAndCount(options);
+    }
 
-  async save(userRole: UserRole): Promise<UserRole | undefined> {
-    return await this.userRoleRepository.save(userRole);
-  }
+    async save(userRole: UserRole): Promise<UserRole | undefined> {
+        return await this.userRoleRepository.save(userRole);
+    }
 
-  async update(userRole: UserRole): Promise<UserRole | undefined> {
-    return await this.save(userRole);
-  }
+    async update(userRole: UserRole): Promise<UserRole | undefined> {
+        return await this.save(userRole);
+    }
 
-  async delete(userRole: UserRole): Promise<UserRole | undefined> {
-    return await this.userRoleRepository.remove(userRole);
-  }
+    async delete(userRole: UserRole): Promise<UserRole | undefined> {
+        return await this.userRoleRepository.remove(userRole);
+    }
 }

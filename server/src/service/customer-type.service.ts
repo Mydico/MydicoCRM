@@ -8,37 +8,37 @@ const relationshipNames = [];
 
 @Injectable()
 export class CustomerTypeService {
-  logger = new Logger('CustomerTypeService');
+    logger = new Logger('CustomerTypeService');
 
-  constructor(@InjectRepository(CustomerTypeRepository) private customerTypeRepository: CustomerTypeRepository) {}
+    constructor(@InjectRepository(CustomerTypeRepository) private customerTypeRepository: CustomerTypeRepository) {}
 
-  async findById(id: string): Promise<CustomerType | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.customerTypeRepository.findOne(id, options);
-  }
+    async findById(id: string): Promise<CustomerType | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.customerTypeRepository.findOne(id, options);
+    }
 
-  async checkExist(customerType: CustomerType):  Promise<any> {
-    return await this.customerTypeRepository.query(`SELECT EXISTS(SELECT 1 FROM customer_type WHERE code = ? );`, [customerType.code]);
-  }
+    async checkExist(customerType: CustomerType):  Promise<any> {
+        return await this.customerTypeRepository.query('SELECT EXISTS(SELECT 1 FROM customer_type WHERE code = ? );', [customerType.code]);
+    }
 
-  async findByfields(options: FindOneOptions<CustomerType>): Promise<CustomerType | undefined> {
-    return await this.customerTypeRepository.findOne(options);
-  }
+    async findByfields(options: FindOneOptions<CustomerType>): Promise<CustomerType | undefined> {
+        return await this.customerTypeRepository.findOne(options);
+    }
 
-  async findAndCount(options: FindManyOptions<CustomerType>): Promise<[CustomerType[], number]> {
-    options.relations = relationshipNames;
-    return await this.customerTypeRepository.findAndCount(options);
-  }
+    async findAndCount(options: FindManyOptions<CustomerType>): Promise<[CustomerType[], number]> {
+        options.relations = relationshipNames;
+        return await this.customerTypeRepository.findAndCount(options);
+    }
 
-  async save(customerType: CustomerType): Promise<CustomerType | undefined> {
-    return await this.customerTypeRepository.save(customerType);
-  }
+    async save(customerType: CustomerType): Promise<CustomerType | undefined> {
+        return await this.customerTypeRepository.save(customerType);
+    }
 
-  async update(customerType: CustomerType): Promise<CustomerType | undefined> {
-    return await this.save(customerType);
-  }
+    async update(customerType: CustomerType): Promise<CustomerType | undefined> {
+        return await this.save(customerType);
+    }
 
-  async delete(customerType: CustomerType): Promise<CustomerType | undefined> {
-    return await this.customerTypeRepository.remove(customerType);
-  }
+    async delete(customerType: CustomerType): Promise<CustomerType | undefined> {
+        return await this.customerTypeRepository.remove(customerType);
+    }
 }

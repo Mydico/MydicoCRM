@@ -1,11 +1,24 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
-// import usersData from '../../../users/DepartmentsData.js';
 import CIcon from '@coreui/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDepartment } from './department.api.js';
+import { getDepartment, getTreeDepartment } from './department.api.js';
 import { fetching, globalizedDepartmentSelectors, reset } from './department.reducer.js';
 import { useHistory } from 'react-router-dom';
+import { Tree, TreeNode } from 'react-organizational-chart';
+import styled from 'styled-components';
+
+const StyledNode = styled.div`
+  padding: 5px;
+  border-radius: 8px;
+  display: inline-block;
+  border: 1px solid red;
+`;
+
+const StyledRootNode = styled.div`
+  margin-top: 25px;
+  margin-bottom: 8px;
+`;
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
@@ -14,8 +27,7 @@ const mappingStatus = {
 const Department = props => {
   const isInitialMount = useRef(true);
   const [details, setDetails] = useState([]);
-  const { initialState } = useSelector(state => state.user);
-  const [activePage, setActivePage] = useState(1);
+
   const [size, setSize] = useState(20);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -26,18 +38,12 @@ const Department = props => {
   });
   useEffect(() => {
     // dispatch(fetching());
-    // dispatch(getDepartment());
+    dispatch(getTreeDepartment());
     // dispatch(reset());
   }, []);
 
-  useEffect(() => {
-    if (!isInitialMount.current) {
-      dispatch(getDepartment({ page: activePage - 1, size, sort: 'createdDate,desc' }));
-    }
-  }, [activePage, size]);
-
   const { selectAll } = globalizedDepartmentSelectors;
-  const users = useSelector(selectAll);
+  const departments = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
       return {
@@ -59,55 +65,16 @@ const Department = props => {
     setDetails(newDetails);
   };
 
-  // Code	Tên chi nhánh	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại chi nhánh	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'name', label: 'Tên chi nhánh', _style: { width: '10%' } },
-    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '15%' } },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
-  ];
-
-  const getBadge = status => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'INACTIVE':
-        return 'danger';
-      case 'DELETED':
-        return 'warning';
-      case 'Banned':
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
-  const [currentItems, setCurrentItems] = useState([]);
-  const csvContent = computedItems(users)
-    .map(item => Object.values(item).join(','))
-    .join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateDepartment = () => {
     history.push(`${props.match.url}new`);
   };
-
-  const toEditDepartment = userId => {
-    history.push(`${props.match.url}${userId}/edit`);
-  };
-
-  const onFilterColumn = value => {
-    if (!isInitialMount.current) {
-      dispatch(getDepartment({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+  const renderChild = children => {
+    if (children && Array.isArray(children) && children.length > 0) {
+      return children.map((item, index) => (
+        <TreeNode key={index} label={<StyledNode>{item.name}</StyledNode>}>
+          {renderChild(item.children)}
+        </TreeNode>
+      ));
     }
   };
 
@@ -119,7 +86,38 @@ const Department = props => {
           <CIcon name="cil-plus" /> Thêm mới chi nhánh
         </CButton>
       </CCardHeader>
-      <CCardBody>
+      {departments.map((item, index) => {
+        return (
+          <StyledRootNode>
+            <Tree
+              key={index}
+              sty
+              lineWidth={'2px'}
+              lineColor={'green'}
+              lineBorderRadius={'10px'}
+              label={<StyledNode>{item.name}</StyledNode>}
+            >
+              {renderChild(item.children)}
+            </Tree>
+          </StyledRootNode>
+        );
+      })}
+      {/* <Tree lineWidth={'2px'} lineColor={'green'} lineBorderRadius={'10px'} label={<StyledNode>Chi nhánh HN</StyledNode>}>
+        <TreeNode label={<StyledNode>CN Hải dương</StyledNode>}>
+          <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>} />
+        </TreeNode>
+        <TreeNode label={<StyledNode>CN Hải dương 2</StyledNode>}>
+          <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>}>
+            <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>} />
+            <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>} />
+          </TreeNode>
+        </TreeNode>
+        <TreeNode label={<StyledNode>CN Hải dương 3</StyledNode>}>
+          <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>} />
+          <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>} />
+        </TreeNode>
+      </Tree> */}
+      {/* <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
           Tải excel (.csv)
         </CButton>
@@ -228,7 +226,7 @@ const Department = props => {
           pages={Math.floor(initialState.totalItem / size) + 1}
           onActivePageChange={i => setActivePage(i)}
         />
-      </CCardBody>
+      </CCardBody> */}
     </CCard>
   );
 };

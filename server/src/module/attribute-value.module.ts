@@ -5,9 +5,9 @@ import { AttributeValueRepository } from '../repository/attribute-value.reposito
 import { AttributeValueService } from '../service/attribute-value.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AttributeValueRepository])],
-  controllers: [AttributeValueController],
-  providers: [AttributeValueService],
-  exports: [AttributeValueService]
+    imports: [TypeOrmModule.forFeature([AttributeValueRepository])],
+    controllers: [AttributeValueController],
+    providers: [AttributeValueService],
+    exports: [AttributeValueService],
 })
 export class AttributeValueModule {}

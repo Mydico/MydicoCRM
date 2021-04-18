@@ -157,7 +157,7 @@ const User = props => {
             ),
             departments: item => (
               <td>
-               {item.departments.reduce((sum, currentValue) => sum + currentValue.name,'')}
+               {item.department?.name || ''}
               </td>
             ),
             roles: item => (

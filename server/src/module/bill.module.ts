@@ -5,9 +5,9 @@ import { BillRepository } from '../repository/bill.repository';
 import { BillService } from '../service/bill.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BillRepository])],
-  controllers: [BillController],
-  providers: [BillService],
-  exports: [BillService]
+    imports: [TypeOrmModule.forFeature([BillRepository])],
+    controllers: [BillController],
+    providers: [BillService],
+    exports: [BillService],
 })
 export class BillModule {}

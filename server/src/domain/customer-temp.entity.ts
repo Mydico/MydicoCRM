@@ -9,14 +9,14 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
  */
 @Entity('customer_temp')
 export default class CustomerTemp extends BaseEntity {
-  @Column({ name: 'name', length: 255, nullable: true })
-  name: string;
+    @Column({ name: 'name', length: 255, nullable: true })
+    name: string;
 
-  @Column({ name: 'tel', length: 100, nullable: true })
-  tel: string;
+    @Column({ name: 'tel', length: 100, nullable: true })
+    tel: string;
 
-  @Column({ name: 'address', length: 255, nullable: true })
-  address: string;
+    @Column({ name: 'address', length: 255, nullable: true })
+    address: string;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

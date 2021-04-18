@@ -12,19 +12,19 @@ import ProductBrand from './product-brand.entity';
  */
 @Entity('product_group')
 export default class ProductGroup extends BaseEntity {
-  @Column({ name: 'name', length: 255, nullable: true })
-  name?: string;
+    @Column({ name: 'name', length: 255, nullable: true })
+    name?: string;
 
-  @Column({ name: 'description', length: 512, nullable: true })
-  description?: string;
+    @Column({ name: 'description', length: 512, nullable: true })
+    description?: string;
 
-  @OneToMany(type => Product, other => other.productGroup)
-  product? : Product[]
+    @OneToMany(type => Product, other => other.productGroup)
+    product? : Product[];
 
-  @OneToMany(type => PromotionItem, other => other.productGroup)
-  promotionItem? : PromotionItem[]
+    @OneToMany(type => PromotionItem, other => other.productGroup)
+    promotionItem? : PromotionItem[];
 
-  @ManyToOne(type => ProductBrand)
-  productBrand: ProductBrand;
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    @ManyToOne(type => ProductBrand)
+    productBrand: ProductBrand;
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

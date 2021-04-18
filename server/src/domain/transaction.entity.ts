@@ -3,82 +3,76 @@ import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne
 import { BaseEntity } from './base/base.entity';
 
 import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
+import Receipt from './receipt.entity';
+import { User } from './user.entity';
+import Bill from './bill.entity';
+import Store from './store.entity';
+import Order from './order.entity';
+import Customer from './customer.entity';
+import { TransactionType } from './enumeration/transaction-type';
+import StoreInput from './store-input.entity';
 
 /**
  * A Transaction.
  */
 @Entity('transaction')
 export default class Transaction extends BaseEntity {
-  @Column({ type: 'integer', name: 'customer_id' })
-  customerId: number;
+    @ManyToOne(type => Customer)
+    customer?: Customer;
 
-  @Column({ type: 'integer', name: 'order_id', nullable: true })
-  orderId: number;
+    @ManyToOne(type => Order)
+    order?: Order;
 
-  @Column({ type: 'integer', name: 'store_id', nullable: true })
-  storeId: number;
+    @ManyToOne(type => Store)
+    store?: Store;
 
-  @Column({ type: 'integer', name: 'bill_id', nullable: true })
-  billId: number;
+    @ManyToOne(type => StoreInput)
+    storeInput?: StoreInput;
 
-  /**
+    @ManyToOne(type => Bill)
+    bill?: Bill;
+
+    /**
    * 0 : chưa thanh toán, 1 : đã thanh toán
    */
-  @Column({ type: 'integer', name: 'status', nullable: true })
-  status: number;
+    @Column({ type: 'integer', name: 'status', nullable: true })
+    status: number;
 
-  @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
+    @Column({ name: 'note', length: 255, nullable: true })
+    note: string;
 
-  @Column({ name: 'note', length: 255, nullable: true })
-  note: string;
+    @ManyToOne(type => User)
+    sale?: User;
 
+    @Column({ type: 'bigint', name: 'total_money', nullable: true, default: 0 })
+    totalMoney: number;
 
-
-  @Column({ type: 'integer', name: 'sale_id', nullable: true })
-  saleId: number;
-
-  @Column({ type: 'integer', name: 'total_money', nullable: true })
-  totalMoney: number;
-
-  /**
+    /**
    * Số tiền hòa trả do trả hàng
    */
-  @Column({ type: 'integer', name: 'refund_money', nullable: true })
-  refundMoney: number;
+    @Column({ type: 'bigint', name: 'refund_money', nullable: true, default: 0 })
+    refundMoney: number;
 
-  /**
-   * 0 : ghi nợ, 1 : thu công nợ, 2 thu tiền mặt
-   */
-  @Column({ type: 'integer', name: 'type', nullable: true })
-  type: number;
+    @Column({ type: 'bigint', name: 'collect_money', nullable: true, default: 0 })
+    collectMoney: number;
 
-  /**
-   * công nợ đầu kỳ
-   */
-  @Column({ type: 'integer', name: 'early_debt', nullable: true })
-  earlyDebt: number;
+    @Column({ type: 'simple-enum', name: 'type', enum: TransactionType, default: TransactionType.DEBIT })
+    type?: TransactionType;
 
-  /**
-   * ghi nợ
-   */
-  @Column({ type: 'integer', name: 'debit', nullable: true })
-  debit: number;
+    @Column({ type: 'bigint', name: 'pre_debt', nullable: true, default: 0 })
+    previousDebt: number;
 
-  /**
-   * ghi có
-   */
-  @Column({ type: 'integer', name: 'debit_yes', nullable: true })
-  debitYes: number;
+    @Column({ type: 'bigint', name: 'early_debt', nullable: true, default: 0 })
+    earlyDebt: number;
 
-  /**
+    /**
    * id phiếu thu
    */
-  @Column({ type: 'integer', name: 'receipt_id', nullable: true })
-  receiptId: number;
+    @ManyToOne(type => Receipt)
+    receipt?: Receipt;
 
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+    @Column({ type: 'integer', name: 'site_id', nullable: true })
+    siteId: number;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

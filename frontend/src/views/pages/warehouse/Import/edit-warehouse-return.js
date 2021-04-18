@@ -119,8 +119,7 @@ const EditWarehouseReturn = props => {
   };
 
   useEffect(() => {
-    const departArr = account.departments.map(item => item.id);
-    dispatch(getWarehouse({ department: JSON.stringify(departArr) }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     dispatch(getProduct());
     dispatch(getDetailWarehouseImport(props.match.params.id));
     dispatch(getCustomer());
@@ -131,7 +130,7 @@ const EditWarehouseReturn = props => {
       setInitValuesState(warehouseImport);
       setSelectedWarehouse(warehouseImport.store);
       setSelectedCustomer(warehouseImport.customer);
-      setProductList(warehouseImport.storeInputDetails);
+      setProductList(Array.isArray(warehouseImport.storeInputDetails) ? warehouseImport.storeInputDetails : []);
     }
   }, [warehouseImport]);
 

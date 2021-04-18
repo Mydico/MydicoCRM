@@ -5,9 +5,9 @@ import { OrderPushRepository } from '../repository/order-push.repository';
 import { OrderPushService } from '../service/order-push.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([OrderPushRepository])],
-  controllers: [OrderPushController],
-  providers: [OrderPushService],
-  exports: [OrderPushService]
+    imports: [TypeOrmModule.forFeature([OrderPushRepository])],
+    controllers: [OrderPushController],
+    providers: [OrderPushService],
+    exports: [OrderPushService],
 })
 export class OrderPushModule {}

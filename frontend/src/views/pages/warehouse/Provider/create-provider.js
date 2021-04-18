@@ -121,7 +121,6 @@ const CreateProvider = () => {
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới nhà cung cấp thành công" />
       <CCardHeader>
         <CCardTitle>Thêm mới nhà cung cấp</CCardTitle>
       </CCardHeader>
@@ -233,6 +232,7 @@ const CreateProvider = () => {
           )}
         </Formik>
       </CCardBody>
+      <Toaster ref={toastRef} message="Tạo mới nhà cung cấp thành công" />
     </CCard>
   );
 };

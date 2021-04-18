@@ -5,9 +5,9 @@ import { TransportLogRepository } from '../repository/transport-log.repository';
 import { TransportLogService } from '../service/transport-log.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TransportLogRepository])],
-  controllers: [TransportLogController],
-  providers: [TransportLogService],
-  exports: [TransportLogService]
+    imports: [TypeOrmModule.forFeature([TransportLogRepository])],
+    controllers: [TransportLogController],
+    providers: [TransportLogService],
+    exports: [TransportLogService],
 })
 export class TransportLogModule {}

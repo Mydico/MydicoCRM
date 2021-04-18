@@ -9,32 +9,32 @@ relationshipNames.push('district');
 
 @Injectable()
 export class WardsService {
-  logger = new Logger('WardsService');
+    logger = new Logger('WardsService');
 
-  constructor(@InjectRepository(WardsRepository) private wardsRepository: WardsRepository) {}
+    constructor(@InjectRepository(WardsRepository) private wardsRepository: WardsRepository) {}
 
-  async findById(id: string): Promise<Wards | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.wardsRepository.findOne(id, options);
-  }
+    async findById(id: string): Promise<Wards | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.wardsRepository.findOne(id, options);
+    }
 
-  async findByfields(options: FindOneOptions<Wards>): Promise<Wards | undefined> {
-    return await this.wardsRepository.findOne(options);
-  }
+    async findByfields(options: FindOneOptions<Wards>): Promise<Wards | undefined> {
+        return await this.wardsRepository.findOne(options);
+    }
 
-  async findAndCount(options: FindManyOptions<Wards>): Promise<Wards[]> {
-    return await this.wardsRepository.find(options);
-  }
+    async findAndCount(options: FindManyOptions<Wards>): Promise<Wards[]> {
+        return await this.wardsRepository.find(options);
+    }
 
-  async save(wards: Wards): Promise<Wards | undefined> {
-    return await this.wardsRepository.save(wards);
-  }
+    async save(wards: Wards): Promise<Wards | undefined> {
+        return await this.wardsRepository.save(wards);
+    }
 
-  async update(wards: Wards): Promise<Wards | undefined> {
-    return await this.save(wards);
-  }
+    async update(wards: Wards): Promise<Wards | undefined> {
+        return await this.save(wards);
+    }
 
-  async delete(wards: Wards): Promise<Wards | undefined> {
-    return await this.wardsRepository.remove(wards);
-  }
+    async delete(wards: Wards): Promise<Wards | undefined> {
+        return await this.wardsRepository.remove(wards);
+    }
 }

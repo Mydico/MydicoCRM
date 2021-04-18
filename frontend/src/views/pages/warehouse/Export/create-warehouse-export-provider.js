@@ -19,7 +19,8 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { creatingWarehouseImport } from '../Import/warehouse-import.api';
-
+import { currencyMask } from '../../../components/currency-input/currency-input';
+import MaskedInput from 'react-text-mask';
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { current } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router-dom';
@@ -118,8 +119,7 @@ const CreateWarehouseExportProvider = () => {
   };
 
   useEffect(() => {
-    const departArr = account.departments.map(item => item.id);
-    dispatch(getWarehouse({ department: JSON.stringify(departArr) }));
+    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
     dispatch(getProduct());
     dispatch(getProvider());
   }, []);
@@ -156,7 +156,7 @@ const CreateWarehouseExportProvider = () => {
     if (arr.length === 0) {
       const copyArr = [...productList];
       copyArr[index].product = value;
-      copyArr[index].price = value.price;
+      copyArr[index].price = Number(value.price);
       copyArr[index].quantity = 1;
       setProductList(copyArr);
     }
@@ -169,7 +169,7 @@ const CreateWarehouseExportProvider = () => {
 
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
-    copyArr[index].price = target.value;
+    copyArr[index].price = Number(target.value.replace(/\D/g, ''));
     setProductList(copyArr);
   };
 
@@ -345,14 +345,17 @@ const CreateWarehouseExportProvider = () => {
                           </td>
                           <td>
                             {
-                              <CInput
-                                type="number"
-                                min={1}
-                                name="code"
-                                id="code"
+                              <MaskedInput
+                                mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
-                                onBlur={handleBlur}
-                                value={item?.price}
+                                value={
+                                    typeof productList[index].price !== 'number'
+                                      ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                          productList[index].price
+                                        )
+                                      : productList[index].price
+                                  }
+                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
                           </td>

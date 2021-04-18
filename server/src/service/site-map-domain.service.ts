@@ -8,33 +8,33 @@ const relationshipNames = [];
 
 @Injectable()
 export class SiteMapDomainService {
-  logger = new Logger('SiteMapDomainService');
+    logger = new Logger('SiteMapDomainService');
 
-  constructor(@InjectRepository(SiteMapDomainRepository) private siteMapDomainRepository: SiteMapDomainRepository) {}
+    constructor(@InjectRepository(SiteMapDomainRepository) private siteMapDomainRepository: SiteMapDomainRepository) {}
 
-  async findById(id: string): Promise<SiteMapDomain | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.siteMapDomainRepository.findOne(id, options);
-  }
+    async findById(id: string): Promise<SiteMapDomain | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.siteMapDomainRepository.findOne(id, options);
+    }
 
-  async findByfields(options: FindOneOptions<SiteMapDomain>): Promise<SiteMapDomain | undefined> {
-    return await this.siteMapDomainRepository.findOne(options);
-  }
+    async findByfields(options: FindOneOptions<SiteMapDomain>): Promise<SiteMapDomain | undefined> {
+        return await this.siteMapDomainRepository.findOne(options);
+    }
 
-  async findAndCount(options: FindManyOptions<SiteMapDomain>): Promise<[SiteMapDomain[], number]> {
-    options.relations = relationshipNames;
-    return await this.siteMapDomainRepository.findAndCount(options);
-  }
+    async findAndCount(options: FindManyOptions<SiteMapDomain>): Promise<[SiteMapDomain[], number]> {
+        options.relations = relationshipNames;
+        return await this.siteMapDomainRepository.findAndCount(options);
+    }
 
-  async save(siteMapDomain: SiteMapDomain): Promise<SiteMapDomain | undefined> {
-    return await this.siteMapDomainRepository.save(siteMapDomain);
-  }
+    async save(siteMapDomain: SiteMapDomain): Promise<SiteMapDomain | undefined> {
+        return await this.siteMapDomainRepository.save(siteMapDomain);
+    }
 
-  async update(siteMapDomain: SiteMapDomain): Promise<SiteMapDomain | undefined> {
-    return await this.save(siteMapDomain);
-  }
+    async update(siteMapDomain: SiteMapDomain): Promise<SiteMapDomain | undefined> {
+        return await this.save(siteMapDomain);
+    }
 
-  async delete(siteMapDomain: SiteMapDomain): Promise<SiteMapDomain | undefined> {
-    return await this.siteMapDomainRepository.remove(siteMapDomain);
-  }
+    async delete(siteMapDomain: SiteMapDomain): Promise<SiteMapDomain | undefined> {
+        return await this.siteMapDomainRepository.remove(siteMapDomain);
+    }
 }

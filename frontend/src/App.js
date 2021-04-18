@@ -30,7 +30,7 @@ export const App = props => {
     dispatch(getSession());
   }, []);
   return (
-    <HashRouter>
+    <BrowserRouter>
       <ToastContainer position={toast.POSITION.TOP_LEFT} className="toastify-container" toastClassName="toastify-toast" />
 
       <React.Suspense fallback={loading}>
@@ -42,7 +42,7 @@ export const App = props => {
           <PrivateRoute path="/" component={TheLayout} />
         </Switch>
       </React.Suspense>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 

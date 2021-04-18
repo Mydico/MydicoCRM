@@ -5,9 +5,9 @@ import { SiteMapDomainRepository } from '../repository/site-map-domain.repositor
 import { SiteMapDomainService } from '../service/site-map-domain.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SiteMapDomainRepository])],
-  controllers: [SiteMapDomainController],
-  providers: [SiteMapDomainService],
-  exports: [SiteMapDomainService]
+    imports: [TypeOrmModule.forFeature([SiteMapDomainRepository])],
+    controllers: [SiteMapDomainController],
+    providers: [SiteMapDomainService],
+    exports: [SiteMapDomainService],
 })
 export class SiteMapDomainModule {}

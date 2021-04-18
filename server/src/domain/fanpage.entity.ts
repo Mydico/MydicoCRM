@@ -9,22 +9,21 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
  */
 @Entity('fanpage')
 export default class Fanpage extends BaseEntity {
-  @Column({ name: 'name', length: 255, nullable: true })
-  name: string;
+    @Column({ name: 'name', length: 255, nullable: true })
+    name: string;
 
-  @Column({ name: 'link', length: 255, nullable: true })
-  link: string;
+    @Column({ name: 'link', length: 255, nullable: true })
+    link: string;
 
 
+    @Column({ type: 'boolean', name: 'is_del', nullable: true })
+    isDel: boolean;
 
-  @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
+    @Column({ name: 'code', length: 255, nullable: true })
+    code: string;
 
-  @Column({ name: 'code', length: 255, nullable: true })
-  code: string;
+    @Column({ type: 'integer', name: 'site_id', nullable: true })
+    siteId: number;
 
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
-
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

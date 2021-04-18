@@ -23,8 +23,8 @@ import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedOrdersSelectors } from './order.reducer';
 import Select from 'react-select';
-import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
-import { getCustomer } from '../../customer/customer.api';
+import { currencyMask } from '../../../components/currency-input/currency-input';
+import MaskedInput from 'react-text-mask';
 import { globalizedPromotionSelectors } from '../Promotion/promotion.reducer';
 import { getDetailProductPromotion, getPromotion, getPromotionProduct } from '../Promotion/promotion.api';
 import { globalizedWarehouseSelectors } from '../../warehouse/Warehouse/warehouse.reducer';
@@ -166,7 +166,7 @@ const EditOrder = props => {
     const arr = productInWarehouses.filter(product => product.product.id === value);
     if (arr.length === 1) {
       const copyArr = [...productList];
-      copyArr[index].priceReal = arr[0].product.price;
+      copyArr[index].priceReal = Number(arr[0].product.price);
       copyArr[index].product = arr[0].product;
       setProductList(copyArr);
       onChangeQuantity({ target: { value: 1 } }, index);
@@ -226,7 +226,7 @@ const EditOrder = props => {
 
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
-    copyArr[index].priceReal = target.value;
+    copyArr[index].priceReal = Number(target.value.replace(/\D/g, ''));
     copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
     setProductList(copyArr);
   };
@@ -538,14 +538,17 @@ const EditOrder = props => {
                             </td>
                             <td>
                               {
-                                <CInput
-                                  type="number"
-                                  min={1}
-                                  name="code"
-                                  id="code"
+                                <MaskedInput
+                                  mask={currencyMask}
                                   onChange={event => onChangePrice(event, index)}
-                                  onBlur={handleBlur}
-                                  value={item?.priceReal}
+                                  value={
+                                    typeof productList[index].priceReal !== 'number'
+                                      ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                          productList[index].priceReal
+                                        )
+                                      : productList[index].priceReal
+                                  }
+                                  render={(ref, props) => <CInput innerRef={ref} {...props} />}
                                 />
                               }
                             </td>

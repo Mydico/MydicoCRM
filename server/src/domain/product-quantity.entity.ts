@@ -10,17 +10,17 @@ import Product from './product.entity';
  */
 @Entity('product_quantity')
 export default class ProductQuantity extends BaseEntity {
-  @Column({ type: 'integer', name: 'quantity' })
-  quantity: number;
+    @Column({ type: 'integer', name: 'quantity' })
+    quantity: number;
 
-  @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel?: boolean;
+    @Column({ type: 'boolean', name: 'is_del', nullable: true })
+    isDel?: boolean;
 
-  @ManyToOne(type => Store)
-  store: Store;
+    @ManyToOne(type => Store)
+    store: Store;
 
-  @ManyToOne(type => Product)
-  product: Product;
+    @ManyToOne(type => Product)
+    product: Product;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

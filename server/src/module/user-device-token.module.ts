@@ -5,9 +5,9 @@ import { UserDeviceTokenRepository } from '../repository/user-device-token.repos
 import { UserDeviceTokenService } from '../service/user-device-token.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserDeviceTokenRepository])],
-  controllers: [UserDeviceTokenController],
-  providers: [UserDeviceTokenService],
-  exports: [UserDeviceTokenService]
+    imports: [TypeOrmModule.forFeature([UserDeviceTokenRepository])],
+    controllers: [UserDeviceTokenController],
+    providers: [UserDeviceTokenService],
+    exports: [UserDeviceTokenService],
 })
 export class UserDeviceTokenModule {}

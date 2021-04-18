@@ -11,38 +11,38 @@ relationshipNames.push('store');
 
 @Injectable()
 export class OrderDetailsService {
-  logger = new Logger('OrderDetailsService');
+    logger = new Logger('OrderDetailsService');
 
-  constructor(@InjectRepository(OrderDetailsRepository) private orderDetailsRepository: OrderDetailsRepository) {}
+    constructor(@InjectRepository(OrderDetailsRepository) private orderDetailsRepository: OrderDetailsRepository) {}
 
-  async findById(id: string): Promise<OrderDetails | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.orderDetailsRepository.findOne(id, options);
-  }
+    async findById(id: string): Promise<OrderDetails | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.orderDetailsRepository.findOne(id, options);
+    }
 
-  async findByfields(options: FindOneOptions<OrderDetails>): Promise<OrderDetails | undefined> {
-    return await this.orderDetailsRepository.findOne(options);
-  }
+    async findByfields(options: FindOneOptions<OrderDetails>): Promise<OrderDetails | undefined> {
+        return await this.orderDetailsRepository.findOne(options);
+    }
 
-  async findAndCountByOrderId(options: FindManyOptions<OrderDetails>): Promise<[OrderDetails[], number]> {
-    options.relations = relationshipNames;
-    return await this.orderDetailsRepository.findAndCount(options);
-  }
+    async findAndCountByOrderId(options: FindManyOptions<OrderDetails>): Promise<[OrderDetails[], number]> {
+        options.relations = relationshipNames;
+        return await this.orderDetailsRepository.findAndCount(options);
+    }
 
-  async findAndCount(options: FindManyOptions<OrderDetails>): Promise<[OrderDetails[], number]> {
-    options.relations = relationshipNames;
-    return await this.orderDetailsRepository.findAndCount(options);
-  }
+    async findAndCount(options: FindManyOptions<OrderDetails>): Promise<[OrderDetails[], number]> {
+        options.relations = relationshipNames;
+        return await this.orderDetailsRepository.findAndCount(options);
+    }
 
-  async save(orderDetails: OrderDetails): Promise<OrderDetails | undefined> {
-    return await this.orderDetailsRepository.save(orderDetails);
-  }
+    async save(orderDetails: OrderDetails): Promise<OrderDetails | undefined> {
+        return await this.orderDetailsRepository.save(orderDetails);
+    }
 
-  async update(orderDetails: OrderDetails): Promise<OrderDetails | undefined> {
-    return await this.save(orderDetails);
-  }
+    async update(orderDetails: OrderDetails): Promise<OrderDetails | undefined> {
+        return await this.save(orderDetails);
+    }
 
-  async delete(orderDetails: OrderDetails): Promise<OrderDetails | undefined> {
-    return await this.orderDetailsRepository.remove(orderDetails);
-  }
+    async delete(orderDetails: OrderDetails): Promise<OrderDetails | undefined> {
+        return await this.orderDetailsRepository.remove(orderDetails);
+    }
 }

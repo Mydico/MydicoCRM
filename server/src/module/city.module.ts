@@ -5,9 +5,9 @@ import { CityRepository } from '../repository/city.repository';
 import { CityService } from '../service/city.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CityRepository])],
-  controllers: [CityController],
-  providers: [CityService],
-  exports: [CityService]
+    imports: [TypeOrmModule.forFeature([CityRepository])],
+    controllers: [CityController],
+    providers: [CityService],
+    exports: [CityService],
 })
 export class CityModule {}

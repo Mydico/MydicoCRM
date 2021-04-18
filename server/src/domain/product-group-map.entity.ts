@@ -9,23 +9,23 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
  */
 @Entity('product_group_map')
 export default class ProductGroupMap extends BaseEntity {
-  @Column({ type: 'integer', name: 'group_id' })
-  groupId: number;
+    @Column({ type: 'integer', name: 'group_id' })
+    groupId: number;
 
-  @Column({ type: 'integer', name: 'product_id' })
-  productId: number;
+    @Column({ type: 'integer', name: 'product_id' })
+    productId: number;
 
-  @Column({ type: 'integer', name: 'created_at', nullable: true })
-  createdAt: number;
+    @Column({ type: 'integer', name: 'created_at', nullable: true })
+    createdAt: number;
 
-  @Column({ name: 'created_by', length: 255, nullable: true })
-  createdBy: string;
+    @Column({ name: 'created_by', length: 255, nullable: true })
+    createdBy: string;
 
-  @Column({ type: 'integer', name: 'updated_at', nullable: true })
-  updatedAt: number;
+    @Column({ type: 'integer', name: 'updated_at', nullable: true })
+    updatedAt: number;
 
-  @Column({ name: 'updated_by', length: 255, nullable: true })
-  updatedBy: string;
+    @Column({ name: 'updated_by', length: 255, nullable: true })
+    updatedBy: string;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

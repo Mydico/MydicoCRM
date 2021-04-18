@@ -8,44 +8,44 @@ const relationshipNames = [];
 
 @Injectable()
 export class PermissionGroupAssociateService {
-  logger = new Logger('PermissionGroupAssociateService');
+    logger = new Logger('PermissionGroupAssociateService');
 
-  constructor(
-    @InjectRepository(PermissionGroupAssociateRepository) private permissionGroupAssociateRepository: PermissionGroupAssociateRepository
-  ) {}
+    constructor(
+        @InjectRepository(PermissionGroupAssociateRepository) private permissionGroupAssociateRepository: PermissionGroupAssociateRepository
+    ) {}
 
-  async findById(id: string): Promise<PermissionGroupAssociate | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.permissionGroupAssociateRepository.findOne(id, options);
-  }
+    async findById(id: string): Promise<PermissionGroupAssociate | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.permissionGroupAssociateRepository.findOne(id, options);
+    }
 
-  async findByfields(options: FindOneOptions<PermissionGroupAssociate>): Promise<PermissionGroupAssociate | undefined> {
-    return await this.permissionGroupAssociateRepository.findOne(options);
-  }
+    async findByfields(options: FindOneOptions<PermissionGroupAssociate>): Promise<PermissionGroupAssociate | undefined> {
+        return await this.permissionGroupAssociateRepository.findOne(options);
+    }
 
-  async checkExist(entity: PermissionGroupAssociate): Promise<PermissionGroupAssociate | undefined> {
-    return await this.permissionGroupAssociateRepository.findOne({
-      where : {
-        action: entity.action,
-        resource: entity.resource
-      }
-    });
-  }
+    async checkExist(entity: PermissionGroupAssociate): Promise<PermissionGroupAssociate | undefined> {
+        return await this.permissionGroupAssociateRepository.findOne({
+            where : {
+                action: entity.action,
+                resource: entity.resource,
+            },
+        });
+    }
 
-  async findAndCount(options: FindManyOptions<PermissionGroupAssociate>): Promise<[PermissionGroupAssociate[], number]> {
-    options.relations = relationshipNames;
-    return await this.permissionGroupAssociateRepository.findAndCount(options);
-  }
+    async findAndCount(options: FindManyOptions<PermissionGroupAssociate>): Promise<[PermissionGroupAssociate[], number]> {
+        options.relations = relationshipNames;
+        return await this.permissionGroupAssociateRepository.findAndCount(options);
+    }
 
-  async save(permissionGroupAssociate: PermissionGroupAssociate): Promise<PermissionGroupAssociate | undefined> {
-    return await this.permissionGroupAssociateRepository.save(permissionGroupAssociate);
-  }
+    async save(permissionGroupAssociate: PermissionGroupAssociate): Promise<PermissionGroupAssociate | undefined> {
+        return await this.permissionGroupAssociateRepository.save(permissionGroupAssociate);
+    }
 
-  async update(permissionGroupAssociate: PermissionGroupAssociate): Promise<PermissionGroupAssociate | undefined> {
-    return await this.save(permissionGroupAssociate);
-  }
+    async update(permissionGroupAssociate: PermissionGroupAssociate): Promise<PermissionGroupAssociate | undefined> {
+        return await this.save(permissionGroupAssociate);
+    }
 
-  async delete(permissionGroupAssociate: PermissionGroupAssociate): Promise<PermissionGroupAssociate | undefined> {
-    return await this.permissionGroupAssociateRepository.remove(permissionGroupAssociate);
-  }
+    async delete(permissionGroupAssociate: PermissionGroupAssociate): Promise<PermissionGroupAssociate | undefined> {
+        return await this.permissionGroupAssociateRepository.remove(permissionGroupAssociate);
+    }
 }

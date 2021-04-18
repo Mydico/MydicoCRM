@@ -5,9 +5,9 @@ import { UserNotifyRepository } from '../repository/user-notify.repository';
 import { UserNotifyService } from '../service/user-notify.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserNotifyRepository])],
-  controllers: [UserNotifyController],
-  providers: [UserNotifyService],
-  exports: [UserNotifyService]
+    imports: [TypeOrmModule.forFeature([UserNotifyRepository])],
+    controllers: [UserNotifyController],
+    providers: [UserNotifyService],
+    exports: [UserNotifyService],
 })
 export class UserNotifyModule {}

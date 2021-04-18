@@ -5,9 +5,9 @@ import { WardsRepository } from '../repository/wards.repository';
 import { WardsService } from '../service/wards.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([WardsRepository])],
-  controllers: [WardsController],
-  providers: [WardsService],
-  exports: [WardsService]
+    imports: [TypeOrmModule.forFeature([WardsRepository])],
+    controllers: [WardsController],
+    providers: [WardsService],
+    exports: [WardsService],
 })
 export class WardsModule {}

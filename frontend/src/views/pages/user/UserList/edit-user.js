@@ -132,6 +132,9 @@ const EditUser = props => {
     dispatch(getDepartment());
     dispatch(getPermissionGroups());
     dispatch(getUserRole());
+    return () => {
+      dispatch(reset())
+    }
   }, []);
 
   useEffect(() => {

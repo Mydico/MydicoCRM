@@ -8,33 +8,33 @@ const relationshipNames = [];
 
 @Injectable()
 export class ReportDateService {
-  logger = new Logger('ReportDateService');
+    logger = new Logger('ReportDateService');
 
-  constructor(@InjectRepository(ReportDateRepository) private reportDateRepository: ReportDateRepository) {}
+    constructor(@InjectRepository(ReportDateRepository) private reportDateRepository: ReportDateRepository) {}
 
-  async findById(id: string): Promise<ReportDate | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.reportDateRepository.findOne(id, options);
-  }
+    async findById(id: string): Promise<ReportDate | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.reportDateRepository.findOne(id, options);
+    }
 
-  async findByfields(options: FindOneOptions<ReportDate>): Promise<ReportDate | undefined> {
-    return await this.reportDateRepository.findOne(options);
-  }
+    async findByfields(options: FindOneOptions<ReportDate>): Promise<ReportDate | undefined> {
+        return await this.reportDateRepository.findOne(options);
+    }
 
-  async findAndCount(options: FindManyOptions<ReportDate>): Promise<[ReportDate[], number]> {
-    options.relations = relationshipNames;
-    return await this.reportDateRepository.findAndCount(options);
-  }
+    async findAndCount(options: FindManyOptions<ReportDate>): Promise<[ReportDate[], number]> {
+        options.relations = relationshipNames;
+        return await this.reportDateRepository.findAndCount(options);
+    }
 
-  async save(reportDate: ReportDate): Promise<ReportDate | undefined> {
-    return await this.reportDateRepository.save(reportDate);
-  }
+    async save(reportDate: ReportDate): Promise<ReportDate | undefined> {
+        return await this.reportDateRepository.save(reportDate);
+    }
 
-  async update(reportDate: ReportDate): Promise<ReportDate | undefined> {
-    return await this.save(reportDate);
-  }
+    async update(reportDate: ReportDate): Promise<ReportDate | undefined> {
+        return await this.save(reportDate);
+    }
 
-  async delete(reportDate: ReportDate): Promise<ReportDate | undefined> {
-    return await this.reportDateRepository.remove(reportDate);
-  }
+    async delete(reportDate: ReportDate): Promise<ReportDate | undefined> {
+        return await this.reportDateRepository.remove(reportDate);
+    }
 }

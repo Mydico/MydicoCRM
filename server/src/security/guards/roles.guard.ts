@@ -4,18 +4,18 @@ import { User } from '../../domain/user.entity';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+    constructor(private readonly reflector: Reflector) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    return true;
-    if (!roles) {
-      return true;
+    canActivate(context: ExecutionContext): boolean {
+        const roles = this.reflector.get<string[]>('roles', context.getHandler());
+        return true;
+        if (!roles) {
+            return true;
+        }
+
+        const request = context.switchToHttp().getRequest();
+        const user = request.user as User;
+
+        return user && user.authorities && user.authorities.some(role => roles.includes(role));
     }
-
-    const request = context.switchToHttp().getRequest();
-    const user = request.user as User;
-
-    return user && user.authorities && user.authorities.some(role => roles.indexOf(role) >= 0);
-  }
 }

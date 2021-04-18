@@ -97,6 +97,9 @@ const CreatePermissionGroups = () => {
 
   useEffect(() => {
     dispatch(getPermissionType());
+    return () => {
+      dispatch(reset())
+    }
   }, []);
 
   const onGetPermission = value => {

@@ -114,8 +114,7 @@ const EditWarehouseImport = (props) => {
   };
 
   useEffect(() => {
-    const departArr = account.departments.map(item => item.id);
-    dispatch(getWarehouse({ department: JSON.stringify(departArr) }));
+    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
     dispatch(getProduct());
     dispatch(getDetailWarehouseImport(props.match.params.id));
   }, []);

@@ -5,9 +5,9 @@ import { PermissionGroupAssociateRepository } from '../repository/permission-gro
 import { PermissionGroupAssociateService } from '../service/permission-group-associate.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PermissionGroupAssociateRepository])],
-  controllers: [PermissionGroupAssociateController],
-  providers: [PermissionGroupAssociateService],
-  exports: [PermissionGroupAssociateService]
+    imports: [TypeOrmModule.forFeature([PermissionGroupAssociateRepository])],
+    controllers: [PermissionGroupAssociateController],
+    providers: [PermissionGroupAssociateService],
+    exports: [PermissionGroupAssociateService],
 })
 export class PermissionGroupAssociateModule {}

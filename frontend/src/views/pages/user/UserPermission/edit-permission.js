@@ -109,6 +109,9 @@ const EditPermissionGroups = props => {
   useEffect(() => {
     dispatch(getDetailPermissionGroups(props.match.params.id));
     dispatch(getPermissionType());
+    return () => {
+      dispatch(reset())
+    }
   }, []);
 
   useEffect(() => {

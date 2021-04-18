@@ -21,7 +21,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { creatingOrder } from './order.api';
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
-import { fetching } from './order.reducer';
+import { currencyMask } from '../../../components/currency-input/currency-input';
+import MaskedInput from 'react-text-mask';
 import Select from 'react-select';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { getCustomer } from '../../customer/customer.api';
@@ -172,14 +173,12 @@ const CreateOrder = props => {
   };
 
   const onSelectedProduct = ({ value }, index) => {
-    const arr = productInWarehouses.filter(product => product.product.id === value);
-    if (arr.length === 1) {
-      const copyArr = [...productList];
-      copyArr[index].priceReal = arr[0].product.price;
-      copyArr[index].product = arr[0].product;
-      setProductList(copyArr);
-      onChangeQuantity({ target: { value: 1 } }, index);
-    }
+    console.log(value)
+    const copyArr = [...productList];
+    copyArr[index].priceReal = Number(value.product.price);
+    copyArr[index].product = value.product;
+    setProductList(copyArr);
+    onChangeQuantity({ target: { value: 1 } }, index);
   };
 
   const onSelectWarehouse = value => {
@@ -240,7 +239,7 @@ const CreateOrder = props => {
 
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
-    copyArr[index].priceReal = target.value;
+    copyArr[index].priceReal = Number(target.value.replace(/\D/g, ''));
     copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
     setProductList(copyArr);
   };
@@ -251,7 +250,6 @@ const CreateOrder = props => {
     copyArr[index].priceTotal =
       copyArr[index].priceReal * copyArr[index].quantity -
       (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
-
     setProductList(copyArr);
   };
 
@@ -519,18 +517,19 @@ const CreateOrder = props => {
                     </thead>
                     <tbody>
                       {productList.map((item, index) => {
+                        console.log(item);
                         return (
                           <tr key={index}>
                             <td style={{ width: 300 }}>
                               <Select
-                                value={{
-                                  value: item.product?.id,
-                                  label: item.product?.name
-                                }}
+                                // value={{
+                                //   value: item.product?.id,
+                                //   label: item.product?.name
+                                // }}
                                 onChange={event => onSelectedProduct(event, index)}
                                 menuPortalTarget={document.body}
                                 options={productInWarehouses.map(item => ({
-                                  value: item.product.id,
+                                  value: item,
                                   label: `${item.product.productBrand?.name}-${item.product.name}-${item.product.volume}`
                                 }))}
                               />
@@ -554,14 +553,17 @@ const CreateOrder = props => {
                             </td>
                             <td>
                               {
-                                <CInput
-                                  type="number"
-                                  min={1}
-                                  name="code"
-                                  id="code"
+                                <MaskedInput
+                                  mask={currencyMask}
                                   onChange={event => onChangePrice(event, index)}
-                                  onBlur={handleBlur}
-                                  value={item?.priceReal}
+                                  value={
+                                    typeof productList[index].priceReal !== 'number'
+                                      ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                          productList[index].priceReal
+                                        )
+                                      : productList[index].priceReal
+                                  }
+                                  render={(ref, props) => <CInput innerRef={ref} {...props} />}
                                 />
                               }
                             </td>
@@ -673,10 +675,7 @@ const CreateOrder = props => {
                             </td>
                             <td className="right">
                               {productList
-                                .reduce(
-                                  (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100,
-                                  0
-                                )
+                                .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                             </td>
                           </tr>

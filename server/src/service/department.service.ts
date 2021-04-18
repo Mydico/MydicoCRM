@@ -13,6 +13,10 @@ export class DepartmentService {
 
   constructor(@InjectRepository(DepartmentRepository) private departmentRepository: DepartmentRepository) {}
 
+  async findAllTree(): Promise<Department[]> {
+    return await this.departmentRepository.findTrees();
+  }
+
   async findById(id: string): Promise<Department | undefined> {
     const options = { relations: relationshipNames };
     return await this.departmentRepository.findOne(id, options);

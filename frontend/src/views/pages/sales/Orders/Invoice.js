@@ -21,6 +21,16 @@ const Invoice = props => {
 
   const onCreateOrder = () => {
     if (invoice) {
+      invoice.totalMoney = invoice?.orderDetails.reduce((sum, current) => sum + current.priceReal * current.quantity, 0);
+      invoice.realMoney = invoice?.orderDetails.reduce(
+        (sum, current) =>
+          sum + (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
+        0
+      );
+      invoice.reduceMoney = invoice?.orderDetails.reduce(
+        (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100,
+        0
+      );
       dispatch(creatingOrder(invoice));
     }
   };
@@ -73,7 +83,11 @@ const Invoice = props => {
               <div>
                 <strong> {invoice?.promotion?.name}</strong>
               </div>
-              <div>{invoice?.promotion?.description.length > 200 ?`${invoice?.promotion?.description.substring(0, 200)}`:invoice?.promotion?.description}</div>
+              <div>
+                {invoice?.promotion?.description.length > 200
+                  ? `${invoice?.promotion?.description.substring(0, 200)}`
+                  : invoice?.promotion?.description}
+              </div>
               <div>Loại khách hàng: {invoice?.promotion?.customerType?.name}</div>
             </CCol>
           </CRow>
@@ -102,13 +116,13 @@ const Invoice = props => {
                     <td>{item.reducePercent}%</td>
                     <td>{(item.priceReal * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                     <td>
-                      {(
-                        item.priceReal * item.quantity -
-                        (item.priceReal * item.quantity * item.reducePercent) / 100
-                      ).toLocaleString('it-IT', {
-                        style: 'currency',
-                        currency: 'VND',
-                      }) || ''}
+                      {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
+                        'it-IT',
+                        {
+                          style: 'currency',
+                          currency: 'VND'
+                        }
+                      ) || ''}
                     </td>
                   </tr>
                 );
@@ -152,8 +166,7 @@ const Invoice = props => {
                           .reduce(
                             (sum, current) =>
                               sum +
-                              (current.priceReal * current.quantity -
-                                (current.priceReal * current.quantity * current.reducePercent) / 100),
+                              (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
                             0
                           )
                           .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}

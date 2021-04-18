@@ -18,12 +18,12 @@ import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingDepartment } from './department.api';
+import { creatingDepartment, getDepartment } from './department.api';
 
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { current } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router-dom';
-import { fetching, globalizedDepartmentSelectors } from './department.reducer';
+import { fetching, globalizedDepartmentSelectors, reset } from './department.reducer';
 import { Table } from 'reactstrap';
 import Select from 'react-select';
 import { globalizedPermissionGroupsSelectors } from '../UserPermission/permission.reducer';
@@ -88,7 +88,11 @@ const CreateDepartment = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
+  const { selectAll: selectAllDepartments } = globalizedDepartmentSelectors;
+
   const groupPermissions = useSelector(selectAllPermissionGroups);
+  const departments = useSelector(selectAllDepartments);
+
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
 
   const initialValues = {
@@ -97,6 +101,10 @@ const CreateDepartment = () => {
 
   useEffect(() => {
     dispatch(getPermissionGroups());
+    dispatch(getDepartment());
+    return () => {
+      reset()
+    }
   }, []);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
@@ -108,7 +116,7 @@ const CreateDepartment = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
+      reset()
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -126,7 +134,6 @@ const CreateDepartment = () => {
   };
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới chi nhánh thành công" />
       <CCardHeader>
         <CCardTitle>Thêm mới chi nhánh</CCardTitle>
       </CCardHeader>
@@ -148,6 +155,20 @@ const CreateDepartment = () => {
             setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
+              <CFormGroup>
+                <CLabel htmlFor="userName">Chọn chi nhánh cha</CLabel>
+                <Select
+                  name="department"
+                  onChange={e => {
+                    setFieldValue('parent', e.value);
+                  }}
+                  placeholder="Chọn chi nhánh"
+                  options={departments.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
+              </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="login">Tên chi nhánh</CLabel>
                 <CInput
@@ -238,6 +259,7 @@ const CreateDepartment = () => {
           )}
         </Formik>
       </CCardBody>
+      <Toaster ref={toastRef} message="Tạo mới chi nhánh thành công" />
     </CCard>
   );
 };

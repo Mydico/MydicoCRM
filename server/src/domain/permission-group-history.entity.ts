@@ -7,8 +7,8 @@ import { BaseEntity } from './base/base.entity';
  */
 @Entity('permission_group_history')
 export default class PermissionGroupHistory extends BaseEntity {
-  @Column({ name: 'description', nullable: true })
-  description: string;
+    @Column({ name: 'description', nullable: true })
+    description: string;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

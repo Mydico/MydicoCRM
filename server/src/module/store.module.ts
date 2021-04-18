@@ -5,9 +5,9 @@ import { StoreRepository } from '../repository/store.repository';
 import { StoreService } from '../service/store.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([StoreRepository])],
-  controllers: [StoreController],
-  providers: [StoreService],
-  exports: [StoreService]
+    imports: [TypeOrmModule.forFeature([StoreRepository])],
+    controllers: [StoreController],
+    providers: [StoreService],
+    exports: [StoreService],
 })
 export class StoreModule {}

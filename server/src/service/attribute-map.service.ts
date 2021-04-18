@@ -10,33 +10,33 @@ relationshipNames.push('value');
 
 @Injectable()
 export class AttributeMapService {
-  logger = new Logger('AttributeMapService');
+    logger = new Logger('AttributeMapService');
 
-  constructor(@InjectRepository(AttributeMapRepository) private attributeMapRepository: AttributeMapRepository) {}
+    constructor(@InjectRepository(AttributeMapRepository) private attributeMapRepository: AttributeMapRepository) {}
 
-  async findById(id: string): Promise<AttributeMap | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.attributeMapRepository.findOne(id, options);
-  }
+    async findById(id: string): Promise<AttributeMap | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.attributeMapRepository.findOne(id, options);
+    }
 
-  async findByfields(options: FindOneOptions<AttributeMap>): Promise<AttributeMap | undefined> {
-    return await this.attributeMapRepository.findOne(options);
-  }
+    async findByfields(options: FindOneOptions<AttributeMap>): Promise<AttributeMap | undefined> {
+        return await this.attributeMapRepository.findOne(options);
+    }
 
-  async findAndCount(options: FindManyOptions<AttributeMap>): Promise<[AttributeMap[], number]> {
-    options.relations = relationshipNames;
-    return await this.attributeMapRepository.findAndCount(options);
-  }
+    async findAndCount(options: FindManyOptions<AttributeMap>): Promise<[AttributeMap[], number]> {
+        options.relations = relationshipNames;
+        return await this.attributeMapRepository.findAndCount(options);
+    }
 
-  async save(attributeMap: AttributeMap): Promise<AttributeMap | undefined> {
-    return await this.attributeMapRepository.save(attributeMap);
-  }
+    async save(attributeMap: AttributeMap): Promise<AttributeMap | undefined> {
+        return await this.attributeMapRepository.save(attributeMap);
+    }
 
-  async update(attributeMap: AttributeMap): Promise<AttributeMap | undefined> {
-    return await this.save(attributeMap);
-  }
+    async update(attributeMap: AttributeMap): Promise<AttributeMap | undefined> {
+        return await this.save(attributeMap);
+    }
 
-  async delete(attributeMap: AttributeMap): Promise<AttributeMap | undefined> {
-    return await this.attributeMapRepository.remove(attributeMap);
-  }
+    async delete(attributeMap: AttributeMap): Promise<AttributeMap | undefined> {
+        return await this.attributeMapRepository.remove(attributeMap);
+    }
 }

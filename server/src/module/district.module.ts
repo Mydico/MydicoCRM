@@ -5,9 +5,9 @@ import { DistrictRepository } from '../repository/district.repository';
 import { DistrictService } from '../service/district.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DistrictRepository])],
-  controllers: [DistrictController],
-  providers: [DistrictService],
-  exports: [DistrictService]
+    imports: [TypeOrmModule.forFeature([DistrictRepository])],
+    controllers: [DistrictController],
+    providers: [DistrictService],
+    exports: [DistrictService],
 })
 export class DistrictModule {}

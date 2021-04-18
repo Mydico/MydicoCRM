@@ -5,9 +5,9 @@ import { StoreInputDetailsRepository } from '../repository/store-input-details.r
 import { StoreInputDetailsService } from '../service/store-input-details.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([StoreInputDetailsRepository])],
-  controllers: [StoreInputDetailsController],
-  providers: [StoreInputDetailsService],
-  exports: [StoreInputDetailsService]
+    imports: [TypeOrmModule.forFeature([StoreInputDetailsRepository])],
+    controllers: [StoreInputDetailsController],
+    providers: [StoreInputDetailsService],
+    exports: [StoreInputDetailsService],
 })
 export class StoreInputDetailsModule {}

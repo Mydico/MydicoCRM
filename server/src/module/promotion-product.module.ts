@@ -5,9 +5,9 @@ import { PromotionProductRepository } from '../repository/promotion-product.repo
 import { PromotionProductService } from '../service/promotion-product.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PromotionProductRepository])],
-  controllers: [PromotionProductController],
-  providers: [PromotionProductService],
-  exports: [PromotionProductService]
+    imports: [TypeOrmModule.forFeature([PromotionProductRepository])],
+    controllers: [PromotionProductController],
+    providers: [PromotionProductService],
+    exports: [PromotionProductService],
 })
 export class PromotionProductModule {}

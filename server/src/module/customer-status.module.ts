@@ -5,9 +5,9 @@ import { CustomerStatusRepository } from '../repository/customer-status.reposito
 import { CustomerStatusService } from '../service/customer-status.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CustomerStatusRepository])],
-  controllers: [CustomerStatusController],
-  providers: [CustomerStatusService],
-  exports: [CustomerStatusService]
+    imports: [TypeOrmModule.forFeature([CustomerStatusRepository])],
+    controllers: [CustomerStatusController],
+    providers: [CustomerStatusService],
+    exports: [CustomerStatusService],
 })
 export class CustomerStatusModule {}

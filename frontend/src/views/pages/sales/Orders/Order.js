@@ -323,9 +323,6 @@ const Order = props => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách đơn hàngg
-        {/* <CButton color="primary" className="mb-2">
-         Thêm mới khách hàng
-        </CButton> */}
         <CButton color="success" variant="outline" className="ml-3" onClick={toCreateOrder}>
           <CIcon name="cil-plus" /> Thêm mới
         </CButton>
@@ -427,7 +424,6 @@ const Order = props => {
                               <td>{item.product?.name}</td>
                               <td>{item.product?.description}</td>
                               <td>{item.quantity}</td>
-
                               <td>{item.product?.price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                               <td>{item.reducePercent}%</td>
                               <td>

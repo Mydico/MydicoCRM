@@ -5,9 +5,9 @@ import { ReportCustomerCategoryDateRepository } from '../repository/report-custo
 import { ReportCustomerCategoryDateService } from '../service/report-customer-category-date.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ReportCustomerCategoryDateRepository])],
-  controllers: [ReportCustomerCategoryDateController],
-  providers: [ReportCustomerCategoryDateService],
-  exports: [ReportCustomerCategoryDateService]
+    imports: [TypeOrmModule.forFeature([ReportCustomerCategoryDateRepository])],
+    controllers: [ReportCustomerCategoryDateController],
+    providers: [ReportCustomerCategoryDateService],
+    exports: [ReportCustomerCategoryDateService],
 })
 export class ReportCustomerCategoryDateModule {}

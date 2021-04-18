@@ -19,12 +19,10 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { creatingUser } from './user.api';
-
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { current } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedUserSelectors, reset } from './user.reducer';
-import Select from 'react-select';
 import { getCity, getDistrict, getWard } from '../../customer/customer.api';
 import { getDepartment } from '../UserDepartment/department.api';
 import { globalizedDepartmentSelectors } from '../UserDepartment/department.reducer';
@@ -33,6 +31,7 @@ import { getUserRole } from '../UserRole/user-roles.api';
 import { globalizedPermissionGroupsSelectors } from '../UserPermission/permission.reducer';
 import { getPermissionGroups } from '../UserPermission/permission.api';
 import { Table } from 'reactstrap';
+import Select from 'react-select';
 
 const validationSchema = function(values) {
   return Yup.object().shape({
@@ -122,6 +121,9 @@ const CreateUser = () => {
     dispatch(getDepartment());
     dispatch(getPermissionGroups());
     dispatch(getUserRole());
+    return () => {
+      dispatch(reset())
+    }
   }, []);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
@@ -164,7 +166,6 @@ const CreateUser = () => {
   };
 
   const onSelectDepartment = ({ value }) => {
-    console.log(value);
     const checkExist = selectedDepartment.filter(selected => selected.id === value.id);
     if (checkExist.length === 0) {
       const newArr = [...selectedDepartment, value];

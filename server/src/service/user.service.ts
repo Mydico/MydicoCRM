@@ -6,71 +6,71 @@ import { FindManyOptions, FindOneOptions } from 'typeorm';
 const relationshipNames = [];
 // relationshipNames.push('departPositions');
 relationshipNames.push('roles');
-relationshipNames.push('departments');
+relationshipNames.push('department');
 relationshipNames.push('authorities');
 relationshipNames.push('permissionGroups');
-// relationshipNames.push('permissionGroups.permissionGroupAssociates');
+relationshipNames.push('permissionGroups.permissionGroupAssociates');
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(UserRepository) private userRepository: UserRepository) {}
+    constructor(@InjectRepository(UserRepository) private userRepository: UserRepository) {}
 
-  async findById(id: string): Promise<User | undefined> {
-    const result = await this.userRepository.findOne(id);
-    return this.flatAuthorities(result);
-  }
-
-  async findByfields(options: FindOneOptions<User>): Promise<User | undefined> {
-    options.relations = relationshipNames
-    const result = await this.userRepository.findOne(options);
-    return this.flatAuthorities(result);
-  }
-
-  async find(options: FindManyOptions<User>): Promise<User | undefined> {
-    options.relations = relationshipNames
-    const result = await this.userRepository.findOne(options);
-    return this.flatAuthorities(result);
-  }
-
-  async findAndCount(options: FindManyOptions<User>): Promise<[User[], number]> {
-    options.relations = relationshipNames
-    const resultList = await this.userRepository.findAndCount(options);
-    const users: User[] = [];
-    if (resultList && resultList[0]) {
-      resultList[0].forEach(user => users.push(this.flatAuthorities(user)));
-      resultList[0] = users;
+    async findById(id: string): Promise<User | undefined> {
+        const result = await this.userRepository.findOne(id);
+        return this.flatAuthorities(result);
     }
-    return resultList;
-  }
 
-  async save(user: User): Promise<User | undefined> {
-    user = this.convertInAuthorities(user);
-    const result = await this.userRepository.save(user);
-    return this.flatAuthorities(result);
-  }
-
-  async update(user: User): Promise<User | undefined> {
-    return await this.save(user);
-  }
-
-  async delete(user: User): Promise<User | undefined> {
-    return await this.userRepository.remove(user);
-  }
-
-  private flatAuthorities(user: any): User {
-    if (user && user.authorities) {
-      const authorities: string[] = [];
-      user.authorities.forEach(authority => authorities.push(authority.name));
-      user.authorities = authorities;
+    async findByfields(options: FindOneOptions<User>): Promise<User | undefined> {
+        options.relations = relationshipNames;
+        const result = await this.userRepository.findOne(options);
+        return this.flatAuthorities(result);
     }
-    return user;
-  }
 
-  private convertInAuthorities(user: any): User {
-    if (user && user.authorities) {
-      const authorities: any[] = [];
-      user.authorities.forEach(authority => authorities.push({ name: authority }));
-      user.authorities = authorities;
+    async find(options: FindManyOptions<User>): Promise<User | undefined> {
+        options.relations = relationshipNames;
+        const result = await this.userRepository.findOne(options);
+        return this.flatAuthorities(result);
     }
-    return user;
-  }
+
+    async findAndCount(options: FindManyOptions<User>): Promise<[User[], number]> {
+        options.relations = relationshipNames;
+        const resultList = await this.userRepository.findAndCount(options);
+        const users: User[] = [];
+        if (resultList && resultList[0]) {
+            resultList[0].forEach(user => users.push(this.flatAuthorities(user)));
+            resultList[0] = users;
+        }
+        return resultList;
+    }
+
+    async save(user: User): Promise<User | undefined> {
+        user = this.convertInAuthorities(user);
+        const result = await this.userRepository.save(user);
+        return this.flatAuthorities(result);
+    }
+
+    async update(user: User): Promise<User | undefined> {
+        return await this.save(user);
+    }
+
+    async delete(user: User): Promise<User | undefined> {
+        return await this.userRepository.remove(user);
+    }
+
+    private flatAuthorities(user: any): User {
+        if (user && user.authorities) {
+            const authorities: string[] = [];
+            user.authorities.forEach(authority => authorities.push(authority.name));
+            user.authorities = authorities;
+        }
+        return user;
+    }
+
+    private convertInAuthorities(user: any): User {
+        if (user && user.authorities) {
+            const authorities: any[] = [];
+            user.authorities.forEach(authority => authorities.push({ name: authority }));
+            user.authorities = authorities;
+        }
+        return user;
+    }
 }

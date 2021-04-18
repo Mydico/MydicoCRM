@@ -1,4 +1,4 @@
 export default {
-  IMMEDIATE: 'DX',
-  SCHEDULE: 'DK'
-}
+    IMMEDIATE: 'DX',
+    SCHEDULE: 'DK',
+};

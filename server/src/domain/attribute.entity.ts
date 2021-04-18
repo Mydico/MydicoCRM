@@ -11,19 +11,18 @@ import Product from './product.entity';
  */
 @Entity('attribute')
 export default class Attribute extends BaseEntity {
-  @Column({ name: 'name', length: 255, nullable: true })
-  name: string;
+    @Column({ name: 'name', length: 255, nullable: true })
+    name: string;
 
 
+    @Column({ type: 'boolean', name: 'is_del', nullable: true })
+    isDel: boolean;
 
-  @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
+    @Column({ type: 'integer', name: 'site_id', nullable: true })
+    siteId: number;
 
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+    @ManyToOne(type => Product)
+    product: Product;
 
-  @ManyToOne(type => Product)
-  product: Product;
-
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

@@ -1,4 +1,4 @@
 export enum PromotionType{
-  LONGTERM = 'LONGTERM',
-  SHORTTERM = 'SHORTTERM',
+    LONGTERM = 'LONGTERM',
+    SHORTTERM = 'SHORTTERM',
 }

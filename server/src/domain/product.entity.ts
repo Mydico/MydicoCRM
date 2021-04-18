@@ -16,61 +16,61 @@ import OrderDetails from './order-details.entity';
  */
 @Entity('product')
 export default class Product extends BaseEntity {
-  @Column({ name: 'name', length: 255 })
-  name: string;
+    @Column({ name: 'name', length: 255 })
+    name: string;
 
-  @Column({ name: 'image', nullable: true, type: "text"  })
-  image: string;
+    @Column({ name: 'image', nullable: true, type: 'text'  })
+    image: string;
 
-  @Column({ name: 'description', length: 255, nullable: true })
-  desc: string;
+    @Column({ name: 'description', length: 255, nullable: true })
+    desc: string;
 
-  @Column({ name: 'code', length: 255, nullable: true })
-  code: string;
+    @Column({ name: 'code', length: 255, nullable: true })
+    code: string;
 
-  @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
-  status: ProductStatus;
+    @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
+    status: ProductStatus;
 
-  @Column({ name: 'barcode', length: 255, nullable: true })
-  barcode: string;
-  /**
+    @Column({ name: 'barcode', length: 255, nullable: true })
+    barcode: string;
+    /**
    * Giá gốc của sản phẩm tính theo đơn vị của sản phẩm
    */
-  @Column({ type: 'bigint', name: 'price', nullable: true })
-  price: number;
+    @Column({ type: 'bigint', name: 'price', nullable: true })
+    price: number;
 
-  @Column({ type: 'integer', name: 'volume', nullable: true })
-  volume: number;
+    @Column({ type: 'integer', name: 'volume', nullable: true })
+    volume: number;
 
-  /**
+    /**
    * Đơn vị của sản phẩm : 0 - Cái, 1 - Hộp, 2 - Chai , 3 - Túi , 4 - Tuýp , 5 - Hũ , 6 - Lọ, 7 - Cặp
    */
-  @Column({ type: 'enum', name: 'unit', nullable: true, enum: UnitType })
-  unit: UnitType;
+    @Column({ type: 'enum', name: 'unit', nullable: true, enum: UnitType })
+    unit: UnitType;
 
-  /**
+    /**
    * Giá gốc của sản phẩm danh cho đại lý tính theo đơn vị của sản phẩm
    */
-  @Column({ type: 'integer', name: 'agent_price', nullable: true })
-  agentPrice: number;
+    @Column({ type: 'integer', name: 'agent_price', nullable: true })
+    agentPrice: number;
 
-  @ManyToOne(type => ProductGroup, productGroup => productGroup.product, { cascade: true })
-  productGroup?: ProductGroup;
+    @ManyToOne(type => ProductGroup, productGroup => productGroup.product, { cascade: true })
+    productGroup?: ProductGroup;
 
-  @ManyToOne(type => ProductBrand)
-  productBrand: ProductBrand;
+    @ManyToOne(type => ProductBrand)
+    productBrand: ProductBrand;
 
-  @ManyToOne(type => Promotion, promotion => promotion.products, { cascade: true })
-  promotion?: Promotion;
+    @ManyToOne(type => Promotion, promotion => promotion.products, { cascade: true })
+    promotion?: Promotion;
 
-  @ManyToOne(type => Store, store => store.product, { cascade: true })
-  store?: Store;
+    @ManyToOne(type => Store, store => store.product, { cascade: true })
+    store?: Store;
 
-  @OneToMany(type => PromotionProduct, other => other.product)
-  promotionProduct? : PromotionProduct[]
+    @OneToMany(type => PromotionProduct, other => other.product)
+    promotionProduct? : PromotionProduct[];
 
-  @OneToMany(type => OrderDetails, other => other.product)
-  orderDetail? : OrderDetails[]
+    @OneToMany(type => OrderDetails, other => other.product)
+    orderDetail? : OrderDetails[];
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

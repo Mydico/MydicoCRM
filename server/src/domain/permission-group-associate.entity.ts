@@ -9,23 +9,23 @@ import PermissionGroup from './permission-group.entity';
  */
 @Entity('permission_group_associate')
 export default class PermissionGroupAssociate extends BaseEntity {
-  @Column({ name: 'resource', nullable: true })
-  resource: string;
+    @Column({ name: 'resource', nullable: true })
+    resource: string;
 
-  @Column({ name: 'action', nullable: true })
-  action: string;
+    @Column({ name: 'action', nullable: true })
+    action: string;
 
-  @Column({ name: 'type_name', nullable: true })
-  typeName: string;
-  
-  @Column({ name: 'type', nullable: true })
-  type: string;
+    @Column({ name: 'type_name', nullable: true })
+    typeName: string;
 
-  @Column({ name: 'description', nullable: true })
-  description: string;
+    @Column({ name: 'type', nullable: true })
+    type: string;
 
-  @ManyToMany(type => PermissionGroup)
-  permissionGroups?: PermissionGroup[];
+    @Column({ name: 'description', nullable: true })
+    description: string;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    @ManyToMany(type => PermissionGroup)
+    permissionGroups?: PermissionGroup[];
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

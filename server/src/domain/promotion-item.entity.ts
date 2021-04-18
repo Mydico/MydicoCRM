@@ -11,28 +11,28 @@ import Promotion from './promotion.entity';
  */
 @Entity('promotion_item')
 export default class PromotionItem extends BaseEntity {
-  @Column({ name: 'name', length: 255, nullable: true })
-  name: string;
+    @Column({ name: 'name', length: 255, nullable: true })
+    name: string;
 
-  @Column({ type: 'bigint', name: 'total_money', nullable: true })
-  totalMoney: number;
+    @Column({ type: 'bigint', name: 'total_money', nullable: true })
+    totalMoney: number;
 
-  @Column({ type: 'integer', name: 'reduce_percent', nullable: true })
-  reducePercent: number;
+    @Column({ type: 'integer', name: 'reduce_percent', nullable: true })
+    reducePercent: number;
 
-  @Column({ name: 'note', length: 512, nullable: true })
-  note: string;
+    @Column({ name: 'note', length: 512, nullable: true })
+    note: string;
 
-  @ManyToOne(type => ProductGroup, productGroup => productGroup.product, { cascade: true })
-  productGroup?: ProductGroup;
-
-
-  @ManyToOne(type => Promotion, promotion => promotion.promotionItems, { cascade: true })
-  promotion?: Promotion;
+    @ManyToOne(type => ProductGroup, productGroup => productGroup.product, { cascade: true })
+    productGroup?: ProductGroup;
 
 
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+    @ManyToOne(type => Promotion, promotion => promotion.promotionItems, { cascade: true })
+    promotion?: Promotion;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+    @Column({ type: 'integer', name: 'site_id', nullable: true })
+    siteId: number;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

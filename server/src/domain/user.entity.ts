@@ -1,5 +1,5 @@
 import { Authority } from './authority.entity';
-import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable, OneToMany, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { config } from '../config';
@@ -31,8 +31,6 @@ export class User extends BaseEntity {
   @Column({ default: true })
   activated: boolean;
 
-
-  // eslint-disable-next-line
   @ManyToMany(type => Authority)
   @JoinTable()
   @ApiModelProperty({ isArray: true, enum: ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_ANONYMOUS'], description: 'Array of permissions' })
@@ -40,15 +38,15 @@ export class User extends BaseEntity {
 
   @ManyToMany(type => UserRole, userRole => userRole.users)
   roles?: UserRole[];
-  
-  @ManyToMany(type => Department, department => department.users)
-  departments?: Department[];
+
+  @ManyToOne(type => Department)
+  department?: Department;
 
   @OneToMany(type => Bill, other => other.transporter)
-  bill? : Bill[]
+  bill?: Bill[];
 
   @OneToMany(type => StoreInput, other => other.approver)
-  storeInput? : StoreInput[]
+  storeInput?: StoreInput[];
 
   @ManyToMany(type => PermissionGroup, other => other.users)
   permissionGroups?: PermissionGroup[];

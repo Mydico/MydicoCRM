@@ -174,18 +174,13 @@ const Bill = props => {
   }, [initialState.updatingSuccess]);
 
   const approveBill = bill => () => {
-    bill.status = BillStatus.APPROVED;
-    dispatch(updateBill(bill));
+    const data = { id: bill.id, status: BillStatus.APPROVED };
+    dispatch(updateBill(data));
   };
 
   const rejectBill = bill => () => {
-    bill.status = BillStatus.REJECTED;
-    dispatch(updateBill(bill));
-  };
-
-  const supplyWaitingBill = bill => () => {
-    bill.status = BillStatus.SUPPLY_WAITING;
-    dispatch(updateBill(bill));
+    const data = { id: bill.id, status: BillStatus.REJECTED };
+    dispatch(updateBill(data));
   };
 
   const shippingBill = bill => () => {
@@ -198,8 +193,10 @@ const Bill = props => {
   };
 
   const successBill = bill => () => {
-    bill.status = BillStatus.SUCCESS;
-    dispatch(updateBill(bill));
+    dispatch(updateBill({
+      id: bill.id,
+      status: BillStatus.SUCCESS
+    }));
   };
 
   const cancelBill = bill => () => {

@@ -18,38 +18,38 @@ import Provider from './provider.entity';
 @Entity('store_input')
 export default class StoreInput extends BaseEntity {
 
-  @Column({ type: 'simple-enum', name: 'type', enum: StoreImportType, default: StoreImportType.NEW })
-  type?: StoreImportType;
+    @Column({ type: 'simple-enum', name: 'type', enum: StoreImportType, default: StoreImportType.NEW })
+    type?: StoreImportType;
 
-  @Column({ type: 'simple-enum', name: 'status', enum: StoreImportStatus, default: StoreImportStatus.WAITING })
-  status?: StoreImportStatus;
+    @Column({ type: 'simple-enum', name: 'status', enum: StoreImportStatus, default: StoreImportStatus.WAITING })
+    status?: StoreImportStatus;
 
-  @ManyToOne(type => Customer, customer => customer.storeInput, { cascade: true })
-  customer?: Customer;
+    @ManyToOne(type => Customer, customer => customer.storeInput, { cascade: true })
+    customer?: Customer;
 
-  @Column({ type: 'bigint', name: 'totalMoney', nullable: true })
-  totalMoney?: number;
+    @Column({ type: 'bigint', name: 'totalMoney', nullable: true })
+    totalMoney?: number;
 
-  @ManyToOne(type => User, user => user.storeInput, { cascade: true })
-  approver?: User
+    @ManyToOne(type => User, user => user.storeInput, { cascade: true })
+    approver?: User;
 
-  @Column({ name: 'note', length: 255, nullable: true })
-  note: string;
+    @Column({ name: 'note', length: 255, nullable: true })
+    note: string;
 
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+    @Column({ type: 'integer', name: 'site_id', nullable: true })
+    siteId: number;
 
-  @OneToMany(type => StoreInputDetails, other => other.storeInput)
-  storeInputDetails? : StoreInputDetails[]
+    @OneToMany(type => StoreInputDetails, other => other.storeInput)
+    storeInputDetails? : StoreInputDetails[];
 
-  @ManyToOne(type => Store)
-  store: Store;
+    @ManyToOne(type => Store)
+    store: Store;
 
-  @ManyToOne(type => Provider)
-  provider: Provider;
+    @ManyToOne(type => Provider)
+    provider: Provider;
 
-  @ManyToOne(type => Store)
-  storeTransfer?: Store;
+    @ManyToOne(type => Store)
+    storeTransfer?: Store;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

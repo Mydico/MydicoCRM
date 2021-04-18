@@ -16,50 +16,50 @@ import { PromotionType } from './enumeration/promotion-type';
  */
 @Entity('promotion')
 export default class Promotion extends BaseEntity {
-  @Column({ name: 'start_time', nullable: true })
-  startTime: string;
+    @Column({ name: 'start_time', nullable: true })
+    startTime: string;
 
-  @Column({ name: 'end_time', nullable: true })
-  endTime: string;
+    @Column({ name: 'end_time', nullable: true })
+    endTime: string;
 
-  @Column({ name: 'name', length: 255, nullable: true })
-  name: string;
+    @Column({ name: 'name', length: 255, nullable: true })
+    name: string;
 
-  @Column({ name: 'description', length: 512, nullable: true })
-  description: string;
+    @Column({ name: 'description', length: 512, nullable: true })
+    description: string;
 
-  @Column({ type: 'bigint', name: 'total_revenue', nullable: true })
-  totalRevenue?: number;
+    @Column({ type: 'bigint', name: 'total_revenue', nullable: true })
+    totalRevenue?: number;
 
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId?: number;
+    @Column({ type: 'integer', name: 'site_id', nullable: true })
+    siteId?: number;
 
-  @Column({ type: 'boolean', name: 'isLock', nullable: false, default: false })
-  isLock: boolean;
+    @Column({ type: 'boolean', name: 'isLock', nullable: false, default: false })
+    isLock: boolean;
 
-  @Column({ name: 'image', length: 255, nullable: true })
-  image?: string;
+    @Column({ name: 'image', length: 255, nullable: true })
+    image?: string;
 
-  @Column({ type: 'simple-enum', name: 'status', enum: PromotionStatus, default: PromotionStatus.ACTIVE })
-  status?: PromotionStatus;
+    @Column({ type: 'simple-enum', name: 'status', enum: PromotionStatus, default: PromotionStatus.ACTIVE })
+    status?: PromotionStatus;
 
-  @Column({ type: 'simple-enum', name: 'type', enum: PromotionType, default: PromotionType.SHORTTERM })
-  type?: PromotionType;
+    @Column({ type: 'simple-enum', name: 'type', enum: PromotionType, default: PromotionType.SHORTTERM })
+    type?: PromotionType;
 
-  @OneToMany(type => Order, other => other.promotion)
-  orders? : Order[]
+    @OneToMany(type => Order, other => other.promotion)
+    orders? : Order[];
 
-  @OneToMany(type => PromotionItem, other => other.promotion)
-  promotionItems? : PromotionItem[]
+    @OneToMany(type => PromotionItem, other => other.promotion)
+    promotionItems? : PromotionItem[];
 
-  @OneToMany(type => Product, other => other.promotion)
-  products? : Product[]
+    @OneToMany(type => Product, other => other.promotion)
+    products? : Product[];
 
-  @OneToMany(type => PromotionProduct, other => other.promotion)
-  promotionProduct? : PromotionProduct[]
+    @OneToMany(type => PromotionProduct, other => other.promotion)
+    promotionProduct? : PromotionProduct[];
 
-  @ManyToOne(type => CustomerType, other => other.promotion)
-  customerType?: CustomerType
+    @ManyToOne(type => CustomerType, other => other.promotion)
+    customerType?: CustomerType;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

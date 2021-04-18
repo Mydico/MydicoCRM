@@ -5,9 +5,9 @@ import { CustomerAdvisoryRepository } from '../repository/customer-advisory.repo
 import { CustomerAdvisoryService } from '../service/customer-advisory.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CustomerAdvisoryRepository])],
-  controllers: [CustomerAdvisoryController],
-  providers: [CustomerAdvisoryService],
-  exports: [CustomerAdvisoryService]
+    imports: [TypeOrmModule.forFeature([CustomerAdvisoryRepository])],
+    controllers: [CustomerAdvisoryController],
+    providers: [CustomerAdvisoryService],
+    exports: [CustomerAdvisoryService],
 })
 export class CustomerAdvisoryModule {}

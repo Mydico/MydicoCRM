@@ -10,11 +10,19 @@ export const getDepartment = createAsyncThunk('api/departments', async (params =
   }
 });
 
+export const getTreeDepartment = createAsyncThunk('api/departments/tree', async (thunkAPI) => {
+  try {
+    const result = await axios.get('api/departments/tree');
+    return { data: result.data };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 
 export const getDetailDepartment = createAsyncThunk('api/detail/departments', async (userId, thunkAPI) => {
   try {
     const result = await axios.get('api/departments/'+ userId);
-    console.log(result)
     return result.data
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

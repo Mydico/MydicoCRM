@@ -8,91 +8,91 @@ import Transport from '../src/domain/transport.entity';
 import { TransportService } from '../src/service/transport.service';
 
 describe('Transport Controller', () => {
-  let app: INestApplication;
+    let app: INestApplication;
 
-  const authGuardMock = { canActivate: (): any => true };
-  const rolesGuardMock = { canActivate: (): any => true };
-  const entityMock: any = {
-    id: 'entityId'
-  };
+    const authGuardMock = { canActivate: (): any => true };
+    const rolesGuardMock = { canActivate: (): any => true };
+    const entityMock: any = {
+        id: 'entityId',
+    };
 
-  const serviceMock = {
-    findById: (): any => entityMock,
-    findAndCount: (): any => [entityMock, 0],
-    save: (): any => entityMock,
-    update: (): any => entityMock,
-    delete: (): any => entityMock
-  };
+    const serviceMock = {
+        findById: (): any => entityMock,
+        findAndCount: (): any => [entityMock, 0],
+        save: (): any => entityMock,
+        update: (): any => entityMock,
+        delete: (): any => entityMock,
+    };
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule]
-    })
-      .overrideGuard(AuthGuard)
-      .useValue(authGuardMock)
-      .overrideGuard(RolesGuard)
-      .useValue(rolesGuardMock)
-      .overrideProvider(TransportService)
-      .useValue(serviceMock)
-      .compile();
+    beforeEach(async () => {
+        const moduleFixture: TestingModule = await Test.createTestingModule({
+            imports: [AppModule],
+        })
+            .overrideGuard(AuthGuard)
+            .useValue(authGuardMock)
+            .overrideGuard(RolesGuard)
+            .useValue(rolesGuardMock)
+            .overrideProvider(TransportService)
+            .useValue(serviceMock)
+            .compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+        app = moduleFixture.createNestApplication();
+        await app.init();
+    });
 
-  it('/GET all transports ', async () => {
-    const getEntities: Transport[] = (
-      await request(app.getHttpServer())
-        .get('/api/transports')
-        .expect(200)
-    ).body;
+    it('/GET all transports ', async () => {
+        const getEntities: Transport[] = (
+            await request(app.getHttpServer())
+                .get('/api/transports')
+                .expect(200)
+        ).body;
 
-    expect(getEntities).toEqual(entityMock);
-  });
+        expect(getEntities).toEqual(entityMock);
+    });
 
-  it('/GET transports by id', async () => {
-    const getEntity: Transport = (
-      await request(app.getHttpServer())
-        .get('/api/transports/' + entityMock.id)
-        .expect(200)
-    ).body;
+    it('/GET transports by id', async () => {
+        const getEntity: Transport = (
+            await request(app.getHttpServer())
+                .get('/api/transports/' + entityMock.id)
+                .expect(200)
+        ).body;
 
-    expect(getEntity).toEqual(entityMock);
-  });
+        expect(getEntity).toEqual(entityMock);
+    });
 
-  it('/POST create transports', async () => {
-    const createdEntity: Transport = (
-      await request(app.getHttpServer())
-        .post('/api/transports')
-        .send(entityMock)
-        .expect(201)
-    ).body;
+    it('/POST create transports', async () => {
+        const createdEntity: Transport = (
+            await request(app.getHttpServer())
+                .post('/api/transports')
+                .send(entityMock)
+                .expect(201)
+        ).body;
 
-    expect(createdEntity).toEqual(entityMock);
-  });
+        expect(createdEntity).toEqual(entityMock);
+    });
 
-  it('/PUT update transports', async () => {
-    const updatedEntity: Transport = (
-      await request(app.getHttpServer())
-        .put('/api/transports')
-        .send(entityMock)
-        .expect(201)
-    ).body;
+    it('/PUT update transports', async () => {
+        const updatedEntity: Transport = (
+            await request(app.getHttpServer())
+                .put('/api/transports')
+                .send(entityMock)
+                .expect(201)
+        ).body;
 
-    expect(updatedEntity).toEqual(entityMock);
-  });
+        expect(updatedEntity).toEqual(entityMock);
+    });
 
-  it('/DELETE transports', async () => {
-    const deletedEntity: Transport = (
-      await request(app.getHttpServer())
-        .delete('/api/transports/' + entityMock.id)
-        .expect(204)
-    ).body;
+    it('/DELETE transports', async () => {
+        const deletedEntity: Transport = (
+            await request(app.getHttpServer())
+                .delete('/api/transports/' + entityMock.id)
+                .expect(204)
+        ).body;
 
-    expect(deletedEntity).toEqual({});
-  });
+        expect(deletedEntity).toEqual({});
+    });
 
-  afterEach(async () => {
-    await app.close();
-  });
+    afterEach(async () => {
+        await app.close();
+    });
 });

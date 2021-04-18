@@ -108,15 +108,15 @@ entity Customer {
 	siteId Integer
 }
 entity Branch {
-	name String maxlength(255),
+name String maxlength(255),
 	code String maxlength(255),
 	desc String maxlength(255),
 	isDel Boolean, }
-
-relationship ManyToOne {
-		Customer {city
+entity CustomerDebit {
+	debt Integer,
 }
-to City
+relationship ManyToOne {
+		Customer {city} to City
 		Customer{branch} to Branch
     Customer{district} to District
     Customer{ward} to Wards
@@ -127,9 +127,9 @@ to City
     Customer{status} to CustomerStatus
     Customer{type} to CustomerType
     Customer{request} to CustomerRequest
-    
+		CustomerDebit{customer} to Customer
+		CustomerDebit{sale} to User
 }
-
 relationship ManyToMany {
 	Customer{user} to User{customer}
 }
@@ -326,59 +326,53 @@ entity Product {
 	agentPrice Integer
 }
 entity PromotionProduct {
-	buy Integer,
-	gift Integer,
-}
+buy Integer,
+	gift Integer, }
 enum DepartmentStatus {
     ACTIVE, INACTIVE, DELETED
 }
 entity Department {
 	name String,
-	status DepartmentStatus,
-}
+	status DepartmentStatus, }
 relationship ManyToOne {
-	PromotionProduct{product} to Product
+	PromotionProduct {product} to Product
 	PromotionProduct{promotion} to Promotion
 }
 enum PermissionStatus {
-    PUBLIC, NONEPUBLIC
+	PUBLIC, NONEPUBLIC
 }
 entity Permission {
-    description String
+	description String
     action String
     type String
     typeName String
     resource String
 		status PermissionStatus
 }
-
 entity PermissionType {
-    description String
+	description String
     name String
     status PermissionGroupStatus
 }
-
 enum PermissionGroupStatus {
-    ACTIVE, INACTIVE, DELETED
+	ACTIVE, INACTIVE, DELETED
 }
 entity PermissionGroup {
-    name String
+	name String
     note String
     status PermissionGroupStatus
 }
-
 entity PermissionGroupHistory {
-    description String
+	description String
 }
-
 entity PermissionGroupAssociate {
-  	resource String
+	resource String
     action String
     type String
     description String
 }
 relationship ManyToMany {
-    PermissionGroup{user} to User{permissionGroup}
+	PermissionGroup{user} to User{permissionGroup}
     PermissionGroup{permissionGroupAssociate} to PermissionGroupAssociate{permissionGroup}
 }
 entity ProductDetails {
@@ -526,12 +520,10 @@ entity StoreInput {
 	note String maxlength(255),
 	siteId Integer
 }
-
 entity StoreHistory {
 	quantity Integer
 	note String
 }
-
 entity Provider {
 	name String
 	address String

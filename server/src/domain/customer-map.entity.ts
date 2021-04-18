@@ -7,14 +7,14 @@ import { BaseEntity } from './base/base.entity';
  */
 @Entity('customer_map')
 export default class CustomerMap extends BaseEntity {
-  @Column({ type: 'integer', name: 'customer_id', nullable: true })
-  customerId: number;
+    @Column({ type: 'integer', name: 'customer_id', nullable: true })
+    customerId: number;
 
-  @Column({ type: 'integer', name: 'user_id', nullable: true })
-  userId: number;
+    @Column({ type: 'integer', name: 'user_id', nullable: true })
+    userId: number;
 
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId: number;
+    @Column({ type: 'integer', name: 'site_id', nullable: true })
+    siteId: number;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

@@ -9,11 +9,11 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
  */
 @Entity('migration')
 export default class Migration extends BaseEntity {
-  @Column({ name: 'version', length: 180 })
-  version: string;
+    @Column({ name: 'version', length: 180 })
+    version: string;
 
-  @Column({ type: 'integer', name: 'apply_time', nullable: true })
-  applyTime: number;
+    @Column({ type: 'integer', name: 'apply_time', nullable: true })
+    applyTime: number;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

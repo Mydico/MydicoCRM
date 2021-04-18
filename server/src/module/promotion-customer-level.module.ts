@@ -5,9 +5,9 @@ import { PromotionCustomerLevelRepository } from '../repository/promotion-custom
 import { PromotionCustomerLevelService } from '../service/promotion-customer-level.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PromotionCustomerLevelRepository])],
-  controllers: [PromotionCustomerLevelController],
-  providers: [PromotionCustomerLevelService],
-  exports: [PromotionCustomerLevelService]
+    imports: [TypeOrmModule.forFeature([PromotionCustomerLevelRepository])],
+    controllers: [PromotionCustomerLevelController],
+    providers: [PromotionCustomerLevelService],
+    exports: [PromotionCustomerLevelService],
 })
 export class PromotionCustomerLevelModule {}

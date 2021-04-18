@@ -37,9 +37,6 @@ const addErrorAlert = key => {
   ToastError(statusError[key.status] ? statusError[key.status] : key.error);
 };
 export default () => next => action => {
-  // If not a promise, continue on
-  console.log(action);
-  console.log(action.payload);
   if (action.payload) {
     if (action.payload && action.payload.statusCode === 200) {
       ToastSuccess(statusError[action.payload.statusCode]);

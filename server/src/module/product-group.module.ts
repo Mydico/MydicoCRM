@@ -5,9 +5,9 @@ import { ProductGroupRepository } from '../repository/product-group.repository';
 import { ProductGroupService } from '../service/product-group.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProductGroupRepository])],
-  controllers: [ProductGroupController],
-  providers: [ProductGroupService],
-  exports: [ProductGroupService]
+    imports: [TypeOrmModule.forFeature([ProductGroupRepository])],
+    controllers: [ProductGroupController],
+    providers: [ProductGroupService],
+    exports: [ProductGroupService],
 })
 export class ProductGroupModule {}

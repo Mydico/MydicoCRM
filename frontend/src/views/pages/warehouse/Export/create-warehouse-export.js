@@ -19,20 +19,20 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { creatingWarehouseImport } from '../Import/warehouse-import.api';
-
+import { currencyMask } from '../../../components/currency-input/currency-input';
+import MaskedInput from 'react-text-mask';
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { current } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router-dom';
 import { fetching } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
-import { getDepartment } from '../../user/UserDepartment/department.api';
-import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 import { getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
+import { getProductInstore } from '../Product/product-warehouse.api';
 const validationSchema = function(values) {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -83,7 +83,7 @@ const validateForm = errors => {
   });
 };
 
-const CreateWarehouseExport = () => {
+const CreateReceipt = () => {
   const formikRef = useRef();
   const { initialState } = useSelector(state => state.warehouseImport);
   const { initialState: customerInitialState } = useSelector(state => state.customer);
@@ -115,12 +115,18 @@ const CreateWarehouseExport = () => {
   };
 
   useEffect(() => {
-    const departArr = account.departments.map(item => item.id);
-    dispatch(getWarehouse({ department: JSON.stringify(departArr) }));
+    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
     dispatch(getProduct());
   }, []);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+    let isValidProduct = true;
+    productList.forEach(element => {
+      if (element.quantity > element.quantityInStore) {
+        isValidProduct = false;
+      }
+    });
+    if (!isValidProduct) return;
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
     dispatch(fetching());
@@ -129,9 +135,22 @@ const CreateWarehouseExport = () => {
   };
 
   const onChangeQuantity = ({ target }, index) => {
+    const quantity = target.value;
     const copyArr = [...productList];
-    copyArr[index].quantity = target.value;
-    setProductList(copyArr);
+    if (selectedWarehouse && copyArr[index].product) {
+      dispatch(
+        getProductInstore({
+          storeId: selectedWarehouse.id,
+          productId: copyArr[index].product.id
+        })
+      ).then(numberOfQuantityInStore => {
+        if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+          copyArr[index].quantity = quantity;
+          copyArr[index].quantityInStore = numberOfQuantityInStore.payload[0].quantity;
+          setProductList(copyArr);
+        }
+      });
+    }
   };
   useEffect(() => {
     if (formikRef.current) {
@@ -152,20 +171,20 @@ const CreateWarehouseExport = () => {
     if (arr.length === 0) {
       const copyArr = [...productList];
       copyArr[index].product = value;
-      copyArr[index].price = value.price;
+      copyArr[index].price = Number(value.price);
       copyArr[index].quantity = 1;
       setProductList(copyArr);
     }
   };
 
   const onAddProduct = () => {
-    const data = { product: {}, quantity: 1 };
+    const data = { product: {}, quantity: 1, quantityInStore: 1 };
     setProductList([...productList, data]);
   };
 
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
-    copyArr[index].price = target.value;
+    copyArr[index].price = Number(target.value.replace(/\D/g, ''));
     setProductList(copyArr);
   };
 
@@ -307,7 +326,16 @@ const CreateWarehouseExport = () => {
                   <tbody>
                     {productList.map((item, index) => {
                       return (
-                        <tr key={index}>
+                        <tr
+                          key={index}
+                          style={
+                            item.quantity > item.quantityInStore
+                              ? {
+                                  boxShadow: '0px 0px 6px 5px red'
+                                }
+                              : {}
+                          }
+                        >
                           <td style={{ width: 500 }}>
                             <Select
                               value={{
@@ -324,31 +352,33 @@ const CreateWarehouseExport = () => {
                           </td>
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
-                          <td style={{ width: 100 }}>
-                            {item.followIndex >= 0 ? (
-                              item.quantity
-                            ) : (
-                              <CInput
-                                type="number"
-                                min={1}
-                                name="code"
-                                id="code"
-                                onChange={event => onChangeQuantity(event, index)}
-                                onBlur={handleBlur}
-                                value={item.quantity}
-                              />
+                          <td style={{ width: 200 }}>
+                            <CInput
+                              type="number"
+                              min={1}
+                              name="code"
+                              id="code"
+                              onChange={event => onChangeQuantity(event, index)}
+                              onBlur={handleBlur}
+                              value={item.quantity}
+                            />
+                            {item.quantity > item.quantityInStore && (
+                              <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
                             )}
                           </td>
-                          <td>
+                          <td style={{ width: 100 }}>
                             {
-                              <CInput
-                                type="number"
-                                min={1}
-                                name="code"
-                                id="code"
+                              <MaskedInput
+                                mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
-                                onBlur={handleBlur}
-                                value={item?.price}
+                                value={
+                                  typeof productList[index].price !== 'number'
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                        productList[index].price
+                                      )
+                                    : productList[index].price
+                                }
+                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
                           </td>
@@ -437,4 +467,4 @@ const CreateWarehouseExport = () => {
   );
 };
 
-export default CreateWarehouseExport;
+export default CreateReceipt;

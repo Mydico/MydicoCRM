@@ -8,33 +8,33 @@ const relationshipNames = [];
 
 @Injectable()
 export class UserTeamService {
-  logger = new Logger('UserTeamService');
+    logger = new Logger('UserTeamService');
 
-  constructor(@InjectRepository(UserTeamRepository) private userTeamRepository: UserTeamRepository) {}
+    constructor(@InjectRepository(UserTeamRepository) private userTeamRepository: UserTeamRepository) {}
 
-  async findById(id: string): Promise<UserTeam | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.userTeamRepository.findOne(id, options);
-  }
+    async findById(id: string): Promise<UserTeam | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.userTeamRepository.findOne(id, options);
+    }
 
-  async findByfields(options: FindOneOptions<UserTeam>): Promise<UserTeam | undefined> {
-    return await this.userTeamRepository.findOne(options);
-  }
+    async findByfields(options: FindOneOptions<UserTeam>): Promise<UserTeam | undefined> {
+        return await this.userTeamRepository.findOne(options);
+    }
 
-  async findAndCount(options: FindManyOptions<UserTeam>): Promise<[UserTeam[], number]> {
-    options.relations = relationshipNames;
-    return await this.userTeamRepository.findAndCount(options);
-  }
+    async findAndCount(options: FindManyOptions<UserTeam>): Promise<[UserTeam[], number]> {
+        options.relations = relationshipNames;
+        return await this.userTeamRepository.findAndCount(options);
+    }
 
-  async save(userTeam: UserTeam): Promise<UserTeam | undefined> {
-    return await this.userTeamRepository.save(userTeam);
-  }
+    async save(userTeam: UserTeam): Promise<UserTeam | undefined> {
+        return await this.userTeamRepository.save(userTeam);
+    }
 
-  async update(userTeam: UserTeam): Promise<UserTeam | undefined> {
-    return await this.save(userTeam);
-  }
+    async update(userTeam: UserTeam): Promise<UserTeam | undefined> {
+        return await this.save(userTeam);
+    }
 
-  async delete(userTeam: UserTeam): Promise<UserTeam | undefined> {
-    return await this.userTeamRepository.remove(userTeam);
-  }
+    async delete(userTeam: UserTeam): Promise<UserTeam | undefined> {
+        return await this.userTeamRepository.remove(userTeam);
+    }
 }

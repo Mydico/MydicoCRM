@@ -1,5 +1,5 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Repository, TreeRepository } from 'typeorm';
 import Department from '../domain/department.entity';
 
 @EntityRepository(Department)
-export class DepartmentRepository extends Repository<Department> {}
+export class DepartmentRepository extends TreeRepository<Department> {}

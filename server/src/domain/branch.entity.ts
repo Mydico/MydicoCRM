@@ -9,17 +9,17 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
  */
 @Entity('branch')
 export default class Branch extends BaseEntity {
-  @Column({ name: 'name', length: 255, nullable: true })
-  name: string;
+    @Column({ name: 'name', length: 255, nullable: true })
+    name: string;
 
-  @Column({ name: 'code', length: 255, unique: true, nullable: false })
-  code: string;
+    @Column({ name: 'code', length: 255, unique: true, nullable: false })
+    code: string;
 
-  @Column({ name: 'description', length: 255, nullable: true })
-  description?: string;
+    @Column({ name: 'description', length: 255, nullable: true })
+    description?: string;
 
-  @Column({ type: 'boolean', name: 'is_del', nullable: true, default: false })
-  isDel?: boolean;
+    @Column({ type: 'boolean', name: 'is_del', nullable: true, default: false })
+    isDel?: boolean;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

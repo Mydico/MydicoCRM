@@ -5,9 +5,9 @@ import { AttributeMapRepository } from '../repository/attribute-map.repository';
 import { AttributeMapService } from '../service/attribute-map.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AttributeMapRepository])],
-  controllers: [AttributeMapController],
-  providers: [AttributeMapService],
-  exports: [AttributeMapService]
+    imports: [TypeOrmModule.forFeature([AttributeMapRepository])],
+    controllers: [AttributeMapController],
+    providers: [AttributeMapService],
+    exports: [AttributeMapService],
 })
 export class AttributeMapModule {}

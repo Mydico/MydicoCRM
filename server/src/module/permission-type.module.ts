@@ -5,9 +5,9 @@ import { PermissionTypeRepository } from '../repository/permission-type.reposito
 import { PermissionTypeService } from '../service/permission-type.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PermissionTypeRepository])],
-  controllers: [PermissionTypeController],
-  providers: [PermissionTypeService],
-  exports: [PermissionTypeService]
+    imports: [TypeOrmModule.forFeature([PermissionTypeRepository])],
+    controllers: [PermissionTypeController],
+    providers: [PermissionTypeService],
+    exports: [PermissionTypeService],
 })
 export class PermissionTypeModule {}

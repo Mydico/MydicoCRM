@@ -7,9 +7,9 @@ import { PromotionProductModule } from './promotion-product.module';
 import { PromotionItemModule } from './promotion-item.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PromotionRepository]), PromotionProductModule, PromotionItemModule],
-  controllers: [PromotionController],
-  providers: [PromotionService],
-  exports: [PromotionService]
+    imports: [TypeOrmModule.forFeature([PromotionRepository]), PromotionProductModule, PromotionItemModule],
+    controllers: [PromotionController],
+    providers: [PromotionService],
+    exports: [PromotionService],
 })
 export class PromotionModule {}

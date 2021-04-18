@@ -6,9 +6,9 @@ import { ProductQuantityService } from '../service/product-quantity.service';
 import { ProductQuantitySubscriber } from '../service/subscribers/product-quantity.subscriber';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProductQuantityRepository])],
-  controllers: [ProductQuantityController],
-  providers: [ProductQuantityService, ProductQuantitySubscriber],
-  exports: [ProductQuantityService]
+    imports: [TypeOrmModule.forFeature([ProductQuantityRepository])],
+    controllers: [ProductQuantityController],
+    providers: [ProductQuantityService, ProductQuantitySubscriber],
+    exports: [ProductQuantityService],
 })
 export class ProductQuantityModule {}

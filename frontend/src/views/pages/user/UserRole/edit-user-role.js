@@ -109,6 +109,9 @@ const EditUserRole = props => {
   useEffect(() => {
     dispatch(getDetailUserRole(props.match.params.id));
     dispatch(getPermissionGroups());
+    return () => {
+      dispatch(reset())
+    }
   }, []);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {

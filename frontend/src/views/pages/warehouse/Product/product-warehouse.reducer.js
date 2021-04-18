@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingProductWarehouse, getProductWarehouse, getDetailProductWarehouse, updateProductWarehouse } from './product-warehouse.api';
+import { creatingProductWarehouse, getProductWarehouse, getDetailProductWarehouse, updateProductWarehouse, getProductInstore } from './product-warehouse.api';
 
 const initialState = {
   loading: false,
@@ -52,6 +52,10 @@ const slice = createSlice({
     [getProductWarehouse.fulfilled]: (state, action) => {
       productWarehousesAdapter.setAll(state, action.payload.data);
       state.initialState.totalItem = action.payload.total
+      state.initialState.loading = false;
+    },
+    [getProductInstore.fulfilled]: (state, action) => {
+      productWarehousesAdapter.setAll(state, action.payload);
       state.initialState.loading = false;
     },
     [getProductWarehouse.rejected]: (state, action) => {

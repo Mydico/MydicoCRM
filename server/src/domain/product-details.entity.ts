@@ -11,19 +11,18 @@ import Product from './product.entity';
  */
 @Entity('product_details')
 export default class ProductDetails extends BaseEntity {
-  @Column({ name: 'barcode', length: 255, nullable: true })
-  barcode: string;
+    @Column({ name: 'barcode', length: 255, nullable: true })
+    barcode: string;
 
 
+    @Column({ type: 'boolean', name: 'is_del', nullable: true })
+    isDel: boolean;
 
-  @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  isDel: boolean;
+    @Column({ name: 'name', length: 250, nullable: true })
+    name: string;
 
-  @Column({ name: 'name', length: 250, nullable: true })
-  name: string;
+    @ManyToOne(type => Product)
+    product: Product;
 
-  @ManyToOne(type => Product)
-  product: Product;
-
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

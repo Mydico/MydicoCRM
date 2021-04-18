@@ -1,4 +1,4 @@
 export enum StoreHistoryType {
-  IMPORT = 'IMPORT',
-  EXPORT = 'EXPORT'
+    IMPORT = 'IMPORT',
+    EXPORT = 'EXPORT'
 }

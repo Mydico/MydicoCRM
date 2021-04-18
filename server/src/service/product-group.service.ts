@@ -6,36 +6,36 @@ import { ProductGroupRepository } from '../repository/product-group.repository';
 import { increment_alphanumeric_str } from './utils/normalizeString';
 
 const relationshipNames = [];
-relationshipNames.push('productBrand')
+relationshipNames.push('productBrand');
 @Injectable()
 export class ProductGroupService {
-  logger = new Logger('ProductGroupService');
+    logger = new Logger('ProductGroupService');
 
-  constructor(@InjectRepository(ProductGroupRepository) private productGroupRepository: ProductGroupRepository) {}
+    constructor(@InjectRepository(ProductGroupRepository) private productGroupRepository: ProductGroupRepository) {}
 
-  async findById(id: string): Promise<ProductGroup | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.productGroupRepository.findOne(id, options);
-  }
+    async findById(id: string): Promise<ProductGroup | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.productGroupRepository.findOne(id, options);
+    }
 
-  async findByfields(options: FindOneOptions<ProductGroup>): Promise<ProductGroup | undefined> {
-    return await this.productGroupRepository.findOne(options);
-  }
+    async findByfields(options: FindOneOptions<ProductGroup>): Promise<ProductGroup | undefined> {
+        return await this.productGroupRepository.findOne(options);
+    }
 
-  async findAndCount(options: FindManyOptions<ProductGroup>): Promise<[ProductGroup[], number]> {
-    options.relations = relationshipNames;
-    return await this.productGroupRepository.findAndCount(options);
-  }
+    async findAndCount(options: FindManyOptions<ProductGroup>): Promise<[ProductGroup[], number]> {
+        options.relations = relationshipNames;
+        return await this.productGroupRepository.findAndCount(options);
+    }
 
-  async save(productGroup: ProductGroup): Promise<ProductGroup | undefined> {
-    return await this.productGroupRepository.save(productGroup);
-  }
+    async save(productGroup: ProductGroup): Promise<ProductGroup | undefined> {
+        return await this.productGroupRepository.save(productGroup);
+    }
 
-  async update(productGroup: ProductGroup): Promise<ProductGroup | undefined> {
-    return await this.save(productGroup);
-  }
+    async update(productGroup: ProductGroup): Promise<ProductGroup | undefined> {
+        return await this.save(productGroup);
+    }
 
-  async delete(productGroup: ProductGroup): Promise<ProductGroup | undefined> {
-    return await this.productGroupRepository.remove(productGroup);
-  }
+    async delete(productGroup: ProductGroup): Promise<ProductGroup | undefined> {
+        return await this.productGroupRepository.remove(productGroup);
+    }
 }

@@ -23,7 +23,7 @@ import { creatingUserRole } from './user-roles.api';
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { current } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router-dom';
-import { fetching, globalizedRoleSelectors } from './user-roles.reducer';
+import { fetching, reset } from './user-roles.reducer';
 import { Table } from 'reactstrap';
 import Select from 'react-select';
 import { globalizedPermissionGroupsSelectors } from '../UserPermission/permission.reducer';
@@ -97,7 +97,10 @@ const CreateRole = () => {
 
   useEffect(() => {
     dispatch(getPermissionGroups());
-  }, []);
+    return () => {
+      dispatch(reset())
+    }
+  }, [])
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
     values.permissionGroups = selectedGroupPermission;

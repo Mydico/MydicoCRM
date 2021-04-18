@@ -8,23 +8,23 @@ import { PermissionStatus } from './enumeration/permission-status';
  */
 @Entity('permission')
 export default class Permission extends BaseEntity {
-  @Column({ name: 'description', nullable: true })
-  description: string;
+    @Column({ name: 'description', nullable: true })
+    description: string;
 
-  @Column({ name: 'action', nullable: true })
-  action: string;
+    @Column({ name: 'action', nullable: true })
+    action: string;
 
-  @Column({ name: 'type', nullable: true })
-  type: string;
+    @Column({ name: 'type', nullable: true })
+    type: string;
 
-  @Column({ name: 'type_name', nullable: true })
-  typeName: string;
+    @Column({ name: 'type_name', nullable: true })
+    typeName: string;
 
-  @Column({ type: 'enum', name: 'status', nullable: true, enum: PermissionStatus, default: PermissionStatus.PUBLIC })
-  status: PermissionStatus;
+    @Column({ type: 'enum', name: 'status', nullable: true, enum: PermissionStatus, default: PermissionStatus.PUBLIC })
+    status: PermissionStatus;
 
-  @Column({ name: 'resource', nullable: true })
-  resource: string;
+    @Column({ name: 'resource', nullable: true })
+    resource: string;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

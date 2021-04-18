@@ -25,8 +25,8 @@ import { current } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
-import { getDepartment } from '../../user/UserDepartment/department.api';
-import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
+import { currencyMask } from '../../../components/currency-input/currency-input';
+import MaskedInput from 'react-text-mask';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
@@ -83,7 +83,7 @@ const validateForm = errors => {
   });
 };
 
-const EditWarehouseExportProvider = (props) => {
+const EditWarehouseExportProvider = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
   const { account } = useSelector(state => state.authentication);
 
@@ -115,8 +115,7 @@ const EditWarehouseExportProvider = (props) => {
   };
 
   useEffect(() => {
-    const departArr = account.departments.map(item => item.id);
-    dispatch(getWarehouse({ department: JSON.stringify(departArr) }));
+    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
     dispatch(getProduct());
     dispatch(getDetailWarehouseImport(props.match.params.id));
   }, []);
@@ -124,13 +123,13 @@ const EditWarehouseExportProvider = (props) => {
   useEffect(() => {
     if (warehouseImport) {
       setInitValuesState(warehouseImport);
-      setSelectedWarehouse(warehouseImport.store)
-      setProductList(warehouseImport.storeInputDetails)
+      setSelectedWarehouse(warehouseImport.store);
+      setProductList(warehouseImport.storeInputDetails);
     }
   }, [warehouseImport]);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
-    values = JSON.parse(JSON.stringify(values))
+    values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
     dispatch(fetching());
@@ -155,7 +154,7 @@ const EditWarehouseExportProvider = (props) => {
     if (arr.length === 0) {
       const copyArr = [...productList];
       copyArr[index].product = value;
-      copyArr[index].price = value.price;
+      copyArr[index].price = Number(value.price);
       copyArr[index].quantity = 1;
       setProductList(copyArr);
     }
@@ -168,7 +167,7 @@ const EditWarehouseExportProvider = (props) => {
 
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
-    copyArr[index].price = target.value;
+    copyArr[index].price = Number(target.value.replace(/\D/g, ''));
     setProductList(copyArr);
   };
 
@@ -336,14 +335,17 @@ const EditWarehouseExportProvider = (props) => {
                           <td>{item?.product?.volume}</td>
                           <td>
                             {
-                              <CInput
-                                type="number"
-                                min={1}
-                                name="code"
-                                id="code"
+                              <MaskedInput
+                                mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
-                                onBlur={handleBlur}
-                                value={item?.price}
+                                value={
+                                  typeof productList[index].price !== 'number'
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                        productList[index].price
+                                      )
+                                    : productList[index].price
+                                }
+                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
                           </td>

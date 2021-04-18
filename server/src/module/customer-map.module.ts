@@ -5,9 +5,9 @@ import { CustomerMapRepository } from '../repository/customer-map.repository';
 import { CustomerMapService } from '../service/customer-map.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CustomerMapRepository])],
-  controllers: [CustomerMapController],
-  providers: [CustomerMapService],
-  exports: [CustomerMapService]
+    imports: [TypeOrmModule.forFeature([CustomerMapRepository])],
+    controllers: [CustomerMapController],
+    providers: [CustomerMapService],
+    exports: [CustomerMapService],
 })
 export class CustomerMapModule {}

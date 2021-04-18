@@ -8,91 +8,91 @@ import PermissionGroupAssociate from '../src/domain/permission-group-associate.e
 import { PermissionGroupAssociateService } from '../src/service/permission-group-associate.service';
 
 describe('PermissionGroupAssociate Controller', () => {
-  let app: INestApplication;
+    let app: INestApplication;
 
-  const authGuardMock = { canActivate: (): any => true };
-  const rolesGuardMock = { canActivate: (): any => true };
-  const entityMock: any = {
-    id: 'entityId'
-  };
+    const authGuardMock = { canActivate: (): any => true };
+    const rolesGuardMock = { canActivate: (): any => true };
+    const entityMock: any = {
+        id: 'entityId',
+    };
 
-  const serviceMock = {
-    findById: (): any => entityMock,
-    findAndCount: (): any => [entityMock, 0],
-    save: (): any => entityMock,
-    update: (): any => entityMock,
-    delete: (): any => entityMock
-  };
+    const serviceMock = {
+        findById: (): any => entityMock,
+        findAndCount: (): any => [entityMock, 0],
+        save: (): any => entityMock,
+        update: (): any => entityMock,
+        delete: (): any => entityMock,
+    };
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule]
-    })
-      .overrideGuard(AuthGuard)
-      .useValue(authGuardMock)
-      .overrideGuard(RolesGuard)
-      .useValue(rolesGuardMock)
-      .overrideProvider(PermissionGroupAssociateService)
-      .useValue(serviceMock)
-      .compile();
+    beforeEach(async () => {
+        const moduleFixture: TestingModule = await Test.createTestingModule({
+            imports: [AppModule],
+        })
+            .overrideGuard(AuthGuard)
+            .useValue(authGuardMock)
+            .overrideGuard(RolesGuard)
+            .useValue(rolesGuardMock)
+            .overrideProvider(PermissionGroupAssociateService)
+            .useValue(serviceMock)
+            .compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+        app = moduleFixture.createNestApplication();
+        await app.init();
+    });
 
-  it('/GET all permission-group-associates ', async () => {
-    const getEntities: PermissionGroupAssociate[] = (
-      await request(app.getHttpServer())
-        .get('/api/permission-group-associates')
-        .expect(200)
-    ).body;
+    it('/GET all permission-group-associates ', async () => {
+        const getEntities: PermissionGroupAssociate[] = (
+            await request(app.getHttpServer())
+                .get('/api/permission-group-associates')
+                .expect(200)
+        ).body;
 
-    expect(getEntities).toEqual(entityMock);
-  });
+        expect(getEntities).toEqual(entityMock);
+    });
 
-  it('/GET permission-group-associates by id', async () => {
-    const getEntity: PermissionGroupAssociate = (
-      await request(app.getHttpServer())
-        .get('/api/permission-group-associates/' + entityMock.id)
-        .expect(200)
-    ).body;
+    it('/GET permission-group-associates by id', async () => {
+        const getEntity: PermissionGroupAssociate = (
+            await request(app.getHttpServer())
+                .get('/api/permission-group-associates/' + entityMock.id)
+                .expect(200)
+        ).body;
 
-    expect(getEntity).toEqual(entityMock);
-  });
+        expect(getEntity).toEqual(entityMock);
+    });
 
-  it('/POST create permission-group-associates', async () => {
-    const createdEntity: PermissionGroupAssociate = (
-      await request(app.getHttpServer())
-        .post('/api/permission-group-associates')
-        .send(entityMock)
-        .expect(201)
-    ).body;
+    it('/POST create permission-group-associates', async () => {
+        const createdEntity: PermissionGroupAssociate = (
+            await request(app.getHttpServer())
+                .post('/api/permission-group-associates')
+                .send(entityMock)
+                .expect(201)
+        ).body;
 
-    expect(createdEntity).toEqual(entityMock);
-  });
+        expect(createdEntity).toEqual(entityMock);
+    });
 
-  it('/PUT update permission-group-associates', async () => {
-    const updatedEntity: PermissionGroupAssociate = (
-      await request(app.getHttpServer())
-        .put('/api/permission-group-associates')
-        .send(entityMock)
-        .expect(201)
-    ).body;
+    it('/PUT update permission-group-associates', async () => {
+        const updatedEntity: PermissionGroupAssociate = (
+            await request(app.getHttpServer())
+                .put('/api/permission-group-associates')
+                .send(entityMock)
+                .expect(201)
+        ).body;
 
-    expect(updatedEntity).toEqual(entityMock);
-  });
+        expect(updatedEntity).toEqual(entityMock);
+    });
 
-  it('/DELETE permission-group-associates', async () => {
-    const deletedEntity: PermissionGroupAssociate = (
-      await request(app.getHttpServer())
-        .delete('/api/permission-group-associates/' + entityMock.id)
-        .expect(204)
-    ).body;
+    it('/DELETE permission-group-associates', async () => {
+        const deletedEntity: PermissionGroupAssociate = (
+            await request(app.getHttpServer())
+                .delete('/api/permission-group-associates/' + entityMock.id)
+                .expect(204)
+        ).body;
 
-    expect(deletedEntity).toEqual({});
-  });
+        expect(deletedEntity).toEqual({});
+    });
 
-  afterEach(async () => {
-    await app.close();
-  });
+    afterEach(async () => {
+        await app.close();
+    });
 });

@@ -13,20 +13,20 @@ import Product from './product.entity';
  */
 @Entity('store_input_details')
 export default class StoreInputDetails extends BaseEntity {
-  @Column({ type: 'integer', name: 'quantity', nullable: true })
-  quantity?: number;
+    @Column({ type: 'integer', name: 'quantity', nullable: true })
+    quantity?: number;
 
-  @Column({ type: 'bigint', name: 'price', nullable: true })
-  price?: number;
+    @Column({ type: 'bigint', name: 'price', nullable: true })
+    price?: number;
 
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  siteId?: number;
+    @Column({ type: 'integer', name: 'site_id', nullable: true })
+    siteId?: number;
 
-  @ManyToOne(type => StoreInput)
-  storeInput: StoreInput;
+    @ManyToOne(type => StoreInput)
+    storeInput: StoreInput;
 
-  @ManyToOne(type => Product)
-  product: Product;
+    @ManyToOne(type => Product)
+    product: Product;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

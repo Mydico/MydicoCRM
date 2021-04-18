@@ -8,9 +8,9 @@ import { RoleModule } from './role.module';
 import { PermissionGroupAssociateModule } from './permission-group-associate.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PermissionGroupRepository]),PermissionModule, RoleModule, PermissionGroupAssociateModule],
-  controllers: [PermissionGroupController],
-  providers: [PermissionGroupService],
-  exports: [PermissionGroupService]
+    imports: [TypeOrmModule.forFeature([PermissionGroupRepository]),PermissionModule, RoleModule, PermissionGroupAssociateModule],
+    controllers: [PermissionGroupController],
+    providers: [PermissionGroupService],
+    exports: [PermissionGroupService],
 })
 export class PermissionGroupModule {}
