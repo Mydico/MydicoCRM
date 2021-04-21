@@ -49,6 +49,10 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
+    [getOrder.rejected]: (state, action) => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = false;
+    },
     [updateOrder.fulfilled]: (state, action) => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;

@@ -12,22 +12,29 @@ import {
   CInput,
   CRow,
   CSelect,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { creatingProductGroup } from './product-group.api';
-import Toaster from '../../../components/notifications/toaster/Toaster';
+import Select from 'react-select';
 import { useHistory } from 'react-router-dom';
-import { fetching } from './product-group.reducer';
+import { fetching, reset } from './product-group.reducer';
 import { getProductBrand } from '../ProductBrand/product-brand.api';
 import { globalizedproductBrandsSelectors } from '../ProductBrand/product-brand.reducer';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    description: Yup.string().min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`).required('Tên liên lạc không để trống'),
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
+    productBrand:Yup.string()
+    .required('Thương hiệu không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
+    code: Yup.string()
+      .min(1, `Mã phải lớn hơn 1 kí tự`)
+      .required('Mã không để trống').nullable()
   });
 };
 
@@ -48,7 +55,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -75,7 +82,7 @@ const CreateProductGroup = () => {
     code: '',
     name: '',
     productBrand: null,
-    description: '',
+    description: ''
   });
   const toastRef = useRef();
   const dispatch = useDispatch();
@@ -86,6 +93,9 @@ const CreateProductGroup = () => {
 
   useEffect(() => {
     dispatch(getProductBrand());
+    return () => {
+      dispatch(reset());
+    };
   }, []);
 
   useEffect(() => {
@@ -96,11 +106,6 @@ const CreateProductGroup = () => {
 
   const onSubmit = (values, { setSubmitting, setErrors, set }) => {
     dispatch(fetching());
-    values.code = values.name
-      .trim()
-      .split(' ')
-      .map(string => string[0])
-      .join('');
     if (!values.productBrand) {
       values.productBrand = initialValues.current.productBrand;
     }
@@ -109,16 +114,14 @@ const CreateProductGroup = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới khách hàng thành công" />
       <CCardHeader>
-        <span className="h2">Thêm mới</span>
+        <CCardTitle>Thêm mới nhóm sản phẩm</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initialValues} enableReinitialize={true} validate={validate(validationSchema)} onSubmit={onSubmit}>
@@ -135,28 +138,40 @@ const CreateProductGroup = () => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
                 <CCol lg="6">
                   <CFormGroup>
                     <CLabel htmlFor="code">Thương hiệu</CLabel>
-                    <CSelect
-                      custom
-                      name="branch"
-                      id="branch"
-                      onChange={e => {
-                        setFieldValue('productBrand', e.target.value);
+                    <Select
+                      name="productBrand"
+                      onChange={item => {
+                        setFieldValue('productBrand', item.value);
                       }}
-                    >
-                      {productBrand.map(item => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </CSelect>
-                    <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
+                      options={productBrand.map(item => ({
+                        value: item.id,
+                        label: `${item.name}`
+                      }))}
+                    />
+                    <CInvalidFeedback className="d-block">{errors.productBrand}</CInvalidFeedback>
+                  </CFormGroup>
+                  <CFormGroup>
+                    <CLabel htmlFor="lastName">Tên nhóm sản phẩm</CLabel>
+                    <CInput
+                      type="text"
+                      name="code"
+                      id="code"
+                      placeholder="Mã nhóm"
+                      autoComplete="family-name"
+                      invalid={errors.code}
+                      required
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.code}
+                    />
+                    <CInvalidFeedback>{errors.code}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="lastName">Tên nhóm sản phẩm</CLabel>
@@ -166,8 +181,7 @@ const CreateProductGroup = () => {
                       id="name"
                       placeholder="Tên loại"
                       autoComplete="family-name"
-                      valid={!errors.name}
-                      invalid={touched.name && !!errors.name}
+                      invalid={errors.name}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -184,8 +198,7 @@ const CreateProductGroup = () => {
                       id="description"
                       placeholder="Mô tả"
                       autoComplete="contactName"
-                      valid={!errors.description}
-                      invalid={touched.description && !!errors.description}
+                      invalid={errors.description}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}

@@ -12,20 +12,24 @@ import {
   CInput,
   CRow,
   CSelect,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { creatingProductBrand } from './product-brand.api';
-import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
-import { fetching } from './product-brand.reducer';
+import { fetching, reset } from './product-brand.reducer';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    description: Yup.string().min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`).required('Tên liên lạc không để trống'),
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
+    code: Yup.string()
+      .min(1, `Mã thương hiệu phải lớn hơn 1 kí tự`)
+      .required('Mã thương hiệu không để trống').nullable(),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống')
   });
 };
 
@@ -46,7 +50,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -72,34 +76,28 @@ const CreateProductBrand = () => {
   const initialValues = {
     code: '',
     name: '',
-    description: '',
+    description: ''
   };
   const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
 
   const onSubmit = (values, { setSubmitting, setErrors }) => {
-    dispatch(fetching())
-    values.code = values.name
-      .trim()
-      .split(' ')
-      .map(string => string[0])
-      .join('');
+    dispatch(fetching());
     dispatch(creatingProductBrand(values));
   };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
+      dispatch(reset())
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới khách hàng thành công" />
       <CCardHeader>
-        <span className="h2">Thêm mới</span>
+        <CCardTitle>Thêm mới</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
@@ -116,11 +114,27 @@ const CreateProductBrand = () => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
                 <CCol lg="6">
+                  <CFormGroup>
+                    <CLabel htmlFor="lastName">Mã thương hiệu</CLabel>
+                    <CInput
+                      type="text"
+                      name="code"
+                      id="code"
+                      placeholder="Tên thương hiệu"
+                      autoComplete="family-name"
+                      invalid={errors.code}
+                      required
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.code}
+                    />
+                    <CInvalidFeedback>{errors.code}</CInvalidFeedback>
+                  </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="lastName">Tên thương hiệu</CLabel>
                     <CInput
@@ -129,8 +143,7 @@ const CreateProductBrand = () => {
                       id="name"
                       placeholder="Tên thương hiệu"
                       autoComplete="family-name"
-                      valid={!errors.name}
-                      invalid={touched.name && !!errors.name}
+                      invalid={errors.name}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -147,8 +160,7 @@ const CreateProductBrand = () => {
                       id="description"
                       placeholder="Mô tả"
                       autoComplete="contactName"
-                      valid={!errors.description}
-                      invalid={touched.description && !!errors.description}
+                      invalid={errors.description}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}

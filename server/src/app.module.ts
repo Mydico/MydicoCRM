@@ -6,7 +6,6 @@ import { ormconfig, roleBDConfig } from './orm.config';
 import { CustomerTokenModule } from './module/customer-token.module';
 import { PromotionModule } from './module/promotion.module';
 import { AttributeModule } from './module/attribute.module';
-import { AttributeMapModule } from './module/attribute-map.module';
 import { AttributeValueModule } from './module/attribute-value.module';
 import { BillModule } from './module/bill.module';
 import { CityModule } from './module/city.module';
@@ -15,7 +14,6 @@ import { CustomerModule } from './module/customer.module';
 import { CustomerAdvisoryModule } from './module/customer-advisory.module';
 import { CustomerCallModule } from './module/customer-call.module';
 import { CustomerCategoryModule } from './module/customer-category.module';
-import { CustomerMapModule } from './module/customer-map.module';
 import { CustomerRequestModule } from './module/customer-request.module';
 import { CustomerSkinModule } from './module/customer-skin.module';
 import { CustomerStatusModule } from './module/customer-status.module';
@@ -30,7 +28,6 @@ import { OrderPushModule } from './module/order-push.module';
 import { ProductModule } from './module/product.module';
 import { ProductDetailsModule } from './module/product-details.module';
 import { ProductGroupModule } from './module/product-group.module';
-import { ProductGroupMapModule } from './module/product-group-map.module';
 import { ProductQuantityModule } from './module/product-quantity.module';
 import { PromotionCustomerLevelModule } from './module/promotion-customer-level.module';
 import { PromotionItemModule } from './module/promotion-item.module';
@@ -38,7 +35,6 @@ import { ReceiptModule } from './module/receipt.module';
 import { ReportCustomerCategoryDateModule } from './module/report-customer-category-date.module';
 import { ReportDateModule } from './module/report-date.module';
 import { SiteModule } from './module/site.module';
-import { SiteMapDomainModule } from './module/site-map-domain.module';
 import { StoreModule } from './module/store.module';
 import { StoreInputModule } from './module/store-input.module';
 import { StoreInputDetailsModule } from './module/store-input-details.module';
@@ -66,6 +62,9 @@ import { PermissionGroupAssociateModule } from './module/permission-group-associ
 import { StoreHistoryModule } from './module/store-history.module';
 import { ProviderModule } from './module/provider.module';
 import { CustomerDebitModule } from './module/customer-debit.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
 // jhipster-needle-add-service-module-to-main-import - JHipster will import service modules here, do not remove
@@ -73,12 +72,14 @@ import { CustomerDebitModule } from './module/customer-debit.module';
 @Module({
     imports: [
         TypeOrmModule.forRoot(ormconfig),
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, './', 'classes/static')
+          }),
         RoleModule.forRootAsync(roleBDConfig, path.join(__dirname, '/acl-model.conf')),
         AuthModule,
         CustomerTokenModule,
         PromotionModule,
         AttributeModule,
-        AttributeMapModule,
         AttributeValueModule,
         BillModule,
         CityModule,
@@ -88,7 +89,6 @@ import { CustomerDebitModule } from './module/customer-debit.module';
         CustomerAdvisoryModule,
         CustomerCallModule,
         CustomerCategoryModule,
-        CustomerMapModule,
         CustomerRequestModule,
         CustomerSkinModule,
         CustomerStatusModule,
@@ -103,7 +103,6 @@ import { CustomerDebitModule } from './module/customer-debit.module';
         ProductModule,
         ProductDetailsModule,
         ProductGroupModule,
-        ProductGroupMapModule,
         ProductQuantityModule,
         PromotionCustomerLevelModule,
         PromotionItemModule,
@@ -111,7 +110,6 @@ import { CustomerDebitModule } from './module/customer-debit.module';
         ReportCustomerCategoryDateModule,
         ReportDateModule,
         SiteModule,
-        SiteMapDomainModule,
         StoreModule,
         StoreInputModule,
         StoreInputDetailsModule,

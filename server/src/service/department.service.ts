@@ -17,6 +17,12 @@ export class DepartmentService {
     return await this.departmentRepository.findTrees();
   }
 
+  async findAllFlatChild(department: Department): Promise<Department[]> {
+    return await this.departmentRepository.find({
+      parent: department
+    });
+  }
+
   async findById(id: string): Promise<Department | undefined> {
     const options = { relations: relationshipNames };
     return await this.departmentRepository.findOne(id, options);

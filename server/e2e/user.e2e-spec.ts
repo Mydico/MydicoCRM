@@ -22,7 +22,6 @@ describe('User', () => {
         email: 'usertest@localhost.it',
         imageUrl: '',
         activated: true,
-        langKey: 'en',
         createdBy: 'testadmin',
         lastModifiedBy: 'testadmin',
     };

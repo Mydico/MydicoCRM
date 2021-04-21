@@ -46,14 +46,8 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDetailProduct.fulfilled]: (state, action) => {
-      productsAdapter.addOne(state, action.payload)
+      productsAdapter.setAll(state, [action.payload])
       state.initialState.loading = false;
-    },
-    [creatingProductStatus.fulfilled]: (state, action) => {
-      state.initialState.updatingSuccess = true;
-    },
-    [creatingProductType.fulfilled]: (state, action) => {
-      state.initialState.updatingSuccess = true;
     },
     [getProduct.fulfilled]: (state, action) => {
       productsAdapter.setAll(state, action.payload.data);
@@ -62,37 +56,6 @@ const slice = createSlice({
     },
     [getProduct.rejected]: (state, action) => {
       state.initialState.loading = false;
-    },
-    [getProductBirthday.fulfilled]: (state, action) => {
-      productsAdapter.setAll(state, action.payload.data);
-      state.initialState.totalItem = action.payload.total
-      state.initialState.loading = false;
-    },
-    [getCity.fulfilled]: (state, action) => {
-      state.initialState.cities = action.payload
-      state.initialState.loading = false;
-    },
-    [getDistrict.fulfilled]: (state, action) => {
-      state.initialState.districts = action.payload
-      state.initialState.loading = false;
-    },
-    [getWard.fulfilled]: (state, action) => {
-      state.initialState.wards = action.payload
-      state.initialState.loading = false;
-    },
-    [getProductType.fulfilled]: (state, action) => {
-      state.initialState.type = action.payload
-      state.initialState.loading = false;
-    },
-    [getProductStatus.fulfilled]: (state, action) => {
-      state.initialState.status = action.payload
-      state.initialState.loading = false;
-    },
-    [getBranches.fulfilled]: (state, action) => {
-      state.initialState.branch = action.payload
-      state.initialState.loading = false;
-    },
-    [getProduct.rejected]: (state, action) => {
       state.loading = false;
     },
   },

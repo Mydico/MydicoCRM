@@ -14,7 +14,6 @@ const ProductBrand = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(getProductBrand());
     dispatch(reset());
   }, []);
   const { selectAll } = globalizedproductBrandsSelectors;
@@ -40,16 +39,17 @@ const ProductBrand = props => {
       key: 'order',
       label: 'STT',
       _style: { width: '1%' },
-      filter: false,
+      filter: false
     },
+    { key: 'code', label: 'Mã thương hiệu', _style: { width: '15%' } },
     { key: 'name', label: 'Tên thương hiệu', _style: { width: '15%' } },
     { key: 'description', label: 'Mô tả', _style: { width: '15%' } },
     {
       key: 'show_details',
       label: '',
       _style: { width: '1%' },
-      filter: false,
-    },
+      filter: false
+    }
   ];
 
   const getBadge = status => {
@@ -73,7 +73,9 @@ const ProductBrand = props => {
   };
 
   const onFilterColumn = value => {
-    dispatch(getProductBrand({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getProductBrand({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    }
   };
 
   const toEditProductBrand = typeId => {
@@ -155,14 +157,16 @@ const ProductBrand = props => {
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
                     <h5>Thông tin thương hiệu</h5>
-                    <CRow>
+                    <CRow className="mt-5">
                       <CCol lg="6">
+                      <dl className="row">
+                          <dt className="col-sm-3">Mã thương hiệu:</dt>
+                          <dd className="col-sm-9">{item.code}</dd>
+                        </dl>
                         <dl className="row">
-                          <dt className="col-sm-4">Tên thương hiệu:</dt>
+                          <dt className="col-sm-3">Tên thương hiệu:</dt>
                           <dd className="col-sm-8">{item.name}</dd>
                         </dl>
-                      </CCol>
-                      <CCol lg="6">
                         <dl className="row">
                           <dt className="col-sm-3">Mô tả:</dt>
                           <dd className="col-sm-9">{item.description}</dd>
@@ -172,7 +176,7 @@ const ProductBrand = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

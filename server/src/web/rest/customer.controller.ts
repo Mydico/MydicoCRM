@@ -8,6 +8,7 @@ import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { Between, Like } from 'typeorm';
+import { User } from '../../domain/user.entity';
 
 @Controller('api/customers')
 @UseGuards(AuthGuard, RolesGuard)
@@ -96,6 +97,8 @@ export class CustomerController {
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     async post(@Req() req: Request, @Body() customer: Customer): Promise<Customer> {
+        const currentUser = req.user as User;
+        customer.department = currentUser.department
         const created = await this.customerService.save(customer);
         HeaderUtil.addEntityCreatedHeaders(req.res, 'Customer', created.id);
         return created;

@@ -10,23 +10,12 @@ const statusError = {
 };
 
 const successMessageMapping = {
-  // 'ATTP.Department.updated': 'Cập nhật Đơn vị thành công',
-  // 'ATTP.Department.deleted': 'Xóa Đơn vị thành công'
-  // 'ATTP.Position.created': 'Tạo mới Chức vụ thành công',
-  // 'ATTP.Position.updated': 'Chỉnh sửa Chức vụ thành công',
-  // 'ATTP.Position.deleted': 'Xóa Đơn vị thành công',
-  // 'ATTP.PermissionGroup.created': 'Tạo mới nhóm quyền thành công',
-  // 'ATTP.PermissionGroup.updated': 'Chỉnh sửa nhóm quyền thành công',
-  // 'ATTP.Investigation.created': 'Tạo mới Đợt thanh tra thành công',
-  // 'ATTP.Investigation.updated': 'Chỉnh sửa Đợt thanh tra thành công',
-  // 'ATTP.Facility.created': 'Tạo mới Cơ sở thành công',
-  // 'ATTP.Facility.updated': 'Chỉnh sửa Cơ sở thành công',
-  // 'ATTP.Product.created': 'Tạo mới Sản phẩm thành công',
-  // 'ATTP.Product.updated': 'Chỉnh sửa Sản phẩm thành công',
-  // 'ATTP.FacilityType.created': 'Tạo mới Loại cơ sở thành công',
-  // 'ATTP.FacilityType.updated': 'Chỉnh sửa Loại cơ sở thành công',
-  // 'ATTP.ProductType.created': 'Tạo mới Loại sản phẩm thành công',
-  // 'ATTP.ProductType.updated': 'Chỉnh sửa Loại sản phẩm thành công'
+  'MydicoCRM.ProductGroup.created': 'Tạo mới Nhóm sản phẩm thành công',
+  'MydicoCRM.ProductGroup.updated': 'Chỉnh sửa Nhóm sản phẩm thành công',
+  'MydicoCRM.ProductBrand.created': 'Tạo mới Thương hiệu thành công',
+  'MydicoCRM.ProductBrand.updated': 'Chỉnh sửa Thương hiệu thành công',
+  'MydicoCRM.Product.created': 'Tạo mới sản phẩm thành công',
+  'MydicoCRM.Product.updated': 'Chỉnh sửa sản phẩm thành công',
 };
 
 // const addErrorAlert = (key?) => {
@@ -38,8 +27,15 @@ const addErrorAlert = key => {
 };
 export default () => next => action => {
   if (action.payload) {
-    if (action.payload && action.payload.statusCode === 200) {
-      ToastSuccess(statusError[action.payload.statusCode]);
+    if (action.payload && (action.payload.statusCode === 201 || action.payload.statusCode === 200)) {
+      const headers = action.payload.headers;
+      let alert = null;
+      Object.entries(headers).forEach(([k, v]) => {
+        if (k.toLowerCase().endsWith('mydicocrm-alert')) {
+          alert = v;
+        }
+      });
+      ToastSuccess(successMessageMapping[alert]);
     } else {
       ToastError(action.payload.message || statusError[action.payload.statusCode]);
     }

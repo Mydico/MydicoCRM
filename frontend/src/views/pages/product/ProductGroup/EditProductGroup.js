@@ -12,24 +12,29 @@ import {
   CInput,
   CRow,
   CSelect,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import Toaster from '../../../components/notifications/toaster/Toaster';
+import Select from 'react-select';
 import { useHistory } from 'react-router-dom';
 import { getDetailProductGroup, updateProductGroup } from './product-group.api';
 import { fetching, globalizedproductGroupsSelectors, reset } from './product-group.reducer';
-import { setTimeout } from 'core-js';
 import { globalizedproductBrandsSelectors } from '../ProductBrand/product-brand.reducer';
 import { getProductBrand } from '../ProductBrand/product-brand.api';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    description: Yup.string().min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`).required('Tên liên lạc không để trống'),
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
+    code: Yup.string()
+      .min(1, `Mã phải lớn hơn 1 kí tự`)
+      .required('Mã không để trống').nullable(),
+    productBrand: Yup.object().required('Thương hiệu không để trống')
   });
 };
 
@@ -51,7 +56,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -76,8 +81,9 @@ const CreateProductGroup = props => {
   const { initialState } = useSelector(state => state.productGroup);
   const initialValues = useRef({
     name: '',
+    code: '',
     productBrand: null,
-    description: '',
+    description: ''
   });
   const { selectAll } = globalizedproductBrandsSelectors;
   const productBrand = useSelector(selectAll);
@@ -97,6 +103,9 @@ const CreateProductGroup = props => {
   useEffect(() => {
     dispatch(getProductBrand());
     dispatch(getDetailProductGroup(props.match.params.id));
+    return () => {
+      dispatch(reset());
+    };
   }, []);
 
   useEffect(() => {
@@ -113,19 +122,14 @@ const CreateProductGroup = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
-      dispatch(reset());
-      setTimeout(() => {
-        history.goBack();
-      }, 1000);
+      history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Lưu thông tin thành công" />
       <CCardHeader>
-        <span className="h2">Chỉnh sửa</span>
+        <CCardTitle>Chỉnh sửa</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initValues || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
@@ -142,28 +146,44 @@ const CreateProductGroup = props => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
                 <CCol lg="6">
                   <CFormGroup>
                     <CLabel htmlFor="code">Thương hiệu</CLabel>
-                    <CSelect
-                      custom
-                      name="branch"
-                      id="branch"
-                      onChange={e => {
-                        setFieldValue('productBrand', e.target.value);
+                    <Select
+                      name="productBrand"
+                      onChange={item => {
+                        setFieldValue('productBrand', item.value);
                       }}
-                    >
-                      {productBrand.map(item => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </CSelect>
-                    <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
+                      value={{
+                        value: values.productBrand?.id,
+                        label: `${values.productBrand?.name}`
+                      }}
+                      options={productBrand.map(item => ({
+                        value: item,
+                        label: `${item.name}`
+                      }))}
+                    />
+                    <CInvalidFeedback className="d-block">{errors.productBrand}</CInvalidFeedback>
+                  </CFormGroup>
+                  <CFormGroup>
+                    <CLabel htmlFor="lastName">Mã nhóm sản phẩm</CLabel>
+                    <CInput
+                      type="text"
+                      name="code"
+                      id="code"
+                      placeholder="Mã nhóm sản phẩm"
+                      autoComplete="family-name"
+                      invalid={errors.code}
+                      required
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.code}
+                    />
+                    <CInvalidFeedback>{errors.code}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="lastName">Tên nhóm sản phẩm</CLabel>
@@ -173,8 +193,7 @@ const CreateProductGroup = props => {
                       id="name"
                       placeholder="Tên nhóm sản phẩm"
                       autoComplete="family-name"
-                      valid={!errors.name}
-                      invalid={touched.name && !!errors.name}
+                      invalid={errors.name}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -190,8 +209,7 @@ const CreateProductGroup = props => {
                       id="description"
                       placeholder="Mô tả"
                       autoComplete="contactName"
-                      valid={!errors.description}
-                      invalid={touched.description && !!errors.description}
+                      invalid={errors.description}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}

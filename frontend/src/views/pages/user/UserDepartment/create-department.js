@@ -103,7 +103,7 @@ const CreateDepartment = () => {
     dispatch(getPermissionGroups());
     dispatch(getDepartment());
     return () => {
-      reset()
+      dispatch(reset())
     }
   }, []);
 
@@ -116,7 +116,6 @@ const CreateDepartment = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      reset()
       history.goBack();
     }
   }, [initialState.updatingSuccess]);

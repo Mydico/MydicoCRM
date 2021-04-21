@@ -12,6 +12,7 @@ import {
   CInput,
   CRow,
   CSelect,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -24,12 +25,20 @@ import { useHistory } from 'react-router-dom';
 import { fetching } from '../customer.reducer';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    contactName: Yup.string().min(5, `Tên liên lạc phải lớn hơn 5 kí tự`).required('Tên liên lạc không để trống'),
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
-    tel: Yup.string().matches(phoneRegExp, 'Số điện thoại không đúng').required('Số điện thoại không để trống'),
-    city: Yup.string().nullable(true).required('Thành phố không để trống'),
+    contactName: Yup.string()
+      .min(5, `Tên liên lạc phải lớn hơn 5 kí tự`)
+      .required('Tên liên lạc không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
+    tel: Yup.string()
+      .matches(phoneRegExp, 'Số điện thoại không đúng')
+      .required('Số điện thoại không để trống'),
+    city: Yup.string()
+      .nullable(true)
+      .required('Thành phố không để trống')
   });
 };
 
@@ -50,7 +59,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -86,7 +95,7 @@ const CreateCustomer = () => {
     branch: null,
     type: null,
     createdYear: '',
-    obclubJoinTime: '',
+    obclubJoinTime: ''
   };
   const toastRef = useRef();
   const dispatch = useDispatch();
@@ -107,7 +116,7 @@ const CreateCustomer = () => {
   }, [selectedCity]);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
-    dispatch(fetching())
+    dispatch(fetching());
     const code = `${values.branch ? values.branch : initialState.branch[0]?.code}-${
       values.type ? values.type : initialState.type[0]?.code
     }${values.name.replaceAll(' ', '')}`;
@@ -120,13 +129,13 @@ const CreateCustomer = () => {
 
     if (!values.branch) {
       values.branch = initialState.branch[0].id;
-    }else{
-      values.branch = initialState.branch.filter(item => item.code === values.branch)[0].id
+    } else {
+      values.branch = initialState.branch.filter(item => item.code === values.branch)[0].id;
     }
     if (!values.type) {
       values.type = initialState.type[0].id;
-    }else{
-      values.type = initialState.type.filter(item => item.code === values.type)[0].id
+    } else {
+      values.type = initialState.type.filter(item => item.code === values.type)[0].id;
     }
     dispatch(creatingCustomer(values));
     resetForm();
@@ -141,8 +150,9 @@ const CreateCustomer = () => {
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới khách hàng thành công" />
-      <CCardHeader>Thêm mới khách hàng</CCardHeader>
+      <CCardHeader>
+        <CCardTitle>Thêm mới khách hàng</CCardTitle>
+      </CCardHeader>
       <CCardBody>
         <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
           {({
@@ -158,7 +168,7 @@ const CreateCustomer = () => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -192,7 +202,7 @@ const CreateCustomer = () => {
                       placeholder="Tên cửa hàng/đại lý"
                       autoComplete="family-name"
                       valid={errors.name || null}
-                      invalid={touched.name && !!errors.name}
+                      invalid={errors.name}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -208,8 +218,8 @@ const CreateCustomer = () => {
                       id="contactName"
                       placeholder="Người liên lạc"
                       autoComplete="contactName"
-                      valid={errors.contactName || null}
-                      invalid={touched.contactName && !!errors.contactName}
+                      valid={errors.contactName}
+                      invalid={errors.contactName}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -226,7 +236,7 @@ const CreateCustomer = () => {
                       placeholder="Số điện thoại"
                       autoComplete="phone"
                       valid={errors.tel || null}
-                      invalid={touched.tel && !!errors.tel}
+                      invalid={errors.tel}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -246,8 +256,8 @@ const CreateCustomer = () => {
                       id="email"
                       placeholder="Email"
                       autoComplete="email"
-                      valid={errors.email || null}
-                      invalid={touched.email && !!errors.email}
+                      valid={!errors.email || null}
+                      invalid={!errors.email}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.email}
@@ -272,7 +282,7 @@ const CreateCustomer = () => {
                           placeholder="Chọn thành phố"
                           options={initialState.cities.map(item => ({
                             value: item.code,
-                            label: item.name,
+                            label: item.name
                           }))}
                         />
                         <CInvalidFeedback className="d-block">{errors.city}</CInvalidFeedback>
@@ -289,7 +299,7 @@ const CreateCustomer = () => {
                           placeholder="Chọn Quận huyện"
                           options={initialState.districts.map(item => ({
                             value: item.id,
-                            label: item.name,
+                            label: item.name
                           }))}
                         />
                         <CInvalidFeedback className="d-block">{errors.districts}</CInvalidFeedback>

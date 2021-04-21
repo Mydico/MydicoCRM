@@ -37,7 +37,6 @@ const Order = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(getOrder());
     dispatch(reset());
   }, []);
   const { selectAll } = globalizedOrdersSelectors;
@@ -122,7 +121,9 @@ const Order = props => {
   };
 
   const onFilterColumn = value => {
-    dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if(Object.keys(value).length > 0){
+      dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    }
   };
 
   const toEditOrder = typeId => {
@@ -424,7 +425,7 @@ const Order = props => {
                               <td>{item.product?.name}</td>
                               <td>{item.product?.description}</td>
                               <td>{item.quantity}</td>
-                              <td>{item.product?.price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
+                              <td>{item.product?.price?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                               <td>{item.reducePercent}%</td>
                               <td>
                                 {(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||

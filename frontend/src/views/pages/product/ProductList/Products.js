@@ -7,10 +7,10 @@ import { getProduct } from './product.api.js';
 import { fetching, globalizedProductSelectors, reset } from './product.reducer.js';
 import { useHistory } from 'react-router-dom';
 const mappingStatus = {
-  "ACTIVE":"ĐANG HOẠT ĐỘNG",
-  "INACTIVE":"KHÔNG HOẠT ĐỘNG",
-  "DELETED":"ĐÃ XÓA",
-}
+  ACTIVE: 'ĐANG HOẠT ĐỘNG',
+  INACTIVE: 'KHÔNG HOẠT ĐỘNG',
+  DELETED: 'ĐÃ XÓA'
+};
 const Product = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.product);
@@ -19,8 +19,6 @@ const Product = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(fetching());
-    dispatch(getProduct());
     dispatch(reset());
   }, []);
 
@@ -34,7 +32,7 @@ const Product = props => {
     return items.map(item => {
       return {
         ...item,
-        productGroup: item.productGroup?.name,
+        productGroup: item.productGroup?.name
       };
     });
   };
@@ -55,7 +53,7 @@ const Product = props => {
       key: 'order',
       label: 'STT',
       _style: { width: '1%' },
-      filter: false,
+      filter: false
     },
     { key: 'code', label: 'Mã', _style: { width: '10%' } },
     { key: 'name', label: 'Tên sản phẩm', _style: { width: '15%' } },
@@ -70,8 +68,8 @@ const Product = props => {
       key: 'show_details',
       label: '',
       _style: { width: '1%' },
-      filter: false,
-    },
+      filter: false
+    }
   ];
 
   const getBadge = status => {
@@ -102,7 +100,9 @@ const Product = props => {
   };
 
   const onFilterColumn = value => {
-    dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    }
   };
 
   return (
@@ -143,6 +143,8 @@ const Product = props => {
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
+            price: item => <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</td>,
+            agentPrice: item => <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.agentPrice)}</td>,
             show_details: item => {
               return (
                 <td className="d-flex py-2">
@@ -193,13 +195,17 @@ const Product = props => {
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Giá đại lý:</dt>
-                          <dd className="col-sm-9">{item.price}</dd>
+                          <dd className="col-sm-9">
+                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.agentPrice)}
+                          </dd>
                         </dl>
                       </CCol>
                       <CCol lg="6">
                         <dl className="row">
                           <dt className="col-sm-3">Giá salon:</dt>
-                          <dd className="col-sm-9">{item.agentPrice}</dd>
+                          <dd className="col-sm-9">
+                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                          </dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Loại sản phẩm</dt>
@@ -218,7 +224,7 @@ const Product = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

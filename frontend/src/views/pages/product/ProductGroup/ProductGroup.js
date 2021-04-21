@@ -14,7 +14,6 @@ const ProductGroup = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(getProductGroup());
     dispatch(reset());
   }, []);
   const { selectAll } = globalizedproductGroupsSelectors;
@@ -34,14 +33,15 @@ const ProductGroup = props => {
     setDetails(newDetails);
   };
 
-  // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	nhóm khách hàng	Phân loại	Sửa	Tạo đơn
+  // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	nhóm sản phẩm	Phân loại	Sửa	Tạo đơn
   const fields = [
     {
       key: 'order',
       label: 'STT',
       _style: { width: '1%' },
-      filter: false,
+      filter: false
     },
+    { key: 'code', label: 'Mã nhóm sản phẩm', _style: { width: '15%' } },
     { key: 'name', label: 'Tên nhóm sản phẩm', _style: { width: '15%' } },
     { key: 'description', label: 'Mô tả', _style: { width: '15%' } },
     { key: 'productBrand', label: 'Thương hiệu', _style: { width: '15%' } },
@@ -49,8 +49,8 @@ const ProductGroup = props => {
       key: 'show_details',
       label: '',
       _style: { width: '1%' },
-      filter: false,
-    },
+      filter: false
+    }
   ];
 
   const getBadge = status => {
@@ -78,12 +78,15 @@ const ProductGroup = props => {
       return {
         ...item,
         productBrand: item.productBrand?.name || '',
+        description: item.description || ''
       };
     });
   };
 
   const onFilterColumn = value => {
-    dispatch(getProductGroup({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getProductGroup({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    }
   };
 
   const toEditProductGroup = typeId => {
@@ -93,9 +96,9 @@ const ProductGroup = props => {
   return (
     <CCard>
       <CCardHeader>
-        <CIcon name="cil-grid" /> Danh sách nhóm khách hàng
+        <CIcon name="cil-grid" /> Danh sách nhóm sản phẩm
         {/* <CButton color="primary" className="mb-2">
-         Thêm mới khách hàng
+         Thêm mới sản phẩm
         </CButton> */}
         <CButton color="success" variant="outline" className="ml-3" onClick={toCreateCustomer}>
           <CIcon name="cil-plus" /> Thêm mới
@@ -164,11 +167,15 @@ const ProductGroup = props => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
-                    <h5>Thông tin nhóm khách hàng</h5>
-                    <CRow className="mt-2">
+                    <h5>Thông tin nhóm sản phẩm</h5>
+                    <CRow className="mt-5">
                       <CCol lg="6">
                         <dl className="row">
-                          <dt className="col-sm-4">Tên nhóm khách hàng:</dt>
+                          <dt className="col-sm-4">Mã nhóm sản phẩm:</dt>
+                          <dd className="col-sm-8">{item.code}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-4">Tên nhóm sản phẩm:</dt>
                           <dd className="col-sm-8">{item.name}</dd>
                         </dl>
                       </CCol>
@@ -177,8 +184,6 @@ const ProductGroup = props => {
                           <dt className="col-sm-4">Thương hiệu:</dt>
                           <dd className="col-sm-8">{item.productBrand}</dd>
                         </dl>
-                      </CCol>
-                      <CCol lg="6">
                         <dl className="row">
                           <dt className="col-sm-3">Mô tả:</dt>
                           <dd className="col-sm-9">{item.description}</dd>
@@ -188,7 +193,7 @@ const ProductGroup = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

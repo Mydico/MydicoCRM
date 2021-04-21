@@ -10,6 +10,9 @@ import ProductGroup from './product-group.entity';
  */
 @Entity('product_brand')
 export default class ProductBrand extends BaseEntity {
+    @Column({ name: 'code', length: 255, nullable: false })
+    code: string;
+
     @Column({ name: 'name', length: 255, nullable: true })
     name: string;
 

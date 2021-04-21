@@ -20,9 +20,8 @@ import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { creatingProduct } from './product.api';
 import { getProductGroup } from '../ProductGroup/product-group.api';
-
+import Select from 'react-select';
 import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedProductSelectors } from './product.reducer';
 import { globalizedproductGroupsSelectors } from '../ProductGroup/product-group.reducer';
@@ -30,17 +29,15 @@ import { ProductStatus, UnitType } from './contants';
 import 'react-dropzone-uploader/dist/styles.css';
 import Dropzone from 'react-dropzone-uploader';
 import './styles.css';
+import CurrencyInput from '../../../components/currency-input/currency-input';
+import { getCodeByName } from '../../../../shared/utils/normalize';
 const validationSchema = function(values) {
   return Yup.object().shape({
     name: Yup.string()
       .min(5, `Tên phải lớn hơn 5 kí tự`)
       .required('Tên không để trống'),
-    price: Yup.number()
-      .min(1000, `Giá tiền phải lớn hơn 1.000đ`)
-      .required('Giá tiền không để trống'),
-    agentPrice: Yup.number()
-      .min(1000, `Giá tiền phải lớn hơn 1.000đ`)
-      .required('Giá tiền không để trống')
+    price: Yup.string().required('Giá tiền không để trống'),
+    agentPrice: Yup.string().required('Giá tiền không để trống')
   });
 };
 
@@ -90,10 +87,9 @@ const dropzoneStyle = {
   borderStyle: 'dashed',
   borderRadius: 5
 };
-
 const CreateProduct = () => {
   const { initialState } = useSelector(state => state.product);
-  const toastRef = useRef();
+  const ref = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
   const images = useRef([]);
@@ -106,7 +102,9 @@ const CreateProduct = () => {
     price: 0,
     agentPrice: 0,
     status: 'ACTIVE',
+    volume: '',
     unit: 'Cái',
+    productGroup: null,
     image: []
   };
   useEffect(() => {
@@ -122,19 +120,9 @@ const CreateProduct = () => {
       values.productBrand = values.productGroup.productBrand.id;
     }
 
-    values.code = values.name
-      .trim()
-      .split(' ')
-      .map(string => string[0])
-      .join('')
-      .replaceAll(' ', '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/Đ/g, 'D');
-    values.code = `${values.code}${values.volume}`;
     values.image = JSON.stringify(images.current);
-
+    values.price = Number(values.price.replace(/\D/g, ''));
+    values.agentPrice = Number(values.agentPrice.replace(/\D/g, ''));
     dispatch(creatingProduct(values));
     resetForm();
   };
@@ -154,21 +142,25 @@ const CreateProduct = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
-      setTimeout(() => {
-        history.goBack();
-      }, 500);
+      history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
+  const renderProductCode = () => {
+    const codeName = getCodeByName(ref.current.values.name);
+    const code = `${ref.current.values.productGroup?.productBrand?.code || ''}_${ref.current.values.productGroup?.code || ''}_${codeName}_${
+      ref.current.values.volume
+    }`;
+    ref.current.setFieldValue('code', `${code}`);
+  };
+
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới sản phẩm thành công" />
       <CCardHeader>
         <CCardTitle>Thêm mới sản phẩm</CCardTitle>
       </CCardHeader>
       <CCardBody>
-        <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
+        <Formik initialValues={initialValues} innerRef={ref} validate={validate(validationSchema)} onSubmit={onSubmit}>
           {({
             values,
             errors,
@@ -189,25 +181,7 @@ const CreateProduct = () => {
                 <CCol lg="6">
                   <CFormGroup>
                     <CLabel htmlFor="code">Mã sản phẩm</CLabel>
-                    <CInput
-                      type="text"
-                      name="code"
-                      id="code"
-                      placeholder="Mã sản phẩm"
-                      disabled
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={`${values.name
-                        ?.trim()
-                        .split(' ')
-                        .map(string => string[0])
-                        .join('')
-                        .replaceAll(' ', '')
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .replace(/đ/g, 'd')
-                        .replace(/Đ/g, 'D')}${values.volume ? values.volume : ''}`}
-                    />
+                    <CInput type="text" name="code" id="code" placeholder="Mã sản phẩm" disabled onBlur={handleBlur} value={values.code} />
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="lastName">Tên sản phẩm</CLabel>
@@ -217,10 +191,12 @@ const CreateProduct = () => {
                       id="name"
                       placeholder="Tên sản phẩm"
                       autoComplete="family-name"
-                      valid={errors.name || null}
-                      invalid={touched.name && !!errors.name}
+                      invalid={errors.name}
                       required
-                      onChange={handleChange}
+                      onChange={e => {
+                        handleChange(e);
+                        renderProductCode();
+                      }}
                       onBlur={handleBlur}
                       value={values.name}
                     />
@@ -234,8 +210,7 @@ const CreateProduct = () => {
                       id="contactName"
                       placeholder="Mô tả"
                       autoComplete="contactName"
-                      valid={errors.description || null}
-                      invalid={touched.description && !!errors.description}
+                      invalid={errors.description}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.description}
@@ -244,58 +219,32 @@ const CreateProduct = () => {
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="productGroup">Loại sản phẩm</CLabel>
-                    <CSelect
-                      custom
+                    <Select
                       name="productGroup"
-                      id="productGroup"
-                      value={values.productGroup}
-                      onChange={e => {
-                        setFieldValue('productGroup', e.target.value);
+                      onChange={async item => {
+                        setFieldValue('productGroup', item.value);
+                        await Promise.resolve();
+                        renderProductCode();
                       }}
-                    >
-                      {productGroup &&
-                        productGroup.map(item => (
-                          <option key={item.id} value={item.id}>
-                            {`${item.productBrand?.name} - ${item.name}`}
-                          </option>
-                        ))}
-                    </CSelect>
+                      options={productGroup.map(item => ({
+                        value: item,
+                        label: `${item.productBrand?.name} - ${item.name}`
+                      }))}
+                    />
                     <CInvalidFeedback>{errors.productGroup}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>
                 <CCol lg="6">
                   <CFormGroup>
                     <CLabel htmlFor="password">Giá đại lý</CLabel>
-                    <CInput
-                      type="number"
-                      name="price"
-                      id="price"
-                      placeholder="Giá đại lý"
-                      autoComplete="address"
-                      onChange={handleChange}
-                      invalid={errors.price}
-                      valid={!errors.price || null}
-                      onBlur={handleBlur}
-                      value={values.price}
-                    />
-                    <CInvalidFeedback className="d-block">{errors.price}</CInvalidFeedback>
+                    <CurrencyInput name="agentPrice" handleChange={handleChange} />
+                    <CInvalidFeedback className="d-block">{errors.agentPrice}</CInvalidFeedback>
                   </CFormGroup>
 
                   <CFormGroup>
                     <CLabel htmlFor="password">Giá Salon</CLabel>
-                    <CInput
-                      type="number"
-                      name="agentPrice"
-                      id="agentPrice"
-                      placeholder="Giá Salon"
-                      autoComplete="agentPrice"
-                      onChange={handleChange}
-                      invalid={errors.agentPrice}
-                      valid={!errors.agentPrice || null}
-                      onBlur={handleBlur}
-                      value={values.agentPrice}
-                    />
-                    <CInvalidFeedback className="d-block">{errors.agentPrice}</CInvalidFeedback>
+                    <CurrencyInput name="price" handleChange={handleChange} />
+                    <CInvalidFeedback className="d-block">{errors.price}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="volume">Dung tích</CLabel>
@@ -305,9 +254,11 @@ const CreateProduct = () => {
                       id="volume"
                       placeholder="Dung tích"
                       autoComplete="volume"
-                      onChange={handleChange}
+                      onChange={e => {
+                        handleChange(e);
+                        renderProductCode();
+                      }}
                       invalid={errors.volume}
-                      valid={!errors.volume || null}
                       onBlur={handleBlur}
                       value={values.volume}
                     />
@@ -315,42 +266,30 @@ const CreateProduct = () => {
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="userName">Đơn vị</CLabel>
-                    <CSelect
-                      custom
+                    <Select
                       name="unit"
-                      name="unit"
-                      id="unit"
-                      value={values.unit}
-                      onChange={e => {
-                        setFieldValue('unit', e.target.value);
+                      onChange={item => {
+                        setFieldValue('unit', item.value);
                       }}
-                    >
-                      {UnitType.map(item => (
-                        <option key={item.value} value={item.value}>
-                          {item.title}
-                        </option>
-                      ))}
-                    </CSelect>
+                      options={UnitType.map(item => ({
+                        value: item.value,
+                        label: `${item.title}`
+                      }))}
+                    />
                     <CInvalidFeedback className="d-block">{errors.unit}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="code">Trạng thái</CLabel>
-                    <CSelect
-                      custom
+                    <Select
                       name="status"
-                      name="status"
-                      id="status"
-                      value={values.status}
-                      onChange={e => {
-                        setFieldValue('status', e.target.value);
+                      onChange={item => {
+                        setFieldValue('status', item.value);
                       }}
-                    >
-                      {ProductStatus.map(item => (
-                        <option key={item.value} value={item.value}>
-                          {mappingStatus[item.title]}
-                        </option>
-                      ))}
-                    </CSelect>
+                      options={ProductStatus.map(item => ({
+                        value: item.value,
+                        label: mappingStatus[item.title]
+                      }))}
+                    />
                     <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>

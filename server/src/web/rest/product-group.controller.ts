@@ -81,7 +81,7 @@ export class ProductGroupController {
         type: ProductGroup,
     })
     async put(@Req() req: Request, @Body() productGroup: ProductGroup): Promise<ProductGroup> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'ProductGroup', productGroup.id);
+        HeaderUtil.addEntityUpdatedHeaders(req.res, 'ProductGroup', productGroup.id);
         return await this.productGroupService.update(productGroup);
     }
 

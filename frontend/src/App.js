@@ -1,6 +1,6 @@
 import React, { Component, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { HashRouter, Route, Switch, BrowserRouter } from 'react-router-dom';
+import { HashRouter, Route, Switch, BrowserRouter, Router } from 'react-router-dom';
 import './scss/style.scss';
 import PrivateRoute from './shared/auth/private-route';
 import { getSession } from './views/pages/login/authenticate.reducer';
@@ -30,7 +30,7 @@ export const App = props => {
     dispatch(getSession());
   }, []);
   return (
-    <BrowserRouter>
+    <BrowserRouter >
       <ToastContainer position={toast.POSITION.TOP_LEFT} className="toastify-container" toastClassName="toastify-toast" />
 
       <React.Suspense fallback={loading}>

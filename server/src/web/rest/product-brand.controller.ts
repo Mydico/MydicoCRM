@@ -71,7 +71,7 @@ export class ProductBrandController {
         type: ProductBrand,
     })
     async put(@Req() req: Request, @Body() productBrand: ProductBrand): Promise<ProductBrand> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'ProductBrand', productBrand.id);
+        HeaderUtil.addEntityUpdatedHeaders(req.res, 'ProductBrand', productBrand.id);
         return await this.productBrandService.update(productBrand);
     }
 

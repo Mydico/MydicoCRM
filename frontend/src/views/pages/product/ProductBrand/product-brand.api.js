@@ -13,16 +13,16 @@ export const getDetailProductBrand = createAsyncThunk('api/detail/product-brands
 export const creatingProductBrand = createAsyncThunk('api/create/product-brands', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/product-brands', body);
-    return result.data
+    return { data: result.data, headers: result.headers, statusCode: result.status };
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
 
-export const updateProductBrand = createAsyncThunk('api/create/product-brands', async (body, thunkAPI) => {
+export const updateProductBrand = createAsyncThunk('api/update/product-brands', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/product-brands', body);
-    return result.data
+    return { data: result.data, headers: result.headers, statusCode: result.status };
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

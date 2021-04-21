@@ -6,9 +6,10 @@ import { OrderService } from '../service/order.service';
 import { BillModule } from './bill.module';
 import { ProductQuantityModule } from './product-quantity.module';
 import { TransactionModule } from './transaction.module';
+import { DepartmentModule } from './department.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([OrderRepository]), BillModule, ProductQuantityModule, TransactionModule],
+    imports: [TypeOrmModule.forFeature([OrderRepository]), BillModule, ProductQuantityModule, TransactionModule, DepartmentModule],
     controllers: [OrderController],
     providers: [OrderService],
     exports: [OrderService],
