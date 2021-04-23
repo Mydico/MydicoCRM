@@ -103,6 +103,23 @@ export class StoreInputController {
         return created;
     }
 
+    @Put('/status')
+    @Roles(RoleType.USER)
+    @ApiOperation({ title: 'Update storeInput' })
+    @ApiResponse({
+        status: 200,
+        description: 'The record has been successfully updated.',
+        type: StoreInput,
+    })
+    async putStatus(@Req() req: Request, @Body() storeInput: StoreInput): Promise<StoreInput> {
+        HeaderUtil.addEntityUpdatedStatusHeaders(req.res, 'StoreInput', storeInput.id);
+        if(storeInput.status === StoreImportStatus.APPROVED){
+            const currentUser = req.user as User;
+            storeInput.approver = currentUser;
+        }
+        return await this.storeInputService.update(storeInput);
+    }
+
     @Put('/')
     @Roles(RoleType.USER)
     @ApiOperation({ title: 'Update storeInput' })
@@ -112,7 +129,7 @@ export class StoreInputController {
         type: StoreInput,
     })
     async put(@Req() req: Request, @Body() storeInput: StoreInput): Promise<StoreInput> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'StoreInput', storeInput.id);
+        HeaderUtil.addEntityUpdatedHeaders(req.res, 'StoreInput', storeInput.id);
         if(storeInput.status === StoreImportStatus.APPROVED){
             const currentUser = req.user as User;
             storeInput.approver = currentUser;

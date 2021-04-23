@@ -81,7 +81,7 @@ export class CustomerStatusController {
         type: CustomerStatus,
     })
     async put(@Req() req: Request, @Body() customerStatus: CustomerStatus): Promise<CustomerStatus> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerStatus', customerStatus.id);
+        HeaderUtil.addEntityUpdatedHeaders(req.res, 'CustomerStatus', customerStatus.id);
         return await this.customerStatusService.update(customerStatus);
     }
 

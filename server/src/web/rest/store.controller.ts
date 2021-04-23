@@ -82,7 +82,7 @@ export class StoreController {
         type: Store,
     })
     async put(@Req() req: Request, @Body() store: Store): Promise<Store> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Store', store.id);
+        HeaderUtil.addEntityUpdatedHeaders(req.res, 'Store', store.id);
         return await this.storeService.update(store);
     }
 

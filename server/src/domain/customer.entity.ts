@@ -114,9 +114,6 @@ export default class Customer extends BaseEntity {
     @ManyToOne(type => City)
     city?: City;
 
-    @ManyToOne(type => Branch)
-    branch: Branch;
-
     @ManyToOne(type => District)
     district?: District;
 

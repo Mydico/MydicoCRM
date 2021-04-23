@@ -19,9 +19,6 @@ import { User } from '../domain/user.entity';
 import { DepartmentService } from './department.service';
 
 const relationshipNames = [];
-relationshipNames.push('city');
-relationshipNames.push('district');
-relationshipNames.push('wards');
 relationshipNames.push('customer');
 relationshipNames.push('orderDetails');
 relationshipNames.push('orderDetails.product');
@@ -53,7 +50,7 @@ export class OrderService {
     let departmentVisible = [];
     if (currentUser.department) {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible.push(currentUser.department)
+      departmentVisible.push(currentUser.department);
     }
     let queryString = "Order.status <> 'DELETED'";
     Object.keys(req.query).forEach((item, index) => {
@@ -61,9 +58,11 @@ export class OrderService {
         queryString += `Order.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'OR '}`;
       }
     });
-    queryString += ` AND Order.department IN ${JSON.stringify(departmentVisible.map(item => item.id))
-      .replace('[', '(')
-      .replace(']', ')')}`;
+    if (departmentVisible.length > 0) {
+      queryString += ` AND Order.department IN ${JSON.stringify(departmentVisible.map(item => item.id))
+        .replace('[', '(')
+        .replace(']', ')')}`;
+    }
     return await this.orderRepository
       .createQueryBuilder('Order')
       .leftJoinAndSelect('Order.customer', 'customer')

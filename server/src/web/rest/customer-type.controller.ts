@@ -81,16 +81,6 @@ export class CustomerTypeController {
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     async post(@Req() req: Request, @Body() customerType: CustomerType): Promise<CustomerType> {
-    // const exists = await this.customerTypeService.checkExist(customerType);
-    // console.log(exists)
-    // if (exists[0].exists)
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.CONFLICT,
-    //       error: 'Duplicate resource'
-    //     },
-    //     HttpStatus.CONFLICT
-    //   );
         try {
             const created = await this.customerTypeService.save(customerType);
             HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerType', created.id);
@@ -125,7 +115,7 @@ export class CustomerTypeController {
         type: CustomerType,
     })
     async put(@Req() req: Request, @Body() customerType: CustomerType): Promise<CustomerType> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerType', customerType.id);
+        HeaderUtil.addEntityUpdatedHeaders(req.res, 'CustomerType', customerType.id);
         return await this.customerTypeService.update(customerType);
     }
 

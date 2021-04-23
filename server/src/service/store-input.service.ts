@@ -47,11 +47,19 @@ export class StoreInputService {
 
     async findAndCount(options: FindManyOptions<StoreInput>): Promise<[StoreInput[], number]> {
         options.relations = relationshipNames;
+        if (!relationshipNames.includes('storeInputDetails') && !relationshipNames.includes('storeInputDetails.product')) {
+            relationshipNames.push('storeInputDetails');
+            relationshipNames.push('storeInputDetails.product');
+        }
         options.where = { type: Not(StoreImportType.EXPORT) };
         return await this.storeInputRepository.findAndCount(options);
     }
 
     async findAndCountExport(options: FindManyOptions<StoreInput>): Promise<[StoreInput[], number]> {
+        if (!relationshipNames.includes('storeInputDetails') && !relationshipNames.includes('storeInputDetails.product')) {
+            relationshipNames.push('storeInputDetails');
+            relationshipNames.push('storeInputDetails.product');
+        }
         options.relations = relationshipNames;
         options.where = { type: StoreImportType.EXPORT };
         return await this.storeInputRepository.findAndCount(options);

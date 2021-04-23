@@ -14,6 +14,9 @@ import { User } from './user.entity';
 @Entity('department')
 @Tree('materialized-path')
 export default class Department extends BaseEntity {
+    @Column({ name: 'code', nullable: true })
+    code: string;
+
     @Column({ name: 'name', nullable: true })
     name: string;
 

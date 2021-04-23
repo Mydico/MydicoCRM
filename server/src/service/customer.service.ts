@@ -14,8 +14,8 @@ relationshipNames.push('skin');
 relationshipNames.push('category');
 relationshipNames.push('status');
 relationshipNames.push('type');
-relationshipNames.push('branch');
 relationshipNames.push('request');
+relationshipNames.push('department');
 relationshipNames.push('users');
 
 @Injectable()

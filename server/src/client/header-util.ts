@@ -26,6 +26,13 @@ export class HeaderUtil {
         this.createAlert(res, message, param);
     }
 
+    static addEntityUpdatedStatusHeaders(res: Response, entityName, param): any {
+        const message = enableTranslation
+            ? applicationName + '.' + entityName + '.status.updated'
+            : 'A ' + entityName + ' is updated with identifier ' + param;
+        this.createAlert(res, message, param);
+    }
+
     static addEntityDeletedHeaders(res: Response, entityName, param): any {
         res.status(204);
         const message = enableTranslation
