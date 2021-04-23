@@ -15,7 +15,6 @@ const Customer = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(getCustomer());
     dispatch(reset());
   }, []);
 
@@ -30,7 +29,7 @@ const Customer = props => {
       return {
         ...item,
         typeName: item.type?.name,
-        branchName: item.branch?.name,
+        department: item.department?.name || ''
       };
     });
   };
@@ -47,6 +46,12 @@ const Customer = props => {
 
   // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
   const fields = [
+    {
+      key: 'order',
+      label: 'STT',
+      _style: { width: '1%' },
+      filter: false
+    },
     { key: 'code', label: 'Mã', _style: { width: '10%' } },
     { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
     { key: 'contactName', label: 'Người liên lạc', _style: { width: '15%' } },
@@ -54,13 +59,13 @@ const Customer = props => {
     { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
     { key: 'users', label: 'Nhân viên quản lý', _style: { width: '15%' } },
     { key: 'typeName', label: 'Loại khách hàng', _style: { width: '10%' } },
-    { key: 'branchName', label: 'Chi nhánh', _style: { width: '20%' } },
+    { key: 'department', label: 'Chi nhánh', _style: { width: '20%' } },
     {
       key: 'show_details',
       label: '',
       _style: { width: '1%' },
-      filter: false,
-    },
+      filter: false
+    }
   ];
 
   const getBadge = status => {
@@ -78,7 +83,9 @@ const Customer = props => {
     }
   };
   const [currentItems, setCurrentItems] = useState([]);
-  const csvContent = computedItems(customers).map(item => Object.values(item).join(',')).join('\n');
+  const csvContent = computedItems(customers)
+    .map(item => Object.values(item).join(','))
+    .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {
     history.push(`${props.match.url}new`);
@@ -89,7 +96,9 @@ const Customer = props => {
   };
 
   const onFilterColumn = value => {
-    dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.values(value).length > 0) {
+      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    }
   };
 
   return (
@@ -124,6 +133,7 @@ const Customer = props => {
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
+            order: (item, index) => <td>{index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
@@ -209,14 +219,14 @@ const Customer = props => {
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Chi nhánh:</dt>
-                          <dd className="col-sm-9">{item.branch.name}</dd>
+                          <dd className="col-sm-9">{item.department || ''}</dd>
                         </dl>
                       </CCol>
                     </CRow>
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

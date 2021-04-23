@@ -13,14 +13,14 @@ const initialState = {
   redirectMessage: null,
   sessionHasBeenFetched: false,
   idToken: null,
-  logoutUrl: null,
+  logoutUrl: null
 };
 export const login = createAsyncThunk('api/authenticate', async ({ username, password, rememberMe }, thunkAPI) => {
   try {
     const result = await axios.post('api/authenticate', {
       username,
       password,
-      rememberMe,
+      rememberMe
     });
     const bearerToken = result.data.id_token;
     if (bearerToken) {
@@ -37,7 +37,7 @@ export const login = createAsyncThunk('api/authenticate', async ({ username, pas
   }
 });
 
-export const  getSession = createAsyncThunk('api/account', async thunkAPI => {
+export const getSession = createAsyncThunk('api/account', async thunkAPI => {
   try {
     const accountResponse = await axios.get('api/account');
     return accountResponse.data;
@@ -64,7 +64,7 @@ const slice = createSlice({
       if (Storage.session.get(AUTH_TOKEN_KEY)) {
         Storage.session.remove(AUTH_TOKEN_KEY);
       }
-    },
+    }
   },
   extraReducers: {
     // Add reducers for additional action types here, and handle loading state as needed
@@ -83,8 +83,8 @@ const slice = createSlice({
     [login.rejected]: (state, action) => {
       state.loginError = action.payload.statusCode;
       state.errorMessage = action.payload.message;
-    },
-  },
+    }
+  }
 });
 
 export default slice.reducer;

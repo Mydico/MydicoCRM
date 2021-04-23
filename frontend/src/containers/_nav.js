@@ -57,11 +57,6 @@ export default [
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'Chi nhánh',
-        to: '/customer/branch'
-      },
-      {
-        _tag: 'CSidebarNavItem',
         name: 'Trạng thái',
         to: '/customer/status'
       },

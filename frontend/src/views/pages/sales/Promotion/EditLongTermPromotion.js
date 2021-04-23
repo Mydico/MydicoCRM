@@ -14,7 +14,7 @@ import {
   CSelect,
   CCardTitle,
   CTextarea,
-  CInputCheckbox,
+  CInputCheckbox
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -34,11 +34,13 @@ import Select from 'react-select';
 import { globalizedproductGroupsSelectors } from '../../product/ProductGroup/product-group.reducer';
 import { getProductGroup } from '../../product/ProductGroup/product-group.api';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống'),
+    endTime: Yup.string().required('Ngày kết thúc không để trống')
   });
 };
 
@@ -59,7 +61,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -82,7 +84,7 @@ const validateForm = errors => {
 
 const EditPromotion = props => {
   const { initialState } = useSelector(state => state.promotion);
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const promotionGroup = [];
@@ -92,7 +94,7 @@ const EditPromotion = props => {
     startTime: new Date().toISOString(),
     endTime: new Date().toISOString(),
     isLock: false,
-    customerType: null,
+    customerType: null
   });
   const { selectAll } = globalizedcustomerTypeSelectors;
   const customerType = useSelector(selectAll);
@@ -124,7 +126,7 @@ const EditPromotion = props => {
   }, [customerType]);
 
   const onAddProduct = () => {
-    const data = { name: "", totalMoney: 0, reducePercent: 0, productGroup : {} };
+    const data = { name: '', totalMoney: 0, reducePercent: 0, productGroup: {} };
     setPromotionItemList([...promotionItemList, data]);
   };
 
@@ -151,14 +153,12 @@ const EditPromotion = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới chương trình bán hàng thành công" />
       <CCardHeader class="card-header">
         <CCardTitle>Chỉnh sửa chương trình dài hạn</CCardTitle>
       </CCardHeader>
@@ -182,7 +182,7 @@ const EditPromotion = props => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => {
             console.log(values);
             return (
@@ -351,12 +351,12 @@ const EditPromotion = props => {
                             <Select
                               defaultValue={{
                                 value: item.productGroup?.id,
-                                label: `${item.productGroup?.name}`,
+                                label: `${item.productGroup?.name}`
                               }}
                               onChange={event => onSelectedProduct(event, index)}
                               options={productGroups.map(item => ({
                                 value: item.id,
-                                label: `${item.name}`,
+                                label: `${item.name}`
                               }))}
                             />
                           </CCol>

@@ -35,8 +35,7 @@ const validationSchema = function(values) {
     name: Yup.string()
       .min(5, `Tên phải lớn hơn 5 kí tự`)
       .required('Tên không để trống'),
-    department: Yup.object()
-      .required('Chi nhánh không để trống'),
+    department: Yup.object().required('Chi nhánh không để trống')
   });
 };
 
@@ -89,7 +88,6 @@ const CreateWarehouse = () => {
   const { initialState: customerInitialState } = useSelector(state => state.customer);
   const { selectAll } = globalizedDepartmentSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -106,30 +104,18 @@ const CreateWarehouse = () => {
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
     dispatch(fetching());
-    values.code = values.name
-      .trim()
-      .split(' ')
-      .map(string => string[0])
-      .join('')
-      .replaceAll(' ', '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/Đ/g, 'D');
     dispatch(creatingWarehouse(values));
     resetForm();
   };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
       <CCardHeader>
         <CCardTitle>Thêm mới kho</CCardTitle>
       </CCardHeader>
@@ -160,19 +146,9 @@ const CreateWarehouse = () => {
                       name="code"
                       id="code"
                       placeholder="Mã kho"
-                      disabled
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={`${values.name
-                        ?.trim()
-                        .split(' ')
-                        .map(string => string[0])
-                        .join('')
-                        .replaceAll(' ', '')
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .replace(/đ/g, 'd')
-                        .replace(/Đ/g, 'D')}${values.volume ? values.volume : ''}`}
+                      value={values.code}
                     />
                   </CFormGroup>
                   <CFormGroup>
@@ -183,8 +159,7 @@ const CreateWarehouse = () => {
                       id="name"
                       placeholder="Tên kho"
                       autoComplete="family-name"
-                      valid={errors.name || null}
-                      invalid={touched.name && !!errors.name}
+                      invalid={errors.name}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -200,8 +175,7 @@ const CreateWarehouse = () => {
                       id="address"
                       placeholder="Mô tả"
                       autoComplete="address"
-                      valid={errors.address || null}
-                      invalid={touched.address && !!errors.address}
+                      invalid={errors.address}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.address}
@@ -233,8 +207,7 @@ const CreateWarehouse = () => {
                       id="tel"
                       placeholder="Số điện thoại"
                       autoComplete="tel"
-                      valid={errors.tel || null}
-                      invalid={touched.tel && !!errors.tel}
+                      invalid={errors.tel}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.tel}

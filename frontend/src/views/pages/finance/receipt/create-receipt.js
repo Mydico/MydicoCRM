@@ -82,7 +82,6 @@ const CreateReceipt = () => {
   const { initialState } = useSelector(state => state.receipt);
   const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -111,15 +110,14 @@ const CreateReceipt = () => {
       dispatch(getCustomerDebts({ customer: selectedCustomer.id })).then(resp => {
         if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
           setCustomerDebt(resp.payload.data[0]);
-        }else{
-          setCustomerDebt(null)
+        } else {
+          setCustomerDebt(null);
         }
       });
     }
   }, [selectedCustomer]);
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -175,7 +173,11 @@ const CreateReceipt = () => {
                     </CFormGroup>
                     <dl className="row">
                       <dt className="col-sm-3">Công nợ hiện tại</dt>
-                      <dd className="col-sm-9">{customerDebt?new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(customerDebt?.debt) : 0}</dd>
+                      <dd className="col-sm-9">
+                        {customerDebt
+                          ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(customerDebt?.debt)
+                          : 0}
+                      </dd>
                     </dl>
                     <CRow>
                       <CCol lg="6">
@@ -249,7 +251,6 @@ const CreateReceipt = () => {
           )}
         </Formik>
       </CCardBody>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
     </CCard>
   );
 };

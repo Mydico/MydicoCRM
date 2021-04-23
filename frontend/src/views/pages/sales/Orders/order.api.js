@@ -13,7 +13,7 @@ export const getDetailOrder = createAsyncThunk('api/detail/orders', async (userI
 export const creatingOrder = createAsyncThunk('api/create/orders', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/orders', body);
-    return result.data;
+    return { data: result.data, headers: result.headers, statusCode: result.status };
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
@@ -22,7 +22,16 @@ export const creatingOrder = createAsyncThunk('api/create/orders', async (body, 
 export const updateOrder = createAsyncThunk('api/update/orders', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/orders', body);
-    return result.data;
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const updateStatusOrder = createAsyncThunk('api/update/orders', async (body, thunkAPI) => {
+  try {
+    const result = await axios.put('api/orders/status', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

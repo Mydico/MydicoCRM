@@ -12,6 +12,7 @@ import {
   CInput,
   CRow,
   CSelect,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -21,61 +22,23 @@ import { creatingCustomerStatus } from './customer-status.api';
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
 import { fetching } from './customer-status.reducer';
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+import { validate } from '../../../../shared/utils/normalize';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    description: Yup.string().min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`).required('Tên liên lạc không để trống'),
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống')
   });
 };
-
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
-
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
 
 const CreateCustomerStatus = () => {
   const { initialState } = useSelector(state => state.customerStatus);
   const initialValues = {
     name: '',
-    description: '',
+    description: ''
   };
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -86,16 +49,14 @@ const CreateCustomerStatus = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới khách hàng thành công" />
       <CCardHeader>
-        <span className="h2">Thêm mới</span>
+        <CCardTitle>Thêm mới</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
@@ -112,7 +73,7 @@ const CreateCustomerStatus = () => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -125,8 +86,7 @@ const CreateCustomerStatus = () => {
                       id="name"
                       placeholder="Tên trạng thái"
                       autoComplete="family-name"
-                      valid={!errors.name}
-                      invalid={touched.name && !!errors.name}
+                      invalid={errors.name}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -142,8 +102,7 @@ const CreateCustomerStatus = () => {
                       id="description"
                       placeholder="Mô tả"
                       autoComplete="contactName"
-                      valid={!errors.description}
-                      invalid={touched.description && !!errors.description}
+                      invalid={errors.description}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}

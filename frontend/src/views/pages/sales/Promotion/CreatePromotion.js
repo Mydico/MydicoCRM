@@ -84,7 +84,7 @@ const validateForm = errors => {
 
 const CreatePromotion = () => {
   const { initialState } = useSelector(state => state.promotion);
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const promotionGroup = [];
@@ -147,7 +147,6 @@ const CreatePromotion = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -160,7 +159,6 @@ const CreatePromotion = () => {
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới chương trình bán hàng thành công" />
       <CCardHeader class="card-header">
         <CCardTitle>Thêm mới chương trình bán hàng</CCardTitle>
       </CCardHeader>

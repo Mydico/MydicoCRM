@@ -82,7 +82,6 @@ const EditReceipt = props => {
   const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
   const { selectById } = globalizedReceiptsSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -100,8 +99,8 @@ const EditReceipt = props => {
 
   useEffect(() => {
     if (receipt) {
-      let customCeceipt = JSON.parse(JSON.stringify(receipt))
-      customCeceipt.money = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(receipt.money)
+      let customCeceipt = JSON.parse(JSON.stringify(receipt));
+      customCeceipt.money = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(receipt.money);
       setInitValuesState(customCeceipt);
       setSelectedCustomer(customCeceipt.customer);
     }
@@ -121,7 +120,6 @@ const EditReceipt = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -156,88 +154,87 @@ const EditReceipt = props => {
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CCol lg="12">
-
-                    <CFormGroup>
-                      <CRow className="mb-3">
-                        <CCol sm={8}>
-                          <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
-                          <Select
-                            name="customer"
-                            onChange={item => {
-                              setSelectedCustomer(item.value);
-                              setFieldValue('customer', item.value);
-                            }}
-                            value={{
-                              value: values.customer,
-                              label: `${values.customer.name}`
-                            }}
-                            options={customers.map(item => ({
-                              value: item,
-                              label: `[${item.code}] ${item.name} ${item.address}`
-                            }))}
-                          />
-                        </CCol>
-                      </CRow>
-                      <FormFeedback className="d-block">{errors.customer}</FormFeedback>
-                    </CFormGroup>
-
-                    <CRow>
-                      <CCol lg="6">
-                        <dl className="row">
-                          <dt className="col-sm-3">Mã khách hàng:</dt>
-                          <dd className="col-sm-9">{selectedCustomer?.code}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Họ tên:</dt>
-                          <dd className="col-sm-9">{selectedCustomer?.name}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Số điện thoại:</dt>
-                          <dd className="col-sm-9">{selectedCustomer?.tel}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Chi nhánh:</dt>
-                          <dd className="col-sm-9">{selectedCustomer?.branch?.name}</dd>
-                        </dl>
-                      </CCol>
-                      <CCol lg="6">
-                        <dl className="row">
-                          <dt className="col-sm-3">Địa chỉ:</dt>
-                          <dd className="col-sm-9">{selectedCustomer?.address}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Thành phố:</dt>
-                          <dd className="col-sm-9">{selectedCustomer?.city?.name}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Quận huyện:</dt>
-                          <dd className="col-sm-9">{selectedCustomer?.district?.name}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Loại khách hàng: </dt>
-                          <dd className="col-sm-9">{selectedCustomer?.type?.name}</dd>
-                        </dl>
-                      </CCol>
-                    </CRow>
-                    <CFormGroup>
-                      <CLabel htmlFor="userName">Số tiền</CLabel>
-                      <CurrencyInput name="money" handleChange={handleChange} />
-                      <FormFeedback className="d-block">{errors.money}</FormFeedback>
-                    </CFormGroup>
-                    <CFormGroup>
-                      <CLabel htmlFor="userName">Ghi chú</CLabel>
-                      <CTextarea
-                        type="text"
-                        name="note"
-                        id="note"
-                        placeholder=""
-                        autoComplete="address"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values.note}
+                <CFormGroup>
+                  <CRow className="mb-3">
+                    <CCol sm={8}>
+                      <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
+                      <Select
+                        name="customer"
+                        onChange={item => {
+                          setSelectedCustomer(item.value);
+                          setFieldValue('customer', item.value);
+                        }}
+                        value={{
+                          value: values.customer,
+                          label: `${values.customer.name}`
+                        }}
+                        options={customers.map(item => ({
+                          value: item,
+                          label: `[${item.code}] ${item.name} ${item.address}`
+                        }))}
                       />
-                    </CFormGroup>
-                  {/* </CCardBody>
+                    </CCol>
+                  </CRow>
+                  <FormFeedback className="d-block">{errors.customer}</FormFeedback>
+                </CFormGroup>
+
+                <CRow>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Mã khách hàng:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.code}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Họ tên:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Số điện thoại:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.tel}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Chi nhánh:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.branch?.name}</dd>
+                    </dl>
+                  </CCol>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Địa chỉ:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.address}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Thành phố:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.city?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Quận huyện:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.district?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Loại khách hàng: </dt>
+                      <dd className="col-sm-9">{selectedCustomer?.type?.name}</dd>
+                    </dl>
+                  </CCol>
+                </CRow>
+                <CFormGroup>
+                  <CLabel htmlFor="userName">Số tiền</CLabel>
+                  <CurrencyInput name="money" handleChange={handleChange} />
+                  <FormFeedback className="d-block">{errors.money}</FormFeedback>
+                </CFormGroup>
+                <CFormGroup>
+                  <CLabel htmlFor="userName">Ghi chú</CLabel>
+                  <CTextarea
+                    type="text"
+                    name="note"
+                    id="note"
+                    placeholder=""
+                    autoComplete="address"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.note}
+                  />
+                </CFormGroup>
+                {/* </CCardBody>
                 </CCard> */}
               </CCol>
 
@@ -253,7 +250,6 @@ const EditReceipt = props => {
           )}
         </Formik>
       </CCardBody>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
     </CCard>
   );
 };

@@ -62,6 +62,11 @@ const WarehouseImport = props => {
       _style: { width: '1%' },
       filter: false
     },
+    {
+      key: 'show_details',
+      _style: { width: '1%' },
+      filter: false
+    },
     { key: 'store', label: 'Tên kho xuất', _style: { width: '10%' } },
     { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
     { key: 'import', label: 'Xuất đến', _style: { width: '10%' } },
@@ -74,6 +79,19 @@ const WarehouseImport = props => {
       _style: { width: '20%' },
       filter: false
     }
+  ];
+
+  const fieldsDetail = [
+    {
+      key: 'order',
+      label: 'STT',
+      _style: { width: '1%' },
+      filter: false
+    },
+    { key: 'productName', label: 'Tên sản phẩm', _style: { width: '10%' } },
+    { key: 'unit', label: 'Đơn vị', _style: { width: '10%' } },
+    { key: 'volume', label: 'Dung tích', _style: { width: '10%' } },
+    { key: 'quantity', label: 'Số lượng', _style: { width: '10%' } }
   ];
 
   const getBadge = status => {
@@ -98,7 +116,7 @@ const WarehouseImport = props => {
   const toCreateWarehouseExportProvider = () => {
     history.push(`${props.match.url}/provider/new`);
   };
-  const toEditWarehouseExportProvider = (userId) => {
+  const toEditWarehouseExportProvider = userId => {
     history.push(`${props.match.url}/provider/${userId}/edit`);
   };
   const toEditWarehouseImport = userId => {
@@ -243,49 +261,45 @@ const WarehouseImport = props => {
             action: item => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
             },
+            show_details: item => {
+              return (
+                <td className="py-2 d-flex">
+                  <CButton
+                    color="primary"
+                    variant="outline"
+                    shape="square"
+                    size="sm"
+                    onClick={() => {
+                      toggleDetails(item.id);
+                    }}
+                  >
+                    <CIcon name="cilZoom" />
+                  </CButton>
+                </td>
+              );
+            },
             details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
-                    <h5>Thông tin người dùng</h5>
-                    <CRow>
-                      <CCol lg="6">
-                        <dl className="row">
-                          <dt className="col-sm-3">Mã:</dt>
-                          <dd className="col-sm-9">{item.code}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Tên kho:</dt>
-                          <dd className="col-sm-9">{item.name}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Địa chỉ</dt>
-                          <dd className="col-sm-9">{item.address}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Số điện thoại</dt>
-                          <dd className="col-sm-9">{item.tel}</dd>
-                        </dl>
-                      </CCol>
-                      <CCol lg="6">
-                        <dl className="row">
-                          <dt className="col-sm-3">Thành phố</dt>
-                          <dd className="col-sm-9">{item.city}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Quận huyện</dt>
-                          <dd className="col-sm-9">{item.district}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Xã Phường</dt>
-                          <dd className="col-sm-9">{item.ward}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Trạng thái</dt>
-                          <dd className="col-sm-9">{mappingStatus[item.status]}</dd>
-                        </dl>
-                      </CCol>
-                    </CRow>
+                    <h5>Thông tin đơn nhập</h5>
+                    <CDataTable
+                      items={item.storeInputDetails.map(item => {
+                        return {
+                          productName: item.product?.name || '',
+                          unit: item.product?.unit || '',
+                          volume: item.product?.volume || '',
+                          quantity: item.quantity || ''
+                        };
+                      })}
+                      fields={fieldsDetail}
+                      bordered
+                      itemsPerPage={5}
+                      pagination
+                      scopedSlots={{
+                        order: (item, index) => <td>{index + 1}</td>
+                      }}
+                    />
                   </CCardBody>
                 </CCollapse>
               );

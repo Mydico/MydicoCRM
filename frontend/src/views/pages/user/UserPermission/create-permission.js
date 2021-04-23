@@ -85,7 +85,7 @@ const validateForm = errors => {
 const CreatePermissionGroups = () => {
   const { initialState } = useSelector(state => state.permission);
   const checkboxRef = useRef();
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const [checkbox, setCheckbox] = useState({});
@@ -98,8 +98,8 @@ const CreatePermissionGroups = () => {
   useEffect(() => {
     dispatch(getPermissionType());
     return () => {
-      dispatch(reset())
-    }
+      dispatch(reset());
+    };
   }, []);
 
   const onGetPermission = value => {
@@ -203,7 +203,6 @@ const CreatePermissionGroups = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       dispatch(reset());
       history.goBack();
     }
@@ -364,7 +363,6 @@ const CreatePermissionGroups = () => {
           )}
         </Formik>
       </CCardBody>
-      <Toaster ref={toastRef} message="Tạo mới nhóm quyền thành công" />
     </CCard>
   );
 };

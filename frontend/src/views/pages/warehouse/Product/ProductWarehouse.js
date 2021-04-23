@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
 const ProductWarehouse = props => {
   const [details, setDetails] = useState([]);
@@ -40,7 +40,7 @@ const ProductWarehouse = props => {
         ...item,
         code: item.product?.code,
         name: item.product?.name,
-        store: item.store?.name,
+        store: item.store?.name
       };
     });
   };
@@ -61,12 +61,12 @@ const ProductWarehouse = props => {
       key: 'order',
       label: 'STT',
       _style: { width: '1%' },
-      filter: false,
+      filter: false
     },
     { key: 'code', label: 'Mã sản phẩm', _style: { width: '10%' } },
     { key: 'name', label: 'Tên sản phẩm', _style: { width: '15%' } },
     { key: 'store', label: 'Tên kho', _style: { width: '15%' } },
-    { key: 'quantity', label: 'Số lượng', _style: { width: '15%' } },
+    { key: 'quantity', label: 'Số lượng', _style: { width: '15%' } }
     // {
     //   key: 'show_details',
     //   label: '',
@@ -216,7 +216,7 @@ const ProductWarehouse = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

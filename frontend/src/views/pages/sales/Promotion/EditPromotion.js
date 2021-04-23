@@ -84,7 +84,7 @@ const validateForm = errors => {
 
 const EditPromotion = props => {
   const { initialState, entities } = useSelector(state => state.promotion);
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const promotionGroup = [];
@@ -111,10 +111,10 @@ const EditPromotion = props => {
   }, []);
 
   useEffect(() => {
-    console.log(promotion)
+    console.log(promotion);
     if (promotion) {
       setInitValues(promotion);
-      console.log(JSON.parse(JSON.stringify(promotion.promotionProduct)))
+      console.log(JSON.parse(JSON.stringify(promotion.promotionProduct)));
       setProductList(JSON.parse(JSON.stringify(promotion.promotionProduct)));
     }
   }, [entities]);
@@ -160,14 +160,12 @@ const EditPromotion = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới chương trình bán hàng thành công" />
       <CCardHeader class="card-header">
         <CCardTitle>Chỉnh sửa chương trình bán hàng</CCardTitle>
       </CCardHeader>

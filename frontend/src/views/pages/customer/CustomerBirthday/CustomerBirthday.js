@@ -30,7 +30,7 @@ const Customer = props => {
       return {
         ...item,
         typeName: item.type?.name,
-        branchName: item.branch?.name,
+        branchName: item.branch?.name
       };
     });
   };
@@ -58,8 +58,8 @@ const Customer = props => {
       key: 'show_details',
       label: '',
       _style: { width: '1%' },
-      filter: false,
-    },
+      filter: false
+    }
   ];
 
   const getBadge = status => {
@@ -202,7 +202,7 @@ const Customer = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

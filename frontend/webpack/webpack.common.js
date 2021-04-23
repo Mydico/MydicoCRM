@@ -35,7 +35,7 @@ const getJSLoaderRule = env => {
     {
       loader: 'babel-loader',
       options: {
-        presets: ['@babel/preset-env','@babel/preset-react']
+        presets: ['@babel/preset-env', '@babel/preset-react']
       }
     }
   ];
@@ -51,7 +51,7 @@ module.exports = options => ({
   cache: options.env !== 'production',
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
-    modules: ['node_modules'],
+    modules: ['node_modules']
     // alias: utils.mapTypescriptAliasToWebpackAlias()
   },
   module: {

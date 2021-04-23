@@ -88,7 +88,6 @@ const mappingType = {
 };
 
 const ViewOrder = props => {
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
 

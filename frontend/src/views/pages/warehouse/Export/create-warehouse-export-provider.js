@@ -96,7 +96,6 @@ const CreateWarehouseExportProvider = () => {
   const { selectAll: selectAllProduct } = globalizedProductSelectors;
   const { selectAll: selectAllProvider } = globalizedProviderSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -119,7 +118,7 @@ const CreateWarehouseExportProvider = () => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     dispatch(getProduct());
     dispatch(getProvider());
   }, []);
@@ -175,7 +174,6 @@ const CreateWarehouseExportProvider = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -349,12 +347,12 @@ const CreateWarehouseExportProvider = () => {
                                 mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
                                 value={
-                                    typeof productList[index].price !== 'number'
-                                      ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                                          productList[index].price
-                                        )
-                                      : productList[index].price
-                                  }
+                                  typeof productList[index].price !== 'number'
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                        productList[index].price
+                                      )
+                                    : productList[index].price
+                                }
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
@@ -439,7 +437,6 @@ const CreateWarehouseExportProvider = () => {
           </CForm>
         )}
       </Formik>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
     </CCard>
   );
 };

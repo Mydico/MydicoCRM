@@ -92,7 +92,6 @@ const CreateReceipt = () => {
   const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
   const { selectAll: selectAllProduct } = globalizedProductSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -115,7 +114,7 @@ const CreateReceipt = () => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     dispatch(getProduct());
   }, []);
 
@@ -190,7 +189,6 @@ const CreateReceipt = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -462,7 +460,6 @@ const CreateReceipt = () => {
           </CForm>
         )}
       </Formik>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
     </CCard>
   );
 };

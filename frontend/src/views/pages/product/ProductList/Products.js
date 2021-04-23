@@ -56,18 +56,15 @@ const Product = props => {
       filter: false
     },
     { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên sản phẩm', _style: { width: '15%' } },
-    { key: 'unit', label: 'Đơn vị', _style: { width: '15%' } },
+    { key: 'name', label: 'Tên sản phẩm', _style: { width: '10%' } },
     { key: 'price', label: 'Giá salon', _style: { width: '15%' } },
-    { key: 'agentPrice', label: 'Giá đại lý', _style: { width: '15%' } },
-    { key: 'volume', label: 'Dung tích', _style: { width: '15%' } },
+    { key: 'agentPrice', label: 'Giá đại lý', _style: { width: '10%' } },
     { key: 'productGroup', label: 'Nhóm sản phẩm', _style: { width: '10%' } },
-    { key: 'desc', label: 'Mô tả', _style: { width: '20%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '15%' } },
+    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
     {
       key: 'show_details',
+      _style: { width: '10%' },
       label: '',
-      _style: { width: '1%' },
       filter: false
     }
   ];
@@ -118,6 +115,7 @@ const Product = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
+          responsive={true}
           items={computedItems(products)}
           fields={fields}
           columnFilter

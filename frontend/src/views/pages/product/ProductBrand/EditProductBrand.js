@@ -23,78 +23,26 @@ import { useHistory } from 'react-router-dom';
 import { getDetailProductBrand, updateProductBrand } from './product-brand.api';
 import { fetching, globalizedproductBrandsSelectors, reset } from './product-brand.reducer';
 import { setTimeout } from 'core-js';
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+import { validate } from '../../../../shared/utils/normalize';
 
 const validationSchema = function(values) {
   return Yup.object().shape({
     code: Yup.string()
       .min(1, `Mã thương hiệu phải lớn hơn 1 kí tự`)
-      .required('Mã thương hiệu không để trống').nullable(),
+      .required('Mã thương hiệu không để trống')
+      .nullable(),
     name: Yup.string()
       .min(5, `Tên phải lớn hơn 5 kí tự`)
       .required('Tên không để trống')
   });
 };
-
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      console.log(values);
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
-
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
-const touchAll = (setTouched, errors) => {
-  setTouched({
-    code: true,
-    lastName: true,
-    userName: true,
-    email: true,
-    password: true,
-    confirmPassword: true,
-    accept: true
-  });
-  validateForm(errors);
-};
-
 const CreateProductBrand = props => {
   const { initialState } = useSelector(state => state.productBrand);
   const initialValues = {
     name: '',
     description: ''
   };
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectById } = globalizedproductBrandsSelectors;

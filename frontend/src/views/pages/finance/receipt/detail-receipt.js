@@ -99,7 +99,6 @@ const DetailReceipt = props => {
   const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
   const { selectById } = globalizedReceiptsSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -206,7 +205,13 @@ const DetailReceipt = props => {
                 </CFormGroup>
                 <dl className="row">
                   <dt className="col-sm-3">Trạng thái:</dt>
-                  <dd className="col-sm-9">{<CBadge size="lg" color={getBadge(values.status)}>{mappingStatus[values.status]}</CBadge>}</dd>
+                  <dd className="col-sm-9">
+                    {
+                      <CBadge size="lg" color={getBadge(values.status)}>
+                        {mappingStatus[values.status]}
+                      </CBadge>
+                    }
+                  </dd>
                 </dl>
               </CCol>
             </CForm>

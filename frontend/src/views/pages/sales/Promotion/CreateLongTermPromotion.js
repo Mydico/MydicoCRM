@@ -14,7 +14,7 @@ import {
   CSelect,
   CCardTitle,
   CTextarea,
-  CInputCheckbox,
+  CInputCheckbox
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -36,11 +36,13 @@ import { globalizedProductSelectors } from '../../product/ProductList/product.re
 import { globalizedproductGroupsSelectors } from '../../product/ProductGroup/product-group.reducer';
 import { getProductGroup } from '../../product/ProductGroup/product-group.api';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống'),
+    endTime: Yup.string().required('Ngày kết thúc không để trống')
   });
 };
 
@@ -61,7 +63,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -84,7 +86,7 @@ const validateForm = errors => {
 
 const CreatePromotion = () => {
   const { initialState } = useSelector(state => state.promotion);
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const initialValues = useRef({
@@ -93,7 +95,7 @@ const CreatePromotion = () => {
     startTime: new Date(),
     endTime: new Date(),
     isLock: false,
-    status: PromotionStatus[0].value,
+    status: PromotionStatus[0].value
   });
   const { selectAll } = globalizedcustomerTypeSelectors;
   const customerType = useSelector(selectAll);
@@ -114,7 +116,7 @@ const CreatePromotion = () => {
   }, [customerType]);
 
   const onAddProduct = () => {
-    const data = { name: "", totalMoney: 0, reducePercent: 0, productGroup : {} };
+    const data = { name: '', totalMoney: 0, reducePercent: 0, productGroup: {} };
     setPromotionItemList([...promotionItemList, data]);
   };
 
@@ -141,14 +143,12 @@ const CreatePromotion = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới chương trình bán hàng thành công" />
       <CCardHeader class="card-header">
         <CCardTitle>Thêm mới chương trình bán hàng dài hạn</CCardTitle>
       </CCardHeader>
@@ -167,7 +167,7 @@ const CreatePromotion = () => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -229,13 +229,29 @@ const CreatePromotion = () => {
                 <CCol lg="6">
                   <CFormGroup>
                     <CLabel htmlFor="password">Thời gian bắt đầu</CLabel>
-                    <CInput type="date" id="startTime" name="startTime" invalid={errors.startTime} value={values.startTime.toISOString().substr(0,10)} onChange={handleChange} placeholder="Thời gian bắt đầu" />
+                    <CInput
+                      type="date"
+                      id="startTime"
+                      name="startTime"
+                      invalid={errors.startTime}
+                      value={values.startTime.toISOString().substr(0, 10)}
+                      onChange={handleChange}
+                      placeholder="Thời gian bắt đầu"
+                    />
                     <CInvalidFeedback className="d-block">{errors.startTime}</CInvalidFeedback>
                   </CFormGroup>
 
                   <CFormGroup>
                     <CLabel htmlFor="password">Thời gian kết thúc</CLabel>
-                    <CInput type="date" id="endTime" name="endTime" invalid={errors.endTime} value={values.endTime.toISOString().substr(0,10)} onChange={handleChange} placeholder="Thời gian kết thúc" />
+                    <CInput
+                      type="date"
+                      id="endTime"
+                      name="endTime"
+                      invalid={errors.endTime}
+                      value={values.endTime.toISOString().substr(0, 10)}
+                      onChange={handleChange}
+                      placeholder="Thời gian kết thúc"
+                    />
                     <CInvalidFeedback className="d-block">{errors.endTime}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup variant="custom-checkbox" className="pb-3">
@@ -310,7 +326,9 @@ const CreatePromotion = () => {
                             onBlur={handleBlur}
                             value={promotionItemList[index].totalMoney}
                           />
-                          {!promotionItemList[index].totalMoney && <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>}
+                          {!promotionItemList[index].totalMoney && (
+                            <CInvalidFeedback className="d-block">Giá trị phải lớn hơn 0</CInvalidFeedback>
+                          )}
                         </CCol>
                         <CCol lg="3">
                           <CLabel htmlFor="password">Chiết khấu(đơn vị: %)</CLabel>
@@ -327,7 +345,9 @@ const CreatePromotion = () => {
                             onBlur={handleBlur}
                             value={promotionItemList[index].reducePercent}
                           />
-                          {promotionItemList[index].reducePercent < 0 && <CInvalidFeedback className="d-block">Giá trị phải lớn hơn hoặc bằng 0</CInvalidFeedback>}
+                          {promotionItemList[index].reducePercent < 0 && (
+                            <CInvalidFeedback className="d-block">Giá trị phải lớn hơn hoặc bằng 0</CInvalidFeedback>
+                          )}
                         </CCol>
                         <CCol lg="3">
                           <CLabel htmlFor="password">Nhóm sản phẩm</CLabel>
@@ -335,7 +355,7 @@ const CreatePromotion = () => {
                             onChange={event => onSelectedProduct(event, index)}
                             options={productGroups.map(item => ({
                               value: item.id,
-                              label: `${item?.productBrand?.name}-${item.name}`,
+                              label: `${item?.productBrand?.name}-${item.name}`
                             }))}
                           />
                         </CCol>

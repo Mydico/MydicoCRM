@@ -91,7 +91,6 @@ const EditWarehouseExportProvider = props => {
   const { selectAll: selectAllProduct } = globalizedProductSelectors;
   const { selectById } = globalizedWarehouseImportSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -115,7 +114,7 @@ const EditWarehouseExportProvider = props => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     dispatch(getProduct());
     dispatch(getDetailWarehouseImport(props.match.params.id));
   }, []);
@@ -173,7 +172,6 @@ const EditWarehouseExportProvider = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -452,7 +450,6 @@ const EditWarehouseExportProvider = props => {
           </CForm>
         )}
       </Formik>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
     </CCard>
   );
 };

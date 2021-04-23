@@ -30,7 +30,7 @@ export const App = props => {
     dispatch(getSession());
   }, []);
   return (
-    <BrowserRouter >
+    <BrowserRouter>
       <ToastContainer position={toast.POSITION.TOP_LEFT} className="toastify-container" toastClassName="toastify-toast" />
 
       <React.Suspense fallback={loading}>

@@ -12,7 +12,7 @@ import {
   CInput,
   CRow,
   CSelect,
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -27,12 +27,20 @@ import { fetching, globalizedProductWarehouseSelectors } from './product-warehou
 import { currencyFormat } from '../../../../shared/utils/normalize';
 import { getCity, getDistrict, getWard } from '../../customer/customer.api';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
-    city: Yup.string().nullable(true).required('Thành phố không để trống'),
-    district: Yup.string().nullable(true).required('Quận huyện không để trống'),
-    ward: Yup.string().nullable(true).required('Phường xã không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
+    city: Yup.string()
+      .nullable(true)
+      .required('Thành phố không để trống'),
+    district: Yup.string()
+      .nullable(true)
+      .required('Quận huyện không để trống'),
+    ward: Yup.string()
+      .nullable(true)
+      .required('Phường xã không để trống')
   });
 };
 
@@ -51,7 +59,7 @@ const validate = getValidationSchema => {
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
 
 const getErrorsFromValidationError = validationError => {
@@ -59,7 +67,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -84,7 +92,6 @@ const CreateProductWarehouse = () => {
   const { initialState } = useSelector(state => state.productProductWarehouse);
   const { initialState: customerInitialState } = useSelector(state => state.customer);
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -92,7 +99,7 @@ const CreateProductWarehouse = () => {
     code: '',
     name: '',
     address: '',
-    tel: '',
+    tel: ''
   };
   const [selectedCity, setSelectedCity] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
@@ -131,14 +138,12 @@ const CreateProductWarehouse = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
       <CCardHeader>
         <CCardTitle>Thêm mới kho</CCardTitle>
       </CCardHeader>
@@ -157,7 +162,7 @@ const CreateProductWarehouse = () => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -321,7 +326,7 @@ const CreateProductWarehouse = () => {
                       placeholder="Số điện thoại"
                       autoComplete="tel"
                       valid={errors.tel || null}
-                      invalid={touched.tel && !!errors.tel}
+                      invalid={errors.tel}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.tel}
@@ -339,8 +344,7 @@ const CreateProductWarehouse = () => {
                       onChange={e => {
                         setFieldValue('status', e.target.value);
                       }}
-                    >
-                    </CSelect>
+                    ></CSelect>
                     <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>

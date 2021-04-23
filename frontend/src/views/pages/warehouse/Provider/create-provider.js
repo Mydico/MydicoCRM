@@ -34,7 +34,7 @@ const validationSchema = function(values) {
   return Yup.object().shape({
     name: Yup.string()
       .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
+      .required('Tên không để trống')
   });
 };
 
@@ -85,7 +85,6 @@ const validateForm = errors => {
 const CreateProvider = () => {
   const { initialState } = useSelector(state => state.provider);
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -114,7 +113,6 @@ const CreateProvider = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -183,7 +181,6 @@ const CreateProvider = () => {
                     />
                     <CInvalidFeedback>{errors.name}</CInvalidFeedback>
                   </CFormGroup>
-
                 </CCol>
                 <CCol lg="6">
                   <CFormGroup>
@@ -232,7 +229,6 @@ const CreateProvider = () => {
           )}
         </Formik>
       </CCardBody>
-      <Toaster ref={toastRef} message="Tạo mới nhà cung cấp thành công" />
     </CCard>
   );
 };

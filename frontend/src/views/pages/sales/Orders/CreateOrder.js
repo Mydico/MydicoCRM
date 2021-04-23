@@ -100,7 +100,7 @@ const CreateOrder = props => {
     note: '',
     address: ''
   };
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
@@ -259,450 +259,448 @@ const CreateOrder = props => {
   };
 
   return (
-    <CCard>
-      <Formik initialValues={initFormState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
-        {({
-          values,
-          errors,
-          touched,
-          status,
-          dirty,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          setFieldValue,
-          isSubmitting,
-          isValid,
-          handleReset,
-          setTouched
-        }) => {
-          return (
-            <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
-              <CCard className="card-accent-primary">
-                <CCardHeader>
-                  <CCardTitle>Thông tin khách hàng</CCardTitle>
-                </CCardHeader>
+    <Formik initialValues={initFormState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
+      {({
+        values,
+        errors,
+        touched,
+        status,
+        dirty,
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        setFieldValue,
+        isSubmitting,
+        isValid,
+        handleReset,
+        setTouched
+      }) => {
+        return (
+          <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
+            <CCard className="card-accent-primary">
+              <CCardHeader>
+                <CCardTitle>Thông tin khách hàng</CCardTitle>
+              </CCardHeader>
 
-                <CCardBody>
-                  <CFormGroup>
-                    <CRow className="mb-3">
-                      <CCol sm={8}>
-                        <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
-                        <Select
-                          name="customer"
-                          onChange={item => {
-                            setFieldValue('customer', { id: item.value, name: item.label });
-                            onSelectCustomer(item);
-                          }}
-                          value={{
-                            value: values.customer?.id,
-                            label: values.customer?.name
-                          }}
-                          options={customers.map(item => ({
-                            value: item.id,
-                            label: `[${item.code}] ${item.name} ${item.address}`
-                          }))}
-                        />
-                      </CCol>
-                    </CRow>
-                    <FormFeedback className="d-block">{errors.customer}</FormFeedback>
-                  </CFormGroup>
-
-                  <CRow>
-                    <CCol lg="6">
-                      <dl className="row">
-                        <dt className="col-sm-3">Mã khách hàng:</dt>
-                        <dd className="col-sm-9">{selectedCustomer?.code}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Họ tên:</dt>
-                        <dd className="col-sm-9">{selectedCustomer?.name}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Số điện thoại:</dt>
-                        <dd className="col-sm-9">{selectedCustomer?.tel}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Chi nhánh:</dt>
-                        <dd className="col-sm-9">{selectedCustomer?.branch?.name}</dd>
-                      </dl>
-                    </CCol>
-                    <CCol lg="6">
-                      <dl className="row">
-                        <dt className="col-sm-3">Địa chỉ:</dt>
-                        <dd className="col-sm-9">{selectedCustomer?.address}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Thành phố:</dt>
-                        <dd className="col-sm-9">{selectedCustomer?.city?.name}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Quận huyện:</dt>
-                        <dd className="col-sm-9">{selectedCustomer?.district?.name}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Loại khách hàng: </dt>
-                        <dd className="col-sm-9">{selectedCustomer?.type?.name}</dd>
-                      </dl>
-                    </CCol>
-                  </CRow>
-                </CCardBody>
-              </CCard>
-              <CCard className="card-accent-info">
-                <CCardHeader>
-                  <CCardTitle>Chương trình khuyến mại</CCardTitle>
-                </CCardHeader>
-                <CCardBody>
-                  <CFormGroup>
-                    <CRow className="mb-3">
-                      <CCol sm={4}>
-                        <CLabel htmlFor="lastName">Chọn chương trình bán hàng</CLabel>
-                        <Select
-                          onChange={item => {
-                            setFieldValue('promotion', { id: item.value, name: item.label });
-                            onSelectPromotion(item);
-                          }}
-                          value={{
-                            value: values.promotion?.id,
-                            label: values.promotion?.name
-                          }}
-                          name="promotion"
-                          options={promotions.map(item => ({
-                            value: item.id,
-                            label: `${item.name}`
-                          }))}
-                        />
-                      </CCol>
-                    </CRow>
-                    <FormFeedback className="d-block">{errors.promotion}</FormFeedback>
-                  </CFormGroup>
-                  <CRow>
-                    <CCol lg="6">
-                      <dl className="row">
-                        <dt className="col-sm-3">Tên chương trình:</dt>
-                        <dd className="col-sm-9">{selectedPromotion?.name}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Ngày bắt đầu:</dt>
-                        <dd className="col-sm-9">{selectedPromotion?.startTime}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Sản phẩm áp dụng</dt>
-                      </dl>
-                    </CCol>
-                    <CCol lg="6">
-                      <dl className="row">
-                        <dt className="col-sm-3">Ngày kết thúc:</dt>
-                        <dd className="col-sm-9">{selectedPromotion?.endTime}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Loại chương trình:</dt>
-                        <dd className="col-sm-9">{mappingType[selectedPromotion?.type]}</dd>
-                      </dl>
-                    </CCol>
-                  </CRow>
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    onClick={() => {
-                      setShowProductPromotion(!showProductPromotion);
-                    }}
-                  >
-                    <CIcon name="cilZoom" /> Xem sản phẩm áp dụng
-                  </CButton>
-                  <CCollapse show={showProductPromotion}>
-                    <CCardBody>
-                      <h5>Thông tin sản phẩm khuyến mại</h5>
-                      <CRow>
-                        <CCol lg="6">
-                          {Array.isArray(promotionState.promotionProducts) &&
-                            promotionState.promotionProducts.map((item, index) => (
-                              <dl className="row">
-                                <dt className="col-sm-4">{`${item.product.name}`}</dt>
-                                <dd className="col-sm-8">{`Mua ${item.buy} Tặng ${item.gift}`}</dd>
-                              </dl>
-                            ))}
-                        </CCol>
-                      </CRow>
-                    </CCardBody>
-                  </CCollapse>
-                </CCardBody>
-              </CCard>
-              <CCard className="card-accent-info">
-                <CCardHeader>
-                  <CCardTitle>Kho hàng</CCardTitle>
-                </CCardHeader>
-                <CCardBody>
+              <CCardBody>
+                <CFormGroup>
                   <CRow className="mb-3">
-                    <CCol sm={4}>
-                      <CLabel htmlFor="lastName">Chọn Kho</CLabel>
+                    <CCol sm={8}>
+                      <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
                       <Select
+                        name="customer"
                         onChange={item => {
-                          setFieldValue('store', item.value);
-                          onSelectWarehouse(item.value);
+                          setFieldValue('customer', { id: item.value, name: item.label });
+                          onSelectCustomer(item);
                         }}
                         value={{
-                          value: values.store,
-                          label: values.store?.name
+                          value: values.customer?.id,
+                          label: values.customer?.name
                         }}
-                        options={warehouses.map(item => ({
-                          value: item,
+                        options={customers.map(item => ({
+                          value: item.id,
+                          label: `[${item.code}] ${item.name} ${item.address}`
+                        }))}
+                      />
+                    </CCol>
+                  </CRow>
+                  <FormFeedback className="d-block">{errors.customer}</FormFeedback>
+                </CFormGroup>
+
+                <CRow>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Mã khách hàng:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.code}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Họ tên:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Số điện thoại:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.tel}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Chi nhánh:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.branch?.name}</dd>
+                    </dl>
+                  </CCol>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Địa chỉ:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.address}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Thành phố:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.city?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Quận huyện:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.district?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Loại khách hàng: </dt>
+                      <dd className="col-sm-9">{selectedCustomer?.type?.name}</dd>
+                    </dl>
+                  </CCol>
+                </CRow>
+              </CCardBody>
+            </CCard>
+            <CCard className="card-accent-info">
+              <CCardHeader>
+                <CCardTitle>Chương trình khuyến mại</CCardTitle>
+              </CCardHeader>
+              <CCardBody>
+                <CFormGroup>
+                  <CRow className="mb-3">
+                    <CCol sm={4}>
+                      <CLabel htmlFor="lastName">Chọn chương trình bán hàng</CLabel>
+                      <Select
+                        onChange={item => {
+                          setFieldValue('promotion', { id: item.value, name: item.label });
+                          onSelectPromotion(item);
+                        }}
+                        value={{
+                          value: values.promotion?.id,
+                          label: values.promotion?.name
+                        }}
+                        name="promotion"
+                        options={promotions.map(item => ({
+                          value: item.id,
                           label: `${item.name}`
                         }))}
                       />
-                      {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
                     </CCol>
                   </CRow>
-                  <CRow>
-                    <CCol lg="6">
-                      <dl className="row">
-                        <dt className="col-sm-3">Tên kho:</dt>
-                        <dd className="col-sm-9">{selectedWarehouse?.name}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Số điện thoại:</dt>
-                        <dd className="col-sm-9">{selectedWarehouse?.tel}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Địa chỉ:</dt>
-                        <dd className="col-sm-9">{selectedWarehouse?.address}</dd>
-                      </dl>
-                    </CCol>
-                    <CCol lg="6">
-                      <dl className="row">
-                        <dt className="col-sm-3">Thành phố:</dt>
-                        <dd className="col-sm-9">{selectedWarehouse?.city?.name}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Quận huyện:</dt>
-                        <dd className="col-sm-9">{selectedWarehouse?.district?.name}</dd>
-                      </dl>
-                      <dl className="row">
-                        <dt className="col-sm-3">Xã phường:</dt>
-                        <dd className="col-sm-9">{selectedWarehouse?.ward?.name}</dd>
-                      </dl>
-                    </CCol>
-                  </CRow>
-                </CCardBody>
-              </CCard>
+                  <FormFeedback className="d-block">{errors.promotion}</FormFeedback>
+                </CFormGroup>
+                <CRow>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Tên chương trình:</dt>
+                      <dd className="col-sm-9">{selectedPromotion?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Ngày bắt đầu:</dt>
+                      <dd className="col-sm-9">{selectedPromotion?.startTime}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Sản phẩm áp dụng</dt>
+                    </dl>
+                  </CCol>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Ngày kết thúc:</dt>
+                      <dd className="col-sm-9">{selectedPromotion?.endTime}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Loại chương trình:</dt>
+                      <dd className="col-sm-9">{mappingType[selectedPromotion?.type]}</dd>
+                    </dl>
+                  </CCol>
+                </CRow>
+                <CButton
+                  color="primary"
+                  variant="outline"
+                  shape="square"
+                  size="sm"
+                  onClick={() => {
+                    setShowProductPromotion(!showProductPromotion);
+                  }}
+                >
+                  <CIcon name="cilZoom" /> Xem sản phẩm áp dụng
+                </CButton>
+                <CCollapse show={showProductPromotion}>
+                  <CCardBody>
+                    <h5>Thông tin sản phẩm khuyến mại</h5>
+                    <CRow>
+                      <CCol lg="6">
+                        {Array.isArray(promotionState.promotionProducts) &&
+                          promotionState.promotionProducts.map((item, index) => (
+                            <dl className="row">
+                              <dt className="col-sm-4">{`${item.product.name}`}</dt>
+                              <dd className="col-sm-8">{`Mua ${item.buy} Tặng ${item.gift}`}</dd>
+                            </dl>
+                          ))}
+                      </CCol>
+                    </CRow>
+                  </CCardBody>
+                </CCollapse>
+              </CCardBody>
+            </CCard>
+            <CCard className="card-accent-info">
+              <CCardHeader>
+                <CCardTitle>Kho hàng</CCardTitle>
+              </CCardHeader>
+              <CCardBody>
+                <CRow className="mb-3">
+                  <CCol sm={4}>
+                    <CLabel htmlFor="lastName">Chọn Kho</CLabel>
+                    <Select
+                      onChange={item => {
+                        setFieldValue('store', item.value);
+                        onSelectWarehouse(item.value);
+                      }}
+                      value={{
+                        value: values.store,
+                        label: values.store?.name
+                      }}
+                      options={warehouses.map(item => ({
+                        value: item,
+                        label: `${item.name}`
+                      }))}
+                    />
+                    {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
+                  </CCol>
+                </CRow>
+                <CRow>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Tên kho:</dt>
+                      <dd className="col-sm-9">{selectedWarehouse?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Số điện thoại:</dt>
+                      <dd className="col-sm-9">{selectedWarehouse?.tel}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Địa chỉ:</dt>
+                      <dd className="col-sm-9">{selectedWarehouse?.address}</dd>
+                    </dl>
+                  </CCol>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Thành phố:</dt>
+                      <dd className="col-sm-9">{selectedWarehouse?.city?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Quận huyện:</dt>
+                      <dd className="col-sm-9">{selectedWarehouse?.district?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Xã phường:</dt>
+                      <dd className="col-sm-9">{selectedWarehouse?.ward?.name}</dd>
+                    </dl>
+                  </CCol>
+                </CRow>
+              </CCardBody>
+            </CCard>
 
-              <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
-                <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-                Thêm sản phẩm
-              </CButton>
-              <CCard>
-                <CCardBody>
-                  <Table responsive striped>
-                    <thead>
-                      <tr>
-                        <th>Sản phẩm</th>
-                        <th>Đơn vị</th>
-                        <th>Dung tích</th>
-                        <th>Số lượng</th>
-                        <th>Đơn giá</th>
-                        <th>Thành tiền</th>
-                        <th>Chiết khấu</th>
-                        <th>Thanh toán</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {productList.map((item, index) => {
-                        console.log(productList[index].priceReal);
-                        return (
-                          <tr key={index}>
-                            <td style={{ width: 300 }}>
-                              <Select
-                                value={{
-                                  value: item.product,
-                                  label: `${item.product.productBrand?.name || ''}-${item.product.name || ''}-${item.product.volume || ''}`
-                                }}
-                                onChange={event => onSelectedProduct(event, index)}
-                                menuPortalTarget={document.body}
-                                options={productInWarehouses.map(item => ({
-                                  value: item.product,
-                                  label: `${item.product.productBrand?.name}-${item.product.name}-${item.product.volume}`
-                                }))}
-                              />
-                            </td>
-                            <td>{item.product?.unit}</td>
-                            <td>{item.product?.volume}</td>
-                            <td style={{ width: 100 }}>
-                              {item.followIndex >= 0 ? (
-                                item.quantity
-                              ) : (
-                                <CInput
-                                  type="number"
-                                  min={1}
-                                  name="code"
-                                  id="code"
-                                  onChange={event => onChangeQuantity(event, index)}
-                                  onBlur={handleBlur}
-                                  value={item.quantity}
-                                />
-                              )}
-                            </td>
-                            <td>
-                              {
-                                <MaskedInput
-                                  mask={currencyMask}
-                                  onChange={event => onChangePrice(event, index)}
-                                  value={
-                                    typeof item.priceReal !== 'number'
-                                      ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceReal)
-                                      : item.priceReal
-                                  }
-                                  render={(ref, props) => <CInput innerRef={ref} {...props} />}
-                                />
-                              }
-                            </td>
-                            <td>
-                              {(item.priceReal * item.quantity).toLocaleString('it-IT', {
-                                style: 'currency',
-                                currency: 'VND'
-                              }) || ''}
-                            </td>
-
-                            <td style={{ width: 100 }}>
+            <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
+              <CIcon name={'cilArrowCircleRight'} className="mr-2" />
+              Thêm sản phẩm
+            </CButton>
+            <CCard>
+              <CCardBody>
+                <Table responsive striped>
+                  <thead>
+                    <tr>
+                      <th>Sản phẩm</th>
+                      <th>Đơn vị</th>
+                      <th>Dung tích</th>
+                      <th>Số lượng</th>
+                      <th>Đơn giá</th>
+                      <th>Thành tiền</th>
+                      <th>Chiết khấu</th>
+                      <th>Thanh toán</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {productList.map((item, index) => {
+                      console.log(productList[index].priceReal);
+                      return (
+                        <tr key={index}>
+                          <td style={{ width: 300 }}>
+                            <Select
+                              value={{
+                                value: item.product,
+                                label: `${item.product.productBrand?.name || ''}-${item.product.name || ''}-${item.product.volume || ''}`
+                              }}
+                              onChange={event => onSelectedProduct(event, index)}
+                              menuPortalTarget={document.body}
+                              options={productInWarehouses.map(item => ({
+                                value: item.product,
+                                label: `${item.product.productBrand?.name}-${item.product.name}-${item.product.volume}`
+                              }))}
+                            />
+                          </td>
+                          <td>{item.product?.unit}</td>
+                          <td>{item.product?.volume}</td>
+                          <td style={{ width: 100 }}>
+                            {item.followIndex >= 0 ? (
+                              item.quantity
+                            ) : (
                               <CInput
                                 type="number"
+                                min={1}
                                 name="code"
                                 id="code"
-                                onChange={event => onChangeReducePercent(event, index)}
+                                onChange={event => onChangeQuantity(event, index)}
                                 onBlur={handleBlur}
-                                value={item.reducePercent}
+                                value={item.quantity}
                               />
-                            </td>
-                            <td>
-                              {(
-                                item.priceReal * item.quantity -
-                                (item.priceReal * item.quantity * item.reducePercent) / 100
-                              ).toLocaleString('it-IT', {
+                            )}
+                          </td>
+                          <td>
+                            {
+                              <MaskedInput
+                                mask={currencyMask}
+                                onChange={event => onChangePrice(event, index)}
+                                value={
+                                  typeof item.priceReal !== 'number'
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceReal)
+                                    : item.priceReal
+                                }
+                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
+                              />
+                            }
+                          </td>
+                          <td>
+                            {(item.priceReal * item.quantity).toLocaleString('it-IT', {
+                              style: 'currency',
+                              currency: 'VND'
+                            }) || ''}
+                          </td>
+
+                          <td style={{ width: 100 }}>
+                            <CInput
+                              type="number"
+                              name="code"
+                              id="code"
+                              onChange={event => onChangeReducePercent(event, index)}
+                              onBlur={handleBlur}
+                              value={item.reducePercent}
+                            />
+                          </td>
+                          <td>
+                            {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
+                              'it-IT',
+                              {
                                 style: 'currency',
                                 currency: 'VND'
-                              }) || ''}
-                            </td>
-                            <td style={{ width: 100 }}>
-                              <CButton
-                                color="danger"
-                                variant="outline"
-                                shape="square"
-                                size="sm"
-                                className="mr-3"
-                                onClick={() => onRemoveProduct(index)}
-                              >
-                                <CIcon name="cilXCircle" />
-                              </CButton>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                </CCardBody>
-              </CCard>
-              <CCard>
-                <CCardHeader>
-                  <CCardTitle>Thông tin khác</CCardTitle>
-                </CCardHeader>
-                <CCardBody>
-                  <CRow>
-                    <CCol lg="4" sm="5">
-                      <CFormGroup>
-                        <CLabel htmlFor="userName">Địa chỉ</CLabel>
-                        <CTextarea
-                          type="text"
-                          name="address"
-                          id="address"
-                          placeholder="Địa chỉ"
-                          autoComplete="address"
-                          valid={errors.address || null}
-                          invalid={touched.address && !!errors.address}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values.address || selectedCustomer?.address}
-                        />
-                      </CFormGroup>
-                      <CFormGroup>
-                        <CLabel htmlFor="userName">Ghi chú</CLabel>
-                        <CTextarea
-                          type="text"
-                          name="note"
-                          id="note"
-                          placeholder="ghi chú"
-                          autoComplete="note"
-                          valid={errors.note || null}
-                          invalid={touched.note && !!errors.note}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values.note}
-                        />
-                      </CFormGroup>
-                    </CCol>
-                    <CCol lg="4" sm="5" className="ml-auto">
-                      <Table className="table-clear">
-                        <tbody>
-                          <tr>
-                            <td className="left">
-                              <strong>Tổng số lượng</strong>
-                            </td>
-                            <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
-                          </tr>
-                          <tr>
-                            <td className="left">
-                              <strong>Tổng tiền</strong>
-                            </td>
-                            <td className="right">
+                              }
+                            ) || ''}
+                          </td>
+                          <td style={{ width: 100 }}>
+                            <CButton
+                              color="danger"
+                              variant="outline"
+                              shape="square"
+                              size="sm"
+                              className="mr-3"
+                              onClick={() => onRemoveProduct(index)}
+                            >
+                              <CIcon name="cilXCircle" />
+                            </CButton>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              </CCardBody>
+            </CCard>
+            <CCard>
+              <CCardHeader>
+                <CCardTitle>Thông tin khác</CCardTitle>
+              </CCardHeader>
+              <CCardBody>
+                <CRow>
+                  <CCol lg="4" sm="5">
+                    <CFormGroup>
+                      <CLabel htmlFor="userName">Địa chỉ</CLabel>
+                      <CTextarea
+                        type="text"
+                        name="address"
+                        id="address"
+                        placeholder="Địa chỉ"
+                        autoComplete="address"
+                        valid={errors.address || null}
+                        invalid={touched.address && !!errors.address}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.address || selectedCustomer?.address}
+                      />
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="userName">Ghi chú</CLabel>
+                      <CTextarea
+                        type="text"
+                        name="note"
+                        id="note"
+                        placeholder="ghi chú"
+                        autoComplete="note"
+                        valid={errors.note || null}
+                        invalid={touched.note && !!errors.note}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.note}
+                      />
+                    </CFormGroup>
+                  </CCol>
+                  <CCol lg="4" sm="5" className="ml-auto">
+                    <Table className="table-clear">
+                      <tbody>
+                        <tr>
+                          <td className="left">
+                            <strong>Tổng số lượng</strong>
+                          </td>
+                          <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
+                        </tr>
+                        <tr>
+                          <td className="left">
+                            <strong>Tổng tiền</strong>
+                          </td>
+                          <td className="right">
+                            {productList
+                              .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
+                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left">
+                            <strong>Chiết khấu</strong>
+                          </td>
+                          <td className="right">
+                            {productList
+                              .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
+                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left">
+                            <strong>Tiền thanh toán</strong>
+                          </td>
+                          <td className="right">
+                            <strong>
                               {productList
-                                .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
+                                .reduce(
+                                  (sum, current) =>
+                                    sum +
+                                    (current.priceReal * current.quantity -
+                                      (current.priceReal * current.quantity * current.reducePercent) / 100),
+                                  0
+                                )
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="left">
-                              <strong>Chiết khấu</strong>
-                            </td>
-                            <td className="right">
-                              {productList
-                                .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
-                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="left">
-                              <strong>Tiền thanh toán</strong>
-                            </td>
-                            <td className="right">
-                              <strong>
-                                {productList
-                                  .reduce(
-                                    (sum, current) =>
-                                      sum +
-                                      (current.priceReal * current.quantity -
-                                        (current.priceReal * current.quantity * current.reducePercent) / 100),
-                                    0
-                                  )
-                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                              </strong>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </Table>
-                      <CFormGroup className="d-flex justify-content-center">
-                        <CButton type="submit" size="lg" className="btn btn-success">
-                          {'Tiếp tục'} <CIcon name="cilArrowRight" />
-                        </CButton>
-                      </CFormGroup>
-                    </CCol>
-                  </CRow>
-                </CCardBody>
-              </CCard>
-            </CForm>
-          );
-        }}
-      </Formik>
-    </CCard>
+                            </strong>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                    <CFormGroup className="d-flex justify-content-center">
+                      <CButton type="submit" size="lg" className="btn btn-success">
+                        {'Tiếp tục'} <CIcon name="cilArrowRight" />
+                      </CButton>
+                    </CFormGroup>
+                  </CCol>
+                </CRow>
+              </CCardBody>
+            </CCard>
+          </CForm>
+        );
+      }}
+    </Formik>
   );
 };
 

@@ -26,7 +26,8 @@ const validationSchema = function(values) {
   return Yup.object().shape({
     code: Yup.string()
       .min(1, `Mã thương hiệu phải lớn hơn 1 kí tự`)
-      .required('Mã thương hiệu không để trống').nullable(),
+      .required('Mã thương hiệu không để trống')
+      .nullable(),
     name: Yup.string()
       .min(5, `Tên phải lớn hơn 5 kí tự`)
       .required('Tên không để trống')
@@ -78,7 +79,7 @@ const CreateProductBrand = () => {
     name: '',
     description: ''
   };
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -89,7 +90,7 @@ const CreateProductBrand = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(reset())
+      dispatch(reset());
       history.goBack();
     }
   }, [initialState.updatingSuccess]);

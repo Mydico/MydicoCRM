@@ -1,5 +1,12 @@
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingPermissionGroups, getPermissionGroups, getDetailPermissionGroups, updatePermissionGroups, getPermissionType, getPermissions } from './permission.api';
+import {
+  creatingPermissionGroups,
+  getPermissionGroups,
+  getDetailPermissionGroups,
+  updatePermissionGroups,
+  getPermissionType,
+  getPermissions
+} from './permission.api';
 
 const initialState = {
   loading: false,
@@ -11,7 +18,7 @@ const initialState = {
 
 export const permissionGroupsAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: permissionGroups => permissionGroups.id,
+  selectId: permissionGroups => permissionGroups.id
   // Keep the "all IDs" array sorted based on book titles
   // sortComparer: (a, b) => a.login.localeCompare(b.login),
 });
@@ -21,17 +28,17 @@ const slice = createSlice({
   initialState: permissionGroupsAdapter.getInitialState({ initialState }),
   reducers: {
     fetching(state) {
-      state.initialState.loading = true
+      state.initialState.loading = true;
     },
     reset(state) {
-      state.initialState.loading = false
-      state.initialState.permissions = []
-      state.initialState.updatingSuccess = false
+      state.initialState.loading = false;
+      state.initialState.permissions = [];
+      state.initialState.updatingSuccess = false;
     },
     permissionGroupsAddOne: permissionGroupsAdapter.addOne,
     permissionGroupsAddMany: permissionGroupsAdapter.addMany,
     permissionGroupsUpdate: permissionGroupsAdapter.updateOne,
-    permissionGroupsRemove: permissionGroupsAdapter.removeOne,
+    permissionGroupsRemove: permissionGroupsAdapter.removeOne
   },
   extraReducers: {
     [creatingPermissionGroups.fulfilled]: (state, action) => {
@@ -44,7 +51,7 @@ const slice = createSlice({
     },
     [getPermissionType.fulfilled]: (state, action) => {
       state.initialState.loading = false;
-      state.initialState.permissionTypes = action.payload
+      state.initialState.permissionTypes = action.payload;
     },
     [getPermissionType.rejected]: (state, action) => {
       state.initialState.loading = false;
@@ -58,12 +65,12 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDetailPermissionGroups.fulfilled]: (state, action) => {
-      permissionGroupsAdapter.addOne(state, action.payload)
+      permissionGroupsAdapter.addOne(state, action.payload);
       state.initialState.loading = false;
     },
     [getPermissionGroups.fulfilled]: (state, action) => {
       permissionGroupsAdapter.setAll(state, action.payload.data);
-      state.initialState.totalItem = action.payload.total
+      state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
     [getPermissionGroups.rejected]: (state, action) => {
@@ -71,15 +78,15 @@ const slice = createSlice({
     },
     [getPermissions.fulfilled]: (state, action) => {
       state.initialState.loading = false;
-      state.initialState.permissions = action.payload
+      state.initialState.permissions = action.payload;
     },
     [getPermissions.rejected]: (state, action) => {
       state.initialState.loading = false;
-    },
-  },
+    }
+  }
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions
+export const { fetching, reset } = slice.actions;
 
 export const globalizedPermissionGroupsSelectors = permissionGroupsAdapter.getSelectors(state => state.permission);

@@ -7,10 +7,10 @@ import { getWarehouse } from './warehouse.api.js';
 import { fetching, globalizedWarehouseSelectors, reset } from './warehouse.reducer.js';
 import { useHistory } from 'react-router-dom';
 const mappingStatus = {
-  "ACTIVE":"ĐANG HOẠT ĐỘNG",
-  "INACTIVE":"KHÔNG HOẠT ĐỘNG",
-  "DELETED":"ĐÃ XÓA",
-}
+  ACTIVE: 'ĐANG HOẠT ĐỘNG',
+  INACTIVE: 'KHÔNG HOẠT ĐỘNG',
+  DELETED: 'ĐÃ XÓA'
+};
 const Warehouse = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.warehouse);
@@ -19,8 +19,6 @@ const Warehouse = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(fetching());
-    dispatch(getWarehouse());
     dispatch(reset());
   }, []);
 
@@ -55,7 +53,7 @@ const Warehouse = props => {
       key: 'order',
       label: 'STT',
       _style: { width: '1%' },
-      filter: false,
+      filter: false
     },
     { key: 'code', label: 'Mã', _style: { width: '10%' } },
     { key: 'name', label: 'Tên kho', _style: { width: '15%' } },
@@ -67,8 +65,8 @@ const Warehouse = props => {
       key: 'show_details',
       label: '',
       _style: { width: '1%' },
-      filter: false,
-    },
+      filter: false
+    }
   ];
 
   const getBadge = status => {
@@ -99,7 +97,9 @@ const Warehouse = props => {
   };
 
   const onFilterColumn = value => {
-    dispatch(getWarehouse({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getWarehouse({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    }
   };
 
   return (
@@ -215,7 +215,7 @@ const Warehouse = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

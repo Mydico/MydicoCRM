@@ -94,7 +94,6 @@ const EditUser = props => {
   const { initialState } = useSelector(state => state.user);
   const { initialState: customerInitialState } = useSelector(state => state.customer);
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -133,20 +132,19 @@ const EditUser = props => {
     dispatch(getPermissionGroups());
     dispatch(getUserRole());
     return () => {
-      dispatch(reset())
-    }
+      dispatch(reset());
+    };
   }, []);
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       dispatch(reset());
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
-    values = JSON.parse(JSON.stringify(values))
+    values = JSON.parse(JSON.stringify(values));
     values.roles = selectedRoles;
     values.departments = selectedDepartment;
     values.permissionGroups = selectedGroupPermission;
@@ -197,7 +195,6 @@ const EditUser = props => {
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới người dùng thành công" />
       <CCardHeader>
         <CCardTitle>Chỉnh sửa người dùng</CCardTitle>
       </CCardHeader>

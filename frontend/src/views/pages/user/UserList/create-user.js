@@ -98,7 +98,6 @@ const CreateUser = () => {
   const { initialState } = useSelector(state => state.user);
   const { initialState: departmentInitialState } = useSelector(state => state.department);
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
@@ -122,8 +121,8 @@ const CreateUser = () => {
     dispatch(getPermissionGroups());
     dispatch(getUserRole());
     return () => {
-      dispatch(reset())
-    }
+      dispatch(reset());
+    };
   }, []);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
@@ -151,7 +150,6 @@ const CreateUser = () => {
   };
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       dispatch(reset());
       history.goBack();
     }
@@ -286,7 +284,7 @@ const CreateUser = () => {
                       onBlur={handleBlur}
                       value={values.password}
                     />
-                     <CInvalidFeedback className="d-block">{errors.password}</CInvalidFeedback>
+                    <CInvalidFeedback className="d-block">{errors.password}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>
               </CRow>
@@ -471,7 +469,6 @@ const CreateUser = () => {
           )}
         </Formik>
       </CCardBody>
-      <Toaster ref={toastRef} message="Tạo mới người dùng thành công" />
     </CCard>
   );
 };

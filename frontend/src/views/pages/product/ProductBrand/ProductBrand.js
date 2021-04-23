@@ -159,7 +159,7 @@ const ProductBrand = props => {
                     <h5>Thông tin thương hiệu</h5>
                     <CRow className="mt-5">
                       <CCol lg="6">
-                      <dl className="row">
+                        <dl className="row">
                           <dt className="col-sm-3">Mã thương hiệu:</dt>
                           <dd className="col-sm-9">{item.code}</dd>
                         </dl>

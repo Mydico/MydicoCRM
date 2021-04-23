@@ -95,7 +95,7 @@ const Transaction = props => {
   };
 
   const renderPreviousDebt = item => {
-    let debt = 0
+    let debt = 0;
     if (item.order) {
       debt = item.order.realMoney;
     } else if (item.receipt) {

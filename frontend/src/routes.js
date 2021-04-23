@@ -14,10 +14,6 @@ const EditCustomerStatus = React.lazy(() => import('./views/pages/customer/Custo
 const EditCustomerType = React.lazy(() => import('./views/pages/customer/CustomerType/EditCustomerType'));
 const CustomerBirthday = React.lazy(() => import('./views/pages/customer/CustomerBirthday/CustomerBirthday'));
 
-const Branch = React.lazy(() => import('./views/pages/customer/CustomerBranch/CustomerBranch'));
-const CreateBranch = React.lazy(() => import('./views/pages/customer/CustomerBranch/CreateCustomerBranch'));
-const EditBranch = React.lazy(() => import('./views/pages/customer/CustomerBranch/EditCustomerBranch'));
-
 const Product = React.lazy(() => import('./views/pages/product/ProductList/Products'));
 const CreateProduct = React.lazy(() => import('./views/pages/product/ProductList/CreateProduct'));
 const EditProduct = React.lazy(() => import('./views/pages/product/ProductList/EditProduct'));
@@ -68,7 +64,6 @@ const StoreHistory = React.lazy(() => import('./views/pages/warehouse/History/wa
 
 const ProductWarehouse = React.lazy(() => import('./views/pages/warehouse/Product/ProductWarehouse'));
 
-
 const User = React.lazy(() => import('./views/pages/user/UserList/user'));
 const CreateUser = React.lazy(() => import('./views/pages/user/UserList/create-user'));
 const EditUser = React.lazy(() => import('./views/pages/user/UserList/edit-user'));
@@ -93,7 +88,6 @@ const CreateReceipt = React.lazy(() => import('./views/pages/finance/receipt/cre
 const EditReceipt = React.lazy(() => import('./views/pages/finance/receipt/edit-receipt'));
 const ViewReceipt = React.lazy(() => import('./views/pages/finance/receipt/detail-receipt'));
 
-
 const Bill = React.lazy(() => import('./views/pages/warehouse/Bill/Bill'));
 
 // https:/github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -101,7 +95,7 @@ const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Thống kê', component: Dashboard },
   { path: '/invoice/', name: 'Thống kê', component: Invoice },
-  { path: '/debt', name: 'Công nợ', component: Debts, exact: true  },
+  { path: '/debt', name: 'Công nợ', component: Debts, exact: true },
   { path: '/debt/:id/detail', name: 'Chi tiết công nợ', component: Transaction },
   { path: '/receipt', name: 'Phiếu thu', component: Receipt, exact: true },
   { path: '/receipt/new', name: 'Tạo phiếu thu', component: CreateReceipt },
@@ -110,23 +104,20 @@ const routes = [
   { path: '/customer/', name: 'Khách hàng', component: Customer, exact: true },
   { path: '/customer/:id/edit/', name: 'Chỉnh sửa khách hàng', component: EditCustomer },
   { path: '/customer/new/', name: 'Thêm mới khách hàng', component: CreateCustomer },
-  { path: '/customer/type/', name: 'Loại khách hàng', component: CustomeType, exact: true  },
-  { path: '/customer/status/', name: 'Trạng thái', component: CustomerStatus, exact: true  },
+  { path: '/customer/type/', name: 'Loại khách hàng', component: CustomeType, exact: true },
+  { path: '/customer/status/', name: 'Trạng thái', component: CustomerStatus, exact: true },
   { path: '/customer/status/new/', name: 'Thêm mới', component: CreateCustomerStatus },
   { path: '/customer/status/:id/edit/', name: 'Chỉnh sửa', component: EditCustomerStatus },
   { path: '/customer/type/new/', name: 'Thêm mới', component: CreateCustomerType },
   { path: '/customer/type/:id/edit/', name: 'Chỉnh sửa', component: EditCustomerType },
   { path: '/customer/birthday/', name: 'Sinh nhật', component: CustomerBirthday },
-  { path: '/customer/branch/', name: 'Chi nhánh', component: Branch, exact: true },
-  { path: '/customer/branch/:id/edit/', name: 'Chỉnh sửa Chi nhánh', component: EditBranch },
-  { path: '/customer/branch/new/', name: 'Thêm mới Chi nhánh', component: CreateBranch },
   { path: '/product/', name: 'Sản phẩm', component: Product, exact: true },
   { path: '/product/:id/edit/', name: 'Chỉnh sửa sản phẩm', component: EditProduct },
   { path: '/product/new/', name: 'Thêm mới sản phẩm', component: CreateProduct },
-  { path: '/product/group/', name: 'Loại sản phẩm', component: ProductGroup, exact: true  },
+  { path: '/product/group/', name: 'Loại sản phẩm', component: ProductGroup, exact: true },
   { path: '/product/group/new/', name: 'Thêm mới', component: CreateProductGroup },
   { path: '/product/group/:id/edit/', name: 'Chỉnh sửa', component: EditProductGroup },
-  { path: '/product/brand/', name: 'Thương hiệu', component: ProductBrand, exact: true  },
+  { path: '/product/brand/', name: 'Thương hiệu', component: ProductBrand, exact: true },
   { path: '/product/brand/new/', name: 'Thêm mới', component: CreateProductBrand },
   { path: '/product/brand/:id/edit/', name: 'Chỉnh sửa', component: EditProductBrand },
   { path: '/promotion/', name: 'Chương trình bán hàng', component: Promotion, exact: true },
@@ -149,7 +140,11 @@ const routes = [
   { path: '/warehouse/export', name: 'Phiếu xuất kho', component: WarehouseExport, exact: true },
   { path: '/warehouse/export/:id/edit/', name: 'Chỉnh sửa phiếu xuất kho', component: EditWarehouseExport },
   { path: '/warehouse/export/new/', name: 'Thêm mới phiếu xuất kho', component: CreateWarehouseExport },
-  { path: '/warehouse/export/provider/:id/edit', name: 'Chỉnh sửa phiếu xuất kho cho nhà cung cấp', component: EditWarehouseExportProvider },
+  {
+    path: '/warehouse/export/provider/:id/edit',
+    name: 'Chỉnh sửa phiếu xuất kho cho nhà cung cấp',
+    component: EditWarehouseExportProvider
+  },
   { path: '/warehouse/export/provider/new', name: 'Thêm mới phiếu xuất kho cho nhà cung cấp', component: CreateWarehouseExportProvider },
   { path: '/warehouse/import', name: 'Phiếu nhập kho', component: WarehouseImport, exact: true },
   { path: '/warehouse/import/:id/edit/', name: 'Chỉnh sửa phiếu nhập kho', component: EditWarehouseImport },
@@ -160,17 +155,17 @@ const routes = [
   { path: '/inwarehouse/', name: 'Sản phẩm trong kho', component: ProductWarehouse, exact: true },
   { path: '/user/', name: 'Người dùng', component: User, exact: true },
   { path: '/user/:id/edit', name: 'Chỉnh sửa', component: EditUser },
-  { path: '/user/new', name: 'Tạo mới', component: CreateUser},
+  { path: '/user/new', name: 'Tạo mới', component: CreateUser },
   { path: '/user-role/', name: 'chức vụ', component: UserRole, exact: true },
   { path: '/user-role/:id/edit', name: 'Chỉnh sửa', component: EditUserRole },
-  { path: '/user-role/new', name: 'Tạo mới', component: CreateUserRole},
+  { path: '/user-role/new', name: 'Tạo mới', component: CreateUserRole },
   { path: '/department/', name: 'chi nhánh', component: Department, exact: true },
   { path: '/department/:id/edit', name: 'Chỉnh sửa', component: EditDepartment },
-  { path: '/department/new', name: 'Tạo mới', component: CreateDepartment},
+  { path: '/department/new', name: 'Tạo mới', component: CreateDepartment },
   { path: '/permission/', name: 'nhóm quyền', component: Permission, exact: true },
   { path: '/permission/:id/edit', name: 'Chỉnh sửa', component: EditPermission },
-  { path: '/permission/new', name: 'Tạo mới', component: CreatePermission},
-  { path: '/bill/', name: 'Vận đơn', component: Bill },
+  { path: '/permission/new', name: 'Tạo mới', component: CreatePermission },
+  { path: '/bill/', name: 'Vận đơn', component: Bill }
 ];
 
 export default routes;

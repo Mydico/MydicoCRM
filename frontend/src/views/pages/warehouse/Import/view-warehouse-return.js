@@ -94,7 +94,6 @@ const DetailWarehouseReturn = props => {
   const { selectById } = globalizedWarehouseImportSelectors;
   const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -119,7 +118,7 @@ const DetailWarehouseReturn = props => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     dispatch(getProduct());
     dispatch(getDetailWarehouseImport(props.match.params.id));
     dispatch(getCustomer());
@@ -176,7 +175,6 @@ const DetailWarehouseReturn = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -290,7 +288,8 @@ const DetailWarehouseReturn = props => {
                     {productList.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{ width: 500 }}>{`${item?.product?.productBrand?.name || ""}-${item?.product?.name || "" }-${item?.product?.volume || ""}`}</td>
+                          <td style={{ width: 500 }}>{`${item?.product?.productBrand?.name || ''}-${item?.product?.name || ''}-${item
+                            ?.product?.volume || ''}`}</td>
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
                           <td style={{ width: 100 }}>{item.quantity}</td>

@@ -15,7 +15,7 @@ import {
   CRow,
   CCol,
   CFormGroup,
-  CLabel,
+  CLabel
 } from '@coreui/react';
 
 export const Toaster = React.forwardRef((props, ref) => {
@@ -28,7 +28,7 @@ export const Toaster = React.forwardRef((props, ref) => {
     'bottom-left',
     'bottom-center',
     'bottom-right',
-    'bottom-full',
+    'bottom-full'
   ];
 
   const [toasts, setToasts] = useState([]);
@@ -49,7 +49,7 @@ export const Toaster = React.forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     addToast() {
       setToasts([...toasts, { position, autohide: autohide && autohideValue, closeButton, fade }]);
-    },
+    }
   }));
 
   const toasters = (() => {
@@ -64,15 +64,23 @@ export const Toaster = React.forwardRef((props, ref) => {
     <CCard ref={ref} className="">
       <CCardBody>
         <CContainer>
-          <CRow >
+          <CRow>
             <CCol sm="12" lg="6">
               {Object.keys(toasters).map(toasterKey => (
                 <CToaster position={toasterKey} key={'toaster' + toasterKey}>
                   {toasters[toasterKey].map((toast, key) => {
                     return (
-                      <CToast key={'toast' + key} show={true} autohide={toast.autohide} fade={toast.fade} style={{backgroundColor:'green'}}>
-                        <CToastHeader closeButton={toast.closeButton} style={{color: 'green'}}>Thông báo</CToastHeader>
-                        <CToastBody style={{color:'white'}}>{props.message}</CToastBody>
+                      <CToast
+                        key={'toast' + key}
+                        show={true}
+                        autohide={toast.autohide}
+                        fade={toast.fade}
+                        style={{ backgroundColor: 'green' }}
+                      >
+                        <CToastHeader closeButton={toast.closeButton} style={{ color: 'green' }}>
+                          Thông báo
+                        </CToastHeader>
+                        <CToastBody style={{ color: 'white' }}>{props.message}</CToastBody>
                       </CToast>
                     );
                   })}

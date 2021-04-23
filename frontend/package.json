@@ -161,6 +161,8 @@
     "webpack:prod:main": "npm run webpack -- --config webpack/webpack.prod.js --profile",
     "webpack:prod": "npm run cleanup && npm run webpack:prod:main",
     "webpack:test": "npm run test",
+    "lint:fix": "npm run lint -- --fix",
+    "lint": "eslint . --ignore-path .frontend.eslintignore --no-eslintrc --config .frontend.eslintrc.json --ext .js,.ts",
     "webpack-dev-server": "node --max_old_space_size=4096 node_modules/webpack-dev-server/bin/webpack-dev-server.js",
     "webpack": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js"
   },

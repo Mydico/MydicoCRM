@@ -35,6 +35,9 @@ import { getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { getCustomer } from '../../customer/customer.api';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 const validationSchema = function(values) {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -94,7 +97,6 @@ const EditWarehouseReturn = props => {
   const { selectById } = globalizedWarehouseImportSelectors;
   const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -134,13 +136,12 @@ const EditWarehouseReturn = props => {
     }
   }, [warehouseImport]);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => () => {
     values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.RETURN;
     dispatch(fetching());
     dispatch(updateWarehouseImport(values));
-    resetForm();
   };
 
   const onChangeQuantity = ({ target }, index) => {
@@ -176,14 +177,34 @@ const EditWarehouseReturn = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
+  const editAlert = (values, { setSubmitting, setErrors }) => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn lưu phiếu này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: onSubmit(values, { setSubmitting, setErrors })
+        },
+        {
+          label: 'Hủy'
+        }
+      ]
+    });
+  };
+
   return (
     <CCard>
-      <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
+      <Formik
+        initialValues={initValuesState || initialValues}
+        enableReinitialize
+        validate={validate(validationSchema)}
+        onSubmit={editAlert}
+      >
         {({
           values,
           errors,
@@ -418,7 +439,6 @@ const EditWarehouseReturn = props => {
           </CForm>
         )}
       </Formik>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
     </CCard>
   );
 };

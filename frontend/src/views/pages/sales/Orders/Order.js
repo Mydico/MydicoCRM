@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getOrder, updateOrder } from './order.api';
+import { getOrder, updateOrder, updateStatusOrder } from './order.api';
 import { globalizedOrdersSelectors, reset } from './order.reducer';
 import { useHistory } from 'react-router-dom';
 import { Table } from 'reactstrap';
@@ -38,6 +38,7 @@ const Order = props => {
   const history = useHistory();
   useEffect(() => {
     dispatch(reset());
+    localStorage.setItem('order', JSON.stringify({}));
   }, []);
   const { selectAll } = globalizedOrdersSelectors;
   const orders = useSelector(selectAll);
@@ -50,7 +51,7 @@ const Order = props => {
     return items.map(item => {
       return {
         ...item,
-        customerName: item.customer?.contactName,
+        customerName: item.customer?.name,
         tel: item.customer?.tel,
         quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
         total: item.orderDetails
@@ -121,7 +122,7 @@ const Order = props => {
   };
 
   const onFilterColumn = value => {
-    if(Object.keys(value).length > 0){
+    if (Object.keys(value).length > 0) {
       dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
     }
   };
@@ -139,22 +140,22 @@ const Order = props => {
 
   const approveOrder = order => () => {
     order.status = OrderStatus.APPROVED;
-    dispatch(updateOrder(order));
+    dispatch(updateStatusOrder(order));
   };
 
   const cancelOrder = order => () => {
     order.status = OrderStatus.CANCEL;
-    dispatch(updateOrder(order));
+    dispatch(updateStatusOrder(order));
   };
 
   const deleteOrder = order => () => {
     order.status = OrderStatus.DELETED;
-    dispatch(updateOrder(order));
+    dispatch(updateStatusOrder(order));
   };
 
   const createCodOrder = order => () => {
     order.status = OrderStatus.CREATE_COD;
-    dispatch(updateOrder(order));
+    dispatch(updateStatusOrder(order));
   };
 
   const approveAlert = item => {

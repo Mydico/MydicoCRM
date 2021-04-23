@@ -27,14 +27,14 @@ import { globalizedproductBrandsSelectors } from '../ProductBrand/product-brand.
 
 const validationSchema = function(values) {
   return Yup.object().shape({
-    productBrand:Yup.string()
-    .required('Thương hiệu không để trống'),
+    productBrand: Yup.string().required('Thương hiệu không để trống'),
     name: Yup.string()
       .min(5, `Tên phải lớn hơn 5 kí tự`)
       .required('Tên không để trống'),
     code: Yup.string()
       .min(1, `Mã phải lớn hơn 1 kí tự`)
-      .required('Mã không để trống').nullable()
+      .required('Mã không để trống')
+      .nullable()
   });
 };
 
@@ -84,7 +84,7 @@ const CreateProductGroup = () => {
     productBrand: null,
     description: ''
   });
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
 

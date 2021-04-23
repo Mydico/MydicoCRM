@@ -12,7 +12,6 @@ import warehouseReducer from '../../views/pages/warehouse/Warehouse/warehouse.re
 import warehouseImportReducer from '../../views/pages/warehouse/Import/warehouse-import.reducer';
 import productWarehouseReducer from '../../views/pages/warehouse/Product/product-warehouse.reducer';
 import orderReducer from '../../views/pages/sales/Orders/order.reducer';
-import branchReducer from '../../views/pages/customer/CustomerBranch/customer-branch.reducer';
 import billReducer from '../../views/pages/warehouse/Bill/bill.reducer';
 import userReducer from '../../views/pages/user/UserList/user.reducer';
 import userRoleReducer from '../../views/pages/user/UserRole/user-roles.reducer';
@@ -29,7 +28,6 @@ const rootReducer = combineReducers({
   customer: customerReducer,
   customerStatus: customerStatusReducer,
   customerType: customerTypeReducer,
-  branch: branchReducer,
   product: productReducer,
   productGroup: productGroupReducer,
   productBrand: productBrandReducer,

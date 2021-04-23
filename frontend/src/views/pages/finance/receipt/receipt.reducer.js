@@ -5,14 +5,14 @@ import { getReceipt, getDetailReceipt, updateReceipt } from './receipt.api';
 const initialState = {
   loading: false,
   updatingSuccess: false,
-  receiptDetails: [],
+  receiptDetails: []
 };
 
 export const receiptAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
   selectId: receipt => receipt.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => b.createdDate.localeCompare(a.createdDate),
+  sortComparer: (a, b) => b.createdDate.localeCompare(a.createdDate)
 });
 
 const slice = createSlice({
@@ -29,7 +29,7 @@ const slice = createSlice({
     receiptAddOne: receiptAdapter.addOne,
     receiptAddMany: receiptAdapter.addMany,
     receiptUpdate: receiptAdapter.updateOne,
-    receiptRemove: receiptAdapter.removeOne,
+    receiptRemove: receiptAdapter.removeOne
   },
   extraReducers: {
     [creatingReceipt.fulfilled]: (state, action) => {
@@ -48,8 +48,8 @@ const slice = createSlice({
     [updateReceipt.fulfilled]: (state, action) => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
-    },
-  },
+    }
+  }
 });
 
 export default slice.reducer;

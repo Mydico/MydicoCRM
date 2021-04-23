@@ -1,28 +1,15 @@
-import React from 'react'
-import {
-  CCard,
-  CCardBody,
-  CCardGroup,
-  CCardHeader
-} from '@coreui/react'
-import {
-  CChartBar,
-  CChartLine,
-  CChartDoughnut,
-  CChartRadar,
-  CChartPie,
-  CChartPolarArea
-} from '@coreui/react-chartjs'
-import { DocsLink } from 'src/reusable'
+import React from 'react';
+import { CCard, CCardBody, CCardGroup, CCardHeader } from '@coreui/react';
+import { CChartBar, CChartLine, CChartDoughnut, CChartRadar, CChartPie, CChartPolarArea } from '@coreui/react-chartjs';
+import { DocsLink } from 'src/reusable';
 
 const Charts = () => {
-
   return (
-    <CCardGroup columns className = "cols-2" >
+    <CCardGroup columns className="cols-2">
       <CCard>
         <CCardHeader>
           Bar Chart
-          <DocsLink href="http://www.chartjs.org"/>
+          <DocsLink href="http://www.chartjs.org" />
         </CCardHeader>
         <CCardBody>
           <CChartBar
@@ -44,19 +31,12 @@ const Charts = () => {
       </CCard>
 
       <CCard>
-        <CCardHeader>
-          Doughnut Chart
-        </CCardHeader>
+        <CCardHeader>Doughnut Chart</CCardHeader>
         <CCardBody>
           <CChartDoughnut
             datasets={[
               {
-                backgroundColor: [
-                  '#41B883',
-                  '#E46651',
-                  '#00D8FF',
-                  '#DD1B16'
-                ],
+                backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
                 data: [40, 20, 80, 10]
               }
             ]}
@@ -71,9 +51,7 @@ const Charts = () => {
       </CCard>
 
       <CCard>
-        <CCardHeader>
-          Line Chart
-        </CCardHeader>
+        <CCardHeader>Line Chart</CCardHeader>
         <CCardBody>
           <CChartLine
             datasets={[
@@ -99,19 +77,12 @@ const Charts = () => {
       </CCard>
 
       <CCard>
-        <CCardHeader>
-          Pie Chart
-        </CCardHeader>
+        <CCardHeader>Pie Chart</CCardHeader>
         <CCardBody>
           <CChartPie
             datasets={[
               {
-                backgroundColor: [
-                  '#41B883',
-                  '#E46651',
-                  '#00D8FF',
-                  '#DD1B16'
-                ],
+                backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
                 data: [40, 20, 80, 10]
               }
             ]}
@@ -126,9 +97,7 @@ const Charts = () => {
       </CCard>
 
       <CCard>
-        <CCardHeader>
-          Polar Area Chart
-        </CCardHeader>
+        <CCardHeader>Polar Area Chart</CCardHeader>
         <CCardBody>
           <CChartPolarArea
             datasets={[
@@ -157,18 +126,13 @@ const Charts = () => {
                 enabled: true
               }
             }}
-            labels={[
-              'Eating', 'Drinking', 'Sleeping', 'Designing',
-              'Coding', 'Cycling', 'Running'
-            ]}
+            labels={['Eating', 'Drinking', 'Sleeping', 'Designing', 'Coding', 'Cycling', 'Running']}
           />
         </CCardBody>
       </CCard>
 
       <CCard>
-        <CCardHeader>
-          Radar Chart
-        </CCardHeader>
+        <CCardHeader>Radar Chart</CCardHeader>
         <CCardBody>
           <CChartRadar
             datasets={[
@@ -201,15 +165,12 @@ const Charts = () => {
                 enabled: true
               }
             }}
-            labels={[
-              'Eating', 'Drinking', 'Sleeping', 'Designing',
-              'Coding', 'Cycling', 'Running'
-            ]}
+            labels={['Eating', 'Drinking', 'Sleeping', 'Designing', 'Coding', 'Cycling', 'Running']}
           />
         </CCardBody>
       </CCard>
     </CCardGroup>
-  )
-}
+  );
+};
 
-export default Charts
+export default Charts;

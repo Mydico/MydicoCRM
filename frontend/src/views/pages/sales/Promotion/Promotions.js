@@ -14,7 +14,7 @@ import {
   CModalBody,
   CModalFooter,
   CModalHeader,
-  CModalTitle,
+  CModalTitle
 } from '@coreui/react';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react';
@@ -48,7 +48,7 @@ const Promotion = props => {
       return {
         ...item,
         customerType: item.customerType?.name || '',
-        description: item.description?.length > 10 ? `${item.description.substring(0, 250)}...` : item.description,
+        description: item.description?.length > 10 ? `${item.description.substring(0, 250)}...` : item.description
       };
     });
   };
@@ -69,7 +69,7 @@ const Promotion = props => {
       key: 'order',
       label: 'STT',
       _style: { width: '1%' },
-      filter: false,
+      filter: false
     },
     { key: 'name', label: 'Tên chương trình bán hàng', _style: { width: '20%' } },
     { key: 'type', label: 'Loại chương trình', _style: { width: '15%' } },
@@ -82,8 +82,8 @@ const Promotion = props => {
       key: 'show_details',
       label: '',
       _style: { width: '10%' },
-      filter: false,
-    },
+      filter: false
+    }
   ];
 
   const getBadge = status => {
@@ -271,7 +271,7 @@ const Promotion = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

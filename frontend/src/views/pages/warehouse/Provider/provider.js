@@ -7,10 +7,10 @@ import { getProvider } from './provider.api.js';
 import { fetching, globalizedProviderSelectors, reset } from './provider.reducer.js';
 import { useHistory } from 'react-router-dom';
 const mappingStatus = {
-  "ACTIVE":"ĐANG HOẠT ĐỘNG",
-  "INACTIVE":"KHÔNG HOẠT ĐỘNG",
-  "DELETED":"ĐÃ XÓA",
-}
+  ACTIVE: 'ĐANG HOẠT ĐỘNG',
+  INACTIVE: 'KHÔNG HOẠT ĐỘNG',
+  DELETED: 'ĐÃ XÓA'
+};
 const Provider = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.provider);
@@ -55,7 +55,7 @@ const Provider = props => {
       key: 'order',
       label: 'STT',
       _style: { width: '1%' },
-      filter: false,
+      filter: false
     },
     { key: 'code', label: 'Mã', _style: { width: '10%' } },
     { key: 'name', label: 'Tên nhà cung cấp', _style: { width: '15%' } },
@@ -65,8 +65,8 @@ const Provider = props => {
       key: 'show_details',
       label: '',
       _style: { width: '1%' },
-      filter: false,
-    },
+      filter: false
+    }
   ];
 
   const getBadge = status => {
@@ -182,10 +182,9 @@ const Provider = props => {
                           <dt className="col-sm-3">Tên nhà cung cấp:</dt>
                           <dd className="col-sm-9">{item.name}</dd>
                         </dl>
-
                       </CCol>
                       <CCol lg="6">
-                      <dl className="row">
+                        <dl className="row">
                           <dt className="col-sm-3">Địa chỉ</dt>
                           <dd className="col-sm-9">{item.address}</dd>
                         </dl>
@@ -198,7 +197,7 @@ const Provider = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

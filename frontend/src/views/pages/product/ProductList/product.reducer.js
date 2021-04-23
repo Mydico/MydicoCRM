@@ -1,5 +1,19 @@
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingProduct, creatingProductStatus, creatingProductType, getBranches, getCity, getProduct, getProductBirthday, getProductStatus, getProductType, getDetailProduct, getDistrict, getWard, updateProduct } from './product.api';
+import {
+  creatingProduct,
+  creatingProductStatus,
+  creatingProductType,
+  getBranches,
+  getCity,
+  getProduct,
+  getProductBirthday,
+  getProductStatus,
+  getProductType,
+  getDetailProduct,
+  getDistrict,
+  getWard,
+  updateProduct
+} from './product.api';
 
 const initialState = {
   loading: false,
@@ -17,7 +31,7 @@ export const productsAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
   selectId: product => product.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.name.localeCompare(b.name),
+  sortComparer: (a, b) => a.name.localeCompare(b.name)
 });
 
 const slice = createSlice({
@@ -25,16 +39,16 @@ const slice = createSlice({
   initialState: productsAdapter.getInitialState({ initialState }),
   reducers: {
     fetching(state) {
-      state.initialState.loading = true
+      state.initialState.loading = true;
     },
     reset(state) {
-      state.initialState.loading = false
-      state.initialState.updatingSuccess = false
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = false;
     },
     productsAddOne: productsAdapter.addOne,
     productsAddMany: productsAdapter.addMany,
     productUpdate: productsAdapter.updateOne,
-    productRemove: productsAdapter.removeOne,
+    productRemove: productsAdapter.removeOne
   },
   extraReducers: {
     [creatingProduct.fulfilled]: (state, action) => {
@@ -46,22 +60,22 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDetailProduct.fulfilled]: (state, action) => {
-      productsAdapter.setAll(state, [action.payload])
+      productsAdapter.setAll(state, [action.payload]);
       state.initialState.loading = false;
     },
     [getProduct.fulfilled]: (state, action) => {
       productsAdapter.setAll(state, action.payload.data);
-      state.initialState.totalItem = action.payload.total
+      state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
     [getProduct.rejected]: (state, action) => {
       state.initialState.loading = false;
       state.loading = false;
-    },
-  },
+    }
+  }
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions
+export const { fetching, reset } = slice.actions;
 
 export const globalizedProductSelectors = productsAdapter.getSelectors(state => state.product);

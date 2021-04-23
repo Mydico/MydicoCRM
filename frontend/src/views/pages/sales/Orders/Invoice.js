@@ -11,7 +11,7 @@ const Invoice = props => {
   const location = useLocation();
   const dispatch = useDispatch();
   const history = useHistory();
-  const toastRef = useRef();
+
   const { initialState } = useSelector(state => state.order);
 
   const [invoice, setInvoice] = useState(null);
@@ -36,19 +36,14 @@ const Invoice = props => {
   };
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       dispatch(reset());
-      localStorage.setItem('order', '');
-      setTimeout(() => {
-        localStorage.setItem('order', JSON.stringify({}));
-        history.push('/order');
-      }, 1000);
+      localStorage.setItem('order', JSON.stringify({}));
+      history.push('/order');
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <div className="animated fadeIn">
-      <Toaster ref={toastRef} message="Tạo đơn hàng thành công" />
       <CCard>
         <CCardHeader>
           Đơn hàng <strong>#{invoice?.code}</strong>
@@ -71,12 +66,12 @@ const Invoice = props => {
             <CCol sm="4">
               <h6 className="mb-3">Tới:</h6>
               <div>
-                <strong>{invoice?.customer.contactName}</strong>
+                <strong>{invoice?.customer.name || ''}</strong>
               </div>
-              <div>{invoice?.address}</div>
-              <div>{`${invoice?.customer?.district?.name}, ${invoice?.customer?.city?.name}`}</div>
-              <div>Email: {invoice?.customer.email}</div>
-              <div>Phone: {invoice?.customer.tel}</div>
+              <div>{invoice?.address || ''}</div>
+              <div>{`${invoice?.customer?.district?.name || ''}, ${invoice?.customer?.city?.name || ''}`}</div>
+              <div>Email: {invoice?.customer.email || ''}</div>
+              <div>Phone: {invoice?.customer.tel || ''}</div>
             </CCol>
             <CCol sm="4">
               <h6 className="mb-3">Chương trình bán hàng:</h6>

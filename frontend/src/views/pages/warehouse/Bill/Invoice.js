@@ -11,7 +11,7 @@ const Invoice = props => {
   const location = useLocation();
   const dispatch = useDispatch();
   const history = useHistory();
-  const toastRef = useRef();
+
   const { initialState } = useSelector(state => state.order);
 
   const [invoice, setInvoice] = useState(null);
@@ -26,7 +26,6 @@ const Invoice = props => {
   };
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       dispatch(reset());
       setTimeout(() => {
         localStorage.setItem('order', JSON.stringify({}));
@@ -37,7 +36,6 @@ const Invoice = props => {
 
   return (
     <div className="animated fadeIn">
-      <Toaster ref={toastRef} message="Tạo đơn hàng thành công" />
       <CCard>
         <CCardHeader>
           Đơn hàng <strong>#{invoice?.code}</strong>
@@ -106,7 +104,7 @@ const Invoice = props => {
                         (item.product?.price * item.quantity * item.reducePercent) / 100
                       ).toLocaleString('it-IT', {
                         style: 'currency',
-                        currency: 'VND',
+                        currency: 'VND'
                       }) || ''}
                     </td>
                   </tr>

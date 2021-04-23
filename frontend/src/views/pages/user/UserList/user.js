@@ -155,16 +155,8 @@ const User = props => {
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
-            departments: item => (
-              <td>
-               {item.department?.name || ''}
-              </td>
-            ),
-            roles: item => (
-              <td>
-                {item.roles.reduce((sum, currentValue) => sum + currentValue.name,'')}
-              </td>
-            ),
+            departments: item => <td>{item.department?.name || ''}</td>,
+            roles: item => <td>{item.roles.reduce((sum, currentValue) => sum + currentValue.name, '')}</td>,
             show_details: item => {
               return (
                 <td className="d-flex py-2">

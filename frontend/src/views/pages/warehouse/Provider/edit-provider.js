@@ -34,7 +34,7 @@ const validationSchema = function(values) {
   return Yup.object().shape({
     name: Yup.string()
       .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
+      .required('Tên không để trống')
   });
 };
 
@@ -87,7 +87,6 @@ const EditProvider = props => {
   const { initialState: customerInitialState } = useSelector(state => state.customer);
   const { selectAll } = globalizedDepartmentSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const departments = useSelector(selectAll);
@@ -112,7 +111,6 @@ const EditProvider = props => {
     dispatch(getDetailProvider(props.match.params.id));
   }, []);
 
-
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
     dispatch(fetching());
     values.code = values.name
@@ -131,7 +129,6 @@ const EditProvider = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -253,7 +250,6 @@ const EditProvider = props => {
           )}
         </Formik>
       </CCardBody>
-      <Toaster ref={toastRef} message="Tạo mới nhà cung cấp thành công" />
     </CCard>
   );
 };

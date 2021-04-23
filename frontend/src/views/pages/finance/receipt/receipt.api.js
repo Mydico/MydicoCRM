@@ -28,7 +28,6 @@ export const updateReceipt = createAsyncThunk('api/update/receipts', async (body
   }
 });
 
-
 export const getReceipt = createAsyncThunk('api/receipts', async (params = { page: 0, size: 20, sort: 'createdDate,desc' }, thunkAPI) => {
   try {
     const result = await axios.get('api/receipts', { params: params });

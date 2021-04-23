@@ -12,6 +12,7 @@ import {
   CInput,
   CRow,
   CSelect,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
@@ -25,10 +26,14 @@ import { fetching, globalizedcustomerStatuselectors, reset } from './customer-st
 import { setTimeout } from 'core-js';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    description: Yup.string().min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`).required('Tên liên lạc không để trống'),
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
+    description: Yup.string()
+      .min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`)
+      .required('Tên liên lạc không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống')
   });
 };
 
@@ -50,7 +55,7 @@ const getErrorsFromValidationError = validationError => {
   return validationError.inner.reduce((errors, error) => {
     return {
       ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
+      [error.path]: error.errors[FIRST_ERROR]
     };
   }, {});
 };
@@ -79,7 +84,7 @@ const touchAll = (setTouched, errors) => {
     email: true,
     password: true,
     confirmPassword: true,
-    accept: true,
+    accept: true
   });
   validateForm(errors);
 };
@@ -88,9 +93,9 @@ const CreateCustomerStatus = props => {
   const { initialState } = useSelector(state => state.customerStatus);
   const initialValues = {
     name: '',
-    description: '',
+    description: ''
   };
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectById } = globalizedcustomerStatuselectors;
@@ -113,19 +118,14 @@ const CreateCustomerStatus = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
-      dispatch(reset());
-      setTimeout(() => {
-        history.goBack();
-      }, 1000);
+      history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Lưu thông tin thành công" />
       <CCardHeader>
-        <span className="h2">Chỉnh sửa</span>
+        <CCardTitle>Chỉnh sửa</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initValues || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
@@ -142,7 +142,7 @@ const CreateCustomerStatus = props => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -155,8 +155,7 @@ const CreateCustomerStatus = props => {
                       id="name"
                       placeholder="Tên trạng thái"
                       autoComplete="family-name"
-                      valid={!errors.name}
-                      invalid={touched.name && !!errors.name}
+                      invalid={errors.name}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -171,9 +170,7 @@ const CreateCustomerStatus = props => {
                       name="description"
                       id="description"
                       placeholder="Mô tả"
-                      autoComplete="contactName"
-                      valid={!errors.description}
-                      invalid={touched.description && !!errors.description}
+                      invalid={errors.description}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}

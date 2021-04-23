@@ -29,27 +29,15 @@ import Select from 'react-select';
 import { getCity, getDistrict, getWard } from '../../customer/customer.api';
 import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
 import { getDepartment } from '../../user/UserDepartment/department.api';
+import { validate } from '../../../../shared/utils/normalize';
 
 const validationSchema = function(values) {
   return Yup.object().shape({
     name: Yup.string()
       .min(5, `Tên phải lớn hơn 5 kí tự`)
       .required('Tên không để trống'),
-    department: Yup.object()
-      .required('Thành phố không để trống'),
+    department: Yup.object().required('Thành phố không để trống')
   });
-};
-
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
 };
 
 export const mappingStatus = {
@@ -58,38 +46,11 @@ export const mappingStatus = {
   DELETED: 'ĐÃ XÓA'
 };
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
 const EditWarehouse = props => {
   const { initialState } = useSelector(state => state.warehouse);
   const { initialState: customerInitialState } = useSelector(state => state.customer);
   const { selectAll } = globalizedDepartmentSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const departments = useSelector(selectAll);
@@ -107,16 +68,13 @@ const EditWarehouse = props => {
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
-    dispatch(getDepartment());
-  }, []);
-
-  useEffect(() => {
     setInitValues(warehouse);
   }, [warehouse]);
 
   useEffect(() => {
     dispatch(getDetailWarehouse(props.match.params.id));
     dispatch(getCity());
+    dispatch(getDepartment());
   }, []);
 
   useEffect(() => {
@@ -133,30 +91,18 @@ const EditWarehouse = props => {
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
     dispatch(fetching());
-    values.code = values.name
-      .trim()
-      .split(' ')
-      .map(string => string[0])
-      .join('')
-      .replaceAll(' ', '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/Đ/g, 'D');
     dispatch(creatingWarehouse(values));
     resetForm();
   };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
       <CCardHeader>
         <CCardTitle>Chỉnh sửa kho</CCardTitle>
       </CCardHeader>
@@ -195,16 +141,7 @@ const EditWarehouse = props => {
                       disabled
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={`${values.name
-                        ?.trim()
-                        .split(' ')
-                        .map(string => string[0])
-                        .join('')
-                        .replaceAll(' ', '')
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .replace(/đ/g, 'd')
-                        .replace(/Đ/g, 'D')}${values.volume ? values.volume : ''}`}
+                      value={values.code}
                     />
                   </CFormGroup>
                   <CFormGroup>
@@ -215,8 +152,7 @@ const EditWarehouse = props => {
                       id="name"
                       placeholder="Tên kho"
                       autoComplete="family-name"
-                      valid={errors.name || null}
-                      invalid={touched.name && !!errors.name}
+                      invalid={errors.name}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -232,8 +168,7 @@ const EditWarehouse = props => {
                       id="address"
                       placeholder="Mô tả"
                       autoComplete="address"
-                      valid={errors.address || null}
-                      invalid={touched.address && !!errors.address}
+                      invalid={errors.address}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.address}
@@ -248,6 +183,10 @@ const EditWarehouse = props => {
                       name="department"
                       onChange={item => {
                         setFieldValue('department', item.value);
+                      }}
+                      value={{
+                        value: values.department,
+                        label: `${values.department?.name}`
                       }}
                       placeholder="Chọn chi nhánh"
                       options={departments.map(item => ({
@@ -265,8 +204,7 @@ const EditWarehouse = props => {
                       id="tel"
                       placeholder="Số điện thoại"
                       autoComplete="tel"
-                      valid={errors.tel || null}
-                      invalid={touched.tel && !!errors.tel}
+                      invalid={errors.tel}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.tel}

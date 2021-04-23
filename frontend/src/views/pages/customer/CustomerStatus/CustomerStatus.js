@@ -17,7 +17,6 @@ const CustomerStatus = props => {
   const { selectAll } = globalizedcustomerStatuselectors;
   const customerStatuses = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getCustomerStatus());
     dispatch(reset());
   }, []);
 
@@ -42,7 +41,7 @@ const CustomerStatus = props => {
       key: 'order',
       label: 'STT',
       _style: { width: '1%' },
-      filter: false,
+      filter: false
     },
     { key: 'name', label: 'Tên trạng thái', _style: { width: '15%' } },
     { key: 'description', label: 'Mô tả', _style: { width: '15%' } },
@@ -50,8 +49,8 @@ const CustomerStatus = props => {
       key: 'show_details',
       label: '',
       _style: { width: '1%' },
-      filter: false,
-    },
+      filter: false
+    }
   ];
 
   const getBadge = status => {
@@ -76,7 +75,9 @@ const CustomerStatus = props => {
   };
 
   const onFilterColumn = value => {
-    dispatch(getCustomerStatus({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getCustomerStatus({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    }
   };
 
   const toEditCustomerStatus = statusId => {
@@ -166,7 +167,7 @@ const CustomerStatus = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

@@ -33,7 +33,8 @@ const validationSchema = function(values) {
       .required('Tên không để trống'),
     code: Yup.string()
       .min(1, `Mã phải lớn hơn 1 kí tự`)
-      .required('Mã không để trống').nullable(),
+      .required('Mã không để trống')
+      .nullable(),
     productBrand: Yup.object().required('Thương hiệu không để trống')
   });
 };
@@ -93,7 +94,7 @@ const CreateProductGroup = props => {
       initialValues.current.productBrand = productBrand[0].id;
     }
   }, [productBrand]);
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectById } = globalizedproductGroupsSelectors;

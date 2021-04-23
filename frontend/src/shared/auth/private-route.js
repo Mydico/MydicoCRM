@@ -20,17 +20,17 @@ export const PrivateRouteComponent = ({ component: Component, isAuthorized, ...r
     // if (!sessionHasBeenFetched) {
     //   return <div></div>;
     // } else {
-      return isAuthenticated ? (
-        <Component {...props} />
-      ) : (
-        <Redirect
-          to={{
-            pathname: '/login',
-            search: props.location.search,
-            state: { from: props.location },
-          }}
-        />
-      );
+    return isAuthenticated ? (
+      <Component {...props} />
+    ) : (
+      <Redirect
+        to={{
+          pathname: '/login',
+          search: props.location.search,
+          state: { from: props.location }
+        }}
+      />
+    );
     //}
   };
 

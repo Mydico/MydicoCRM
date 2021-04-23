@@ -28,25 +28,17 @@ import { Table } from 'reactstrap';
 import Select from 'react-select';
 import { globalizedPermissionGroupsSelectors } from '../UserPermission/permission.reducer';
 import { getPermissionGroups } from '../UserPermission/permission.api';
+import { validate } from '../../../../shared/utils/normalize';
 
 const validationSchema = function(values) {
   return Yup.object().shape({
     name: Yup.string()
       .min(5, `Tên chi nhánh phải lớn hơn 5 kí tự`)
-      .required('Tên chi nhánh không để trống')
+      .required('Tên chi nhánh không để trống'),
+    code: Yup.string()
+      .min(2, `Mã chi nhánh phải lớn hơn 5 kí tự`)
+      .required('Mã chi nhánh không để trống')
   });
-};
-
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
 };
 
 export const mappingStatus = {
@@ -55,36 +47,9 @@ export const mappingStatus = {
   DELETED: 'ĐÃ XÓA'
 };
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
 const CreateDepartment = () => {
   const { initialState } = useSelector(state => state.department);
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
@@ -96,15 +61,16 @@ const CreateDepartment = () => {
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
 
   const initialValues = {
-    name: ''
+    name: '',
+    code: ''
   };
 
   useEffect(() => {
     dispatch(getPermissionGroups());
     dispatch(getDepartment());
     return () => {
-      dispatch(reset())
-    }
+      dispatch(reset());
+    };
   }, []);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
@@ -169,6 +135,20 @@ const CreateDepartment = () => {
                 />
               </CFormGroup>
               <CFormGroup>
+                <CLabel htmlFor="login">Mã chi nhánh</CLabel>
+                <CInput
+                  type="text"
+                  name="code"
+                  id="code"
+                  invalid={errors.code}
+                  placeholder="Mã chi nhánh"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.code}
+                />
+                <CInvalidFeedback>{errors.code}</CInvalidFeedback>
+              </CFormGroup>
+              <CFormGroup>
                 <CLabel htmlFor="login">Tên chi nhánh</CLabel>
                 <CInput
                   type="text"
@@ -177,6 +157,7 @@ const CreateDepartment = () => {
                   placeholder="Tên chi nhánh"
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  invalid={errors.name}
                   value={values.name}
                 />
                 <CInvalidFeedback>{errors.name}</CInvalidFeedback>
@@ -258,7 +239,6 @@ const CreateDepartment = () => {
           )}
         </Formik>
       </CCardBody>
-      <Toaster ref={toastRef} message="Tạo mới chi nhánh thành công" />
     </CCard>
   );
 };

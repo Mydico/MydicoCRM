@@ -1,49 +1,49 @@
 export const UnitType = [
   {
     title: 'Cái',
-    value: 'Cái',
+    value: 'Cái'
   },
   {
     title: 'Hộp',
-    value: 'Hộp',
+    value: 'Hộp'
   },
   {
     title: 'Chai',
-    value: 'Chai',
+    value: 'Chai'
   },
   {
     title: 'Túi',
-    value: 'Túi',
+    value: 'Túi'
   },
   {
     title: 'Tuýp',
-    value: 'Tuýp',
+    value: 'Tuýp'
   },
   {
     title: 'Hũ',
-    value: 'Hũ',
+    value: 'Hũ'
   },
   {
     title: 'Lọ',
-    value: 'Lọ',
+    value: 'Lọ'
   },
   {
     title: 'Cặp',
-    value: 'Cặp',
-  },
+    value: 'Cặp'
+  }
 ];
 
 export const ProductStatus = [
   {
     title: 'ACTIVE',
-    value: 'ACTIVE',
+    value: 'ACTIVE'
   },
   {
     title: 'INACTIVE',
-    value: 'INACTIVE',
+    value: 'INACTIVE'
   },
   {
     title: 'DELETED',
-    value: 'DELETED',
-  },
+    value: 'DELETED'
+  }
 ];

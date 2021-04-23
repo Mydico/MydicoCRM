@@ -84,7 +84,6 @@ const validateForm = errors => {
 const CreateRole = () => {
   const { initialState } = useSelector(state => state.userRole);
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
@@ -98,9 +97,9 @@ const CreateRole = () => {
   useEffect(() => {
     dispatch(getPermissionGroups());
     return () => {
-      dispatch(reset())
-    }
-  }, [])
+      dispatch(reset());
+    };
+  }, []);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
     values.permissionGroups = selectedGroupPermission;
@@ -111,7 +110,6 @@ const CreateRole = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -129,7 +127,6 @@ const CreateRole = () => {
   };
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Tạo mới chức vụ thành công" />
       <CCardHeader>
         <CCardTitle>Thêm mới chức vụ</CCardTitle>
       </CCardHeader>

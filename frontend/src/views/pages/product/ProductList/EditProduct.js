@@ -75,29 +75,29 @@ const EditProduct = props => {
   const { initialState } = useSelector(state => state.product);
   const initialValues = {
     agentPrice: 0,
-    barcode: "",
-    code: "",
+    barcode: '',
+    code: '',
     createdBy: null,
-    createdDate: "",
-    desc: "",
-    id: "",
-    image: "[]",
+    createdDate: '',
+    desc: '',
+    id: '',
+    image: '[]',
     lastModifiedBy: null,
     lastModifiedDate: null,
-    name: "",
+    name: '',
     price: 0,
     productBrand: null,
     productGroup: null,
-    code: "",
+    code: '',
     createdBy: null,
-    createdDate: "",
+    createdDate: '',
     description: null,
-    id: "",
+    id: '',
     lastModifiedBy: null,
     lastModifiedDate: null,
-    name: "",
-    status: "",
-    unit: "",
+    name: '',
+    status: '',
+    unit: '',
     volume: 0
   };
   const ref = useRef(null);
@@ -118,7 +118,6 @@ const EditProduct = props => {
   useEffect(() => {
     if (product) {
       const temp = { ...product };
-      console.log(temp)
       temp.image = [];
       try {
         temp.image = JSON.parse(product.image);
@@ -175,7 +174,13 @@ const EditProduct = props => {
         <CCardTitle>Chỉnh sửa sản phẩm</CCardTitle>
       </CCardHeader>
       <CCardBody>
-        <Formik initialValues={initValues || initialValues} innerRef={ref} validate={validate(validationSchema)} enableReinitialize onSubmit={onSubmit}>
+        <Formik
+          initialValues={initValues || initialValues}
+          innerRef={ref}
+          validate={validate(validationSchema)}
+          enableReinitialize
+          onSubmit={onSubmit}
+        >
           {({
             values,
             errors,

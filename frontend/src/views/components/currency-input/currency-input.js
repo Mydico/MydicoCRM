@@ -18,20 +18,25 @@ export const defaultMaskOptions = {
   allowLeadingZeroes: false
 };
 export const currencyMask = createNumberMask({
-  ...defaultMaskOptions,
+  ...defaultMaskOptions
 });
-const CurrencyInput = ({ maskOptions, name, handleChange , ...inputProps }) => {
-
+const CurrencyInput = ({ maskOptions, name, handleChange, ...inputProps }) => {
   return (
     <Field
       name={name}
       render={({ field }) => {
-        return(
-        <MaskedInput {...field} mask={currencyMask} onChange={handleChange} {...inputProps} render={(ref, props) => <CInput name={name} innerRef={ref} {...props} />} />
-      )}}
+        return (
+          <MaskedInput
+            {...field}
+            mask={currencyMask}
+            onChange={handleChange}
+            {...inputProps}
+            render={(ref, props) => <CInput name={name} innerRef={ref} {...props} />}
+          />
+        );
+      }}
     />
   );
 };
-
 
 export default CurrencyInput;

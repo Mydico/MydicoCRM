@@ -84,7 +84,6 @@ const validateForm = errors => {
 const EditDepartment = props => {
   const { initialState } = useSelector(state => state.department);
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -112,7 +111,7 @@ const EditDepartment = props => {
   }, []);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
-    values = JSON.parse(JSON.stringify(values))
+    values = JSON.parse(JSON.stringify(values));
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(updateDepartment(values));
@@ -121,7 +120,6 @@ const EditDepartment = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       dispatch(reset());
       history.goBack();
     }
@@ -258,7 +256,6 @@ const EditDepartment = props => {
           )}
         </Formik>
       </CCardBody>
-      <Toaster ref={toastRef} message="Tạo mới chi nhánh thành công" />
     </CCard>
   );
 };

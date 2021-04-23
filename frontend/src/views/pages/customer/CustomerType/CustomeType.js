@@ -14,8 +14,7 @@ const CustomerType = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(getCustomerType());
-    dispatch(reset())
+    dispatch(reset());
   }, []);
   const { selectAll } = globalizedcustomerTypeSelectors;
   const customerTypes = useSelector(selectAll);
@@ -40,7 +39,7 @@ const CustomerType = props => {
       key: 'order',
       label: 'STT',
       _style: { width: '1%' },
-      filter: false,
+      filter: false
     },
     { key: 'code', label: 'Mã', _style: { width: '10%' } },
     { key: 'name', label: 'Tên trạng thái', _style: { width: '15%' } },
@@ -49,8 +48,8 @@ const CustomerType = props => {
       key: 'show_details',
       label: '',
       _style: { width: '1%' },
-      filter: false,
-    },
+      filter: false
+    }
   ];
 
   const getBadge = status => {
@@ -74,7 +73,9 @@ const CustomerType = props => {
   };
 
   const onFilterColumn = value => {
-    dispatch(getCustomerType({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getCustomerType({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    }
   };
 
   const toEditCustomerType = typeId => {
@@ -157,17 +158,17 @@ const CustomerType = props => {
                   <CCardBody>
                     <h5>Thông tin loại khách hàng</h5>
                     <dl className="row">
-                          <dt className="col-sm-2">Mã:</dt>
-                          <dd className="col-sm-9">{item.code}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-2">Tên loại khách hàng:</dt>
-                          <dd className="col-sm-9">{item.name}</dd>
-                        </dl>
+                      <dt className="col-sm-2">Mã:</dt>
+                      <dd className="col-sm-9">{item.code}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-2">Tên loại khách hàng:</dt>
+                      <dd className="col-sm-9">{item.name}</dd>
+                    </dl>
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination

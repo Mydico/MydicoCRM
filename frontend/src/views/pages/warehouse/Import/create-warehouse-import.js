@@ -33,6 +33,9 @@ import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 import { getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 const validationSchema = function(values) {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -91,7 +94,6 @@ const CreateWarehouse = () => {
   const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
   const { selectAll: selectAllProduct } = globalizedProductSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -112,16 +114,15 @@ const CreateWarehouse = () => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     dispatch(getProduct());
   }, []);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => () => {
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.NEW;
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
-    resetForm();
   };
 
   const onChangeQuantity = ({ target }, index) => {
@@ -153,14 +154,31 @@ const CreateWarehouse = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
+  const editAlert = (values, { setSubmitting, setErrors }) => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn tạo phiếu này?',
+      closeOnEscape: true,
+      closeOnClickOutside: true,
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: onSubmit(values, { setSubmitting, setErrors })
+        },
+        {
+          label: 'Hủy'
+        }
+      ]
+    });
+  };
+
   return (
     <CCard>
-      <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
+      <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={editAlert}>
         {({
           values,
           errors,
@@ -322,7 +340,6 @@ const CreateWarehouse = () => {
           </CForm>
         )}
       </Formik>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
     </CCard>
   );
 };

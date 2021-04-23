@@ -193,10 +193,12 @@ const Bill = props => {
   };
 
   const successBill = bill => () => {
-    dispatch(updateBill({
-      id: bill.id,
-      status: BillStatus.SUCCESS
-    }));
+    dispatch(
+      updateBill({
+        id: bill.id,
+        status: BillStatus.SUCCESS
+      })
+    );
   };
 
   const cancelBill = bill => () => {

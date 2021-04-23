@@ -110,11 +110,11 @@ const Receipt = props => {
     history.push(`${props.match.url}/new`);
   };
 
-  const toDetailReceipt = (id) => {
+  const toDetailReceipt = id => {
     history.push(`${props.match.url}/${id}/detail`);
   };
 
-  const toEditReceipt = (id) => {
+  const toEditReceipt = id => {
     history.push(`${props.match.url}/${id}/edit`);
   };
 
@@ -150,9 +150,9 @@ const Receipt = props => {
         return (
           <CRow>
             <CButton
-              onClick={(event) => {
-                event.stopPropagation()
-                toEditReceipt(item.id)
+              onClick={event => {
+                event.stopPropagation();
+                toEditReceipt(item.id);
               }}
               color="warning"
               variant="outline"
@@ -163,8 +163,8 @@ const Receipt = props => {
               CHỈNH SỬA
             </CButton>
             <CButton
-              onClick={(event) => {
-                event.stopPropagation()
+              onClick={event => {
+                event.stopPropagation();
                 alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu thu này không', approveTicket);
               }}
               color="success"
@@ -176,8 +176,8 @@ const Receipt = props => {
               DUYỆT PHIẾU
             </CButton>
             <CButton
-              onClick={(event) => {
-                event.stopPropagation()
+              onClick={event => {
+                event.stopPropagation();
                 alertFunc(item, 'Bạn có chắc chắn muốn hủy phiếu thu này không', rejectTicket);
               }}
               color="danger"

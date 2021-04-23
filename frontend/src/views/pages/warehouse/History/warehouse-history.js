@@ -9,13 +9,13 @@ import { useHistory } from 'react-router-dom';
 import { WarehouseImportType } from '../Export/contants.js';
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
-  IMPORT: 'NHẬP KHO',
+  IMPORT: 'NHẬP KHO'
 };
 const getBadge = status => {
   switch (status) {
-    case "EXPORT":
+    case 'EXPORT':
       return 'primary';
-    case "IMPORT":
+    case 'IMPORT':
       return 'info';
     default:
       return 'primary';

@@ -13,7 +13,7 @@ import {
   CProgress,
   CSidebar,
   CImg,
-  CSidebarClose,
+  CSidebarClose
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { setAsideShow } from '../App.reducer';

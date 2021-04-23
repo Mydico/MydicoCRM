@@ -5,14 +5,14 @@ import { getBill, getDetailBill, updateBill } from './bill.api';
 const initialState = {
   loading: false,
   updatingSuccess: false,
-  billDetails: [],
+  billDetails: []
 };
 
 export const billAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
   selectId: bill => bill.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.createdDate.localeCompare(b.createdDate),
+  sortComparer: (a, b) => a.createdDate.localeCompare(b.createdDate)
 });
 
 const slice = createSlice({
@@ -29,7 +29,7 @@ const slice = createSlice({
     billAddOne: billAdapter.addOne,
     billAddMany: billAdapter.addMany,
     billUpdate: billAdapter.updateOne,
-    billRemove: billAdapter.removeOne,
+    billRemove: billAdapter.removeOne
   },
   extraReducers: {
     [creatingBill.fulfilled]: (state, action) => {
@@ -52,8 +52,8 @@ const slice = createSlice({
     [updateBill.fulfilled]: (state, action) => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
-    },
-  },
+    }
+  }
 });
 
 export default slice.reducer;

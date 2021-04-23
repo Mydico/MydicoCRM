@@ -12,99 +12,53 @@ import {
   CInput,
   CRow,
   CSelect,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingCustomer, creatingCustomerType, getBranches, getCity, getCustomerType, getDistrict } from '../customer.api';
+import { creatingCustomerType, getDetailCustomerType, updateCustomerType } from './customer-type.api';
 import Toaster from '../../../components/notifications/toaster/Toaster';
 import { useHistory } from 'react-router-dom';
-import { getDetailCustomerType, updateCustomerType } from './customer-type.api';
-import { fetching, globalizedcustomerTypeSelectors, reset } from './customer-type.reducer';
-import { setTimeout } from 'core-js';
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+import { fetching, globalizedcustomerTypeSelectors } from './customer-type.reducer';
+import { validate } from '../../../../shared/utils/normalize';
 
-const validationSchema = function (values) {
+const validationSchema = function(values) {
   return Yup.object().shape({
-    description: Yup.string().min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`).required('Tên liên lạc không để trống'),
-    name: Yup.string().min(5, `Tên phải lớn hơn 5 kí tự`).required('Tên không để trống'),
+    name: Yup.string()
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
+    name: Yup.string()
+      .min(2, `Mã phải lớn hơn 2 kí tự`)
+      .required('Mã không để trống')
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      console.log(values);
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
-
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR],
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
-const touchAll = (setTouched, errors) => {
-  setTouched({
-    code: true,
-    lastName: true,
-    userName: true,
-    email: true,
-    password: true,
-    confirmPassword: true,
-    accept: true,
-  });
-  validateForm(errors);
-};
-
-const CreateCustomerType = props => {
+const EditCustomerType = props => {
   const { initialState } = useSelector(state => state.customerType);
   const initialValues = {
+    code: '',
     name: '',
-    description: '',
+    description: ''
   };
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const [initValues, setInitValues] = useState(null);
+
   const { selectById } = globalizedcustomerTypeSelectors;
   const customerType = useSelector(state => selectById(state, props.match.params.id));
 
-  const [initValues, setInitValues] = useState(null);
+  useEffect(() => {
+    if (customerType) {
+      setInitValues(customerType);
+    }
+  }, [customerType]);
 
   useEffect(() => {
     dispatch(getDetailCustomerType(props.match.params.id));
   }, []);
-
-  useEffect(() => {
-    setInitValues(customerType);
-  }, [customerType]);
 
   const onSubmit = (values, { setSubmitting, setErrors }) => {
     dispatch(fetching());
@@ -113,19 +67,14 @@ const CreateCustomerType = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
-      dispatch(reset());
-      setTimeout(() => {
-        history.goBack();
-      }, 1000);
+      history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
-      <Toaster ref={toastRef} message="Lưu thông tin thành công" />
       <CCardHeader>
-        <span className="h2">Chỉnh sửa</span>
+        <CCardTitle>Chỉnh sửa</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initValues || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
@@ -142,21 +91,25 @@ const CreateCustomerType = props => {
             isSubmitting,
             isValid,
             handleReset,
-            setTouched,
+            setTouched
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
                 <CCol lg="6">
                   <CFormGroup>
-                    <CLabel htmlFor="lastName">Tên trạng thái</CLabel>
+                    <CLabel htmlFor="lastName">Mã</CLabel>
+                    <CInput type="text" name="code" id="code" required onChange={handleChange} onBlur={handleBlur} value={values.code} />
+                    <CInvalidFeedback>{errors.code}</CInvalidFeedback>
+                  </CFormGroup>
+                  <CFormGroup>
+                    <CLabel htmlFor="lastName">Tên loại</CLabel>
                     <CInput
                       type="text"
                       name="name"
                       id="name"
-                      placeholder="Tên trạng thái"
+                      placeholder="Tên loại"
                       autoComplete="family-name"
-                      valid={!errors.name}
-                      invalid={touched.name && !!errors.name}
+                      invalid={errors.name}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -164,6 +117,7 @@ const CreateCustomerType = props => {
                     />
                     <CInvalidFeedback>{errors.name}</CInvalidFeedback>
                   </CFormGroup>
+
                   <CFormGroup>
                     <CLabel htmlFor="userName">Mô tả</CLabel>
                     <CInput
@@ -172,8 +126,7 @@ const CreateCustomerType = props => {
                       id="description"
                       placeholder="Mô tả"
                       autoComplete="contactName"
-                      valid={!errors.description}
-                      invalid={touched.description && !!errors.description}
+                      invalid={errors.description}
                       required
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -182,8 +135,11 @@ const CreateCustomerType = props => {
                     <CInvalidFeedback>{errors.description}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup className="d-flex justify-content-center">
-                    <CButton type="submit" color="primary" disabled={initialState.loading}>
-                      <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
+                    <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
+                      <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Tạo mới'}
+                    </CButton>
+                    <CButton type="reset" size="lg" color="danger" onClick={handleReset} className="ml-5">
+                      <CIcon name="cil-ban" /> Xóa nhập liệu
                     </CButton>
                   </CFormGroup>
                 </CCol>
@@ -196,4 +152,4 @@ const CreateCustomerType = props => {
   );
 };
 
-export default CreateCustomerType;
+export default EditCustomerType;

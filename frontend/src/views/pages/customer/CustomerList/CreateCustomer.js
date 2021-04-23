@@ -23,6 +23,9 @@ import Toaster from '../../../components/notifications/toaster/Toaster';
 import Select from 'react-select';
 import { useHistory } from 'react-router-dom';
 import { fetching } from '../customer.reducer';
+import { getDepartment } from '../../user/UserDepartment/department.api';
+import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
+import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = function(values) {
@@ -36,51 +39,14 @@ const validationSchema = function(values) {
     tel: Yup.string()
       .matches(phoneRegExp, 'Số điện thoại không đúng')
       .required('Số điện thoại không để trống'),
-    city: Yup.string()
-      .nullable(true)
-      .required('Thành phố không để trống')
-  });
-};
-
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
-
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
+    type: Yup.object().required('Loại khách hàng không để trống'),
+    department: Yup.object().required('Chi nhánh không để trống'),
+    city: Yup.object().required('Thành phố không để trống')
   });
 };
 
 const CreateCustomer = () => {
+  const ref = useRef(null);
   const { initialState } = useSelector(state => state.customer);
   const initialValues = {
     code: '',
@@ -89,64 +55,50 @@ const CreateCustomer = () => {
     email: '',
     tel: '',
     dateOfBirth: '',
-    city: null,
-    district: null,
     address: '',
-    branch: null,
-    type: null,
     createdYear: '',
     obclubJoinTime: ''
   };
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedCity, setSelectedCity] = useState(null);
-
+  const { selectAll } = globalizedDepartmentSelectors;
+  const departments = useSelector(selectAll);
   useEffect(() => {
     dispatch(getCity());
     dispatch(getCustomerType());
-    dispatch(getBranches());
+    dispatch(getDepartment());
     dispatch(getCustomerStatus());
   }, []);
 
   useEffect(() => {
     if (selectedCity) {
-      dispatch(getDistrict({ city: selectedCity }));
+      dispatch(getDistrict({ city: selectedCity.code }));
     }
   }, [selectedCity]);
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+    if (!isNaN(Number(values.name))) {
+      alert('Tên khách hàng phải có chữ cái');
+      return;
+    }
     dispatch(fetching());
-    const code = `${values.branch ? values.branch : initialState.branch[0]?.code}-${
-      values.type ? values.type : initialState.type[0]?.code
-    }${values.name.replaceAll(' ', '')}`;
-    const normalizeCode = code
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/Đ/g, 'D');
-    values.code = `${normalizeCode}`;
-
-    if (!values.branch) {
-      values.branch = initialState.branch[0].id;
-    } else {
-      values.branch = initialState.branch.filter(item => item.code === values.branch)[0].id;
-    }
-    if (!values.type) {
-      values.type = initialState.type[0].id;
-    } else {
-      values.type = initialState.type.filter(item => item.code === values.type)[0].id;
-    }
     dispatch(creatingCustomer(values));
     resetForm();
   };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
+
+  const renderCustomerCode = () => {
+    const codeName = getCodeByCustomer(ref.current.values.name);
+    const code = `${ref.current.values.department?.code || ''}_${ref.current.values.type?.code || ''}_${codeName}`;
+    ref.current.setFieldValue('code', `${code}`);
+  };
 
   return (
     <CCard>
@@ -154,7 +106,7 @@ const CreateCustomer = () => {
         <CCardTitle>Thêm mới khách hàng</CCardTitle>
       </CCardHeader>
       <CCardBody>
-        <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
+        <Formik initialValues={initialValues} innerRef={ref} validate={validate(validationSchema)} onSubmit={onSubmit}>
           {({
             values,
             errors,
@@ -183,14 +135,7 @@ const CreateCustomer = () => {
                       disabled
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={`${values.branch ? values.branch : initialState.branch[0]?.code}-${
-                        values.type ? values.type : initialState.type[0]?.code
-                      }${values.name
-                        .replaceAll(' ', '')
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .replace(/đ/g, 'd')
-                        .replace(/Đ/g, 'D')}`}
+                      value={values.code}
                     />
                   </CFormGroup>
                   <CFormGroup>
@@ -201,10 +146,13 @@ const CreateCustomer = () => {
                       id="name"
                       placeholder="Tên cửa hàng/đại lý"
                       autoComplete="family-name"
-                      valid={errors.name || null}
                       invalid={errors.name}
                       required
-                      onChange={handleChange}
+                      onChange={async e => {
+                        await handleChange(e);
+                        Promise.resolve();
+                        renderCustomerCode();
+                      }}
                       onBlur={handleBlur}
                       value={values.name}
                     />
@@ -218,7 +166,6 @@ const CreateCustomer = () => {
                       id="contactName"
                       placeholder="Người liên lạc"
                       autoComplete="contactName"
-                      valid={errors.contactName}
                       invalid={errors.contactName}
                       required
                       onChange={handleChange}
@@ -235,7 +182,6 @@ const CreateCustomer = () => {
                       id="tel"
                       placeholder="Số điện thoại"
                       autoComplete="phone"
-                      valid={errors.tel || null}
                       invalid={errors.tel}
                       required
                       onChange={handleChange}
@@ -256,8 +202,7 @@ const CreateCustomer = () => {
                       id="email"
                       placeholder="Email"
                       autoComplete="email"
-                      valid={!errors.email || null}
-                      invalid={!errors.email}
+                      invalid={errors.email}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.email}
@@ -273,15 +218,12 @@ const CreateCustomer = () => {
                         <Select
                           name="city"
                           onChange={e => {
-                            const founded = initialState.cities.filter(item => item.code === e.value);
-                            if (founded.length > 0) {
-                              setFieldValue('city', founded[0].id);
-                              setSelectedCity(e.value);
-                            }
+                            setFieldValue('city', e.value);
+                            setSelectedCity(e.value);
                           }}
                           placeholder="Chọn thành phố"
                           options={initialState.cities.map(item => ({
-                            value: item.code,
+                            value: item,
                             label: item.name
                           }))}
                         />
@@ -298,7 +240,7 @@ const CreateCustomer = () => {
                           }}
                           placeholder="Chọn Quận huyện"
                           options={initialState.districts.map(item => ({
-                            value: item.id,
+                            value: item,
                             label: item.name
                           }))}
                         />
@@ -315,7 +257,7 @@ const CreateCustomer = () => {
                       placeholder="Địa chỉ"
                       autoComplete="address"
                       onChange={handleChange}
-                      valid={errors.address || null}
+                      invalid={errors.address}
                       onBlur={handleBlur}
                       value={values.address}
                     />
@@ -323,51 +265,49 @@ const CreateCustomer = () => {
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="code">Loại khách hàng</CLabel>
-                    <CSelect
-                      custom
-                      name="ccmonth"
+                    <Select
                       name="type"
-                      value={values.type || initialState.type[0]?.code}
-                      id="type"
-                      onChange={handleChange}
-                    >
-                      <option key={0} value={null}>
-                        Chọn loại khách hàng
-                      </option>
-                      {initialState.type.map(item => (
-                        <option key={item.id} value={item.code}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </CSelect>
+                      onChange={async item => {
+                        setFieldValue('type', item.value);
+                        await Promise.resolve();
+                        renderCustomerCode();
+                      }}
+                      placeholder="Chọn loại khách hàng"
+                      options={initialState.type.map(item => ({
+                        value: item,
+                        label: item.name
+                      }))}
+                    />
                     <CInvalidFeedback className="d-block">{errors.type}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="code">Chi nhánh</CLabel>
-                    <CSelect custom name="branch" id="branch" value={values.branch || initialState.branch[0]?.code} onChange={handleChange}>
-                      <option key={0} value={null}>
-                        Chọn chi nhánh
-                      </option>
-                      {initialState.branch.map(item => (
-                        <option key={item.id} value={item.code}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </CSelect>
-                    <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
+                    <Select
+                      name="department"
+                      onChange={async item => {
+                        setFieldValue('department', item.value);
+                        await Promise.resolve();
+                        renderCustomerCode();
+                      }}
+                      placeholder="Chi nhánh"
+                      options={departments.map(item => ({
+                        value: item,
+                        label: item.name
+                      }))}
+                    />
+                    <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="code">Trạng thái</CLabel>
-                    <CSelect custom name="status" id="status" value={values.status || initialState.status[0]?.id} onChange={handleChange}>
-                      <option key={0} value={null}>
-                        Chọn trạng thái
-                      </option>
-                      {initialState.status.map(item => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </CSelect>
+                    <Select
+                      name="status"
+                      onChange={handleChange}
+                      placeholder="Trạng thái"
+                      options={initialState.status.map(item => ({
+                        value: item,
+                        label: item.name
+                      }))}
+                    />
                     <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
@@ -376,10 +316,9 @@ const CreateCustomer = () => {
                       type="text"
                       name="createdYear"
                       id="createdYear"
-                      placeholder="User Name"
                       autoComplete="createdYear"
                       onChange={handleChange}
-                      valid={errors.createdYear || null}
+                      valid={errors.createdYear}
                       onBlur={handleBlur}
                       value={values.createdYear}
                     />
@@ -387,13 +326,7 @@ const CreateCustomer = () => {
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="email">Ngày tham gia ObClub</CLabel>
-                    <CInput
-                      type="date"
-                      id="obclubJoinTime"
-                      name="obclubJoinTime"
-                      onChange={handleChange}
-                      placeholder="Ngày tháng năm sinh"
-                    />
+                    <CInput type="date" id="obclubJoinTime" name="obclubJoinTime" onChange={handleChange} />
                     <CInvalidFeedback>{errors.obclubJoinTime}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>

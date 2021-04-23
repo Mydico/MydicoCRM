@@ -3,8 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   sidebarShow: 'responsive',
   asideShow: false,
-  sidebarShow: true,
-  darkMode: false,
+  darkMode: false
 };
 
 const slice = createSlice({
@@ -15,13 +14,16 @@ const slice = createSlice({
       state.asideShow = action.payload;
     },
     setSidebarShow: (state, action) => {
-      state.asideShow = action.payload;
+      state.sidebarShow = action.payload;
     },
-  },
+    setDarkMode: (state, action) => {
+      state.darkMode = action.payload;
+    }
+  }
 });
 
 export default slice.reducer;
 
 // Actions
 
-export const { setAsideShow, setSidebarShow} = slice.actions;
+export const { setAsideShow, setSidebarShow, setDarkMode } = slice.actions;

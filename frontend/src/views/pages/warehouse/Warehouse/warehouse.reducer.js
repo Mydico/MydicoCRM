@@ -17,7 +17,7 @@ export const warehousesAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
   selectId: warehouse => warehouse.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.name.localeCompare(b.name),
+  sortComparer: (a, b) => a.name.localeCompare(b.name)
 });
 
 const slice = createSlice({
@@ -25,16 +25,16 @@ const slice = createSlice({
   initialState: warehousesAdapter.getInitialState({ initialState }),
   reducers: {
     fetching(state) {
-      state.initialState.loading = true
+      state.initialState.loading = true;
     },
     reset(state) {
-      state.initialState.loading = false
-      state.initialState.updatingSuccess = false
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = false;
     },
     warehousesAddOne: warehousesAdapter.addOne,
     warehousesAddMany: warehousesAdapter.addMany,
     warehouseUpdate: warehousesAdapter.updateOne,
-    warehouseRemove: warehousesAdapter.removeOne,
+    warehouseRemove: warehousesAdapter.removeOne
   },
   extraReducers: {
     [creatingWarehouse.fulfilled]: (state, action) => {
@@ -46,21 +46,21 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDetailWarehouse.fulfilled]: (state, action) => {
-      warehousesAdapter.addOne(state, action.payload)
+      warehousesAdapter.addOne(state, action.payload);
       state.initialState.loading = false;
     },
     [getWarehouse.fulfilled]: (state, action) => {
       warehousesAdapter.setAll(state, action.payload.data);
-      state.initialState.totalItem = action.payload.total
+      state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
     [getWarehouse.rejected]: (state, action) => {
       state.loading = false;
-    },
-  },
+    }
+  }
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions
+export const { fetching, reset } = slice.actions;
 
 export const globalizedWarehouseSelectors = warehousesAdapter.getSelectors(state => state.warehouse);

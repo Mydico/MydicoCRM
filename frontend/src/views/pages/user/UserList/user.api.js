@@ -10,12 +10,11 @@ export const getUser = createAsyncThunk('api/users', async (params = { page: 0, 
   }
 });
 
-
 export const getDetailUser = createAsyncThunk('api/detail/users', async (userId, thunkAPI) => {
   try {
-    const result = await axios.get('api/users/'+ userId);
-    console.log(result)
-    return result.data
+    const result = await axios.get('api/users/' + userId);
+    console.log(result);
+    return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
@@ -24,7 +23,7 @@ export const getDetailUser = createAsyncThunk('api/detail/users', async (userId,
 export const creatingUser = createAsyncThunk('api/create/users', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/users', body);
-    return result.data
+    return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
@@ -33,7 +32,7 @@ export const creatingUser = createAsyncThunk('api/create/users', async (body, th
 export const updateUser = createAsyncThunk('api/update/users', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/users', body);
-    return result.data
+    return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

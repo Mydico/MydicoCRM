@@ -91,7 +91,7 @@ const validateForm = errors => {
 const EditPermissionGroups = props => {
   const { initialState } = useSelector(state => state.permission);
   const checkboxRef = useRef();
-  const toastRef = useRef();
+
   const dispatch = useDispatch();
   const history = useHistory();
   const [checkbox, setCheckbox] = useState({});
@@ -110,8 +110,8 @@ const EditPermissionGroups = props => {
     dispatch(getDetailPermissionGroups(props.match.params.id));
     dispatch(getPermissionType());
     return () => {
-      dispatch(reset())
-    }
+      dispatch(reset());
+    };
   }, []);
 
   useEffect(() => {
@@ -138,7 +138,7 @@ const EditPermissionGroups = props => {
 
   const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
     let arrPermission = [];
-    values = JSON.parse(JSON.stringify(values))
+    values = JSON.parse(JSON.stringify(values));
     selectedPermission.forEach(selectPer => {
       if (selectPer.permissions) {
         arrPermission = arrPermission.concat(selectPer.permissions);
@@ -230,7 +230,6 @@ const EditPermissionGroups = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       dispatch(reset());
       history.goBack();
     }
@@ -391,7 +390,6 @@ const EditPermissionGroups = props => {
           )}
         </Formik>
       </CCardBody>
-      <Toaster ref={toastRef} message="Lưu nhóm quyền thành công" />
     </CCard>
   );
 };

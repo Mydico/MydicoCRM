@@ -1,14 +1,14 @@
 export const UserStatus = [
   {
     title: 'ACTIVE',
-    value: 'ACTIVE',
+    value: 'ACTIVE'
   },
   {
     title: 'INACTIVE',
-    value: 'INACTIVE',
+    value: 'INACTIVE'
   },
   {
     title: 'DELETED',
-    value: 'DELETED',
-  },
+    value: 'DELETED'
+  }
 ];

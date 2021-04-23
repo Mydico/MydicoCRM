@@ -33,6 +33,9 @@ import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 import { getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 const validationSchema = function(values) {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -83,7 +86,7 @@ const validateForm = errors => {
   });
 };
 
-const EditWarehouseImport = (props) => {
+const EditWarehouseImport = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
   const { account } = useSelector(state => state.authentication);
 
@@ -91,7 +94,6 @@ const EditWarehouseImport = (props) => {
   const { selectAll: selectAllProduct } = globalizedProductSelectors;
   const { selectById } = globalizedWarehouseImportSelectors;
 
-  const toastRef = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -114,7 +116,7 @@ const EditWarehouseImport = (props) => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([ account.department?.id || ""]) }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     dispatch(getProduct());
     dispatch(getDetailWarehouseImport(props.match.params.id));
   }, []);
@@ -122,18 +124,17 @@ const EditWarehouseImport = (props) => {
   useEffect(() => {
     if (warehouseImport) {
       setInitValuesState(warehouseImport);
-      setSelectedWarehouse(warehouseImport.store)
-      setProductList(JSON.parse(JSON.stringify(warehouseImport.storeInputDetails)))
+      setSelectedWarehouse(warehouseImport.store);
+      setProductList(JSON.parse(JSON.stringify(warehouseImport.storeInputDetails)));
     }
   }, [warehouseImport]);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
-    values = JSON.parse(JSON.stringify(values))
+  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => () => {
+    values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.NEW;
     dispatch(fetching());
     dispatch(updateWarehouseImport(values));
-    resetForm();
   };
 
   const onChangeQuantity = ({ target }, index) => {
@@ -165,14 +166,34 @@ const EditWarehouseImport = (props) => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      toastRef.current.addToast();
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
 
+  const editAlert = (values, { setSubmitting, setErrors }) => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn lưu phiếu này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: onSubmit(values, { setSubmitting, setErrors })
+        },
+        {
+          label: 'Hủy'
+        }
+      ]
+    });
+  };
+
   return (
     <CCard>
-      <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
+      <Formik
+        initialValues={initValuesState || initialValues}
+        enableReinitialize
+        validate={validate(validationSchema)}
+        onSubmit={editAlert}
+      >
         {({
           values,
           errors,
@@ -338,7 +359,6 @@ const EditWarehouseImport = (props) => {
           </CForm>
         )}
       </Formik>
-      <Toaster ref={toastRef} message="Tạo mới kho thành công" />
     </CCard>
   );
 };

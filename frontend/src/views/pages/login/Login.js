@@ -11,7 +11,7 @@ import {
   CInputGroup,
   CInputGroupPrepend,
   CInputGroupText,
-  CRow,
+  CRow
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { freeSet } from '@coreui/icons';
@@ -62,7 +62,7 @@ const Login = props => {
                       handleChange,
                       handleBlur,
                       handleSubmit,
-                      isSubmitting,
+                      isSubmitting
                       /* and other goodies */
                     }) => (
                       <CForm onSubmit={handleSubmit}>
@@ -107,9 +107,7 @@ const Login = props => {
                 <CCardBody className="text-center">
                   <div>
                     <h2>Đăng ký</h2>
-                    <p>
-                     Trải nghiệm hệ thống CRM mới nhất của Mydico
-                    </p>
+                    <p>Trải nghiệm hệ thống CRM mới nhất của Mydico</p>
                     <Link to="/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>
                         Đăng ký ngay

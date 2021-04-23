@@ -1,5 +1,19 @@
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingCustomer, creatingCustomerStatus, creatingCustomerType, getBranches, getCity, getCustomer, getCustomerBirthday, getCustomerStatus, getCustomerType, getDetailCustomer, getDistrict, getWard, updateCustomer } from './customer.api';
+import {
+  creatingCustomer,
+  creatingCustomerStatus,
+  creatingCustomerType,
+  getBranches,
+  getCity,
+  getCustomer,
+  getCustomerBirthday,
+  getCustomerStatus,
+  getCustomerType,
+  getDetailCustomer,
+  getDistrict,
+  getWard,
+  updateCustomer
+} from './customer.api';
 
 const initialState = {
   loading: false,
@@ -17,7 +31,7 @@ export const customersAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
   selectId: customer => customer.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.name.localeCompare(b.name),
+  sortComparer: (a, b) => a.name.localeCompare(b.name)
 });
 
 const slice = createSlice({
@@ -25,16 +39,16 @@ const slice = createSlice({
   initialState: customersAdapter.getInitialState({ initialState }),
   reducers: {
     fetching(state) {
-      state.initialState.loading = true
+      state.initialState.loading = true;
     },
     reset(state) {
-      state.initialState.loading = false
-      state.initialState.updatingSuccess = false
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = false;
     },
     customersAddOne: customersAdapter.addOne,
     customersAddMany: customersAdapter.addMany,
     customerUpdate: customersAdapter.updateOne,
-    customerRemove: customersAdapter.removeOne,
+    customerRemove: customersAdapter.removeOne
   },
   extraReducers: {
     [creatingCustomer.fulfilled]: (state, action) => {
@@ -50,7 +64,7 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDetailCustomer.fulfilled]: (state, action) => {
-      customersAdapter.addOne(state, action.payload)
+      customersAdapter.setAll(state, [action.payload]);
       state.initialState.loading = false;
     },
     [creatingCustomerStatus.fulfilled]: (state, action) => {
@@ -61,45 +75,45 @@ const slice = createSlice({
     },
     [getCustomer.fulfilled]: (state, action) => {
       customersAdapter.setAll(state, action.payload.data);
-      state.initialState.totalItem = action.payload.total
+      state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
     [getCustomerBirthday.fulfilled]: (state, action) => {
       customersAdapter.setAll(state, action.payload.data);
-      state.initialState.totalItem = action.payload.total
+      state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
     [getCity.fulfilled]: (state, action) => {
-      state.initialState.cities = action.payload
+      state.initialState.cities = action.payload;
       state.initialState.loading = false;
     },
     [getDistrict.fulfilled]: (state, action) => {
-      state.initialState.districts = action.payload
+      state.initialState.districts = action.payload;
       state.initialState.loading = false;
     },
     [getWard.fulfilled]: (state, action) => {
-      state.initialState.wards = action.payload
+      state.initialState.wards = action.payload;
       state.initialState.loading = false;
     },
     [getCustomerType.fulfilled]: (state, action) => {
-      state.initialState.type = action.payload
+      state.initialState.type = action.payload;
       state.initialState.loading = false;
     },
     [getCustomerStatus.fulfilled]: (state, action) => {
-      state.initialState.status = action.payload
+      state.initialState.status = action.payload;
       state.initialState.loading = false;
     },
     [getBranches.fulfilled]: (state, action) => {
-      state.initialState.branch = action.payload
+      state.initialState.branch = action.payload;
       state.initialState.loading = false;
     },
     [getCustomer.rejected]: (state, action) => {
       state.loading = false;
-    },
-  },
+    }
+  }
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions
+export const { fetching, reset } = slice.actions;
 
 export const globalizedCustomerSelectors = customersAdapter.getSelectors(state => state.customer);
