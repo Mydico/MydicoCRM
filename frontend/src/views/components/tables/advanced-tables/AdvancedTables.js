@@ -1,11 +1,11 @@
 import React from 'react';
-import { CCard, CCardHeader, CCol, CRow } from '@coreui/react';
+import {CCard, CCardHeader, CCol, CRow} from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import DemoTable from './DemoTable';
 import SelectTable from './SelectTable';
 import BackendTable from './BackendTable';
 import DownloadTable from './DownloadTable';
-import { DocsLink } from 'src/reusable';
+import {DocsLink} from 'src/reusable';
 
 const AdvancedTables = () => {
   return (

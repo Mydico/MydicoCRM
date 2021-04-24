@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {
   CHeader,
   CToggler,
@@ -10,21 +10,20 @@ import {
   CSubheader,
   CBreadcrumbRouter,
   CLink,
-  CImg
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 
 // routes config
 import routes from '../routes';
 
-import { TheHeaderDropdown, TheHeaderDropdownMssg, TheHeaderDropdownNotif, TheHeaderDropdownTasks } from './index';
-import { setAsideShow, setSidebarShow, setDarkMode } from '../App.reducer';
+import {TheHeaderDropdown, TheHeaderDropdownMssg, TheHeaderDropdownNotif, TheHeaderDropdownTasks} from './index';
+import {setAsideShow, setSidebarShow, setDarkMode} from '../App.reducer';
 
 const TheHeader = () => {
   const dispatch = useDispatch();
-  const asideShow = useSelector(state => state.app.asideShow);
-  const darkMode = useSelector(state => state.app.darkMode);
-  const sidebarShow = useSelector(state => state.app.sidebarShow);
+  const asideShow = useSelector((state) => state.app.asideShow);
+  const darkMode = useSelector((state) => state.app.darkMode);
+  const sidebarShow = useSelector((state) => state.app.sidebarShow);
 
   const toggleSidebar = () => {
     const val = [true, 'responsive'].includes(sidebarShow) ? false : 'responsive';

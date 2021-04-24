@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -11,44 +11,44 @@ import {
   CLabel,
   CInput,
   CRow,
-  CSelect,
-  CCardTitle
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingCustomerType, getDetailCustomerType, updateCustomerType } from './customer-type.api';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedcustomerTypeSelectors } from './customer-type.reducer';
-import { validate } from '../../../../shared/utils/normalize';
+import {useDispatch, useSelector} from 'react-redux';
+import {getDetailCustomerType, updateCustomerType} from './customer-type.api';
 
-const validationSchema = function(values) {
+import {useHistory} from 'react-router-dom';
+import {fetching, globalizedcustomerTypeSelectors} from './customer-type.reducer';
+import {validate} from '../../../../shared/utils/normalize';
+
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
     name: Yup.string()
-      .min(2, `Mã phải lớn hơn 2 kí tự`)
-      .required('Mã không để trống')
+        .min(2, `Mã phải lớn hơn 2 kí tự`)
+        .required('Mã không để trống'),
   });
 };
 
-const EditCustomerType = props => {
-  const { initialState } = useSelector(state => state.customerType);
+const EditCustomerType = (props) => {
+  const {initialState} = useSelector((state) => state.customerType);
   const initialValues = {
     code: '',
     name: '',
-    description: ''
+    description: '',
   };
   const dispatch = useDispatch();
   const history = useHistory();
 
   const [initValues, setInitValues] = useState(null);
 
-  const { selectById } = globalizedcustomerTypeSelectors;
-  const customerType = useSelector(state => selectById(state, props.match.params.id));
+  const {selectById} = globalizedcustomerTypeSelectors;
+  const customerType = useSelector((state) => selectById(state, props.match.params.id));
 
   useEffect(() => {
     if (customerType) {
@@ -60,7 +60,7 @@ const EditCustomerType = props => {
     dispatch(getDetailCustomerType(props.match.params.id));
   }, []);
 
-  const onSubmit = (values, { setSubmitting, setErrors }) => {
+  const onSubmit = (values, {}) => {
     dispatch(fetching());
     dispatch(updateCustomerType(values));
   };
@@ -81,17 +81,15 @@ const EditCustomerType = props => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
-            setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

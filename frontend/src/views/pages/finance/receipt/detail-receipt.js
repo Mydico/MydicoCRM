@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
-  CButton,
+
   CCard,
   CCardHeader,
   CCardBody,
@@ -9,74 +9,39 @@ import {
   CTextarea,
   CFormGroup,
   CLabel,
-  CInput,
+
   CRow,
-  CSelect,
+
   CCardTitle,
-  CBadge
+  CBadge,
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { useHistory } from 'react-router-dom';
-import Select from 'react-select';
-import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
-import { FormFeedback } from 'reactstrap';
-import { getCustomer } from '../../customer/customer.api';
-import MaskedInput from 'react-text-mask';
+
+import {useHistory} from 'react-router-dom';
+
+import {globalizedCustomerSelectors} from '../../customer/customer.reducer';
+
+import {getCustomer} from '../../customer/customer.api';
+
 import CurrencyInput from '../../../components/currency-input/currency-input';
-import { creatingReceipt, getDetailReceipt, updateReceipt } from './receipt.api';
-import { fetching, globalizedReceiptsSelectors } from './receipt.reducer';
+import {getDetailReceipt} from './receipt.api';
+import {globalizedReceiptsSelectors} from './receipt.reducer';
 
-const validationSchema = function(values) {
+const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object().required('Khách hàng không để trống'),
-    money: Yup.string().required('Tiền không để trống')
+    money: Yup.string().required('Tiền không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
 
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
-const getBadge = status => {
+const getBadge = (status) => {
   switch (status) {
     case 'APPROVED':
       return 'success';
@@ -91,13 +56,13 @@ const getBadge = status => {
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
-  REJECTED: 'ĐÃ HỦY'
+  REJECTED: 'ĐÃ HỦY',
 };
-const DetailReceipt = props => {
+const DetailReceipt = (props) => {
   const formikRef = useRef();
-  const { initialState } = useSelector(state => state.receipt);
-  const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
-  const { selectById } = globalizedReceiptsSelectors;
+  const {} = useSelector((state) => state.receipt);
+  const {selectAll: selectAllCustomer} = globalizedCustomerSelectors;
+  const {selectById} = globalizedReceiptsSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -106,18 +71,18 @@ const DetailReceipt = props => {
   const [initValuesState, setInitValuesState] = useState(null);
 
   const customers = useSelector(selectAllCustomer);
-  const receipt = useSelector(state => selectById(state, props.match.params.id));
+  const receipt = useSelector((state) => selectById(state, props.match.params.id));
 
   const initialValues = {
     customer: {},
     money: '',
-    note: ''
+    note: '',
   };
 
   useEffect(() => {
     if (receipt) {
       const customReceipt = JSON.parse(JSON.stringify(receipt));
-      customReceipt.money = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(receipt.money);
+      customReceipt.money = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(receipt.money);
       setInitValuesState(customReceipt);
       setSelectedCustomer(customReceipt.customer);
     }
@@ -142,18 +107,12 @@ const DetailReceipt = props => {
         >
           {({
             values,
-            errors,
-            touched,
-            status,
-            dirty,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleChange
+
+
+            ,
           }) => (
             <CForm noValidate name="simpleForm">
               <CCol lg="12">

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -11,42 +11,42 @@ import {
   CLabel,
   CInput,
   CRow,
-  CSelect,
-  CCardTitle
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { useHistory } from 'react-router-dom';
-import { getDetailProductBrand, updateProductBrand } from './product-brand.api';
-import { fetching, globalizedproductBrandsSelectors, reset } from './product-brand.reducer';
-import { setTimeout } from 'core-js';
-import { validate } from '../../../../shared/utils/normalize';
+import {useDispatch, useSelector} from 'react-redux';
 
-const validationSchema = function(values) {
+import {useHistory} from 'react-router-dom';
+import {getDetailProductBrand, updateProductBrand} from './product-brand.api';
+import {fetching, globalizedproductBrandsSelectors, reset} from './product-brand.reducer';
+
+import {validate} from '../../../../shared/utils/normalize';
+
+const validationSchema = function() {
   return Yup.object().shape({
     code: Yup.string()
-      .min(1, `Mã thương hiệu phải lớn hơn 1 kí tự`)
-      .required('Mã thương hiệu không để trống')
-      .nullable(),
+        .min(1 `Mã thương hiệu phải lớn hơn 1 kí tự`)
+        .required('Mã thương hiệu không để trống')
+        .nullable(),
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống')
+        .min(5, `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
   });
 };
-const CreateProductBrand = props => {
-  const { initialState } = useSelector(state => state.productBrand);
+const CreateProductBrand = (props) => {
+  const {initialState} = useSelector((state) => state.productBrand);
   const initialValues = {
     name: '',
-    description: ''
+    description: '',
   };
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectById } = globalizedproductBrandsSelectors;
-  const productBrands = useSelector(state => selectById(state, props.match.params.id));
+  const {selectById} = globalizedproductBrandsSelectors;
+  const productBrands = useSelector((state) => selectById(state, props.match.params.id));
 
   const [initValues, setInitValues] = useState(null);
 
@@ -58,7 +58,7 @@ const CreateProductBrand = props => {
     setInitValues(productBrands);
   }, [productBrands]);
 
-  const onSubmit = (values, { setSubmitting, setErrors }) => {
+  const onSubmit = (values, {}) => {
     dispatch(fetching());
     dispatch(updateProductBrand(values));
   };
@@ -80,17 +80,14 @@ const CreateProductBrand = props => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
-            handleSubmit,
-            setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+            handleSubmit
+
+
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

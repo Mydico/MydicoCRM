@@ -1,10 +1,10 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import classNames from 'classnames';
-import { TheContent, TheSidebar, TheAside, TheFooter, TheHeader } from './index';
+import {TheContent, TheSidebar, TheAside, TheFooter, TheHeader} from './index';
 
 const TheLayout = () => {
-  const darkMode = useSelector(state => state.app.darkMode);
+  const darkMode = useSelector((state) => state.app.darkMode);
   const classes = classNames('c-app c-default-layout', darkMode && 'c-dark-theme');
 
   return (

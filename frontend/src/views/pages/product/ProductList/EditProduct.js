@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -11,68 +11,39 @@ import {
   CLabel,
   CInput,
   CRow,
-  CSelect,
-  CCardTitle
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { getProductType, getDetailProduct, getDistrict, updateProduct } from './product.api';
-import { getProductGroup } from '../ProductGroup/product-group.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {getDetailProduct, updateProduct} from './product.api';
+import {getProductGroup} from '../ProductGroup/product-group.api';
 import Select from 'react-select';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedProductSelectors } from './product.reducer';
-import { globalizedproductGroupsSelectors } from '../ProductGroup/product-group.reducer';
-import { ProductStatus, UnitType } from './contants';
-import { mappingStatus } from './CreateProduct';
+import {useHistory} from 'react-router-dom';
+import {fetching, globalizedProductSelectors} from './product.reducer';
+import {globalizedproductGroupsSelectors} from '../ProductGroup/product-group.reducer';
+import {ProductStatus, UnitType} from './contants';
+import {mappingStatus} from './CreateProduct';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import CurrencyInput from '../../../components/currency-input/currency-input';
-import { getCodeByName } from '../../../../shared/utils/normalize';
+import {getCodeByName} from '../../../../shared/utils/normalize';
 
-const validationSchema = function(values) {
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống')
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import { validate } from '../../../../shared/utils/normalize';
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
 
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const EditProduct = props => {
-  const { initialState } = useSelector(state => state.product);
+const EditProduct = (props) => {
+  const {initialState} = useSelector((state) => state.product);
   const initialValues = {
     agentPrice: 0,
     barcode: '',
@@ -98,16 +69,16 @@ const EditProduct = props => {
     name: '',
     status: '',
     unit: '',
-    volume: 0
+    volume: 0,
   };
   const ref = useRef(null);
   const images = useRef([]);
   const dispatch = useDispatch();
   const history = useHistory();
   const [initValues, setInitValues] = useState(null);
-  const { selectById } = globalizedProductSelectors;
-  const { selectAll } = globalizedproductGroupsSelectors;
-  const product = useSelector(state => selectById(state, props.match.params.id));
+  const {selectById} = globalizedProductSelectors;
+  const {selectAll} = globalizedproductGroupsSelectors;
+  const product = useSelector((state) => selectById(state, props.match.params.id));
   const [initImages, setInitImages] = useState([]);
   const productGroup = useSelector(selectAll);
   useEffect(() => {
@@ -117,25 +88,25 @@ const EditProduct = props => {
 
   useEffect(() => {
     if (product) {
-      const temp = { ...product };
+      const temp = {...product};
       temp.image = [];
       try {
         temp.image = JSON.parse(product.image);
       } catch (e) {}
-      const arrRequest = temp.image?.map(image => fetch(image));
-      Promise.all(arrRequest).then(arrRes => {
-        const arr = arrRes.map(res => {
-          return res?.arrayBuffer().then(buf => {
-            return new File([buf], res.url.match(/.*\/(.*)$/)[1], { type: 'image/jpeg' });
+      const arrRequest = temp.image?.map((image) => fetch(image));
+      Promise.all(arrRequest).then((arrRes) => {
+        const arr = arrRes.map((res) => {
+          return res?.arrayBuffer().then((buf) => {
+            return new File([buf], res.url.match(/.*\/(.*)$/)[1], {type: 'image/jpeg'});
           });
         });
-        Promise.all(arr).then(res => setInitImages(res));
+        Promise.all(arr).then((res) => setInitImages(res));
       });
       setInitValues(temp);
     }
   }, [product]);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     values.image = JSON.stringify(images.current);
     dispatch(updateProduct(values));
@@ -143,10 +114,10 @@ const EditProduct = props => {
   };
 
   const getUploadParams = () => {
-    return { url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/api/files' : 'http://localhost:8082/api/files' };
+    return {url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/api/files' : 'http://localhost:8082/api/files'};
   };
 
-  const handleChangeStatus = ({ meta, file, xhr }, status) => {
+  const handleChangeStatus = ({xhr}, status) => {
     if (status === 'done') {
       const response = JSON.parse(xhr.response);
       const arr = [...images.current];
@@ -184,17 +155,15 @@ const EditProduct = props => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
-            setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+            setFieldValue
+
+
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -222,7 +191,7 @@ const EditProduct = props => {
                       autoComplete="family-name"
                       invalid={errors.name}
                       required
-                      onChange={e => {
+                      onChange={(e) => {
                         handleChange(e);
                         renderProductCode();
                       }}
@@ -250,18 +219,18 @@ const EditProduct = props => {
                     <CLabel htmlFor="productGroup">Loại sản phẩm</CLabel>
                     <Select
                       name="productGroup"
-                      onChange={async item => {
+                      onChange={async (item) => {
                         setFieldValue('productGroup', item.value);
                         await Promise.resolve();
                         renderProductCode();
                       }}
                       value={{
                         value: values.productGroup,
-                        label: `${values.productGroup?.productBrand?.name} - ${values.productGroup?.name}`
+                        label: `${values.productGroup?.productBrand?.name} - ${values.productGroup?.name}`,
                       }}
-                      options={productGroup.map(item => ({
+                      options={productGroup.map((item) => ({
                         value: item,
-                        label: `${item.productBrand?.name} - ${item.name}`
+                        label: `${item.productBrand?.name} - ${item.name}`,
                       }))}
                     />
                     <CInvalidFeedback>{errors.productGroup}</CInvalidFeedback>
@@ -286,7 +255,7 @@ const EditProduct = props => {
                       id="volume"
                       placeholder="Dung tích"
                       autoComplete="volume"
-                      onChange={e => {
+                      onChange={(e) => {
                         handleChange(e);
                         renderProductCode();
                       }}
@@ -301,16 +270,16 @@ const EditProduct = props => {
                     <CLabel htmlFor="userName">Đơn vị</CLabel>
                     <Select
                       name="unit"
-                      onChange={item => {
+                      onChange={(item) => {
                         setFieldValue('unit', item.value);
                       }}
                       value={{
                         value: values.unit,
-                        label: values.unit
+                        label: values.unit,
                       }}
-                      options={UnitType.map(item => ({
+                      options={UnitType.map((item) => ({
                         value: item.value,
-                        label: `${item.title}`
+                        label: `${item.title}`,
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.type}</CInvalidFeedback>
@@ -319,16 +288,16 @@ const EditProduct = props => {
                     <CLabel htmlFor="code">Trạng thái</CLabel>
                     <Select
                       name="status"
-                      onChange={item => {
+                      onChange={(item) => {
                         setFieldValue('status', item.value);
                       }}
                       value={{
                         value: values.status,
-                        label: mappingStatus[values.status]
+                        label: mappingStatus[values.status],
                       }}
-                      options={ProductStatus.map(item => ({
+                      options={ProductStatus.map((item) => ({
                         value: item.value,
-                        label: mappingStatus[item.title]
+                        label: mappingStatus[item.title],
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>

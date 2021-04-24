@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -9,78 +9,42 @@ import {
   CTextarea,
   CFormGroup,
   CLabel,
-  CInput,
+
   CRow,
-  CSelect,
+
   CCardTitle,
-  CInvalidFeedback
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { useHistory } from 'react-router-dom';
+
+import {useHistory} from 'react-router-dom';
 import Select from 'react-select';
-import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
-import { FormFeedback } from 'reactstrap';
-import { getCustomer } from '../../customer/customer.api';
-import MaskedInput from 'react-text-mask';
-import CurrencyInput from '../../../components/currency-input/currency-input';
-import { creatingReceipt } from './receipt.api';
-import { fetching } from './receipt.reducer';
-import { getCustomerDebts } from '../debt/debt.api';
+import {globalizedCustomerSelectors} from '../../customer/customer.reducer';
+import {FormFeedback} from 'reactstrap';
+import {getCustomer} from '../../customer/customer.api';
 
-const validationSchema = function(values) {
+import CurrencyInput from '../../../components/currency-input/currency-input';
+import {creatingReceipt} from './receipt.api';
+import {fetching} from './receipt.reducer';
+import {getCustomerDebts} from '../debt/debt.api';
+
+const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object().required('Khách hàng không để trống'),
-    money: Yup.string().required('Tiền không để trống')
+    money: Yup.string().required('Tiền không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
 
 const CreateReceipt = () => {
   const formikRef = useRef();
-  const { initialState } = useSelector(state => state.receipt);
-  const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
+  const {initialState} = useSelector((state) => state.receipt);
+  const {selectAll: selectAllCustomer} = globalizedCustomerSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -91,14 +55,14 @@ const CreateReceipt = () => {
   const initialValues = {
     customer: {},
     money: '',
-    note: ''
+    note: '',
   };
 
   useEffect(() => {
     dispatch(getCustomer());
   }, []);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     values.money = Number(values.money.replace(/\D/g, ''));
     dispatch(creatingReceipt(values));
@@ -107,7 +71,7 @@ const CreateReceipt = () => {
 
   useEffect(() => {
     if (selectedCustomer) {
-      dispatch(getCustomerDebts({ customer: selectedCustomer.id })).then(resp => {
+      dispatch(getCustomerDebts({customer: selectedCustomer.id})).then((resp) => {
         if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
           setCustomerDebt(resp.payload.data[0]);
         } else {
@@ -132,17 +96,16 @@ const CreateReceipt = () => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CCol lg="12">
@@ -158,13 +121,13 @@ const CreateReceipt = () => {
                           <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
                           <Select
                             name="customer"
-                            onChange={item => {
+                            onChange={(item) => {
                               setSelectedCustomer(item.value);
                               setFieldValue('customer', item.value);
                             }}
-                            options={customers.map(item => ({
+                            options={customers.map((item) => ({
                               value: item,
-                              label: `[${item.code}] ${item.name} ${item.address}`
+                              label: `[${item.code}] ${item.name} ${item.address}`,
                             }))}
                           />
                         </CCol>
@@ -174,9 +137,9 @@ const CreateReceipt = () => {
                     <dl className="row">
                       <dt className="col-sm-3">Công nợ hiện tại</dt>
                       <dd className="col-sm-9">
-                        {customerDebt
-                          ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(customerDebt?.debt)
-                          : 0}
+                        {customerDebt ?
+                          new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(customerDebt?.debt) :
+                          0}
                       </dd>
                     </dl>
                     <CRow>

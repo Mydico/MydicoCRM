@@ -1,5 +1,5 @@
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingProvider, getProvider, getDetailProvider, updateProvider } from './provider.api';
+import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
+import {creatingProvider, getProvider, getDetailProvider, updateProvider} from './provider.api';
 
 const initialState = {
   loading: false,
@@ -10,19 +10,19 @@ const initialState = {
   wards: [],
   type: [],
   branch: [],
-  status: []
+  status: [],
 };
 
 export const providersAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: provider => provider.id,
+  selectId: (provider) => provider.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.name.localeCompare(b.name)
+  sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
 
 const slice = createSlice({
   name: 'provider',
-  initialState: providersAdapter.getInitialState({ initialState }),
+  initialState: providersAdapter.getInitialState({initialState}),
   reducers: {
     fetching(state) {
       state.initialState.loading = true;
@@ -34,14 +34,14 @@ const slice = createSlice({
     providersAddOne: providersAdapter.addOne,
     providersAddMany: providersAdapter.addMany,
     providerUpdate: providersAdapter.updateOne,
-    providerRemove: providersAdapter.removeOne
+    providerRemove: providersAdapter.removeOne,
   },
   extraReducers: {
-    [creatingProvider.fulfilled]: (state, action) => {
+    [creatingProvider.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
-    [updateProvider.fulfilled]: (state, action) => {
+    [updateProvider.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
@@ -54,13 +54,13 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [getProvider.rejected]: (state, action) => {
+    [getProvider.rejected]: (state ) => {
       state.loading = false;
-    }
-  }
+    },
+  },
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions;
+export const {fetching, reset} = slice.actions;
 
-export const globalizedProviderSelectors = providersAdapter.getSelectors(state => state.provider);
+export const globalizedProviderSelectors = providersAdapter.getSelectors((state) => state.provider);

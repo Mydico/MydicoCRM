@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect} from 'react';
 import {
   CButton,
   CCard,
@@ -12,81 +12,46 @@ import {
   CInput,
   CRow,
   CSelect,
-  CCardTitle
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingWarehouse } from './warehouse.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {creatingWarehouse} from './warehouse.api';
 
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedWarehouseSelectors } from './warehouse.reducer';
-import { WarehouseStatus, UnitType } from './contants';
-import { currencyFormat } from '../../../../shared/utils/normalize';
+
+import {useHistory} from 'react-router-dom';
+import {fetching} from './warehouse.reducer';
+import {WarehouseStatus} from './contants';
+
 import Select from 'react-select';
-import { getDepartment } from '../../user/UserDepartment/department.api';
-import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
+import {getDepartment} from '../../user/UserDepartment/department.api';
+import {globalizedDepartmentSelectors} from '../../user/UserDepartment/department.reducer';
 
-const validationSchema = function(values) {
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
-    department: Yup.object().required('Chi nhánh không để trống')
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
+    department: Yup.object().required('Chi nhánh không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
+
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA'
+  DELETED: 'ĐÃ XÓA',
 };
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
 
 const CreateWarehouse = () => {
-  const { initialState } = useSelector(state => state.warehouse);
-  const { initialState: customerInitialState } = useSelector(state => state.customer);
-  const { selectAll } = globalizedDepartmentSelectors;
+  const {initialState} = useSelector((state) => state.warehouse);
+  const {} = useSelector((state) => state.customer);
+  const {selectAll} = globalizedDepartmentSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -95,14 +60,14 @@ const CreateWarehouse = () => {
     code: '',
     name: '',
     address: '',
-    tel: ''
+    tel: '',
   };
   const departments = useSelector(selectAll);
   useEffect(() => {
     dispatch(getDepartment());
   }, []);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     dispatch(creatingWarehouse(values));
     resetForm();
@@ -124,17 +89,16 @@ const CreateWarehouse = () => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -188,13 +152,13 @@ const CreateWarehouse = () => {
                     <CLabel htmlFor="password">Chọn chi nhánh</CLabel>
                     <Select
                       name="department"
-                      onChange={item => {
+                      onChange={(item) => {
                         setFieldValue('department', item.value);
                       }}
                       placeholder="Chọn chi nhánh"
-                      options={departments.map(item => ({
+                      options={departments.map((item) => ({
                         value: item,
-                        label: `${item.name}`
+                        label: `${item.name}`,
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
@@ -222,11 +186,11 @@ const CreateWarehouse = () => {
                       name="status"
                       id="status"
                       value={values.status}
-                      onChange={e => {
+                      onChange={(e) => {
                         setFieldValue('status', e.target.value);
                       }}
                     >
-                      {WarehouseStatus.map(item => (
+                      {WarehouseStatus.map((item) => (
                         <option key={item.value} value={item.value}>
                           {mappingStatus[item.title]}
                         </option>

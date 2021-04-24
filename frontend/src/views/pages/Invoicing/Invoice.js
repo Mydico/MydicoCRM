@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Row, Col, Table } from 'reactstrap';
+import React, {Component} from 'react';
+import {Card, CardHeader, CardBody, Row, Col, Table} from 'reactstrap';
 
 class Invoice extends Component {
   render() {

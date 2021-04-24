@@ -1,36 +1,36 @@
-import { createStore, applyMiddleware, compose } from 'redux';
+import {applyMiddleware, compose} from 'redux';
 import promiseMiddleware from 'redux-promise-middleware';
 // import thunkMiddleware from 'redux-thunk';
-import reducer, { IRootState } from '../shared/reducers';
+import reducer from '../shared/reducers';
 import logger from 'redux-logger';
 
 // import DevTools from './devtools';
 // import errorMiddleware from './error-middleware';
 import notificationMiddleware from './notification-middleware';
 // import loggerMiddleware from './logger-middleware';
-import { loadingBarMiddleware } from 'react-redux-loading-bar';
-import { configureStore } from '@reduxjs/toolkit';
+import {loadingBarMiddleware} from 'react-redux-loading-bar';
+import {configureStore} from '@reduxjs/toolkit';
 
 const defaultMiddlewares = [
   // thunkMiddleware,
   // errorMiddleware,
   notificationMiddleware,
   promiseMiddleware,
-  loadingBarMiddleware()
+  loadingBarMiddleware(),
   // loggerMiddleware
 ];
 
-const composedMiddlewares = middlewares =>
-  process.env.NODE_ENV === 'development'
-    ? compose(applyMiddleware(...defaultMiddlewares, ...middlewares))
-    : compose(applyMiddleware(...defaultMiddlewares, ...middlewares));
+const composedMiddlewares = (middlewares) =>
+  process.env.NODE_ENV === 'development' ?
+    compose(applyMiddleware(...defaultMiddlewares, ...middlewares)) :
+    compose(applyMiddleware(...defaultMiddlewares, ...middlewares));
 
 const store = configureStore({
   reducer,
-  middleware: getDefaultMiddleware =>
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
-      .concat(logger)
-      .concat(defaultMiddlewares)
+        .concat(logger)
+        .concat(defaultMiddlewares),
 });
 
 if (process.env.NODE_ENV === 'development' && module.hot) {

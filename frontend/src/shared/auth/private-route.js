@@ -1,9 +1,9 @@
 import React from 'react';
-import { connect, useSelector } from 'react-redux';
-import { Route, Redirect, RouteProps } from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import {Route, Redirect} from 'react-router-dom';
 
-export const PrivateRouteComponent = ({ component: Component, isAuthorized, ...rest }) => {
-  const { isAuthenticated, account, sessionHasBeenFetched } = useSelector(state => state.authentication);
+export const PrivateRouteComponent = ({component: Component, ...rest}) => {
+  const {isAuthenticated} = useSelector((state) => state.authentication);
   // const checkAuthorities = props =>
   //   isAuthorized ? (
   //     // <ErrorBoundary>
@@ -16,7 +16,7 @@ export const PrivateRouteComponent = ({ component: Component, isAuthorized, ...r
   //       </div>
   //     </div>
   //   );
-  const renderRedirect = props => {
+  const renderRedirect = (props) => {
     // if (!sessionHasBeenFetched) {
     //   return <div></div>;
     // } else {
@@ -27,11 +27,11 @@ export const PrivateRouteComponent = ({ component: Component, isAuthorized, ...r
         to={{
           pathname: '/login',
           search: props.location.search,
-          state: { from: props.location }
+          state: {from: props.location},
         }}
       />
     );
-    //}
+    // }
   };
 
   if (!Component) throw new Error(`A component needs to be specified for private route for path ${rest.path}`);

@@ -1,20 +1,17 @@
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
 import {
   creatingPromotion,
-  creatingPromotionStatus,
-  creatingPromotionType,
-  getBranches,
-  getCity,
+
+
   getPromotion,
-  getPromotionBirthday,
-  getPromotionStatus,
-  getPromotionType,
+
+
   getDetailPromotion,
-  getDistrict,
-  getWard,
+
+
   updatePromotion,
   getPromotionProduct,
-  getDetailProductPromotion
+  getDetailProductPromotion,
 } from './promotion.api';
 
 const initialState = {
@@ -22,19 +19,19 @@ const initialState = {
   updatingSuccess: false,
   totalItem: 0,
   products: [],
-  promotionProducts: []
+  promotionProducts: [],
 };
 
 export const promotionsAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: promotion => promotion.id,
+  selectId: (promotion) => promotion.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.createdDate.localeCompare(b.createdDate)
+  sortComparer: (a, b) => a.createdDate.localeCompare(b.createdDate),
 });
 
 const slice = createSlice({
   name: 'promotion',
-  initialState: promotionsAdapter.getInitialState({ initialState }),
+  initialState: promotionsAdapter.getInitialState({initialState}),
   reducers: {
     fetching(state) {
       state.initialState.loading = true;
@@ -45,18 +42,18 @@ const slice = createSlice({
     promotionsAddOne: promotionsAdapter.addOne,
     promotionsAddMany: promotionsAdapter.addMany,
     promotionUpdate: promotionsAdapter.updateOne,
-    promotionRemove: promotionsAdapter.removeOne
+    promotionRemove: promotionsAdapter.removeOne,
   },
   extraReducers: {
-    [creatingPromotion.fulfilled]: (state, action) => {
+    [creatingPromotion.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
-    [updatePromotion.fulfilled]: (state, action) => {
+    [updatePromotion.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
-    [updatePromotion.rejected]: (state, action) => {
+    [updatePromotion.rejected]: (state ) => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
@@ -77,13 +74,13 @@ const slice = createSlice({
       state.initialState.promotionProducts = action.payload;
       state.initialState.loading = false;
     },
-    [getPromotion.rejected]: (state, action) => {
+    [getPromotion.rejected]: (state ) => {
       state.loading = false;
-    }
-  }
+    },
+  },
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions;
+export const {fetching, reset} = slice.actions;
 
-export const globalizedPromotionSelectors = promotionsAdapter.getSelectors(state => state.promotion);
+export const globalizedPromotionSelectors = promotionsAdapter.getSelectors((state) => state.promotion);

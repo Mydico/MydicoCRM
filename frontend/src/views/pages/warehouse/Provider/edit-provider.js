@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -11,96 +11,55 @@ import {
   CLabel,
   CInput,
   CRow,
-  CSelect,
-  CCardTitle
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingProvider, getDetailProvider } from './provider.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {creatingProvider, getDetailProvider} from './provider.api';
 
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedProviderSelectors } from './provider.reducer';
-import { ProviderStatus, UnitType } from './contants';
-import Select from 'react-select';
-import { getCity, getDistrict, getWard } from '../../customer/customer.api';
-import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
-import { getDepartment } from '../../user/UserDepartment/department.api';
 
-const validationSchema = function(values) {
+import {useHistory} from 'react-router-dom';
+import {fetching, globalizedProviderSelectors} from './provider.reducer';
+
+
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống')
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
+
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA'
+  DELETED: 'ĐÃ XÓA',
 };
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
 
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
-const EditProvider = props => {
-  const { initialState } = useSelector(state => state.provider);
-  const { initialState: customerInitialState } = useSelector(state => state.customer);
-  const { selectAll } = globalizedDepartmentSelectors;
+const EditProvider = (props) => {
+  const {initialState} = useSelector((state) => state.provider);
+  const {} = useSelector((state) => state.customer);
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const departments = useSelector(selectAll);
 
   const initialValues = useRef({
     code: '',
     name: '',
     address: '',
-    phone: ''
+    phone: '',
   });
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [selectedDistrict, setSelectedDistrict] = useState(null);
-  const { selectById } = globalizedProviderSelectors;
-  const provider = useSelector(state => selectById(state, props.match.params.id));
+  const [,] = useState(null);
+  const [,] = useState(null);
+  const {selectById} = globalizedProviderSelectors;
+  const provider = useSelector((state) => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
@@ -111,18 +70,18 @@ const EditProvider = props => {
     dispatch(getDetailProvider(props.match.params.id));
   }, []);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     values.code = values.name
-      .trim()
-      .split(' ')
-      .map(string => string[0])
-      .join('')
-      .replaceAll(' ', '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/Đ/g, 'D');
+        .trim()
+        .split(' ')
+        .map((string) => string[0])
+        .join('')
+        .replaceAll(' ', '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D');
     dispatch(creatingProvider(values));
     resetForm();
   };
@@ -149,16 +108,15 @@ const EditProvider = props => {
             values,
             errors,
             touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
-            setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -174,15 +132,15 @@ const EditProvider = props => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={`${values.name
-                        ?.trim()
-                        .split(' ')
-                        .map(string => string[0])
-                        .join('')
-                        .replaceAll(' ', '')
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .replace(/đ/g, 'd')
-                        .replace(/Đ/g, 'D')}`}
+                          ?.trim()
+                          .split(' ')
+                          .map((string) => string[0])
+                          .join('')
+                          .replaceAll(' ', '')
+                          .normalize('NFD')
+                          .replace(/[\u0300-\u036f]/g, '')
+                          .replace(/đ/g, 'd')
+                          .replace(/Đ/g, 'D')}`}
                     />
                   </CFormGroup>
                   <CFormGroup>

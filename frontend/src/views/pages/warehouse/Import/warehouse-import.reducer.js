@@ -1,10 +1,10 @@
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
 import {
   creatingWarehouseImport,
   getWarehouseImport,
   getDetailWarehouseImport,
   updateWarehouseImport,
-  getWarehouseExport
+  getWarehouseExport,
 } from './warehouse-import.api';
 
 const initialState = {
@@ -16,19 +16,19 @@ const initialState = {
   wards: [],
   type: [],
   branch: [],
-  status: []
+  status: [],
 };
 
 export const warehouseImportAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: warehouse => warehouse.id,
+  selectId: (warehouse) => warehouse.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => b.status.localeCompare(a.status)
+  sortComparer: (a, b) => b.status.localeCompare(a.status),
 });
 
 const slice = createSlice({
   name: 'warehouseImport',
-  initialState: warehouseImportAdapter.getInitialState({ initialState }),
+  initialState: warehouseImportAdapter.getInitialState({initialState}),
   reducers: {
     fetching(state) {
       state.initialState.loading = true;
@@ -40,18 +40,18 @@ const slice = createSlice({
     warehousesAddOne: warehouseImportAdapter.addOne,
     warehousesAddMany: warehouseImportAdapter.addMany,
     warehouseUpdate: warehouseImportAdapter.updateOne,
-    warehouseRemove: warehouseImportAdapter.removeOne
+    warehouseRemove: warehouseImportAdapter.removeOne,
   },
   extraReducers: {
-    [creatingWarehouseImport.fulfilled]: (state, action) => {
+    [creatingWarehouseImport.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
-    [creatingWarehouseImport.rejected]: (state, action) => {
+    [creatingWarehouseImport.rejected]: (state ) => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
-    [updateWarehouseImport.fulfilled]: (state, action) => {
+    [updateWarehouseImport.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
@@ -69,13 +69,13 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [getWarehouseImport.rejected]: (state, action) => {
+    [getWarehouseImport.rejected]: (state ) => {
       state.loading = false;
-    }
-  }
+    },
+  },
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions;
+export const {fetching, reset} = slice.actions;
 
-export const globalizedWarehouseImportSelectors = warehouseImportAdapter.getSelectors(state => state.warehouseImport);
+export const globalizedWarehouseImportSelectors = warehouseImportAdapter.getSelectors((state) => state.warehouseImport);

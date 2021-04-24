@@ -5,5 +5,5 @@ export const BillStatus = {
   SUPPLY_WAITING: 'SUPPLY_WAITING',
   SHIPPING: 'SHIPPING',
   SUCCESS: 'SUCCESS',
-  CANCEL: 'CANCEL'
+  CANCEL: 'CANCEL',
 };

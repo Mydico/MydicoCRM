@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
+import React, {useEffect, useState} from 'react';
+import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getCustomerBirthday } from '../customer.api.js';
-import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
-import { useHistory } from 'react-router-dom';
+import {useDispatch, useSelector} from 'react-redux';
+import {getCustomerBirthday} from '../customer.api.js';
+import {globalizedCustomerSelectors, reset} from '../customer.reducer.js';
+import {useHistory} from 'react-router-dom';
 
-const Customer = props => {
+const Customer = (props) => {
   const [details, setDetails] = useState([]);
-  const { initialState } = useSelector(state => state.customer);
+  const {initialState} = useSelector((state) => state.customer);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
   const dispatch = useDispatch();
@@ -20,21 +20,21 @@ const Customer = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomerBirthday({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getCustomerBirthday({page: activePage - 1, size, sort: 'createdDate,desc'}));
   }, [activePage, size]);
 
-  const { selectAll } = globalizedCustomerSelectors;
+  const {selectAll} = globalizedCustomerSelectors;
   const customers = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
+  const computedItems = (items) => {
+    return items.map((item) => {
       return {
         ...item,
         typeName: item.type?.name,
-        branchName: item.branch?.name
+        branchName: item.branch?.name,
       };
     });
   };
-  const toggleDetails = index => {
+  const toggleDetails = (index) => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -47,22 +47,22 @@ const Customer = props => {
 
   // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
   const fields = [
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
-    { key: 'contactName', label: 'Người liên lạc', _style: { width: '15%' } },
-    { key: 'yearOfBirth', label: 'Năm Sinh', _style: { width: '15%' } },
-    { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
-    { key: 'users', label: 'Nhân viên quản lý', _style: { width: '15%' } },
-    { key: 'dateOfBirth', label: 'Ngày sinh', _style: { width: '10%' } },
+    {key: 'code', label: 'Mã', _style: {width: '10%'}},
+    {key: 'name', label: 'Tên cửa hàng/đại lý', _style: {width: '15%'}},
+    {key: 'contactName', label: 'Người liên lạc', _style: {width: '15%'}},
+    {key: 'yearOfBirth', label: 'Năm Sinh', _style: {width: '15%'}},
+    {key: 'tel', label: 'Điện thoại', _style: {width: '15%'}},
+    {key: 'users', label: 'Nhân viên quản lý', _style: {width: '15%'}},
+    {key: 'dateOfBirth', label: 'Ngày sinh', _style: {width: '10%'}},
     {
       key: 'show_details',
       label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
+      _style: {width: '1%'},
+      filter: false,
+    },
   ];
 
-  const getBadge = status => {
+  const getBadge = (status) => {
     switch (status) {
       case 'Active':
         return 'success';
@@ -76,21 +76,21 @@ const Customer = props => {
         return 'primary';
     }
   };
-  const [currentItems, setCurrentItems] = useState([]);
+  const [,] = useState([]);
   const csvContent = computedItems(customers)
-    .map(item => Object.values(item).join(','))
-    .join('\n');
+      .map((item) => Object.values(item).join(','))
+      .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {
     history.push(`${props.match.url}new`);
   };
 
-  const toEditCustomer = userId => {
+  const toEditCustomer = (userId) => {
     history.push(`${props.match.url}${userId}/edit`);
   };
 
-  const onFilterColumn = value => {
-    dispatch(getCustomerBirthday({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+  const onFilterColumn = (value) => {
+    dispatch(getCustomerBirthday({page: 0, size: size, sort: 'createdDate,desc', ...value}));
   };
 
   return (
@@ -108,26 +108,26 @@ const Customer = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [20, 30, 50] }}
+          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [20, 30, 50]}}
           itemsPerPage={size}
           hover
           sorter
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
-          onPaginationChange={val => setSize(val)}
+          onPageChange={(val) => console.log('new page:', val)}
+          onPagesChange={(val) => console.log('new pages:', val)}
+          onPaginationChange={(val) => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
+          onTableFilterChange={(val) => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
-            status: item => (
+            status: (item) => (
               <td>
                 <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
               </td>
             ),
-            show_details: item => {
+            show_details: (item) => {
               return (
                 <td className="d-flex py-2">
                   <CButton
@@ -144,7 +144,7 @@ const Customer = props => {
                 </td>
               );
             },
-            details: item => {
+            details: (item) => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
@@ -202,13 +202,13 @@ const Customer = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            }
+            },
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / size) + 1}
-          onActivePageChange={i => setActivePage(i)}
+          onActivePageChange={(i) => setActivePage(i)}
         />
       </CCardBody>
     </CCard>

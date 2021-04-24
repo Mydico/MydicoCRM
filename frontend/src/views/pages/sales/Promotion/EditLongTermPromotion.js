@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -14,76 +14,40 @@ import {
   CSelect,
   CCardTitle,
   CTextarea,
-  CInputCheckbox
+  CInputCheckbox,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingPromotion, getDetailPromotion, updatePromotion } from './promotion.api';
-import store from '../../../../config/store';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedPromotionSelectors } from './promotion.reducer';
-import { PromotionStatus, UnitType } from './contants';
-import { currencyFormat } from '../../../../shared/utils/normalize';
-import { getCustomerType } from '../../customer/CustomerType/customer-type.api';
-import { globalizedcustomerTypeSelectors } from '../../customer/CustomerType/customer-type.reducer';
-import Select from 'react-select';
-import { globalizedproductGroupsSelectors } from '../../product/ProductGroup/product-group.reducer';
-import { getProductGroup } from '../../product/ProductGroup/product-group.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {getDetailPromotion, updatePromotion} from './promotion.api';
 
-const validationSchema = function(values) {
+
+import {useHistory} from 'react-router-dom';
+import {fetching, globalizedPromotionSelectors} from './promotion.reducer';
+
+
+import {getCustomerType} from '../../customer/CustomerType/customer-type.api';
+import {globalizedcustomerTypeSelectors} from '../../customer/CustomerType/customer-type.reducer';
+import Select from 'react-select';
+import {globalizedproductGroupsSelectors} from '../../product/ProductGroup/product-group.reducer';
+import {getProductGroup} from '../../product/ProductGroup/product-group.api';
+
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống')
+    endTime: Yup.string().required('Ngày kết thúc không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
 
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
-const EditPromotion = props => {
-  const { initialState } = useSelector(state => state.promotion);
+const EditPromotion = (props) => {
+  const {initialState} = useSelector((state) => state.promotion);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -94,14 +58,14 @@ const EditPromotion = props => {
     startTime: new Date().toISOString(),
     endTime: new Date().toISOString(),
     isLock: false,
-    customerType: null
+    customerType: null,
   });
-  const { selectAll } = globalizedcustomerTypeSelectors;
+  const {selectAll} = globalizedcustomerTypeSelectors;
   const customerType = useSelector(selectAll);
-  const { selectAll: selectAllProductGroup } = globalizedproductGroupsSelectors;
+  const {selectAll: selectAllProductGroup} = globalizedproductGroupsSelectors;
   const productGroups = useSelector(selectAllProductGroup);
-  const { selectById } = globalizedPromotionSelectors;
-  const promotion = useSelector(state => selectById(state, props.match.params.id));
+  const {selectById} = globalizedPromotionSelectors;
+  const promotion = useSelector((state) => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
@@ -126,13 +90,13 @@ const EditPromotion = props => {
   }, [customerType]);
 
   const onAddProduct = () => {
-    const data = { name: '', totalMoney: 0, reducePercent: 0, productGroup: {} };
+    const data = {name: '', totalMoney: 0, reducePercent: 0, productGroup: {}};
     setPromotionItemList([...promotionItemList, data]);
   };
 
   const onSelectedProduct = (item, index) => {
     const copyArr = JSON.parse(JSON.stringify(promotionItemList));
-    copyArr[index].productGroup = { id: item.value };
+    copyArr[index].productGroup = {id: item.value};
     setPromotionItemList(copyArr);
   };
 
@@ -142,7 +106,7 @@ const EditPromotion = props => {
     setPromotionItemList(copyArr);
   };
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     values = JSON.parse(JSON.stringify(values));
     if (!values.customerType) values.customerType = initialValues.current.customerType;
@@ -173,16 +137,16 @@ const EditPromotion = props => {
             values,
             errors,
             touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => {
             console.log(values);
             return (
@@ -229,12 +193,12 @@ const EditPromotion = props => {
                         name="customerType"
                         id="customerType"
                         value={values.customerType?.id}
-                        onChange={e => {
+                        onChange={(e) => {
                           setFieldValue('customerType', e.target.value);
                         }}
                       >
                         {customerType &&
-                          customerType.map(item => (
+                          customerType.map((item) => (
                             <option key={item.id} value={item.id}>
                               {item.name}
                             </option>
@@ -300,7 +264,7 @@ const EditPromotion = props => {
                               id="name"
                               placeholder="Tên doanh số"
                               autoComplete="name"
-                              onChange={event => onChangeProductPromotion(event.target.value, index, 'name')}
+                              onChange={(event) => onChangeProductPromotion(event.target.value, index, 'name')}
                               invalid={!promotionItemList[index].name}
                               valid={promotionItemList[index].name}
                               onBlur={handleBlur}
@@ -317,7 +281,7 @@ const EditPromotion = props => {
                               min={0}
                               placeholder="Mức doanh thu"
                               autoComplete="totalMoney"
-                              onChange={event => onChangeProductPromotion(event.target.value, index, 'totalMoney')}
+                              onChange={(event) => onChangeProductPromotion(event.target.value, index, 'totalMoney')}
                               invalid={!promotionItemList[index].totalMoney}
                               valid={promotionItemList[index].totalMoney}
                               onBlur={handleBlur}
@@ -336,7 +300,7 @@ const EditPromotion = props => {
                               min={0}
                               placeholder="Chiết khấu"
                               autoComplete="reducePercent"
-                              onChange={event => onChangeProductPromotion(event.target.value, index, 'reducePercent')}
+                              onChange={(event) => onChangeProductPromotion(event.target.value, index, 'reducePercent')}
                               invalid={promotionItemList[index].reducePercent < 0}
                               valid={promotionItemList[index].reducePercent}
                               onBlur={handleBlur}
@@ -351,12 +315,12 @@ const EditPromotion = props => {
                             <Select
                               defaultValue={{
                                 value: item.productGroup?.id,
-                                label: `${item.productGroup?.name}`
+                                label: `${item.productGroup?.name}`,
                               }}
-                              onChange={event => onSelectedProduct(event, index)}
-                              options={productGroups.map(item => ({
+                              onChange={(event) => onSelectedProduct(event, index)}
+                              options={productGroups.map((item) => ({
                                 value: item.id,
-                                label: `${item.name}`
+                                label: `${item.name}`,
                               }))}
                             />
                           </CCol>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -12,85 +12,50 @@ import {
   CInput,
   CRow,
   CSelect,
-  CCardTitle
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingProductWarehouse, getDetailProductWarehouse } from './product-warehouse.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {creatingProductWarehouse, getDetailProductWarehouse} from './product-warehouse.api';
 
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedProductWarehouseSelectors } from './product-warehouse.reducer';
-import { currencyFormat } from '../../../../shared/utils/normalize';
-import { getCity, getDistrict, getWard } from '../../customer/customer.api';
 
-const validationSchema = function(values) {
+import {useHistory} from 'react-router-dom';
+import {fetching, globalizedProductWarehouseSelectors} from './product-warehouse.reducer';
+
+import {getCity, getDistrict, getWard} from '../../customer/customer.api';
+
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
     city: Yup.string()
-      .nullable(true)
-      .required('Thành phố không để trống'),
+        .nullable(true)
+        .required('Thành phố không để trống'),
     district: Yup.string()
-      .nullable(true)
-      .required('Quận huyện không để trống'),
+        .nullable(true)
+        .required('Quận huyện không để trống'),
     ward: Yup.string()
-      .nullable(true)
-      .required('Phường xã không để trống')
+        .nullable(true)
+        .required('Phường xã không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
+
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA'
+  DELETED: 'ĐÃ XÓA',
 };
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
 
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
-const EditProductWarehouse = props => {
-  const { initialState } = useSelector(state => state.productProductWarehouse);
-  const { initialState: customerInitialState } = useSelector(state => state.customer);
+const EditProductWarehouse = (props) => {
+  const {initialState} = useSelector((state) => state.productProductWarehouse);
+  const {initialState: customerInitialState} = useSelector((state) => state.customer);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -99,12 +64,12 @@ const EditProductWarehouse = props => {
     code: '',
     name: '',
     address: '',
-    tel: ''
+    tel: '',
   });
   const [selectedCity, setSelectedCity] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
-  const { selectById } = globalizedProductWarehouseSelectors;
-  const productProductWarehouse = useSelector(state => selectById(state, props.match.params.id));
+  const {selectById} = globalizedProductWarehouseSelectors;
+  const productProductWarehouse = useSelector((state) => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {}, []);
@@ -120,28 +85,28 @@ const EditProductWarehouse = props => {
 
   useEffect(() => {
     if (selectedCity) {
-      dispatch(getDistrict({ city: selectedCity }));
+      dispatch(getDistrict({city: selectedCity}));
     }
   }, [selectedCity]);
 
   useEffect(() => {
     if (selectedDistrict) {
-      dispatch(getWard({ district: selectedDistrict }));
+      dispatch(getWard({district: selectedDistrict}));
     }
   }, [selectedDistrict]);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     values.code = values.name
-      .trim()
-      .split(' ')
-      .map(string => string[0])
-      .join('')
-      .replaceAll(' ', '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/Đ/g, 'D');
+        .trim()
+        .split(' ')
+        .map((string) => string[0])
+        .join('')
+        .replaceAll(' ', '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D');
     dispatch(creatingProductWarehouse(values));
     resetForm();
   };
@@ -168,16 +133,16 @@ const EditProductWarehouse = props => {
             values,
             errors,
             touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -193,15 +158,15 @@ const EditProductWarehouse = props => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={`${values.name
-                        ?.trim()
-                        .split(' ')
-                        .map(string => string[0])
-                        .join('')
-                        .replaceAll(' ', '')
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .replace(/đ/g, 'd')
-                        .replace(/Đ/g, 'D')}${values.volume ? values.volume : ''}`}
+                          ?.trim()
+                          .split(' ')
+                          .map((string) => string[0])
+                          .join('')
+                          .replaceAll(' ', '')
+                          .normalize('NFD')
+                          .replace(/[\u0300-\u036f]/g, '')
+                          .replace(/đ/g, 'd')
+                          .replace(/Đ/g, 'D')}${values.volume ? values.volume : ''}`}
                     />
                   </CFormGroup>
                   <CFormGroup>
@@ -260,8 +225,8 @@ const EditProductWarehouse = props => {
                       name="city"
                       id="city"
                       value={values.city?.id}
-                      onChange={e => {
-                        const founded = customerInitialState.cities.filter(item => item.code === e.target.value);
+                      onChange={(e) => {
+                        const founded = customerInitialState.cities.filter((item) => item.code === e.target.value);
                         if (founded.length > 0) {
                           setFieldValue('city', founded[0].id);
                           setSelectedCity(e.target.value);
@@ -271,7 +236,7 @@ const EditProductWarehouse = props => {
                       <option key={0} value={null}>
                         Chọn tỉnh thành
                       </option>
-                      {customerInitialState.cities.map(item => (
+                      {customerInitialState.cities.map((item) => (
                         <option key={item.id} value={item.code}>
                           {item.name}
                         </option>
@@ -289,8 +254,8 @@ const EditProductWarehouse = props => {
                           name="district"
                           id="district"
                           value={values.district?.id}
-                          onChange={e => {
-                            const founded = customerInitialState.districts.filter(item => item.code === e.target.value);
+                          onChange={(e) => {
+                            const founded = customerInitialState.districts.filter((item) => item.code === e.target.value);
                             if (founded.length > 0) {
                               setFieldValue('district', founded[0].id);
                               setSelectedDistrict(e.target.value);
@@ -300,7 +265,7 @@ const EditProductWarehouse = props => {
                           <option key={0} value={null}>
                             Chọn Quận huyện
                           </option>
-                          {customerInitialState.districts.map(item => (
+                          {customerInitialState.districts.map((item) => (
                             <option key={item.id} value={item.code}>
                               {item.name}
                             </option>
@@ -317,15 +282,15 @@ const EditProductWarehouse = props => {
                           name="ward"
                           id="ward"
                           value={values.ward?.id}
-                          onChange={e => {
-                            const founded = customerInitialState.wards.filter(item => item.code === e.target.value);
+                          onChange={(e) => {
+                            const founded = customerInitialState.wards.filter((item) => item.code === e.target.value);
                             if (founded.length > 0) setFieldValue('ward', founded[0].id);
                           }}
                         >
                           <option key={0} value={null}>
                             Chọn Xã phường
                           </option>
-                          {customerInitialState.wards.map(item => (
+                          {customerInitialState.wards.map((item) => (
                             <option key={item.id} value={item.code}>
                               {item.name}
                             </option>
@@ -359,7 +324,7 @@ const EditProductWarehouse = props => {
                       name="status"
                       id="status"
                       value={values.status}
-                      onChange={e => {
+                      onChange={(e) => {
                         setFieldValue('status', e.target.value);
                       }}
                     ></CSelect>

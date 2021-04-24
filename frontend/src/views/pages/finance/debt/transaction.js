@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { CBadge, CCard, CCardHeader, CCardBody, CCol, CDataTable, CRow, CPagination, CCardTitle, CLink } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {CBadge, CCard, CCardHeader, CCardBody, CCol, CDataTable, CRow, CPagination, CCardTitle, CLink} from '@coreui/react';
 
-import { useHistory } from 'react-router-dom';
+import {useDispatch, useSelector} from 'react-redux';
 
-import { getTransaction } from './debt.api';
-const getBadge = status => {
+import {useHistory} from 'react-router-dom';
+
+import {getTransaction} from './debt.api';
+const getBadge = (status) => {
   switch (status) {
     case 'PAYMENT':
       return 'success';
@@ -21,10 +21,10 @@ const getBadge = status => {
 const mappingStatus = {
   DEBIT: 'GHI NỢ',
   PAYMENT: 'THANH TOÁN',
-  RETURN: 'TRẢ HÀNG'
+  RETURN: 'TRẢ HÀNG',
 };
-const Transaction = props => {
-  const { initialState } = useSelector(state => state.debt);
+const Transaction = (props) => {
+  const {initialState} = useSelector((state) => state.debt);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -32,14 +32,14 @@ const Transaction = props => {
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
 
-  const computedItems = items => {
-    return items.map(item => {
+  const computedItems = (items) => {
+    return items.map((item) => {
       return {
         ...item,
         code: item.customer?.code || '',
         name: item.customer?.name || '',
         phone: item.customer?.phone || '',
-        sale: item.sale?.name || ''
+        sale: item.sale?.name || '',
       };
     });
   };
@@ -48,14 +48,14 @@ const Transaction = props => {
     {
       key: 'order',
       label: 'STT',
-      _style: { width: '1%' },
-      filter: false
+      _style: {width: '1%'},
+      filter: false,
     },
-    { key: 'type', label: 'Loại công nợ', _style: { width: '10%' } },
-    { key: 'entity', label: 'Công nợ', _style: { width: '15%' } },
-    { key: 'previousDebt', label: 'Nợ cũ', _style: { width: '15%' } },
-    { key: 'issueDebt', label: 'Phát sinh nợ', _style: { width: '10%' } },
-    { key: 'earlyDebt', label: 'Nợ mới', _style: { width: '15%' } }
+    {key: 'type', label: 'Loại công nợ', _style: {width: '10%'}},
+    {key: 'entity', label: 'Công nợ', _style: {width: '15%'}},
+    {key: 'previousDebt', label: 'Nợ cũ', _style: {width: '15%'}},
+    {key: 'issueDebt', label: 'Phát sinh nợ', _style: {width: '10%'}},
+    {key: 'earlyDebt', label: 'Nợ mới', _style: {width: '15%'}},
   ];
 
   useEffect(() => {
@@ -65,16 +65,16 @@ const Transaction = props => {
   }, [props.location.state?.customer]);
 
   useEffect(() => {
-    dispatch(getTransaction({ customer: props.match.params.id }));
+    dispatch(getTransaction({customer: props.match.params.id}));
   }, []);
 
-  const onFilterColumn = value => {
+  const onFilterColumn = (value) => {
     if (value) {
-      dispatch(getTransaction({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getTransaction({page: 0, size: size, sort: 'createdDate,desc', ...value}));
     }
   };
 
-  const renderLink = item => {
+  const renderLink = (item) => {
     let link = '';
     let href = '';
     if (item.order) {
@@ -94,7 +94,7 @@ const Transaction = props => {
     );
   };
 
-  const renderPreviousDebt = item => {
+  const renderPreviousDebt = (item) => {
     let debt = 0;
     if (item.order) {
       debt = item.order.realMoney;
@@ -103,7 +103,7 @@ const Transaction = props => {
     } else {
       debt = item.storeInput.totalMoney;
     }
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(debt);
+    return new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(debt);
   };
 
   return (
@@ -130,7 +130,7 @@ const Transaction = props => {
               </dl>
               <dl className="row">
                 <dt className="col-sm-3">Nợ hiện tại</dt>
-                <dd className="col-sm-9">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(debt?.debt)}</dd>
+                <dd className="col-sm-9">{new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(debt?.debt)}</dd>
               </dl>
             </CCol>
           </CRow>
@@ -147,34 +147,34 @@ const Transaction = props => {
             columnFilter
             tableFilter
             cleaner
-            itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+            itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [10, 20, 30, 50]}}
             itemsPerPage={size}
             hover
             sorter
             loading={initialState.loading}
             // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-            onPageChange={val => console.log('new page:', val)}
-            onPagesChange={val => console.log('new pages:', val)}
-            onPaginationChange={val => setSize(val)}
+            onPageChange={(val) => console.log('new page:', val)}
+            onPagesChange={(val) => console.log('new pages:', val)}
+            onPaginationChange={(val) => setSize(val)}
             // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
             // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-            onTableFilterChange={val => console.log('new table filter:', val)}
+            onTableFilterChange={(val) => console.log('new table filter:', val)}
             onColumnFilterChange={onFilterColumn}
             scopedSlots={{
               order: (item, index) => <td>{index + 1}</td>,
-              previousDebt: (item, index) => (
-                <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.previousDebt)}</td>
+              previousDebt: (item ) => (
+                <td>{new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(item.previousDebt)}</td>
               ),
-              earlyDebt: (item, index) => (
-                <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.earlyDebt)}</td>
+              earlyDebt: (item ) => (
+                <td>{new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(item.earlyDebt)}</td>
               ),
-              entity: item => <td>{renderLink(item)}</td>,
-              type: item => (
+              entity: (item) => <td>{renderLink(item)}</td>,
+              type: (item) => (
                 <td>
                   <CBadge color={getBadge(item.type)}>{mappingStatus[item.type]}</CBadge>
                 </td>
               ),
-              issueDebt: item => <td>{renderPreviousDebt(item)}</td>
+              issueDebt: (item) => <td>{renderPreviousDebt(item)}</td>,
               // debt: item => <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.debt)}</td>,
               // action: item => {
               //   return (
@@ -199,7 +199,7 @@ const Transaction = props => {
           <CPagination
             activePage={activePage}
             pages={Math.floor(initialState.totalItem / size) + 1}
-            onActivePageChange={i => setActivePage(i)}
+            onActivePageChange={(i) => setActivePage(i)}
           />
         </CCardBody>
       </CCard>

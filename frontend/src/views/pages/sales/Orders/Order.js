@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
+import React, {useEffect, useState} from 'react';
+import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getOrder, updateOrder, updateStatusOrder } from './order.api';
-import { globalizedOrdersSelectors, reset } from './order.reducer';
-import { useHistory } from 'react-router-dom';
-import { Table } from 'reactstrap';
-import { OrderStatus } from './order-status';
-import { confirmAlert } from 'react-confirm-alert'; // Import
+import {useDispatch, useSelector} from 'react-redux';
+import {getOrder, updateStatusOrder} from './order.api';
+import {globalizedOrdersSelectors, reset} from './order.reducer';
+import {useHistory} from 'react-router-dom';
+import {Table} from 'reactstrap';
+import {OrderStatus} from './order-status';
+import {confirmAlert} from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-const getBadge = status => {
+const getBadge = (status) => {
   switch (status) {
     case 'ACTIVE':
       return 'success';
@@ -27,41 +27,41 @@ const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
   CREATE_COD: 'ĐÃ TẠO VẬN ĐƠN',
-  CANCEL: 'ĐÃ HỦY'
+  CANCEL: 'ĐÃ HỦY',
 };
-const Order = props => {
+const Order = (props) => {
   const [details, setDetails] = useState([]);
-  const { initialState } = useSelector(state => state.order);
+  const {initialState} = useSelector((state) => state.order);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size] = useState(20);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
     dispatch(reset());
     localStorage.setItem('order', JSON.stringify({}));
   }, []);
-  const { selectAll } = globalizedOrdersSelectors;
+  const {selectAll} = globalizedOrdersSelectors;
   const orders = useSelector(selectAll);
 
   useEffect(() => {
-    dispatch(getOrder({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
+    dispatch(getOrder({page: activePage - 1, size: size, sort: 'createdDate,desc'}));
   }, [activePage]);
 
-  const computedItems = items => {
-    return items.map(item => {
+  const computedItems = (items) => {
+    return items.map((item) => {
       return {
         ...item,
         customerName: item.customer?.name,
         tel: item.customer?.tel,
         quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
         total: item.orderDetails
-          ?.reduce((sum, current) => sum + current.priceTotal, 0)
-          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
+            ?.reduce((sum, current) => sum + current.priceTotal, 0)
+            .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}),
       };
     });
   };
 
-  const toggleDetails = index => {
+  const toggleDetails = (index) => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -77,31 +77,31 @@ const Order = props => {
     {
       key: 'order',
       label: 'STT',
-      _style: { width: '1%' },
-      filter: false
+      _style: {width: '1%'},
+      filter: false,
     },
     {
       key: 'show_details',
       label: 'Xem chi tiết',
-      _style: { width: '1%' },
-      filter: false
+      _style: {width: '1%'},
+      filter: false,
     },
-    { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
-    { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
-    { key: 'tel', label: 'Số điện thoại', _style: { width: '10%' } },
-    { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' } },
-    { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
-    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+    {key: 'code', label: 'Mã đơn hàng', _style: {width: '10%'}},
+    {key: 'customerName', label: 'Tên khách hàng/đại lý', _style: {width: '15%'}},
+    {key: 'tel', label: 'Số điện thoại', _style: {width: '10%'}},
+    {key: 'quantity', label: 'Tổng sản phẩm', _style: {width: '10%'}},
+    {key: 'total', label: 'Tiền thanh toán', _style: {width: '10%'}},
+    {key: 'createdDate', label: 'Ngày tạo', _style: {width: '10%'}},
+    {key: 'status', label: 'Trạng thái', _style: {width: '10%'}},
     {
       key: 'action',
       label: '',
-      _style: { width: '30%' },
-      filter: false
-    }
+      _style: {width: '30%'},
+      filter: false,
+    },
   ];
 
-  const getBadge = status => {
+  const getBadge = (status) => {
     switch (status) {
       case 'APPROVED':
         return 'success';
@@ -115,19 +115,19 @@ const Order = props => {
         return 'primary';
     }
   };
-  const csvContent = orders.map(item => Object.values(item).join(',')).join('\n');
+  const csvContent = orders.map((item) => Object.values(item).join(',')).join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateOrder = () => {
     history.push(`${props.match.url}/new`);
   };
 
-  const onFilterColumn = value => {
+  const onFilterColumn = (value) => {
     if (Object.keys(value).length > 0) {
-      dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getOrder({page: 0, size: size, sort: 'createdDate,desc', ...value}));
     }
   };
 
-  const toEditOrder = typeId => {
+  const toEditOrder = (typeId) => {
     history.push(`${props.match.url}/${typeId}/edit`);
   };
 
@@ -138,90 +138,90 @@ const Order = props => {
     }
   }, [initialState.updatingSuccess]);
 
-  const approveOrder = order => () => {
+  const approveOrder = (order) => () => {
     order.status = OrderStatus.APPROVED;
     dispatch(updateStatusOrder(order));
   };
 
-  const cancelOrder = order => () => {
+  const cancelOrder = (order) => () => {
     order.status = OrderStatus.CANCEL;
     dispatch(updateStatusOrder(order));
   };
 
-  const deleteOrder = order => () => {
+  const deleteOrder = (order) => () => {
     order.status = OrderStatus.DELETED;
     dispatch(updateStatusOrder(order));
   };
 
-  const createCodOrder = order => () => {
+  const createCodOrder = (order) => () => {
     order.status = OrderStatus.CREATE_COD;
     dispatch(updateStatusOrder(order));
   };
 
-  const approveAlert = item => {
+  const approveAlert = (item) => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn duyệt đơn hàng này?',
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: approveOrder(item)
+          onClick: approveOrder(item),
         },
         {
-          label: 'Hủy'
-        }
-      ]
+          label: 'Hủy',
+        },
+      ],
     });
   };
 
-  const cancelAlert = item => {
+  const cancelAlert = (item) => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn hủy đơn hàng này?',
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: cancelOrder(item)
+          onClick: cancelOrder(item),
         },
         {
-          label: 'Hủy'
-        }
-      ]
+          label: 'Hủy',
+        },
+      ],
     });
   };
 
-  const deleteAlert = item => {
+  const deleteAlert = (item) => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn xóa đơn hàng này?',
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: deleteOrder(item)
+          onClick: deleteOrder(item),
         },
         {
-          label: 'Hủy'
-        }
-      ]
+          label: 'Hủy',
+        },
+      ],
     });
   };
 
-  const codAlert = item => {
+  const codAlert = (item) => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn tạo vận đơn cho đơn hàng này?',
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: createCodOrder(item)
+          onClick: createCodOrder(item),
         },
         {
-          label: 'Hủy'
-        }
-      ]
+          label: 'Hủy',
+        },
+      ],
     });
   };
-  const renderButtonStatus = item => {
+  const renderButtonStatus = (item) => {
     switch (item.status) {
       case OrderStatus.WAITING:
         return (
@@ -339,29 +339,29 @@ const Order = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [20, 30, 50] }}
+          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [20, 30, 50]}}
           itemsPerPage={20}
           hover
           sorter
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
-          onPaginationChange={val => console.log('new pagination:', val)}
+          onPageChange={(val) => console.log('new page:', val)}
+          onPagesChange={(val) => console.log('new pages:', val)}
+          onPaginationChange={(val) => console.log('new pagination:', val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
+          onTableFilterChange={(val) => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
-            status: item => (
+            status: (item) => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
-            createdDate: item => <td>{item.createdDate.substr(0, 10)}</td>,
+            createdDate: (item) => <td>{item.createdDate.substr(0, 10)}</td>,
 
-            show_details: item => {
+            show_details: (item) => {
               return (
                 <td className="py-2 d-flex">
                   <CButton
@@ -378,10 +378,10 @@ const Order = props => {
                 </td>
               );
             },
-            action: item => {
+            action: (item) => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
             },
-            details: item => {
+            details: (item) => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
@@ -426,10 +426,10 @@ const Order = props => {
                               <td>{item.product?.name}</td>
                               <td>{item.product?.description}</td>
                               <td>{item.quantity}</td>
-                              <td>{item.product?.price?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
+                              <td>{item.product?.price?.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}</td>
                               <td>{item.reducePercent}%</td>
                               <td>
-                                {(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
+                                {(item.product?.price * item.quantity).toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) ||
                                   ''}
                               </td>
                               <td>
@@ -438,7 +438,7 @@ const Order = props => {
                                   (item.product?.price * item.quantity * item.reducePercent) / 100
                                 ).toLocaleString('it-IT', {
                                   style: 'currency',
-                                  currency: 'VND'
+                                  currency: 'VND',
                                 }) || ''}
                               </td>
                             </tr>
@@ -465,8 +465,8 @@ const Order = props => {
                               </td>
                               <td className="right">
                                 {item?.orderDetails
-                                  .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
-                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                    .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
+                                    .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                               </td>
                             </tr>
                             <tr>
@@ -475,11 +475,11 @@ const Order = props => {
                               </td>
                               <td className="right">
                                 {item?.orderDetails
-                                  .reduce(
-                                    (sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100,
-                                    0
-                                  )
-                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                    .reduce(
+                                        (sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100,
+                                        0,
+                                    )
+                                    .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                               </td>
                             </tr>
                             <tr>
@@ -489,14 +489,14 @@ const Order = props => {
                               <td className="right">
                                 <strong>
                                   {item?.orderDetails
-                                    .reduce(
-                                      (sum, current) =>
-                                        sum +
+                                      .reduce(
+                                          (sum, current) =>
+                                            sum +
                                         (current.product?.price * current.quantity -
                                           (current.product?.price * current.quantity * current.reducePercent) / 100),
-                                      0
-                                    )
-                                    .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                          0,
+                                      )
+                                      .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                                 </strong>
                               </td>
                             </tr>
@@ -507,13 +507,13 @@ const Order = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            }
+            },
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / 20) + 1}
-          onActivePageChange={i => setActivePage(i)}
+          onActivePageChange={(i) => setActivePage(i)}
         />
       </CCardBody>
     </CCard>

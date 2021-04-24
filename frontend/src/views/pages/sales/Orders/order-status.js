@@ -3,5 +3,5 @@ export const OrderStatus = {
   APPROVED: 'APPROVED',
   CREATE_COD: 'CREATE_COD',
   CANCEL: 'CANCEL',
-  DELETED: 'DELETED'
+  DELETED: 'DELETED',
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect} from 'react';
 import {
   CButton,
   CCard,
@@ -11,79 +11,44 @@ import {
   CLabel,
   CInput,
   CRow,
-  CSelect,
-  CCardTitle
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingProductBrand } from './product-brand.api';
-import { useHistory } from 'react-router-dom';
-import { fetching, reset } from './product-brand.reducer';
+import {useDispatch, useSelector} from 'react-redux';
+import {creatingProductBrand} from './product-brand.api';
+import {useHistory} from 'react-router-dom';
+import {fetching, reset} from './product-brand.reducer';
 
-const validationSchema = function(values) {
+const validationSchema = function() {
   return Yup.object().shape({
     code: Yup.string()
-      .min(1, `Mã thương hiệu phải lớn hơn 1 kí tự`)
-      .required('Mã thương hiệu không để trống')
-      .nullable(),
+        .min(1 `Mã thương hiệu phải lớn hơn 1 kí tự`)
+        .required('Mã thương hiệu không để trống')
+        .nullable(),
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống')
+        .min(5, `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
 
 const CreateProductBrand = () => {
-  const { initialState } = useSelector(state => state.productBrand);
+  const {initialState} = useSelector((state) => state.productBrand);
   const initialValues = {
     code: '',
     name: '',
-    description: ''
+    description: '',
   };
 
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const onSubmit = (values, { setSubmitting, setErrors }) => {
+  const onSubmit = (values, {}) => {
     dispatch(fetching());
     dispatch(creatingProductBrand(values));
   };
@@ -105,17 +70,15 @@ const CreateProductBrand = () => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
-            setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

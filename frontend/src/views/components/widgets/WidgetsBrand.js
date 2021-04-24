@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CWidgetBrand, CRow, CCol } from '@coreui/react';
+import {CWidgetBrand, CRow, CCol} from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import ChartLineSimple from '../charts/ChartLineSimple';
 
-const WidgetsBrand = ({ withCharts }) => {
+const WidgetsBrand = ({withCharts}) => {
   // render
 
   return withCharts ? (
@@ -91,7 +91,7 @@ const WidgetsBrand = ({ withCharts }) => {
 };
 
 WidgetsBrand.propTypes = {
-  withCharts: PropTypes.bool
+  withCharts: PropTypes.bool,
 };
 
 export default WidgetsBrand;

@@ -1,99 +1,64 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
   CCardHeader,
   CCardBody,
-  CCol,
+
   CForm,
   CInvalidFeedback,
   CFormGroup,
   CLabel,
   CInput,
-  CRow,
-  CSelect,
-  CCardTitle
+
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingUser, getDetailDepartment, updateDepartment } from './department.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {getDetailDepartment, updateDepartment} from './department.api';
 
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedDepartmentSelectors, reset } from './department.reducer';
-import { Table } from 'reactstrap';
+
+import {useHistory} from 'react-router-dom';
+import {fetching, globalizedDepartmentSelectors, reset} from './department.reducer';
+import {Table} from 'reactstrap';
 import Select from 'react-select';
-import { globalizedPermissionGroupsSelectors } from '../UserPermission/permission.reducer';
-import { getPermissionGroups } from '../UserPermission/permission.api';
+import {globalizedPermissionGroupsSelectors} from '../UserPermission/permission.reducer';
+import {getPermissionGroups} from '../UserPermission/permission.api';
 
-const validationSchema = function(values) {
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên chi nhánh phải lớn hơn 5 kí tự`)
-      .required('Tên chi nhánh không để trống')
+        .min(5 `Tên chi nhánh phải lớn hơn 5 kí tự`)
+        .required('Tên chi nhánh không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
+
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA'
+  DELETED: 'ĐÃ XÓA',
 };
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
 
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
-const EditDepartment = props => {
-  const { initialState } = useSelector(state => state.department);
+const EditDepartment = (props) => {
+  const {initialState} = useSelector((state) => state.department);
 
   const dispatch = useDispatch();
   const history = useHistory();
 
   const initialValues = useRef({
-    name: ''
+    name: '',
   });
 
-  const { selectById } = globalizedDepartmentSelectors;
-  const departments = useSelector(state => selectById(state, props.match.params.id));
-  const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
+  const {selectById} = globalizedDepartmentSelectors;
+  const departments = useSelector((state) => selectById(state, props.match.params.id));
+  const {selectAll: selectAllPermissionGroups} = globalizedPermissionGroupsSelectors;
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
   const [initValues, setInitValues] = useState(null);
@@ -110,7 +75,7 @@ const EditDepartment = props => {
     dispatch(getPermissionGroups());
   }, []);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     values = JSON.parse(JSON.stringify(values));
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
@@ -125,15 +90,15 @@ const EditDepartment = props => {
     }
   }, [initialState.updatingSuccess]);
 
-  const onSelectGroupPermission = ({ value }) => {
-    const checkExist = selectedGroupPermission.filter(selected => selected.id === value.id);
+  const onSelectGroupPermission = ({value}) => {
+    const checkExist = selectedGroupPermission.filter((selected) => selected.id === value.id);
     if (checkExist.length === 0) {
       const newArr = [...selectedGroupPermission, value];
       setSelectedGroupPermission(newArr);
     }
   };
 
-  const removeGPermission = index => {
+  const removeGPermission = (index) => {
     const arr = [...selectedGroupPermission];
     arr.splice(index, 1);
     setSelectedGroupPermission(arr);
@@ -153,17 +118,15 @@ const EditDepartment = props => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
-            setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CFormGroup>
@@ -183,19 +146,19 @@ const EditDepartment = props => {
                 <CLabel htmlFor="userName">Nhóm quyền</CLabel>
                 <Select
                   name="department"
-                  onChange={e => {
+                  onChange={(e) => {
                     onSelectGroupPermission(e);
                   }}
                   placeholder="Chọn nhóm chức năng"
-                  options={groupPermissions.map(item => ({
+                  options={groupPermissions.map((item) => ({
                     value: item,
-                    label: item.name
+                    label: item.name,
                   }))}
                 />
               </CFormGroup>
 
               {selectedGroupPermission.length > 0 ? (
-                <Table style={{ marginTop: 15 }}>
+                <Table style={{marginTop: 15}}>
                   <thead>
                     <tr>
                       <th className="hand  text-left index-column">
@@ -220,14 +183,14 @@ const EditDepartment = props => {
                           <td className="text-left">{i + 1}</td>
                           <td>{gPermission.name}</td>
                           <td>
-                            {gPermission.permissionGroupAssociates
-                              ? Object.keys(
+                            {gPermission.permissionGroupAssociates ?
+                              Object.keys(
                                   gPermission.permissionGroupAssociates.reduce((r, a) => {
                                     r[a.typeName] = [[]];
                                     return r;
-                                  }, {})
-                                ).join(', ')
-                              : ''}
+                                  }, {}),
+                              ).join(', ') :
+                              ''}
                           </td>
                           <td className="text-center">
                             <CButton type="reset" size="lg" color="danger" onClick={() => removeGPermission(i)} className="ml-5">
@@ -240,7 +203,7 @@ const EditDepartment = props => {
                   </tbody>
                 </Table>
               ) : (
-                <div className="alert alert-warning" style={{ textAlign: 'center' }}>
+                <div className="alert alert-warning" style={{textAlign: 'center'}}>
                   <span>Người dùng này chưa có nhóm quyền !</span>
                 </div>
               )}

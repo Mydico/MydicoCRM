@@ -1,21 +1,17 @@
-import React, { useImperativeHandle, useState } from 'react';
+import React, {useImperativeHandle, useState} from 'react';
 import {
   CCard,
-  CCardHeader,
+
   CCardBody,
   CToast,
   CToastBody,
   CToastHeader,
   CToaster,
-  CForm,
-  CInput,
-  CInputCheckbox,
-  CButton,
+
+
   CContainer,
   CRow,
   CCol,
-  CFormGroup,
-  CLabel
 } from '@coreui/react';
 
 export const Toaster = React.forwardRef((props, ref) => {
@@ -28,16 +24,16 @@ export const Toaster = React.forwardRef((props, ref) => {
     'bottom-left',
     'bottom-center',
     'bottom-right',
-    'bottom-full'
+    'bottom-full',
   ];
 
   const [toasts, setToasts] = useState([]);
 
-  const [position, setPosition] = useState('top-right');
-  const [autohide, setAutohide] = useState(true);
-  const [autohideValue, setAutohideValue] = useState(1000);
-  const [closeButton, setCloseButton] = useState(true);
-  const [fade, setFade] = useState(true);
+  const [position] = useState('top-right');
+  const [autohide] = useState(true);
+  const [autohideValue] = useState(1000);
+  const [closeButton] = useState(true);
+  const [fade] = useState(true);
 
   // const addToast = () => {
   //   setToasts([
@@ -48,8 +44,8 @@ export const Toaster = React.forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     addToast() {
-      setToasts([...toasts, { position, autohide: autohide && autohideValue, closeButton, fade }]);
-    }
+      setToasts([...toasts, {position, autohide: autohide && autohideValue, closeButton, fade}]);
+    },
   }));
 
   const toasters = (() => {
@@ -66,7 +62,7 @@ export const Toaster = React.forwardRef((props, ref) => {
         <CContainer>
           <CRow>
             <CCol sm="12" lg="6">
-              {Object.keys(toasters).map(toasterKey => (
+              {Object.keys(toasters).map((toasterKey) => (
                 <CToaster position={toasterKey} key={'toaster' + toasterKey}>
                   {toasters[toasterKey].map((toast, key) => {
                     return (
@@ -75,12 +71,12 @@ export const Toaster = React.forwardRef((props, ref) => {
                         show={true}
                         autohide={toast.autohide}
                         fade={toast.fade}
-                        style={{ backgroundColor: 'green' }}
+                        style={{backgroundColor: 'green'}}
                       >
-                        <CToastHeader closeButton={toast.closeButton} style={{ color: 'green' }}>
+                        <CToastHeader closeButton={toast.closeButton} style={{color: 'green'}}>
                           Thông báo
                         </CToastHeader>
-                        <CToastBody style={{ color: 'white' }}>{props.message}</CToastBody>
+                        <CToastBody style={{color: 'white'}}>{props.message}</CToastBody>
                       </CToast>
                     );
                   })}

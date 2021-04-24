@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {
   CNav,
   CNavItem,
@@ -13,17 +13,17 @@ import {
   CProgress,
   CSidebar,
   CImg,
-  CSidebarClose
+  CSidebarClose,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { setAsideShow } from '../App.reducer';
+import {setAsideShow} from '../App.reducer';
 const TheAside = () => {
-  const show = useSelector(state => state.app.asideShow);
+  const show = useSelector((state) => state.app.asideShow);
   const dispatch = useDispatch();
-  const setState = state => dispatch(setAsideShow(state));
+  const setState = (state) => dispatch(setAsideShow(state));
 
   return (
-    <CSidebar aside colorScheme="light" size="lg" overlaid show={show} onShowChange={state => setState(state)}>
+    <CSidebar aside colorScheme="light" size="lg" overlaid show={show} onShowChange={(state) => setState(state)}>
       <CSidebarClose onClick={() => setState(false)} />
       <CTabs>
         <CNav variant="tabs" className="nav-underline nav-underline-primary">

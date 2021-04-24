@@ -1,6 +1,6 @@
-import React, { Suspense } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import { CContainer, CFade } from '@coreui/react';
+import React, {Suspense} from 'react';
+import {Route, Switch} from 'react-router-dom';
+import {CContainer, CFade} from '@coreui/react';
 
 // routes config
 import routes from '../routes';
@@ -25,7 +25,7 @@ const TheContent = () => {
                     path={route.path}
                     exact={route.exact}
                     name={route.name}
-                    render={props => (
+                    render={(props) => (
                       <CFade>
                         <route.component {...props} />
                       </CFade>

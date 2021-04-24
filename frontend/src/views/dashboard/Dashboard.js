@@ -1,5 +1,5 @@
-import React, { lazy } from 'react';
-import { CBadge, CButton, CButtonGroup, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CProgress, CRow, CCallout } from '@coreui/react';
+import React, {lazy} from 'react';
+import {CBadge, CButton, CButtonGroup, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CProgress, CRow, CCallout} from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 
 import MainChartExample from '../../charts/MainChartExample.js';
@@ -25,7 +25,7 @@ const Dashboard = () => {
                 <CIcon name="cil-cloud-download" />
               </CButton>
               <CButtonGroup className="float-right mr-3">
-                {['Day', 'Month', 'Year'].map(value => (
+                {['Day', 'Month', 'Year'].map((value) => (
                   <CButton color="outline-secondary" key={value} className="mx-0" active={value === 'Month'}>
                     {value}
                   </CButton>
@@ -33,7 +33,7 @@ const Dashboard = () => {
               </CButtonGroup>
             </CCol>
           </CRow>
-          <MainChartExample style={{ height: '300px', marginTop: '40px' }} />
+          <MainChartExample style={{height: '300px', marginTop: '40px'}} />
         </CCardBody>
         <CCardFooter>
           <CRow className="text-center">

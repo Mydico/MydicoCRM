@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -11,95 +11,42 @@ import {
   CLabel,
   CInput,
   CRow,
-  CSelect,
-  CCardTitle
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingCustomer, creatingCustomerStatus, getBranches, getCity, getCustomerType, getDistrict } from '../customer.api';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { useHistory } from 'react-router-dom';
-import { getDetailCustomerStatus, updateCustomerStatus } from './customer-status.api';
-import { fetching, globalizedcustomerStatuselectors, reset } from './customer-status.reducer';
-import { setTimeout } from 'core-js';
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+import {useDispatch, useSelector} from 'react-redux';
 
-const validationSchema = function(values) {
+
+import {useHistory} from 'react-router-dom';
+import {getDetailCustomerStatus, updateCustomerStatus} from './customer-status.api';
+import {fetching, globalizedcustomerStatuselectors} from './customer-status.reducer';
+
+
+const validationSchema = function() {
   return Yup.object().shape({
     description: Yup.string()
-      .min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`)
-      .required('Tên liên lạc không để trống'),
+        .min(5 `Mô tả liên lạc phải lớn hơn 5 kí tự`)
+        .required('Tên liên lạc không để trống'),
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống')
+        .min(5, `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      console.log(values);
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
-
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
-const touchAll = (setTouched, errors) => {
-  setTouched({
-    code: true,
-    lastName: true,
-    userName: true,
-    email: true,
-    password: true,
-    confirmPassword: true,
-    accept: true
-  });
-  validateForm(errors);
-};
-
-const CreateCustomerStatus = props => {
-  const { initialState } = useSelector(state => state.customerStatus);
+const CreateCustomerStatus = (props) => {
+  const {initialState} = useSelector((state) => state.customerStatus);
   const initialValues = {
     name: '',
-    description: ''
+    description: '',
   };
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectById } = globalizedcustomerStatuselectors;
-  const customerStatus = useSelector(state => selectById(state, props.match.params.id));
+  const {selectById} = globalizedcustomerStatuselectors;
+  const customerStatus = useSelector((state) => selectById(state, props.match.params.id));
 
   const [initValues, setInitValues] = useState(null);
 
@@ -111,7 +58,7 @@ const CreateCustomerStatus = props => {
     setInitValues(customerStatus);
   }, [customerStatus]);
 
-  const onSubmit = (values, { setSubmitting, setErrors }) => {
+  const onSubmit = (values, {}) => {
     dispatch(fetching());
     dispatch(updateCustomerStatus(values));
   };
@@ -132,17 +79,14 @@ const CreateCustomerStatus = props => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
-            handleSubmit,
-            setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+            handleSubmit
+
+
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

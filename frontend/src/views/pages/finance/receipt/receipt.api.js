@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import {createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const getDetailReceipt = createAsyncThunk('api/detail/receipts', async (userId, thunkAPI) => {
@@ -28,10 +28,10 @@ export const updateReceipt = createAsyncThunk('api/update/receipts', async (body
   }
 });
 
-export const getReceipt = createAsyncThunk('api/receipts', async (params = { page: 0, size: 20, sort: 'createdDate,desc' }, thunkAPI) => {
+export const getReceipt = createAsyncThunk('api/receipts', async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
   try {
-    const result = await axios.get('api/receipts', { params: params });
-    return { data: result.data, total: result.headers['x-total-count'] };
+    const result = await axios.get('api/receipts', {params: params});
+    return {data: result.data, total: result.headers['x-total-count']};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

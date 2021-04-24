@@ -1,22 +1,22 @@
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingUserRole, getUserRole, getDetailUserRole, updateUserRole } from './user-roles.api';
+import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
+import {creatingUserRole, getUserRole, getDetailUserRole, updateUserRole} from './user-roles.api';
 
 const initialState = {
   loading: false,
   updatingSuccess: false,
-  totalItem: 0
+  totalItem: 0,
 };
 
 export const userRoleAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: userRole => userRole.id
+  selectId: (userRole) => userRole.id,
   // Keep the "all IDs" array sorted based on book titles
   // sortComparer: (a, b) => a.login.localeCompare(b.login),
 });
 
 const slice = createSlice({
   name: 'userRole',
-  initialState: userRoleAdapter.getInitialState({ initialState }),
+  initialState: userRoleAdapter.getInitialState({initialState}),
   reducers: {
     fetching(state) {
       state.initialState.loading = true;
@@ -28,22 +28,22 @@ const slice = createSlice({
     userRoleAddOne: userRoleAdapter.addOne,
     userRoleAddMany: userRoleAdapter.addMany,
     userRoleUpdate: userRoleAdapter.updateOne,
-    userRoleRemove: userRoleAdapter.removeOne
+    userRoleRemove: userRoleAdapter.removeOne,
   },
   extraReducers: {
-    [creatingUserRole.fulfilled]: (state, action) => {
+    [creatingUserRole.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
-    [creatingUserRole.rejected]: (state, action) => {
+    [creatingUserRole.rejected]: (state ) => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
-    [updateUserRole.fulfilled]: (state, action) => {
+    [updateUserRole.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
-    [updateUserRole.rejected]: (state, action) => {
+    [updateUserRole.rejected]: (state ) => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
@@ -56,13 +56,13 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [getUserRole.rejected]: (state, action) => {
+    [getUserRole.rejected]: (state ) => {
       state.loading = false;
-    }
-  }
+    },
+  },
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions;
+export const {fetching, reset} = slice.actions;
 
-export const globalizedUserRoleSelectors = userRoleAdapter.getSelectors(state => state.userRole);
+export const globalizedUserRoleSelectors = userRoleAdapter.getSelectors((state) => state.userRole);

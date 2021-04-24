@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -14,76 +14,40 @@ import {
   CSelect,
   CCardTitle,
   CTextarea,
-  CInputCheckbox
+  CInputCheckbox,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingPromotion, getDetailPromotion, updatePromotion } from './promotion.api';
-import store from '../../../../config/store';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedPromotionSelectors } from './promotion.reducer';
-import { PromotionStatus, UnitType } from './contants';
-import { currencyFormat } from '../../../../shared/utils/normalize';
-import { getCustomerType } from '../../customer/CustomerType/customer-type.api';
-import { globalizedcustomerTypeSelectors } from '../../customer/CustomerType/customer-type.reducer';
-import Select from 'react-select';
-import { getProduct } from '../../product/ProductList/product.api';
-import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import {useDispatch, useSelector} from 'react-redux';
+import {getDetailPromotion, updatePromotion} from './promotion.api';
 
-const validationSchema = function(values) {
+
+import {useHistory} from 'react-router-dom';
+import {fetching, globalizedPromotionSelectors} from './promotion.reducer';
+
+
+import {getCustomerType} from '../../customer/CustomerType/customer-type.api';
+import {globalizedcustomerTypeSelectors} from '../../customer/CustomerType/customer-type.reducer';
+import Select from 'react-select';
+import {getProduct} from '../../product/ProductList/product.api';
+import {globalizedProductSelectors} from '../../product/ProductList/product.reducer';
+
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống')
+    endTime: Yup.string().required('Ngày kết thúc không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
 
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
-const EditPromotion = props => {
-  const { initialState, entities } = useSelector(state => state.promotion);
+const EditPromotion = (props) => {
+  const {initialState, entities} = useSelector((state) => state.promotion);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -94,14 +58,14 @@ const EditPromotion = props => {
     startTime: new Date().toISOString(),
     endTime: new Date().toISOString(),
     isLock: false,
-    customerType: null
+    customerType: null,
   });
-  const { selectAll } = globalizedcustomerTypeSelectors;
+  const {selectAll} = globalizedcustomerTypeSelectors;
   const customerType = useSelector(selectAll);
-  const { selectAll: selectAllProduct } = globalizedProductSelectors;
+  const {selectAll: selectAllProduct} = globalizedProductSelectors;
   const products = useSelector(selectAllProduct);
-  const { selectById } = globalizedPromotionSelectors;
-  const promotion = useSelector(state => selectById(state, props.match.params.id));
+  const {selectById} = globalizedPromotionSelectors;
+  const promotion = useSelector((state) => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
@@ -128,17 +92,17 @@ const EditPromotion = props => {
   }, [customerType]);
 
   const onAddProduct = () => {
-    const data = { product: { id: '' }, buy: 0, gift: 0 };
+    const data = {product: {id: ''}, buy: 0, gift: 0};
     setProductList([...productList, data]);
   };
 
   const onSelectedProduct = (item, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
-    const foundedIndex = copyArr.findIndex(product => product.product.id === item.value);
+    const foundedIndex = copyArr.findIndex((product) => product.product.id === item.value);
     if (foundedIndex >= 0) {
       copyArr.splice(index, 1);
     } else {
-      copyArr[index].product = { id: item.value };
+      copyArr[index].product = {id: item.value};
     }
     setProductList(copyArr);
   };
@@ -149,7 +113,7 @@ const EditPromotion = props => {
     setProductList(copyArr);
   };
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     values = JSON.parse(JSON.stringify(values));
     if (!values.customerType) values.customerType = initialValues.current.customerType;
@@ -180,16 +144,16 @@ const EditPromotion = props => {
             values,
             errors,
             touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => {
             return (
               <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
@@ -235,12 +199,12 @@ const EditPromotion = props => {
                         name="customerType"
                         id="customerType"
                         value={values.customerType?.id}
-                        onChange={e => {
+                        onChange={(e) => {
                           setFieldValue('customerType', e.target.value);
                         }}
                       >
                         {customerType &&
-                          customerType.map(item => (
+                          customerType.map((item) => (
                             <option key={item.id} value={item.id}>
                               {item.name}
                             </option>
@@ -306,12 +270,12 @@ const EditPromotion = props => {
                                 <Select
                                   value={{
                                     value: item.product?.id,
-                                    label: `${item.product?.code}-${item.product?.name}`
+                                    label: `${item.product?.code}-${item.product?.name}`,
                                   }}
-                                  onChange={event => onSelectedProduct(event, index)}
-                                  options={products.map(item => ({
+                                  onChange={(event) => onSelectedProduct(event, index)}
+                                  options={products.map((item) => ({
                                     value: item.id,
-                                    label: `${item.code}-${item.name}`
+                                    label: `${item.code}-${item.name}`,
                                   }))}
                                 />
                               </CCol>
@@ -323,7 +287,7 @@ const EditPromotion = props => {
                                   id="buy"
                                   placeholder="Dung tích"
                                   autoComplete="buy"
-                                  onChange={event => onChangeProductPromotion(event.target.value, index, 'buy')}
+                                  onChange={(event) => onChangeProductPromotion(event.target.value, index, 'buy')}
                                   invalid={!productList[index].buy}
                                   valid={productList[index].buy}
                                   onBlur={handleBlur}
@@ -339,7 +303,7 @@ const EditPromotion = props => {
                                   id="gift"
                                   placeholder="Dung tích"
                                   autoComplete="gift"
-                                  onChange={event => onChangeProductPromotion(event.target.value, index, 'gift')}
+                                  onChange={(event) => onChangeProductPromotion(event.target.value, index, 'gift')}
                                   invalid={!productList[index].gift}
                                   valid={productList[index].gift}
                                   onBlur={handleBlur}

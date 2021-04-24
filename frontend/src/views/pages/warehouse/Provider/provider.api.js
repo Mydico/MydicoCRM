@@ -1,11 +1,11 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import {createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const getProvider = createAsyncThunk('api/providers', async (params = { page: 0, size: 20, sort: 'createdDate,desc' }, thunkAPI) => {
+export const getProvider = createAsyncThunk('api/providers', async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
   try {
     console.log(params);
-    const result = await axios.get('api/providers', { params: params });
-    return { data: result.data, total: result.headers['x-total-count'] };
+    const result = await axios.get('api/providers', {params: params});
+    return {data: result.data, total: result.headers['x-total-count']};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

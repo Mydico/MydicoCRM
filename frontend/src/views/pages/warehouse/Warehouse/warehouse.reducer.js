@@ -1,5 +1,5 @@
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingWarehouse, getWarehouse, getDetailWarehouse, updateWarehouse } from './warehouse.api';
+import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
+import {creatingWarehouse, getWarehouse, getDetailWarehouse, updateWarehouse} from './warehouse.api';
 
 const initialState = {
   loading: false,
@@ -10,19 +10,19 @@ const initialState = {
   wards: [],
   type: [],
   branch: [],
-  status: []
+  status: [],
 };
 
 export const warehousesAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: warehouse => warehouse.id,
+  selectId: (warehouse) => warehouse.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.name.localeCompare(b.name)
+  sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
 
 const slice = createSlice({
   name: 'warehouse',
-  initialState: warehousesAdapter.getInitialState({ initialState }),
+  initialState: warehousesAdapter.getInitialState({initialState}),
   reducers: {
     fetching(state) {
       state.initialState.loading = true;
@@ -34,14 +34,14 @@ const slice = createSlice({
     warehousesAddOne: warehousesAdapter.addOne,
     warehousesAddMany: warehousesAdapter.addMany,
     warehouseUpdate: warehousesAdapter.updateOne,
-    warehouseRemove: warehousesAdapter.removeOne
+    warehouseRemove: warehousesAdapter.removeOne,
   },
   extraReducers: {
-    [creatingWarehouse.fulfilled]: (state, action) => {
+    [creatingWarehouse.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
-    [updateWarehouse.fulfilled]: (state, action) => {
+    [updateWarehouse.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
@@ -54,13 +54,13 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [getWarehouse.rejected]: (state, action) => {
+    [getWarehouse.rejected]: (state ) => {
       state.loading = false;
-    }
-  }
+    },
+  },
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions;
+export const {fetching, reset} = slice.actions;
 
-export const globalizedWarehouseSelectors = warehousesAdapter.getSelectors(state => state.warehouse);
+export const globalizedWarehouseSelectors = warehousesAdapter.getSelectors((state) => state.warehouse);

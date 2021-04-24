@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable } from '@coreui/react';
+import React, {useState} from 'react';
+import {CCardBody, CBadge, CButton, CCollapse, CDataTable} from '@coreui/react';
 import usersData from '../../users/UsersData.js';
 
 const DemoTable = () => {
   const [details, setDetails] = useState([]);
   // const [items, setItems] = useState(usersData)
 
-  const toggleDetails = index => {
+  const toggleDetails = (index) => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -18,19 +18,19 @@ const DemoTable = () => {
   };
 
   const fields = [
-    { key: 'name', _style: { width: '40%' } },
+    {key: 'name', _style: {width: '40%'}},
     'registered',
-    { key: 'role', _style: { width: '20%' } },
-    { key: 'status', _style: { width: '20%' } },
+    {key: 'role', _style: {width: '20%'}},
+    {key: 'status', _style: {width: '20%'}},
     {
       key: 'show_details',
       label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
+      _style: {width: '1%'},
+      filter: false,
+    },
   ];
 
-  const getBadge = status => {
+  const getBadge = (status) => {
     switch (status) {
       case 'Active':
         return 'success';
@@ -68,12 +68,12 @@ const DemoTable = () => {
         // onTableFilterChange={(val) => console.log('new table filter:', val)}
         // onColumnFilterChange={(val) => console.log('new column filter:', val)}
         scopedSlots={{
-          status: item => (
+          status: (item) => (
             <td>
               <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
             </td>
           ),
-          show_details: item => {
+          show_details: (item) => {
             return (
               <td className="py-2">
                 <CButton
@@ -90,7 +90,7 @@ const DemoTable = () => {
               </td>
             );
           },
-          details: item => {
+          details: (item) => {
             return (
               <CCollapse show={details.includes(item.id)}>
                 <CCardBody>
@@ -105,7 +105,7 @@ const DemoTable = () => {
                 </CCardBody>
               </CCollapse>
             );
-          }
+          },
         }}
       />
     </CCardBody>

@@ -1,0 +1,32 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "plugin:react/recommended",
+        "google"
+    ],
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "autofix"
+    ],
+    "rules": {
+        "no-unused-vars":"error",
+        "autofix/no-unused-vars": "error",
+        "autofix/comma-spacing": "error",
+        "autofix/no-var": "error",
+        "max-len": "off",
+        "no-tabs": "off",
+        "react/prop-types": "off",
+        "react/display-name": "off"
+    },
+    "ignorePatterns": [ "/*" ] 
+}

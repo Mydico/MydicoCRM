@@ -1,59 +1,58 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   CButton,
   CCard,
   CCardHeader,
   CCardBody,
-  CCol,
+
   CForm,
   CInvalidFeedback,
   CFormGroup,
   CLabel,
   CInput,
-  CRow,
-  CSelect,
-  CCardTitle
+
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingDepartment, getDepartment } from './department.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {creatingDepartment, getDepartment} from './department.api';
 
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedDepartmentSelectors, reset } from './department.reducer';
-import { Table } from 'reactstrap';
+
+import {useHistory} from 'react-router-dom';
+import {fetching, globalizedDepartmentSelectors, reset} from './department.reducer';
+import {Table} from 'reactstrap';
 import Select from 'react-select';
-import { globalizedPermissionGroupsSelectors } from '../UserPermission/permission.reducer';
-import { getPermissionGroups } from '../UserPermission/permission.api';
-import { validate } from '../../../../shared/utils/normalize';
+import {globalizedPermissionGroupsSelectors} from '../UserPermission/permission.reducer';
+import {getPermissionGroups} from '../UserPermission/permission.api';
+import {validate} from '../../../../shared/utils/normalize';
 
-const validationSchema = function(values) {
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên chi nhánh phải lớn hơn 5 kí tự`)
-      .required('Tên chi nhánh không để trống'),
+        .min(5 `Tên chi nhánh phải lớn hơn 5 kí tự`)
+        .required('Tên chi nhánh không để trống'),
     code: Yup.string()
-      .min(2, `Mã chi nhánh phải lớn hơn 5 kí tự`)
-      .required('Mã chi nhánh không để trống')
+        .min(2, `Mã chi nhánh phải lớn hơn 5 kí tự`)
+        .required('Mã chi nhánh không để trống'),
   });
 };
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA'
+  DELETED: 'ĐÃ XÓA',
 };
 
 const CreateDepartment = () => {
-  const { initialState } = useSelector(state => state.department);
+  const {initialState} = useSelector((state) => state.department);
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
-  const { selectAll: selectAllDepartments } = globalizedDepartmentSelectors;
+  const {selectAll: selectAllPermissionGroups} = globalizedPermissionGroupsSelectors;
+  const {selectAll: selectAllDepartments} = globalizedDepartmentSelectors;
 
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const departments = useSelector(selectAllDepartments);
@@ -62,7 +61,7 @@ const CreateDepartment = () => {
 
   const initialValues = {
     name: '',
-    code: ''
+    code: '',
   };
 
   useEffect(() => {
@@ -73,7 +72,7 @@ const CreateDepartment = () => {
     };
   }, []);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(creatingDepartment(values));
@@ -85,14 +84,14 @@ const CreateDepartment = () => {
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
-  const onSelectGroupPermission = ({ value }) => {
-    const checkExist = selectedGroupPermission.filter(selected => selected.id === value.id);
+  const onSelectGroupPermission = ({value}) => {
+    const checkExist = selectedGroupPermission.filter((selected) => selected.id === value.id);
     if (checkExist.length === 0) {
       const newArr = [...selectedGroupPermission, value];
       setSelectedGroupPermission(newArr);
     }
   };
-  const removeGPermission = index => {
+  const removeGPermission = (index) => {
     const arr = [...selectedGroupPermission];
     arr.splice(index, 1);
     setSelectedGroupPermission(arr);
@@ -107,30 +106,29 @@ const CreateDepartment = () => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CFormGroup>
                 <CLabel htmlFor="userName">Chọn chi nhánh cha</CLabel>
                 <Select
                   name="department"
-                  onChange={e => {
+                  onChange={(e) => {
                     setFieldValue('parent', e.value);
                   }}
                   placeholder="Chọn chi nhánh"
-                  options={departments.map(item => ({
+                  options={departments.map((item) => ({
                     value: item,
-                    label: item.name
+                    label: item.name,
                   }))}
                 />
               </CFormGroup>
@@ -166,19 +164,19 @@ const CreateDepartment = () => {
                 <CLabel htmlFor="userName">Nhóm quyền</CLabel>
                 <Select
                   name="department"
-                  onChange={e => {
+                  onChange={(e) => {
                     onSelectGroupPermission(e);
                   }}
                   placeholder="Chọn nhóm chức năng"
-                  options={groupPermissions.map(item => ({
+                  options={groupPermissions.map((item) => ({
                     value: item,
-                    label: item.name
+                    label: item.name,
                   }))}
                 />
               </CFormGroup>
 
               {selectedGroupPermission.length > 0 ? (
-                <Table style={{ marginTop: 15 }}>
+                <Table style={{marginTop: 15}}>
                   <thead>
                     <tr>
                       <th className="hand  text-left index-column">
@@ -203,14 +201,14 @@ const CreateDepartment = () => {
                           <td className="text-left">{i + 1}</td>
                           <td>{gPermission.name}</td>
                           <td>
-                            {gPermission.permissionGroupAssociates
-                              ? Object.keys(
+                            {gPermission.permissionGroupAssociates ?
+                              Object.keys(
                                   gPermission.permissionGroupAssociates.reduce((r, a) => {
                                     r[a.typeName] = [[]];
                                     return r;
-                                  }, {})
-                                ).join(', ')
-                              : ''}
+                                  }, {}),
+                              ).join(', ') :
+                              ''}
                           </td>
                           <td className="text-center">
                             <CButton type="reset" size="lg" color="danger" onClick={() => removeGPermission(i)} className="ml-5">
@@ -223,7 +221,7 @@ const CreateDepartment = () => {
                   </tbody>
                 </Table>
               ) : (
-                <div className="alert alert-warning" style={{ textAlign: 'center' }}>
+                <div className="alert alert-warning" style={{textAlign: 'center'}}>
                   <span>Người dùng này chưa có nhóm quyền !</span>
                 </div>
               )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {
   CCreateElement,
   CSidebar,
@@ -7,27 +7,27 @@ import {
   CSidebarNav,
   CSidebarNavDivider,
   CSidebarNavTitle,
-  CNavItem,
-  CProgress,
+
+
   CSidebarMinimizer,
   CSidebarNavDropdown,
-  CSidebarNavItem
+  CSidebarNavItem,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 
 // sidebar nav config
 import navigation from './_nav';
-import { setSidebarShow } from '../App.reducer';
+import {setSidebarShow} from '../App.reducer';
 
 const TheSidebar = () => {
   const dispatch = useDispatch();
-  const show = useSelector(state => state.app.sidebarShow);
+  const show = useSelector((state) => state.app.sidebarShow);
 
   return (
     <CSidebar
       show={show}
       unfoldable
-      onShowChange={val => {
+      onShowChange={(val) => {
         dispatch(setSidebarShow(val));
       }}
     >
@@ -42,7 +42,7 @@ const TheSidebar = () => {
             CSidebarNavDivider,
             CSidebarNavDropdown,
             CSidebarNavItem,
-            CSidebarNavTitle
+            CSidebarNavTitle,
           }}
         />
 

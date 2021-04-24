@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -11,88 +11,53 @@ import {
   CLabel,
   CInput,
   CRow,
-  CSelect,
-  CCardTitle
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingUser, getDetailUser, updateUser } from './user.api';
-import { Table } from 'reactstrap';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedUserSelectors, reset } from './user.reducer';
-import { UserStatus, UnitType } from './contants';
-import { currencyFormat } from '../../../../shared/utils/normalize';
-import { getCity, getDistrict, getWard } from '../../customer/customer.api';
-import { globalizedDepartmentSelectors } from '../UserDepartment/department.reducer';
-import { globalizedPermissionGroupsSelectors } from '../UserPermission/permission.reducer';
-import { globalizedUserRoleSelectors } from '../UserRole/user-roles.reducer';
-import { getDepartment } from '../UserDepartment/department.api';
-import { getPermissionGroups } from '../UserPermission/permission.api';
-import { getUserRole } from '../UserRole/user-roles.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {getDetailUser, updateUser} from './user.api';
+import {Table} from 'reactstrap';
+
+
+import {useHistory} from 'react-router-dom';
+import {fetching, globalizedUserSelectors, reset} from './user.reducer';
+
+
+import {globalizedDepartmentSelectors} from '../UserDepartment/department.reducer';
+import {globalizedPermissionGroupsSelectors} from '../UserPermission/permission.reducer';
+import {globalizedUserRoleSelectors} from '../UserRole/user-roles.reducer';
+import {getDepartment} from '../UserDepartment/department.api';
+import {getPermissionGroups} from '../UserPermission/permission.api';
+import {getUserRole} from '../UserRole/user-roles.api';
 import Select from 'react-select';
 
-const validationSchema = function(values) {
+const validationSchema = function() {
   return Yup.object().shape({
     firstName: Yup.string()
-      .min(3, `Họ phải lớn hơn 5 kí tự`)
-      .required('Họ không để trống'),
+        .min(3 `Họ phải lớn hơn 5 kí tự`)
+        .required('Họ không để trống'),
     lastName: Yup.string()
-      .min(3, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống')
+        .min(3, `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
+
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA'
+  DELETED: 'ĐÃ XÓA',
 };
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
 
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-
-const EditUser = props => {
-  const { initialState } = useSelector(state => state.user);
-  const { initialState: customerInitialState } = useSelector(state => state.customer);
+const EditUser = (props) => {
+  const {initialState} = useSelector((state) => state.user);
+  const {} = useSelector((state) => state.customer);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -101,14 +66,14 @@ const EditUser = props => {
     code: '',
     name: '',
     address: '',
-    tel: ''
+    tel: '',
   });
 
-  const { selectById } = globalizedUserSelectors;
-  const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
-  const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
-  const { selectAll: selectAllRole } = globalizedUserRoleSelectors;
-  const user = useSelector(state => selectById(state, props.match.params.id));
+  const {selectById} = globalizedUserSelectors;
+  const {selectAll: selectAllDepartment} = globalizedDepartmentSelectors;
+  const {selectAll: selectAllPermissionGroups} = globalizedPermissionGroupsSelectors;
+  const {selectAll: selectAllRole} = globalizedUserRoleSelectors;
+  const user = useSelector((state) => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState([]);
@@ -143,7 +108,7 @@ const EditUser = props => {
     }
   }, [initialState.updatingSuccess]);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     values = JSON.parse(JSON.stringify(values));
     values.roles = selectedRoles;
     values.departments = selectedDepartment;
@@ -153,40 +118,40 @@ const EditUser = props => {
     resetForm();
   };
 
-  const removeGPermission = index => {
+  const removeGPermission = (index) => {
     const arr = [...selectedGroupPermission];
     arr.splice(index, 1);
     setSelectedGroupPermission(arr);
   };
-  const removeDepartment = index => {
+  const removeDepartment = (index) => {
     const arr = [...selectedDepartment];
     arr.splice(index, 1);
     setSelectedDepartment(arr);
   };
-  const removeRoles = index => {
+  const removeRoles = (index) => {
     const arr = [...selectedRoles];
     arr.splice(index, 1);
     setSelectedRoles(arr);
   };
 
-  const onSelectGroupPermission = ({ value }) => {
-    const checkExist = selectedGroupPermission.filter(selected => selected.id === value.id);
+  const onSelectGroupPermission = ({value}) => {
+    const checkExist = selectedGroupPermission.filter((selected) => selected.id === value.id);
     if (checkExist.length === 0) {
       const newArr = [...selectedGroupPermission, value];
       setSelectedGroupPermission(newArr);
     }
   };
 
-  const onSelectDepartment = ({ value }) => {
-    const checkExist = selectedDepartment.filter(selected => selected.id === value.id);
+  const onSelectDepartment = ({value}) => {
+    const checkExist = selectedDepartment.filter((selected) => selected.id === value.id);
     if (checkExist.length === 0) {
       const newArr = [...selectedDepartment, value];
       setSelectedDepartment(newArr);
     }
   };
 
-  const onSelectRoles = ({ value }) => {
-    const checkExist = selectedRoles.filter(selected => selected.id === value.id);
+  const onSelectRoles = ({value}) => {
+    const checkExist = selectedRoles.filter((selected) => selected.id === value.id);
     if (checkExist.length === 0) {
       const newArr = [...selectedRoles, value];
       setSelectedRoles(newArr);
@@ -209,16 +174,15 @@ const EditUser = props => {
             values,
             errors,
             touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
-            setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -299,19 +263,19 @@ const EditUser = props => {
                 <CLabel htmlFor="userName">Chi nhánh</CLabel>
                 <Select
                   name="department"
-                  onChange={e => {
+                  onChange={(e) => {
                     onSelectDepartment(e);
                   }}
                   placeholder="Chọn chi nhánh"
-                  options={departments.map(item => ({
+                  options={departments.map((item) => ({
                     value: item,
-                    label: item.name
+                    label: item.name,
                   }))}
                 />
                 <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
               </CFormGroup>
               {selectedDepartment.length > 0 ? (
-                <Table style={{ marginTop: 15 }}>
+                <Table style={{marginTop: 15}}>
                   <thead>
                     <tr>
                       <th className="hand  text-left index-column">
@@ -343,7 +307,7 @@ const EditUser = props => {
                   </tbody>
                 </Table>
               ) : (
-                <div className="alert alert-warning" style={{ textAlign: 'center' }}>
+                <div className="alert alert-warning" style={{textAlign: 'center'}}>
                   <span>Người dùng này chưa có Chi nhánh !</span>
                 </div>
               )}
@@ -351,19 +315,19 @@ const EditUser = props => {
                 <CLabel htmlFor="userName">Chức vụ</CLabel>
                 <Select
                   name="role"
-                  onChange={e => {
+                  onChange={(e) => {
                     onSelectRoles(e);
                   }}
                   placeholder="Chọn chức vụ"
-                  options={roles.map(item => ({
+                  options={roles.map((item) => ({
                     value: item,
-                    label: item.name
+                    label: item.name,
                   }))}
                 />
                 <CInvalidFeedback className="d-block">{errors.userRole}</CInvalidFeedback>
               </CFormGroup>
               {selectedRoles.length > 0 ? (
-                <Table style={{ marginTop: 15 }}>
+                <Table style={{marginTop: 15}}>
                   <thead>
                     <tr>
                       <th className="hand  text-left index-column">
@@ -395,7 +359,7 @@ const EditUser = props => {
                   </tbody>
                 </Table>
               ) : (
-                <div className="alert alert-warning" style={{ textAlign: 'center' }}>
+                <div className="alert alert-warning" style={{textAlign: 'center'}}>
                   <span>Người dùng này chưa có chức vụ !</span>
                 </div>
               )}
@@ -403,19 +367,19 @@ const EditUser = props => {
                 <CLabel htmlFor="userName">Nhóm quyền</CLabel>
                 <Select
                   name="department"
-                  onChange={e => {
+                  onChange={(e) => {
                     onSelectGroupPermission(e);
                   }}
                   placeholder="Chọn nhóm chức năng"
-                  options={groupPermissions.map(item => ({
+                  options={groupPermissions.map((item) => ({
                     value: item,
-                    label: item.name
+                    label: item.name,
                   }))}
                 />
               </CFormGroup>
 
               {selectedGroupPermission.length > 0 ? (
-                <Table style={{ marginTop: 15 }}>
+                <Table style={{marginTop: 15}}>
                   <thead>
                     <tr>
                       <th className="hand  text-left index-column">
@@ -440,14 +404,14 @@ const EditUser = props => {
                           <td className="text-left">{i + 1}</td>
                           <td>{gPermission.name}</td>
                           <td>
-                            {gPermission.permissionGroupAssociates
-                              ? Object.keys(
+                            {gPermission.permissionGroupAssociates ?
+                              Object.keys(
                                   gPermission.permissionGroupAssociates.reduce((r, a) => {
                                     r[a.typeName] = [[]];
                                     return r;
-                                  }, {})
-                                ).join(', ')
-                              : ''}
+                                  }, {}),
+                              ).join(', ') :
+                              ''}
                           </td>
                           <td className="text-center">
                             <CButton type="reset" size="lg" color="danger" onClick={() => removeGPermission(i)} className="ml-5">
@@ -460,7 +424,7 @@ const EditUser = props => {
                   </tbody>
                 </Table>
               ) : (
-                <div className="alert alert-warning" style={{ textAlign: 'center' }}>
+                <div className="alert alert-warning" style={{textAlign: 'center'}}>
                   <span>Người dùng này chưa có nhóm quyền !</span>
                 </div>
               )}

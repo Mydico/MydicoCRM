@@ -1,6 +1,6 @@
 import React from 'react';
-import { CBadge, CButton, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CRow } from '@coreui/react';
-import { DocsLink } from 'src/reusable';
+import {CBadge, CButton, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CRow} from '@coreui/react';
+import {DocsLink} from 'src/reusable';
 
 const Badges = () => {
   return (
@@ -34,7 +34,7 @@ const Badges = () => {
           <CCardFooter>
             <CButton color="secondary">
               Notifications{' '}
-              <CBadge color="primary" shape="pill" style={{ position: 'static' }}>
+              <CBadge color="primary" shape="pill" style={{position: 'static'}}>
                 9
               </CBadge>
             </CButton>

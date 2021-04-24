@@ -1,21 +1,21 @@
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { getCustomerType, getDetailCustomerType, updateCustomerType, creatingCustomerType } from './customer-type.api';
+import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
+import {getCustomerType, getDetailCustomerType, updateCustomerType, creatingCustomerType} from './customer-type.api';
 
 const initialState = {
   loading: false,
-  updatingSuccess: false
+  updatingSuccess: false,
 };
 
 export const customerTypeAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: customerType => customerType.id,
+  selectId: (customerType) => customerType.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.name.localeCompare(b.name)
+  sortComparer: (a, b) => a.name.localeCompare(b.name),
 });
 
 const slice = createSlice({
   name: 'customerType',
-  initialState: customerTypeAdapter.getInitialState({ initialState }),
+  initialState: customerTypeAdapter.getInitialState({initialState}),
   reducers: {
     fetching(state) {
       state.initialState.loading = true;
@@ -27,7 +27,7 @@ const slice = createSlice({
     customerTypeAddOne: customerTypeAdapter.addOne,
     customerTypeAddMany: customerTypeAdapter.addMany,
     customerTypeUpdate: customerTypeAdapter.updateOne,
-    customerTypeRemove: customerTypeAdapter.removeOne
+    customerTypeRemove: customerTypeAdapter.removeOne,
   },
   extraReducers: {
     [creatingCustomerType.fulfilled]: (state, action) => {
@@ -49,14 +49,14 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [updateCustomerType.fulfilled]: (state, action) => {
+    [updateCustomerType.fulfilled]: (state ) => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
-    }
-  }
+    },
+  },
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions;
+export const {fetching, reset} = slice.actions;
 
-export const globalizedcustomerTypeSelectors = customerTypeAdapter.getSelectors(state => state.customerType);
+export const globalizedcustomerTypeSelectors = customerTypeAdapter.getSelectors((state) => state.customerType);

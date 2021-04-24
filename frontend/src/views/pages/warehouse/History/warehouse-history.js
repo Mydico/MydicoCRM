@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
+import React, {useEffect, useState} from 'react';
+import {CCardBody, CBadge, CDataTable, CCard, CCardHeader, CPagination} from '@coreui/react';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getStoreHistory } from './warehouse-history.api.js';
-import { fetching, globalizedStoreHistorySelectors, reset } from './warehouse-history.reducer.js';
-import { useHistory } from 'react-router-dom';
-import { WarehouseImportType } from '../Export/contants.js';
+import {useDispatch, useSelector} from 'react-redux';
+import {getStoreHistory} from './warehouse-history.api.js';
+import {globalizedStoreHistorySelectors, reset} from './warehouse-history.reducer.js';
+import {useHistory} from 'react-router-dom';
+
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
-  IMPORT: 'NHẬP KHO'
+  IMPORT: 'NHẬP KHO',
 };
-const getBadge = status => {
+const getBadge = (status) => {
   switch (status) {
     case 'EXPORT':
       return 'primary';
@@ -21,9 +21,9 @@ const getBadge = status => {
       return 'primary';
   }
 };
-const StoreHistory = props => {
-  const [details, setDetails] = useState([]);
-  const { initialState } = useSelector(state => state.storeHistory);
+const StoreHistory = () => {
+  const [] = useState([]);
+  const {initialState} = useSelector((state) => state.storeHistory);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
   const dispatch = useDispatch();
@@ -33,17 +33,17 @@ const StoreHistory = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getStoreHistory({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getStoreHistory({page: activePage - 1, size, sort: 'createdDate,desc'}));
   }, [activePage, size]);
 
-  const { selectAll } = globalizedStoreHistorySelectors;
+  const {selectAll} = globalizedStoreHistorySelectors;
   const storeHistorys = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
+  const computedItems = (items) => {
+    return items.map((item) => {
       return {
         ...item,
         store: item.store?.name,
-        product: item.product?.name
+        product: item.product?.name,
       };
     });
   };
@@ -53,19 +53,19 @@ const StoreHistory = props => {
     {
       key: 'order',
       label: 'STT',
-      _style: { width: '1%' },
-      filter: false
+      _style: {width: '1%'},
+      filter: false,
     },
-    { key: 'store', label: 'Tên kho', _style: { width: '10%' } },
-    { key: 'product', label: 'Tên sản phẩm', _style: { width: '15%' } },
-    { key: 'type', label: 'Hình thức', _style: { width: '15%' } },
-    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
-    { key: 'quantity', label: 'Số lượng', _style: { width: '15%' } }
+    {key: 'store', label: 'Tên kho', _style: {width: '10%'}},
+    {key: 'product', label: 'Tên sản phẩm', _style: {width: '15%'}},
+    {key: 'type', label: 'Hình thức', _style: {width: '15%'}},
+    {key: 'createdDate', label: 'Ngày tạo', _style: {width: '15%'}},
+    {key: 'quantity', label: 'Số lượng', _style: {width: '15%'}},
   ];
 
-  const onFilterColumn = value => {
+  const onFilterColumn = (value) => {
     if (value) {
-      dispatch(getStoreHistory({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getStoreHistory({page: 0, size: size, sort: 'createdDate,desc', ...value}));
     }
   };
 
@@ -81,32 +81,32 @@ const StoreHistory = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [10, 20, 30, 50]}}
           itemsPerPage={size}
           hover
           sorter
           loading={initialState.loading}
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
-          onPaginationChange={val => setSize(val)}
+          onPageChange={(val) => console.log('new page:', val)}
+          onPagesChange={(val) => console.log('new pages:', val)}
+          onPaginationChange={(val) => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
+          onTableFilterChange={(val) => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
-            type: (item, index) => (
+            type: (item ) => (
               <td>
                 <CBadge color={getBadge(item.type)}>{mappingStatus[item.type]}</CBadge>
               </td>
-            )
+            ),
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / size) + 1}
-          onActivePageChange={i => setActivePage(i)}
+          onActivePageChange={(i) => setActivePage(i)}
         />
       </CCardBody>
     </CCard>

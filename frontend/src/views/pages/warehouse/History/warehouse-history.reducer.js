@@ -1,5 +1,5 @@
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingStoreHistory, getStoreHistory, getDetailStoreHistory, updateStoreHistory } from './warehouse-history.api';
+import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
+import {creatingStoreHistory, getStoreHistory, getDetailStoreHistory, updateStoreHistory} from './warehouse-history.api';
 
 const initialState = {
   loading: false,
@@ -10,19 +10,19 @@ const initialState = {
   wards: [],
   type: [],
   branch: [],
-  status: []
+  status: [],
 };
 
 export const storeHistorysAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: storeHistory => storeHistory.id,
+  selectId: (storeHistory) => storeHistory.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.createdDate.localeCompare(b.createdDate)
+  sortComparer: (a, b) => a.createdDate.localeCompare(b.createdDate),
 });
 
 const slice = createSlice({
   name: 'storeHistory',
-  initialState: storeHistorysAdapter.getInitialState({ initialState }),
+  initialState: storeHistorysAdapter.getInitialState({initialState}),
   reducers: {
     fetching(state) {
       state.initialState.loading = true;
@@ -34,14 +34,14 @@ const slice = createSlice({
     storeHistorysAddOne: storeHistorysAdapter.addOne,
     storeHistorysAddMany: storeHistorysAdapter.addMany,
     storeHistoryUpdate: storeHistorysAdapter.updateOne,
-    storeHistoryRemove: storeHistorysAdapter.removeOne
+    storeHistoryRemove: storeHistorysAdapter.removeOne,
   },
   extraReducers: {
-    [creatingStoreHistory.fulfilled]: (state, action) => {
+    [creatingStoreHistory.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
-    [updateStoreHistory.fulfilled]: (state, action) => {
+    [updateStoreHistory.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
@@ -54,13 +54,13 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [getStoreHistory.rejected]: (state, action) => {
+    [getStoreHistory.rejected]: (state ) => {
       state.loading = false;
-    }
-  }
+    },
+  },
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions;
+export const {fetching, reset} = slice.actions;
 
-export const globalizedStoreHistorySelectors = storeHistorysAdapter.getSelectors(state => state.storeHistory);
+export const globalizedStoreHistorySelectors = storeHistorysAdapter.getSelectors((state) => state.storeHistory);

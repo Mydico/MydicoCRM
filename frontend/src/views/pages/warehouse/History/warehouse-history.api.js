@@ -1,16 +1,16 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import {createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const getStoreHistory = createAsyncThunk(
-  'api/store-histories',
-  async (params = { page: 0, size: 20, sort: 'createdDate,desc' }, thunkAPI) => {
-    try {
-      const result = await axios.get('api/store-histories', { params: params });
-      return { data: result.data, total: result.headers['x-total-count'] };
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  }
+    'api/store-histories',
+    async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
+      try {
+        const result = await axios.get('api/store-histories', {params: params});
+        return {data: result.data, total: result.headers['x-total-count']};
+      } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      }
+    },
 );
 
 export const getDetailStoreHistory = createAsyncThunk('api/detail/store-histories', async (userId, thunkAPI) => {

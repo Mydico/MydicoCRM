@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect} from 'react';
 import {
   CButton,
   CCard,
@@ -11,42 +11,42 @@ import {
   CLabel,
   CInput,
   CRow,
-  CSelect,
-  CCardTitle
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingCustomerType } from './customer-type.api';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { useHistory } from 'react-router-dom';
-import { fetching } from './customer-type.reducer';
-import { validate } from '../../../../shared/utils/normalize';
+import {useDispatch, useSelector} from 'react-redux';
+import {creatingCustomerType} from './customer-type.api';
 
-const validationSchema = function(values) {
+import {useHistory} from 'react-router-dom';
+import {fetching} from './customer-type.reducer';
+import {validate} from '../../../../shared/utils/normalize';
+
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
     code: Yup.string()
-      .min(2, `Mã phải lớn hơn 2 kí tự`)
-      .required('Mã không để trống')
+        .min(2, `Mã phải lớn hơn 2 kí tự`)
+        .required('Mã không để trống'),
   });
 };
 
 const CreateCustomerType = () => {
-  const { initialState } = useSelector(state => state.customerType);
+  const {initialState} = useSelector((state) => state.customerType);
   const initialValues = {
     code: '',
     name: '',
-    description: ''
+    description: '',
   };
 
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const onSubmit = (values, { setSubmitting, setErrors }) => {
+  const onSubmit = (values, {}) => {
     dispatch(fetching());
     dispatch(creatingCustomerType(values));
   };
@@ -67,17 +67,15 @@ const CreateCustomerType = () => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
-            setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

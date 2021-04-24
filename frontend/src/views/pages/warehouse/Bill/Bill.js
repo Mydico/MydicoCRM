@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CCardBody,
   CBadge,
@@ -15,35 +15,21 @@ import {
   CModalBody,
   CModalFooter,
   CModalTitle,
-  CLabel
+  CLabel,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getBill, updateBill } from './bill.api';
-import { globalizedBillsSelectors, reset } from './bill.reducer';
-import { useHistory } from 'react-router-dom';
-import { Table } from 'reactstrap';
-import { BillStatus } from './bill-status';
-import { confirmAlert } from 'react-confirm-alert'; // Import
+import {useDispatch, useSelector} from 'react-redux';
+import {getBill, updateBill} from './bill.api';
+import {globalizedBillsSelectors, reset} from './bill.reducer';
+import {useHistory} from 'react-router-dom';
+import {Table} from 'reactstrap';
+import {BillStatus} from './bill-status';
+import {confirmAlert} from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Select from 'react-select';
-import { getUser } from '../../user/UserList/user.api';
-import { globalizedUserSelectors } from '../../user/UserList/user.reducer';
+import {getUser} from '../../user/UserList/user.api';
+import {globalizedUserSelectors} from '../../user/UserList/user.reducer';
 
-const getBadge = status => {
-  switch (status) {
-    case 'ACTIVE':
-      return 'success';
-    case 'INACTIVE':
-      return 'danger';
-    case 'DELETED':
-      return 'warning';
-    case 'Banned':
-      return 'danger';
-    default:
-      return 'primary';
-  }
-};
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -51,15 +37,15 @@ const mappingStatus = {
   REJECTED: 'KHÔNG DUYỆT',
   SUPPLY_WAITING: 'ĐỢI XUẤT KHO',
   SHIPPING: 'ĐANG VẬN CHUYỂN',
-  SUCCESS: 'GIAO THÀNH CÔNG'
+  SUCCESS: 'GIAO THÀNH CÔNG',
 };
-const Bill = props => {
+const Bill = (props) => {
   const selectedBill = useRef(null);
   const selectedTransporter = useRef(null);
   const [details, setDetails] = useState([]);
-  const { initialState } = useSelector(state => state.bill);
+  const {initialState} = useSelector((state) => state.bill);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size] = useState(20);
   const [modal, setModal] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -67,16 +53,16 @@ const Bill = props => {
     dispatch(reset());
     dispatch(getUser());
   }, []);
-  const { selectAll } = globalizedBillsSelectors;
-  const { selectAll: selectUserAll } = globalizedUserSelectors;
+  const {selectAll} = globalizedBillsSelectors;
+  const {selectAll: selectUserAll} = globalizedUserSelectors;
   const bills = useSelector(selectAll);
   const users = useSelector(selectUserAll);
   useEffect(() => {
-    dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
+    dispatch(getBill({page: activePage - 1, size: size, sort: 'createdDate,desc'}));
   }, [activePage]);
 
-  const computedItems = items => {
-    return items.map(item => {
+  const computedItems = (items) => {
+    return items.map((item) => {
       return {
         ...item,
         customerName: `${item.customer?.contactName} \n ${item.customer?.address}`,
@@ -84,13 +70,13 @@ const Bill = props => {
         tel: item.customer?.tel,
         quantity: item.order.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
         total: item.order.orderDetails
-          ?.reduce((sum, current) => sum + current.priceTotal, 0)
-          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
+            ?.reduce((sum, current) => sum + current.priceTotal, 0)
+            .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}),
       };
     });
   };
 
-  const toggleDetails = index => {
+  const toggleDetails = (index) => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -106,33 +92,33 @@ const Bill = props => {
     {
       key: 'bill',
       label: 'STT',
-      _style: { width: '1%' },
-      filter: false
+      _style: {width: '1%'},
+      filter: false,
     },
     {
       key: 'show_details',
       label: 'Xem chi tiết',
-      _style: { width: '1%' },
-      filter: false
+      _style: {width: '1%'},
+      filter: false,
     },
-    { key: 'code', label: 'Mã vận đơn', _style: { width: '10%' } },
-    { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
-    { key: 'transporter', label: 'Người vận chuyển', _style: { width: '10%' } },
-    { key: 'tel', label: 'Số điện thoại', _style: { width: '10%' } },
-    { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '5%' } },
-    { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
-    { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+    {key: 'code', label: 'Mã vận đơn', _style: {width: '10%'}},
+    {key: 'customerName', label: 'Tên khách hàng/đại lý', _style: {width: '15%'}},
+    {key: 'transporter', label: 'Người vận chuyển', _style: {width: '10%'}},
+    {key: 'tel', label: 'Số điện thoại', _style: {width: '10%'}},
+    {key: 'quantity', label: 'Tổng sản phẩm', _style: {width: '5%'}},
+    {key: 'total', label: 'Tiền thanh toán', _style: {width: '10%'}},
+    {key: 'createdBy', label: 'Người tạo', _style: {width: '10%'}},
+    {key: 'createdDate', label: 'Ngày tạo', _style: {width: '10%'}},
+    {key: 'status', label: 'Trạng thái', _style: {width: '10%'}},
     {
       key: 'action',
       label: '',
-      _style: { width: '30%' },
-      filter: false
-    }
+      _style: {width: '30%'},
+      filter: false,
+    },
   ];
 
-  const getBadge = status => {
+  const getBadge = (status) => {
     switch (status) {
       case BillStatus.APPROVED:
       case BillStatus.SUCCESS:
@@ -149,19 +135,19 @@ const Bill = props => {
         return 'primary';
     }
   };
-  const csvContent = bills.map(item => Object.values(item).join(',')).join('\n');
+  const csvContent = bills.map((item) => Object.values(item).join(',')).join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateBill = () => {
     history.push(`${props.match.url}/new`);
   };
 
-  const onFilterColumn = value => {
+  const onFilterColumn = (value) => {
     if (value) {
-      dispatch(getBill({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getBill({page: 0, size: size, sort: 'createdDate,desc', ...value}));
     }
   };
 
-  const toEditBill = typeId => {
+  const toEditBill = (typeId) => {
     history.push(`${props.match.url}/${typeId}/edit`);
   };
 
@@ -173,48 +159,44 @@ const Bill = props => {
     }
   }, [initialState.updatingSuccess]);
 
-  const approveBill = bill => () => {
-    const data = { id: bill.id, status: BillStatus.APPROVED };
+  const approveBill = (bill) => () => {
+    const data = {id: bill.id, status: BillStatus.APPROVED};
     dispatch(updateBill(data));
   };
 
-  const rejectBill = bill => () => {
-    const data = { id: bill.id, status: BillStatus.REJECTED };
+  const rejectBill = (bill) => () => {
+    const data = {id: bill.id, status: BillStatus.REJECTED};
     dispatch(updateBill(data));
   };
 
-  const shippingBill = bill => () => {
+  const shippingBill = (bill) => () => {
     dispatch(
-      updateBill({
-        id: bill.id,
-        status: BillStatus.SHIPPING
-      })
+        updateBill({
+          id: bill.id,
+          status: BillStatus.SHIPPING,
+        }),
     );
   };
 
-  const successBill = bill => () => {
+  const successBill = (bill) => () => {
     dispatch(
-      updateBill({
-        id: bill.id,
-        status: BillStatus.SUCCESS
-      })
+        updateBill({
+          id: bill.id,
+          status: BillStatus.SUCCESS,
+        }),
     );
   };
 
-  const cancelBill = bill => () => {
+  const cancelBill = (bill) => () => {
     bill.status = BillStatus.CANCEL;
     dispatch(updateBill(bill));
   };
 
-  const deleteBill = bill => () => {
+  const deleteBill = (bill) => () => {
     bill.status = BillStatus.DELETED;
     dispatch(updateBill(bill));
   };
 
-  const createCodBill = bill => () => {
-    bill.status = BillStatus.CREATE_COD;
-    dispatch(updateBill(bill));
-  };
 
   const alertAction = (item, operation, message) => {
     confirmAlert({
@@ -223,64 +205,49 @@ const Bill = props => {
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: operation(item)
+          onClick: operation(item),
         },
         {
-          label: 'Hủy'
-        }
-      ]
+          label: 'Hủy',
+        },
+      ],
     });
   };
 
-  const approveAlert = item => {
+  const approveAlert = (item) => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn duyệt vận đơn này?',
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: approveBill(item)
+          onClick: approveBill(item),
         },
         {
-          label: 'Hủy'
-        }
-      ]
+          label: 'Hủy',
+        },
+      ],
     });
   };
 
-  const cancelAlert = item => {
-    confirmAlert({
-      title: 'Xác nhận',
-      message: 'Bạn có chắc chắn muốn hủy vận đơn này?',
-      buttons: [
-        {
-          label: 'Đồng ý',
-          onClick: cancelBill(item)
-        },
-        {
-          label: 'Hủy'
-        }
-      ]
-    });
-  };
 
-  const deleteAlert = item => {
+  const deleteAlert = (item) => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn xóa vận đơn này?',
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: deleteBill(item)
+          onClick: deleteBill(item),
         },
         {
-          label: 'Hủy'
-        }
-      ]
+          label: 'Hủy',
+        },
+      ],
     });
   };
 
-  const renderButtonStatus = item => {
+  const renderButtonStatus = (item) => {
     switch (item.status) {
       case BillStatus.CREATED:
         return (
@@ -421,29 +388,29 @@ const Bill = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [20, 30, 50] }}
+          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [20, 30, 50]}}
           itemsPerPage={20}
           hover
           sorter
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
-          onPaginationChange={val => console.log('new pagination:', val)}
+          onPageChange={(val) => console.log('new page:', val)}
+          onPagesChange={(val) => console.log('new pages:', val)}
+          onPaginationChange={(val) => console.log('new pagination:', val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
+          onTableFilterChange={(val) => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             bill: (item, index) => <td>{index + 1}</td>,
-            status: item => (
+            status: (item) => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
-            createdDate: item => <td>{item.createdDate.substr(0, 10)}</td>,
+            createdDate: (item) => <td>{item.createdDate.substr(0, 10)}</td>,
 
-            show_details: item => {
+            show_details: (item) => {
               return (
                 <td className="py-2 d-flex">
                   <CButton
@@ -460,10 +427,10 @@ const Bill = props => {
                 </td>
               );
             },
-            action: item => {
+            action: (item) => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
             },
-            details: item => {
+            details: (item) => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
@@ -512,7 +479,7 @@ const Bill = props => {
                               <td>{item.product?.price}</td>
                               <td>{item.reducePercent}%</td>
                               <td>
-                                {(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
+                                {(item.product?.price * item.quantity).toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) ||
                                   ''}
                               </td>
                               <td>
@@ -521,7 +488,7 @@ const Bill = props => {
                                   (item.product?.price * item.quantity * item.reducePercent) / 100
                                 ).toLocaleString('it-IT', {
                                   style: 'currency',
-                                  currency: 'VND'
+                                  currency: 'VND',
                                 }) || ''}
                               </td>
                             </tr>
@@ -542,8 +509,8 @@ const Bill = props => {
                               </td>
                               <td className="right">
                                 {item?.order.orderDetails
-                                  .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
-                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                    .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
+                                    .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                               </td>
                             </tr>
                             <tr>
@@ -552,11 +519,11 @@ const Bill = props => {
                               </td>
                               <td className="right">
                                 {item?.order.orderDetails
-                                  .reduce(
-                                    (sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100,
-                                    0
-                                  )
-                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                    .reduce(
+                                        (sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100,
+                                        0,
+                                    )
+                                    .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                               </td>
                             </tr>
                             <tr>
@@ -566,14 +533,14 @@ const Bill = props => {
                               <td className="right">
                                 <strong>
                                   {item?.order.orderDetails
-                                    .reduce(
-                                      (sum, current) =>
-                                        sum +
+                                      .reduce(
+                                          (sum, current) =>
+                                            sum +
                                         (current.product?.price * current.quantity -
                                           (current.product?.price * current.quantity * current.reducePercent) / 100),
-                                      0
-                                    )
-                                    .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                          0,
+                                      )
+                                      .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                                 </strong>
                               </td>
                             </tr>
@@ -584,13 +551,13 @@ const Bill = props => {
                   </CCardBody>
                 </CCollapse>
               );
-            }
+            },
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / 20) + 1}
-          onActivePageChange={i => setActivePage(i)}
+          onActivePageChange={(i) => setActivePage(i)}
         />
       </CCardBody>
       <CModal show={modal} onClose={() => setModal(!modal)} size="lg">
@@ -601,13 +568,13 @@ const Bill = props => {
           <CLabel htmlFor="userName">Người vận chuyển</CLabel>
           <Select
             name="department"
-            onChange={e => {
+            onChange={(e) => {
               selectedTransporter.current = e.value;
             }}
             placeholder="Chọn người vận chuyển"
-            options={users.map(item => ({
+            options={users.map((item) => ({
               value: item,
-              label: `${item.login}-${item.firstName}-${item.lastName}-${item.phone}`
+              label: `${item.login}-${item.firstName}-${item.lastName}-${item.phone}`,
             }))}
           />
         </CModalBody>

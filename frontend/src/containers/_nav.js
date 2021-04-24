@@ -9,12 +9,12 @@ export default [
     icon: <CIcon name="cil-speedometer" customClasses="c-sidebar-nav-icon" />,
     badge: {
       color: 'info',
-      text: 'NEW'
-    }
+      text: 'NEW',
+    },
   },
   {
     _tag: 'CSidebarNavTitle',
-    _children: ['Quản lý nghiệp vụ']
+    _children: ['Quản lý nghiệp vụ'],
   },
   {
     _tag: 'CSidebarNavDropdown',
@@ -25,19 +25,19 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Chương trình bán hàng',
-        to: '/promotion/'
+        to: '/promotion/',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Đơn hàng',
-        to: '/order'
+        to: '/order',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Điều phối khách hàng',
-        to: '/customer/status'
-      }
-    ]
+        to: '/customer/status',
+      },
+    ],
   },
   {
     _tag: 'CSidebarNavDropdown',
@@ -48,24 +48,24 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Danh sách',
-        to: '/customer/'
+        to: '/customer/',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Phân loại',
-        to: '/customer/type'
+        to: '/customer/type',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Trạng thái',
-        to: '/customer/status'
+        to: '/customer/status',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Sinh nhật 7 ngày tới',
-        to: '/customer/birthday'
-      }
-    ]
+        to: '/customer/birthday',
+      },
+    ],
   },
   {
     _tag: 'CSidebarNavDropdown',
@@ -76,19 +76,19 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Danh sách',
-        to: '/product/'
+        to: '/product/',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Loại sản phẩm',
-        to: '/product/group'
+        to: '/product/group',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Thương hiệu',
-        to: '/product/brand'
-      }
-    ]
+        to: '/product/brand',
+      },
+    ],
   },
   {
     _tag: 'CSidebarNavDropdown',
@@ -99,14 +99,14 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Công nợ',
-        to: '/debt'
+        to: '/debt',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Phiếu thu',
-        to: '/receipt'
-      }
-    ]
+        to: '/receipt',
+      },
+    ],
   },
   {
     _tag: 'CSidebarNavDropdown',
@@ -117,46 +117,46 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Kho hàng',
-        to: '/warehouse/'
+        to: '/warehouse/',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Nhà cung cấp',
-        to: '/provider'
+        to: '/provider',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Sản phẩm trong kho',
-        to: '/inwarehouse/'
+        to: '/inwarehouse/',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Vận đơn',
-        to: '/bill/'
+        to: '/bill/',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Phiếu nhập kho',
-        to: '/warehouse/import'
+        to: '/warehouse/import',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Phiếu xuất kho',
-        to: '/warehouse/export'
+        to: '/warehouse/export',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Lịch sử xuất/nhập kho',
-        to: '/warehouse/histories/'
-      }
-    ]
+        to: '/warehouse/histories/',
+      },
+    ],
   },
   {
-    _tag: 'CSidebarNavDivider'
+    _tag: 'CSidebarNavDivider',
   },
   {
     _tag: 'CSidebarNavTitle',
-    _children: ['Quản trị hệ thống']
+    _children: ['Quản trị hệ thống'],
   },
   {
     _tag: 'CSidebarNavDropdown',
@@ -167,19 +167,19 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Danh sách',
-        to: '/user/'
+        to: '/user/',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Chức vụ',
-        to: '/user-role/'
+        to: '/user-role/',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Chi nhánh',
-        to: '/department/'
-      }
-    ]
+        to: '/department/',
+      },
+    ],
   },
   {
     _tag: 'CSidebarNavDropdown',
@@ -190,8 +190,8 @@ export default [
       {
         _tag: 'CSidebarNavDropdown',
         name: 'Phân quyền',
-        to: '/permission/'
-      }
-    ]
-  }
+        to: '/permission/',
+      },
+    ],
+  },
 ];

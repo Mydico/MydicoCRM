@@ -1,4 +1,4 @@
-import { combineReducers } from '@reduxjs/toolkit';
+import {combineReducers} from '@reduxjs/toolkit';
 import authenticateReducer from '../../views/pages/login/authenticate.reducer';
 import appReducer from '../../App.reducer';
 import customerReducer from '../../views/pages/customer/customer.reducer';
@@ -44,7 +44,7 @@ const rootReducer = combineReducers({
   storeHistory: warehouseHistoryReducer,
   provider: ProviderReducer,
   debt: DebtReducer,
-  receipt: ReceiptReducer
+  receipt: ReceiptReducer,
 });
 
 export default rootReducer;

@@ -1,10 +1,10 @@
 import React from 'react';
-import { CBadge, CCard, CCardBody, CCardHeader, CCol, CDataTable, CRow } from '@coreui/react';
-import { DocsLink } from 'src/reusable';
+import {CBadge, CCard, CCardBody, CCardHeader, CCol, CDataTable, CRow} from '@coreui/react';
+import {DocsLink} from 'src/reusable';
 
 import usersData from '../../users/UsersData';
 
-const getBadge = status => {
+const getBadge = (status) => {
   switch (status) {
     case 'Active':
       return 'success';
@@ -37,11 +37,11 @@ const Tables = () => {
                 itemsPerPage={5}
                 pagination
                 scopedSlots={{
-                  status: item => (
+                  status: (item) => (
                     <td>
                       <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
                     </td>
-                  )
+                  ),
                 }}
               />
             </CCardBody>
@@ -59,11 +59,11 @@ const Tables = () => {
                 itemsPerPage={5}
                 pagination
                 scopedSlots={{
-                  status: item => (
+                  status: (item) => (
                     <td>
                       <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
                     </td>
-                  )
+                  ),
                 }}
               />
             </CCardBody>
@@ -83,11 +83,11 @@ const Tables = () => {
                 itemsPerPage={5}
                 pagination
                 scopedSlots={{
-                  status: item => (
+                  status: (item) => (
                     <td>
                       <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
                     </td>
-                  )
+                  ),
                 }}
               />
             </CCardBody>
@@ -105,11 +105,11 @@ const Tables = () => {
                 itemsPerPage={5}
                 pagination
                 scopedSlots={{
-                  status: item => (
+                  status: (item) => (
                     <td>
                       <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
                     </td>
-                  )
+                  ),
                 }}
               />
             </CCardBody>
@@ -132,11 +132,11 @@ const Tables = () => {
                 itemsPerPage={10}
                 pagination
                 scopedSlots={{
-                  status: item => (
+                  status: (item) => (
                     <td>
                       <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
                     </td>
-                  )
+                  ),
                 }}
               />
             </CCardBody>
@@ -159,11 +159,11 @@ const Tables = () => {
                 itemsPerPage={10}
                 pagination
                 scopedSlots={{
-                  status: item => (
+                  status: (item) => (
                     <td>
                       <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
                     </td>
-                  )
+                  ),
                 }}
               />
             </CCardBody>

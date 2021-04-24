@@ -8,7 +8,7 @@ import {
   CInputGroupAppend,
   CInputGroupPrepend,
   CInputGroupText,
-  CRow
+  CRow,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 

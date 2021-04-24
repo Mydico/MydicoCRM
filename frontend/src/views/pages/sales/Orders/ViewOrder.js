@@ -1,99 +1,29 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  CButton,
+
   CCard,
   CCardHeader,
   CCardBody,
   CCol,
-  CForm,
-  CCollapse,
-  CCardTitle,
-  CLabel,
-  CInput,
   CRow,
-  CFormGroup,
-  CTextarea
+
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { Form, Formik } from 'formik';
-import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingOrder, getDetailOrder, getOrderDetail, updateOrder } from './order.api';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedOrdersSelectors } from './order.reducer';
-import Select from 'react-select';
-import { currencyMask } from '../../../components/currency-input/currency-input';
-import MaskedInput from 'react-text-mask';
-import { globalizedPromotionSelectors } from '../Promotion/promotion.reducer';
-import { getDetailProductPromotion, getPromotion, getPromotionProduct } from '../Promotion/promotion.api';
-import { globalizedWarehouseSelectors } from '../../warehouse/Warehouse/warehouse.reducer';
-import { getWarehouse } from '../../warehouse/Warehouse/warehouse.api';
-import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
-import { getProductWarehouse } from '../../warehouse/Product/product-warehouse.api';
-import { FormFeedback, Table } from 'reactstrap';
-import { OrderStatus } from './order-status';
 
-const validationSchema = function(values) {
-  return Yup.object().shape({
-    customer: Yup.object()
-      .required('Khách hàng  không để trống')
-      .nullable(),
-    promotion: Yup.object()
-      .required('Chương trình bán hàng không để trống')
-      .nullable()
-  });
-};
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {useDispatch, useSelector} from 'react-redux';
+import {getDetailOrder} from './order.api';
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
+import {globalizedOrdersSelectors} from './order.reducer';
 
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
+import {Table} from 'reactstrap';
 
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
-const mappingType = {
-  SHORTTERM: 'Ngắn hạn',
-  LONGTERM: 'Dài hạn'
-};
 
-const ViewOrder = props => {
+const ViewOrder = (props) => {
   const dispatch = useDispatch();
-  const history = useHistory();
 
-  const { selectById } = globalizedOrdersSelectors;
+  const {selectById} = globalizedOrdersSelectors;
 
-  const order = useSelector(state => selectById(state, props.match.params.id));
+  const order = useSelector((state) => selectById(state, props.match.params.id));
 
   const [invoice, setInvoice] = useState(null);
 
@@ -144,9 +74,9 @@ const ViewOrder = props => {
                 <strong> {invoice?.promotion?.name}</strong>
               </div>
               <div>
-                {invoice?.promotion?.description.length > 200
-                  ? `${invoice?.promotion?.description.substring(0, 200)}`
-                  : invoice?.promotion?.description}
+                {invoice?.promotion?.description.length > 200 ?
+                  `${invoice?.promotion?.description.substring(0, 200)}` :
+                  invoice?.promotion?.description}
               </div>
               <div>Loại khách hàng: {invoice?.promotion?.customerType?.name}</div>
             </CCol>
@@ -172,16 +102,16 @@ const ViewOrder = props => {
                     <td>{item.product?.volume}</td>
                     <td>{item.quantity}</td>
 
-                    <td>{Number(item.priceReal).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
+                    <td>{Number(item.priceReal).toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}</td>
                     <td>{item.reducePercent}%</td>
-                    <td>{(item.priceReal * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
+                    <td>{(item.priceReal * item.quantity).toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}</td>
                     <td>
                       {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
-                        'it-IT',
-                        {
-                          style: 'currency',
-                          currency: 'VND'
-                        }
+                          'it-IT',
+                          {
+                            style: 'currency',
+                            currency: 'VND',
+                          },
                       ) || ''}
                     </td>
                   </tr>
@@ -202,8 +132,8 @@ const ViewOrder = props => {
                     </td>
                     <td className="right">
                       {invoice?.orderDetails
-                        .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
-                        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                          .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
+                          .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                     </td>
                   </tr>
                   <tr>
@@ -212,8 +142,8 @@ const ViewOrder = props => {
                     </td>
                     <td className="right">
                       {invoice?.orderDetails
-                        .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
-                        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                          .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
+                          .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                     </td>
                   </tr>
                   <tr>
@@ -223,13 +153,13 @@ const ViewOrder = props => {
                     <td className="right">
                       <strong>
                         {invoice?.orderDetails
-                          .reduce(
-                            (sum, current) =>
-                              sum +
+                            .reduce(
+                                (sum, current) =>
+                                  sum +
                               (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
-                            0
-                          )
-                          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                0,
+                            )
+                            .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                       </strong>
                     </td>
                   </tr>

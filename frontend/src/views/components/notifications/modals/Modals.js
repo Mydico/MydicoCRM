@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   CButton,
   CCard,
@@ -10,9 +10,9 @@ import {
   CModalFooter,
   CModalHeader,
   CModalTitle,
-  CRow
+  CRow,
 } from '@coreui/react';
-import { DocsLink } from 'src/reusable';
+import {DocsLink} from 'src/reusable';
 
 const Modals = () => {
   const [modal, setModal] = useState(true);

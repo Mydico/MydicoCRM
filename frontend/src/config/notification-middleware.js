@@ -1,12 +1,12 @@
-import { isPromise } from 'react-jhipster';
-import { ToastError, ToastSuccess } from './toast-style';
+
+import {toastError, toastSuccess} from './toast-style';
 const statusError = {
   401: 'Bạn chưa đăng nhập vào hệ thống',
   400: 'Bạn đã nhập dữ liệu không đúng',
   403: 'Bạn không có quyền thực hiện hành động này',
   409: 'Dữ liệu đã tồn tại trên hệ thống.',
   500: 'Lỗi hệ thống. Vui lòng thử lại',
-  422: 'Lỗi hệ thống. Vui lòng thử lại'
+  422: 'Lỗi hệ thống. Vui lòng thử lại',
 };
 
 const successMessageMapping = {
@@ -29,17 +29,14 @@ const successMessageMapping = {
   'MydicoCRM.Order.status.updated': 'Cập nhật trạng thái đơn hàng thành công',
   'MydicoCRM.StoreInput.created': 'Tạo mới phiếu kho thành công',
   'MydicoCRM.StoreInput.updated': 'Chỉnh sửa phiếu kho thành công',
-  'MydicoCRM.StoreInput.status.updated': 'Cập nhật trạng thái phiếu thành công'
+  'MydicoCRM.StoreInput.status.updated': 'Cập nhật trạng thái phiếu thành công',
 };
 
 // const addErrorAlert = (key?) => {
 //   toast.error(statusError[key.status] ? statusError[key.status] : key.error, centerToast);
 // };
 
-const addErrorAlert = key => {
-  ToastError(statusError[key.status] ? statusError[key.status] : key.error);
-};
-export default () => next => action => {
+export default () => (next) => (action) => {
   if (action.payload) {
     if (action.payload && (action.payload.statusCode === 201 || action.payload.statusCode === 200)) {
       const headers = action.payload.headers;
@@ -49,10 +46,9 @@ export default () => next => action => {
           alert = v;
         }
       });
-      console.log(alert);
-      ToastSuccess(successMessageMapping[alert]);
+      toastSuccess(successMessageMapping[alert]);
     } else {
-      ToastError(action.payload.message || statusError[action.payload.statusCode]);
+      toastError(action.payload.message || statusError[action.payload.statusCode]);
     }
   }
 

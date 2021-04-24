@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -12,85 +12,51 @@ import {
   CInput,
   CRow,
   CFormGroup,
-  CTextarea
+  CTextarea,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Form, Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingOrder, getDetailOrder, getOrderDetail, updateOrder } from './order.api';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedOrdersSelectors } from './order.reducer';
+import {useDispatch, useSelector} from 'react-redux';
+import {getDetailOrder, getOrderDetail, updateOrder} from './order.api';
+
+import {useHistory} from 'react-router-dom';
+import {globalizedOrdersSelectors} from './order.reducer';
 import Select from 'react-select';
-import { currencyMask } from '../../../components/currency-input/currency-input';
+import {currencyMask} from '../../../components/currency-input/currency-input';
 import MaskedInput from 'react-text-mask';
-import { globalizedPromotionSelectors } from '../Promotion/promotion.reducer';
-import { getDetailProductPromotion, getPromotion, getPromotionProduct } from '../Promotion/promotion.api';
-import { globalizedWarehouseSelectors } from '../../warehouse/Warehouse/warehouse.reducer';
-import { getWarehouse } from '../../warehouse/Warehouse/warehouse.api';
-import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
-import { getProductWarehouse } from '../../warehouse/Product/product-warehouse.api';
-import { FormFeedback, Table } from 'reactstrap';
-import { OrderStatus } from './order-status';
-import { confirmAlert } from 'react-confirm-alert'; // Import
+import {globalizedPromotionSelectors} from '../Promotion/promotion.reducer';
+import {getDetailProductPromotion, getPromotion} from '../Promotion/promotion.api';
+import {globalizedWarehouseSelectors} from '../../warehouse/Warehouse/warehouse.reducer';
+import {getWarehouse} from '../../warehouse/Warehouse/warehouse.api';
+import {globalizedProductWarehouseSelectors} from '../../warehouse/Product/product-warehouse.reducer';
+import {getProductWarehouse} from '../../warehouse/Product/product-warehouse.api';
+import {FormFeedback, Table} from 'reactstrap';
+import {OrderStatus} from './order-status';
+import {confirmAlert} from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-const validationSchema = function(values) {
+const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object()
-      .required('Khách hàng  không để trống')
-      .nullable(),
+        .required('Khách hàng  không để trống')
+        .nullable(),
     promotion: Yup.object()
-      .required('Chương trình bán hàng không để trống')
-      .nullable()
+        .required('Chương trình bán hàng không để trống')
+        .nullable(),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
 
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
 const mappingType = {
   SHORTTERM: 'Ngắn hạn',
-  LONGTERM: 'Dài hạn'
+  LONGTERM: 'Dài hạn',
 };
 
-const EditOrder = props => {
-  const { initialState } = useSelector(state => state.order);
-  const { initialState: promotionState } = useSelector(state => state.promotion);
+const EditOrder = (props) => {
+  const {initialState} = useSelector((state) => state.order);
+  const {initialState: promotionState} = useSelector((state) => state.promotion);
 
   const initialValues = {
     customer: null,
@@ -99,19 +65,19 @@ const EditOrder = props => {
     code: '',
     note: '',
     address: '',
-    status: OrderStatus.WAITING
+    status: OrderStatus.WAITING,
   };
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
-  const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
-  const { selectAll: selectAllProductInWarehouse } = globalizedProductWarehouseSelectors;
-  const { selectById } = globalizedOrdersSelectors;
+  const {selectAll: selectAllPromotion} = globalizedPromotionSelectors;
+  const {selectAll: selectAllWarehouse} = globalizedWarehouseSelectors;
+  const {selectAll: selectAllProductInWarehouse} = globalizedProductWarehouseSelectors;
+  const {selectById} = globalizedOrdersSelectors;
 
   const promotions = useSelector(selectAllPromotion);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
-  const order = useSelector(state => selectById(state, props.match.params.id));
+  const order = useSelector((state) => selectById(state, props.match.params.id));
   const warehouses = useSelector(selectAllWarehouse);
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -123,7 +89,7 @@ const EditOrder = props => {
   const [showProductPromotion, setShowProductPromotion] = useState(false);
 
   useEffect(() => {
-    dispatch(getPromotion({ isLock: 0 }));
+    dispatch(getPromotion({isLock: 0}));
     dispatch(getDetailOrder(props.match.params.id));
     dispatch(getWarehouse());
   }, []);
@@ -132,7 +98,7 @@ const EditOrder = props => {
     if (order) {
       setInitValuesState(order);
       setSelectedCustomer(order.customer);
-      dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
+      dispatch(getDetailProductPromotion({promotion: order.promotion.id}));
       dispatch(getOrderDetail(props.match.params.id));
     }
   }, [order]);
@@ -142,12 +108,12 @@ const EditOrder = props => {
       setProductList(initialState.orderDetails);
       if (initialState.orderDetails.length > 0) {
         setSelectedWarehouse(initialState.orderDetails[0].store);
-        dispatch(getProductWarehouse({ store: initialState.orderDetails[0].store.id }));
+        dispatch(getProductWarehouse({store: initialState.orderDetails[0].store.id}));
       }
     }
   }, [initialState.orderDetails]);
 
-  const onSubmit = (values, { setSubmitting, setErrors }) => () => {
+  const onSubmit = (values, {}) => () => {
     values = JSON.parse(JSON.stringify(values));
     if (!values.address) values.address = selectedCustomer.address;
     if (selectedPromotion) {
@@ -160,56 +126,56 @@ const EditOrder = props => {
     dispatch(updateOrder(values));
   };
 
-  const onSelectPromotion = ({ value }) => {
-    const arr = promotions.filter(customer => customer.id === value);
+  const onSelectPromotion = ({value}) => {
+    const arr = promotions.filter((customer) => customer.id === value);
     if (arr.length === 1) {
       setSelectedPromotion(arr[0]);
     }
   };
 
-  const onSelectedProduct = ({ value }, index) => {
-    const arr = productInWarehouses.filter(product => product.product.id === value);
+  const onSelectedProduct = ({value}, index) => {
+    const arr = productInWarehouses.filter((product) => product.product.id === value);
     if (arr.length === 1) {
       const copyArr = [...productList];
       copyArr[index].priceReal = Number(arr[0].product.price);
       copyArr[index].product = arr[0].product;
       setProductList(copyArr);
-      onChangeQuantity({ target: { value: 1 } }, index);
+      onChangeQuantity({target: {value: 1}}, index);
     }
   };
 
   useEffect(() => {
     if (selectedPromotion?.id) {
-      dispatch(getDetailProductPromotion({ promotion: selectedPromotion.id }));
+      dispatch(getDetailProductPromotion({promotion: selectedPromotion.id}));
     }
   }, [selectedPromotion]);
 
   useEffect(() => {
     if (selectedWarehouse?.id) {
-      dispatch(getProductWarehouse({ store: selectedWarehouse?.id }));
+      dispatch(getProductWarehouse({store: selectedWarehouse?.id}));
     }
   }, [selectedWarehouse]);
 
   const onAddProduct = () => {
     if (selectedWarehouse?.id) {
-      const data = { product: {}, quantity: 1, reducePercent: 0, store: { id: selectedWarehouse.id } };
+      const data = {product: {}, quantity: 1, reducePercent: 0, store: {id: selectedWarehouse.id}};
       setProductList([...productList, data]);
     } else {
       setIsSelectedWarehouse(false);
     }
   };
 
-  const onChangeQuantity = ({ target }, index) => {
+  const onChangeQuantity = ({target}, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = target.value;
     copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
     if (Array.isArray(promotionState.promotionProducts)) {
-      const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
+      const founded = promotionState.promotionProducts.filter((item) => item.product.id === copyArr[index].product.id);
       if (founded.length > 0) {
         if (target.value >= founded[0].buy) {
           const ratio = founded[0].gift / founded[0].buy;
           const gift = Math.floor(target.value * ratio);
-          const existExtraProductIndex = copyArr.findIndex(item => item.followIndex === index);
+          const existExtraProductIndex = copyArr.findIndex((item) => item.followIndex === index);
           if (existExtraProductIndex != -1) {
             copyArr[existExtraProductIndex].quantity = gift;
           } else {
@@ -218,8 +184,8 @@ const EditOrder = props => {
               quantity: gift,
               reducePercent: 100,
               priceReal: copyArr[index].product.price,
-              store: { id: selectedWarehouse.id },
-              followIndex: index
+              store: {id: selectedWarehouse.id},
+              followIndex: index,
             };
             copyArr.splice(index + 1, 0, extraProduct);
           }
@@ -229,14 +195,14 @@ const EditOrder = props => {
     setProductList(copyArr);
   };
 
-  const onChangePrice = ({ target }, index) => {
+  const onChangePrice = ({target}, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].priceReal = Number(target.value.replace(/\D/g, ''));
     copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
     setProductList(copyArr);
   };
 
-  const onChangeReducePercent = ({ target }, index) => {
+  const onChangeReducePercent = ({target}, index) => {
     const copyArr = [...productList];
     copyArr[index].reducePercent = target.value;
     copyArr[index].priceTotal =
@@ -246,31 +212,31 @@ const EditOrder = props => {
     setProductList(copyArr);
   };
 
-  const onSelectWarehouse = ({ value }) => {
-    const arr = warehouses.filter(customer => customer.id === value);
+  const onSelectWarehouse = ({value}) => {
+    const arr = warehouses.filter((customer) => customer.id === value);
     if (arr.length === 1) {
       setSelectedWarehouse(arr[0]);
       setIsSelectedWarehouse(true);
     }
   };
 
-  const editAlert = (values, { setSubmitting, setErrors }) => {
+  const editAlert = (values, {setSubmitting, setErrors}) => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn lưu đơn hàng này?',
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: onSubmit(values, { setSubmitting, setErrors })
+          onClick: onSubmit(values, {setSubmitting, setErrors}),
         },
         {
-          label: 'Hủy'
-        }
-      ]
+          label: 'Hủy',
+        },
+      ],
     });
   };
 
-  const onRemoveProduct = index => {
+  const onRemoveProduct = (index) => {
     const copyArr = [...productList];
     copyArr.splice(index, 1);
     setProductList(copyArr);
@@ -288,16 +254,15 @@ const EditOrder = props => {
         values,
         errors,
         touched,
-        status,
-        dirty,
+
+
         handleChange,
         handleBlur,
         handleSubmit,
-        setFieldValue,
-        isSubmitting,
-        isValid,
-        handleReset,
-        setTouched
+        setFieldValue
+
+
+        ,
       }) => {
         return (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
@@ -357,18 +322,18 @@ const EditOrder = props => {
                     <CCol sm={4}>
                       <CLabel htmlFor="lastName">Chọn chương trình bán hàng</CLabel>
                       <Select
-                        onChange={item => {
-                          setFieldValue('promotion', { id: item.value, name: item.label });
+                        onChange={(item) => {
+                          setFieldValue('promotion', {id: item.value, name: item.label});
                           onSelectPromotion(item);
                         }}
                         value={{
                           value: values.promotion?.id,
-                          label: values.promotion?.name
+                          label: values.promotion?.name,
                         }}
                         name="promotion"
-                        options={promotions.map(item => ({
+                        options={promotions.map((item) => ({
                           value: item.id,
-                          label: `${item.name}`
+                          label: `${item.name}`,
                         }))}
                       />
                     </CCol>
@@ -418,7 +383,7 @@ const EditOrder = props => {
                       <CCol lg="6">
                         {Array.isArray(promotionState.promotionProducts) &&
                           promotionState.promotionProducts.map((item, index) => (
-                            <dl className="row">
+                            <dl className="row" key={index}>
                               <dt className="col-sm-4">{`${item.product.name}`}</dt>
                               <dd className="col-sm-8">{`Mua ${item.buy} Tặng ${item.gift}`}</dd>
                             </dl>
@@ -440,17 +405,17 @@ const EditOrder = props => {
                       <CCol sm={4}>
                         <CLabel htmlFor="lastName">Chọn Kho</CLabel>
                         <Select
-                          onChange={item => {
+                          onChange={(item) => {
                             setFieldValue('store', item.value);
                             onSelectWarehouse(item.value);
                           }}
                           value={{
                             value: values.store,
-                            label: values.store?.name
+                            label: values.store?.name,
                           }}
-                          options={warehouses.map(item => ({
+                          options={warehouses.map((item) => ({
                             value: item,
-                            label: `${item.name}`
+                            label: `${item.name}`,
                           }))}
                         />
                         {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
@@ -514,23 +479,23 @@ const EditOrder = props => {
                     {productList.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{ width: 300 }}>
+                          <td style={{width: 300}}>
                             <Select
                               value={{
                                 value: item.product?.id,
-                                label: item.product?.name
+                                label: item.product?.name,
                               }}
-                              onChange={event => onSelectedProduct(event, index)}
+                              onChange={(event) => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
-                              options={productInWarehouses.map(item => ({
+                              options={productInWarehouses.map((item) => ({
                                 value: item.product.id,
-                                label: `${item.product.productBrand?.name}-${item.product.name}-${item.product.volume}`
+                                label: `${item.product.productBrand?.name}-${item.product.name}-${item.product.volume}`,
                               }))}
                             />
                           </td>
                           <td>{item.product?.unit}</td>
                           <td>{item.product?.volume}</td>
-                          <td style={{ width: 100 }}>
+                          <td style={{width: 100}}>
                             {item.followIndex >= 0 ? (
                               item.quantity
                             ) : (
@@ -539,7 +504,7 @@ const EditOrder = props => {
                                 min={1}
                                 name="code"
                                 id="code"
-                                onChange={event => onChangeQuantity(event, index)}
+                                onChange={(event) => onChangeQuantity(event, index)}
                                 onBlur={handleBlur}
                                 value={item.quantity}
                               />
@@ -549,13 +514,13 @@ const EditOrder = props => {
                             {
                               <MaskedInput
                                 mask={currencyMask}
-                                onChange={event => onChangePrice(event, index)}
+                                onChange={(event) => onChangePrice(event, index)}
                                 value={
-                                  typeof productList[index].priceReal !== 'number'
-                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                                        productList[index].priceReal
-                                      )
-                                    : productList[index].priceReal
+                                  typeof productList[index].priceReal !== 'number' ?
+                                    new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(
+                                        productList[index].priceReal,
+                                    ) :
+                                    productList[index].priceReal
                                 }
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
@@ -564,30 +529,30 @@ const EditOrder = props => {
                           <td>
                             {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                               style: 'currency',
-                              currency: 'VND'
+                              currency: 'VND',
                             }) || ''}
                           </td>
 
-                          <td style={{ width: 100 }}>
+                          <td style={{width: 100}}>
                             <CInput
                               type="number"
                               name="code"
                               id="code"
-                              onChange={event => onChangeReducePercent(event, index)}
+                              onChange={(event) => onChangeReducePercent(event, index)}
                               onBlur={handleBlur}
                               value={item.reducePercent}
                             />
                           </td>
                           <td>
                             {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
-                              'it-IT',
-                              {
-                                style: 'currency',
-                                currency: 'VND'
-                              }
+                                'it-IT',
+                                {
+                                  style: 'currency',
+                                  currency: 'VND',
+                                },
                             ) || ''}
                           </td>
-                          <td style={{ width: 100 }}>
+                          <td style={{width: 100}}>
                             <CButton
                               color="danger"
                               variant="outline"
@@ -659,8 +624,8 @@ const EditOrder = props => {
                           </td>
                           <td className="right">
                             {productList
-                              .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
-                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
+                                .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                           </td>
                         </tr>
                         <tr>
@@ -669,8 +634,8 @@ const EditOrder = props => {
                           </td>
                           <td className="right">
                             {productList
-                              .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
-                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
+                                .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                           </td>
                         </tr>
                         <tr>
@@ -680,14 +645,14 @@ const EditOrder = props => {
                           <td className="right">
                             <strong>
                               {productList
-                                .reduce(
-                                  (sum, current) =>
-                                    sum +
+                                  .reduce(
+                                      (sum, current) =>
+                                        sum +
                                     (current.priceReal * current.quantity -
                                       (current.priceReal * current.quantity * current.reducePercent) / 100),
-                                  0
-                                )
-                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                      0,
+                                  )
+                                  .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                             </strong>
                           </td>
                         </tr>

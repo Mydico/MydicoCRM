@@ -1,20 +1,20 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Component, useEffect, useRef, useState } from 'react';
-import { Table } from 'reactstrap';
-import { useHistory, useLocation } from 'react-router-dom';
-import { creatingOrder } from './order.api';
-import { useDispatch, useSelector } from 'react-redux';
-import { reset } from './order.reducer';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { CButton, CCard, CCardHeader, CCardBody, CCol, CCardTitle, CLabel, CInput, CRow, CFormGroup, CTextarea } from '@coreui/react';
-const Invoice = props => {
+import React, { useEffect,  useState} from 'react';
+import {Table} from 'reactstrap';
+import {useHistory, useLocation} from 'react-router-dom';
+import {creatingOrder} from './order.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {reset} from './order.reducer';
+
+import {CButton, CCard, CCardHeader, CCardBody, CCol,    CRow,  CTextarea} from '@coreui/react';
+const Invoice = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const { initialState } = useSelector(state => state.order);
+  const {initialState} = useSelector((state) => state.order);
 
-  const [invoice, setInvoice] = useState(null);
+  const [invoice setInvoice] = useState(null);
   useEffect(() => {
     if (location.state) setInvoice(location.state);
   }, []);
@@ -97,14 +97,14 @@ const Invoice = props => {
 
                     <td>{item.product?.price}</td>
                     <td>{item.reducePercent}%</td>
-                    <td>{(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
+                    <td>{(item.product?.price * item.quantity).toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}</td>
                     <td>
                       {(
                         item.product?.price * item.quantity -
                         (item.product?.price * item.quantity * item.reducePercent) / 100
                       ).toLocaleString('it-IT', {
                         style: 'currency',
-                        currency: 'VND'
+                        currency: 'VND',
                       }) || ''}
                     </td>
                   </tr>
@@ -125,8 +125,8 @@ const Invoice = props => {
                     </td>
                     <td className="right">
                       {invoice?.orderDetails
-                        .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
-                        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                          .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
+                          .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                     </td>
                   </tr>
                   <tr>
@@ -135,8 +135,8 @@ const Invoice = props => {
                     </td>
                     <td className="right">
                       {invoice?.orderDetails
-                        .reduce((sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100, 0)
-                        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                          .reduce((sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100, 0)
+                          .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                     </td>
                   </tr>
                   <tr>
@@ -146,14 +146,14 @@ const Invoice = props => {
                     <td className="right">
                       <strong>
                         {invoice?.orderDetails
-                          .reduce(
-                            (sum, current) =>
-                              sum +
+                            .reduce(
+                                (sum, current) =>
+                                  sum +
                               (current.product?.price * current.quantity -
                                 (current.product?.price * current.quantity * current.reducePercent) / 100),
-                            0
-                          )
-                          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                0,
+                            )
+                            .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
                       </strong>
                     </td>
                   </tr>

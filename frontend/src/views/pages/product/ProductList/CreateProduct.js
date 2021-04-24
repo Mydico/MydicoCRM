@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   CButton,
   CCard,
@@ -11,72 +11,43 @@ import {
   CLabel,
   CInput,
   CRow,
-  CSelect,
-  CCardTitle
+
+  CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingProduct } from './product.api';
-import { getProductGroup } from '../ProductGroup/product-group.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {creatingProduct} from './product.api';
+import {getProductGroup} from '../ProductGroup/product-group.api';
 import Select from 'react-select';
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedProductSelectors } from './product.reducer';
-import { globalizedproductGroupsSelectors } from '../ProductGroup/product-group.reducer';
-import { ProductStatus, UnitType } from './contants';
+
+import {useHistory} from 'react-router-dom';
+import {fetching} from './product.reducer';
+import {globalizedproductGroupsSelectors} from '../ProductGroup/product-group.reducer';
+import {ProductStatus, UnitType} from './contants';
 import 'react-dropzone-uploader/dist/styles.css';
 import Dropzone from 'react-dropzone-uploader';
 import './styles.css';
 import CurrencyInput from '../../../components/currency-input/currency-input';
-import { getCodeByName } from '../../../../shared/utils/normalize';
-const validationSchema = function(values) {
+import {getCodeByName} from '../../../../shared/utils/normalize';
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
     price: Yup.string().required('Giá tiền không để trống'),
-    agentPrice: Yup.string().required('Giá tiền không để trống')
+    agentPrice: Yup.string().required('Giá tiền không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import { validate } from '../../../../shared/utils/normalize';
+
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA'
-};
-
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
+  DELETED: 'ĐÃ XÓA',
 };
 
 const dropzoneStyle = {
@@ -85,15 +56,15 @@ const dropzoneStyle = {
   borderWidth: 2,
   borderColor: 'rgb(102, 102, 102)',
   borderStyle: 'dashed',
-  borderRadius: 5
+  borderRadius: 5,
 };
 const CreateProduct = () => {
-  const { initialState } = useSelector(state => state.product);
+  const {initialState} = useSelector((state) => state.product);
   const ref = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
   const images = useRef([]);
-  const { selectAll } = globalizedproductGroupsSelectors;
+  const {selectAll} = globalizedproductGroupsSelectors;
   const productGroup = useSelector(selectAll);
   const initialValues = {
     code: '',
@@ -105,13 +76,13 @@ const CreateProduct = () => {
     volume: '',
     unit: 'Cái',
     productGroup: null,
-    image: []
+    image: [],
   };
   useEffect(() => {
     dispatch(getProductGroup());
   }, []);
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     if (!values.productGroup) {
       values.productBrand = productGroup[0].productBrand.id;
@@ -128,10 +99,10 @@ const CreateProduct = () => {
   };
 
   const getUploadParams = () => {
-    return { url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/' : 'http://localhost:8082/' };
+    return {url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/' : 'http://localhost:8082/'};
   };
 
-  const handleChangeStatus = ({ meta, file, xhr }, status) => {
+  const handleChangeStatus = ({xhr}, status) => {
     if (status === 'done') {
       const response = JSON.parse(xhr.response);
       const arr = [...images.current];
@@ -164,17 +135,16 @@ const CreateProduct = () => {
           {({
             values,
             errors,
-            touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -193,7 +163,7 @@ const CreateProduct = () => {
                       autoComplete="family-name"
                       invalid={errors.name}
                       required
-                      onChange={e => {
+                      onChange={(e) => {
                         handleChange(e);
                         renderProductCode();
                       }}
@@ -221,14 +191,14 @@ const CreateProduct = () => {
                     <CLabel htmlFor="productGroup">Loại sản phẩm</CLabel>
                     <Select
                       name="productGroup"
-                      onChange={async item => {
+                      onChange={async (item) => {
                         setFieldValue('productGroup', item.value);
                         await Promise.resolve();
                         renderProductCode();
                       }}
-                      options={productGroup.map(item => ({
+                      options={productGroup.map((item) => ({
                         value: item,
-                        label: `${item.productBrand?.name} - ${item.name}`
+                        label: `${item.productBrand?.name} - ${item.name}`,
                       }))}
                     />
                     <CInvalidFeedback>{errors.productGroup}</CInvalidFeedback>
@@ -254,7 +224,7 @@ const CreateProduct = () => {
                       id="volume"
                       placeholder="Dung tích"
                       autoComplete="volume"
-                      onChange={e => {
+                      onChange={(e) => {
                         handleChange(e);
                         renderProductCode();
                       }}
@@ -268,12 +238,12 @@ const CreateProduct = () => {
                     <CLabel htmlFor="userName">Đơn vị</CLabel>
                     <Select
                       name="unit"
-                      onChange={item => {
+                      onChange={(item) => {
                         setFieldValue('unit', item.value);
                       }}
-                      options={UnitType.map(item => ({
+                      options={UnitType.map((item) => ({
                         value: item.value,
-                        label: `${item.title}`
+                        label: `${item.title}`,
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.unit}</CInvalidFeedback>
@@ -282,12 +252,12 @@ const CreateProduct = () => {
                     <CLabel htmlFor="code">Trạng thái</CLabel>
                     <Select
                       name="status"
-                      onChange={item => {
+                      onChange={(item) => {
                         setFieldValue('status', item.value);
                       }}
-                      options={ProductStatus.map(item => ({
+                      options={ProductStatus.map((item) => ({
                         value: item.value,
-                        label: mappingStatus[item.title]
+                        label: mappingStatus[item.title],
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>

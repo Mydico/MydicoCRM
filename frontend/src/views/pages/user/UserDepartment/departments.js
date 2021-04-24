@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
+import React, {useEffect, useRef, useState} from 'react';
+import {CButton, CCard, CCardHeader} from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getDepartment, getTreeDepartment } from './department.api.js';
-import { fetching, globalizedDepartmentSelectors, reset } from './department.reducer.js';
-import { useHistory } from 'react-router-dom';
-import { Tree, TreeNode } from 'react-organizational-chart';
+import {useDispatch, useSelector} from 'react-redux';
+import {getTreeDepartment} from './department.api.js';
+import {globalizedDepartmentSelectors} from './department.reducer.js';
+import {useHistory} from 'react-router-dom';
+import {Tree, TreeNode} from 'react-organizational-chart';
 import styled from 'styled-components';
 
 const StyledNode = styled.div`
@@ -19,16 +19,10 @@ const StyledRootNode = styled.div`
   margin-top: 25px;
   margin-bottom: 8px;
 `;
-const mappingStatus = {
-  ACTIVE: 'ĐANG HOẠT ĐỘNG',
-  INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA'
-};
-const Department = props => {
+const Department = (props) => {
   const isInitialMount = useRef(true);
-  const [details, setDetails] = useState([]);
 
-  const [size, setSize] = useState(20);
+  const [,] = useState(20);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -42,33 +36,14 @@ const Department = props => {
     // dispatch(reset());
   }, []);
 
-  const { selectAll } = globalizedDepartmentSelectors;
+  const {selectAll} = globalizedDepartmentSelectors;
   const departments = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
-      return {
-        ...item,
-        ward: item.ward?.name,
-        district: item.district?.name,
-        city: item.city?.name
-      };
-    });
-  };
-  const toggleDetails = index => {
-    const position = details.indexOf(index);
-    let newDetails = details.slice();
-    if (position !== -1) {
-      newDetails.splice(position, 1);
-    } else {
-      newDetails = [...details, index];
-    }
-    setDetails(newDetails);
-  };
+
 
   const toCreateDepartment = () => {
     history.push(`${props.match.url}new`);
   };
-  const renderChild = children => {
+  const renderChild = (children) => {
     if (children && Array.isArray(children) && children.length > 0) {
       return children.map((item, index) => (
         <TreeNode key={index} label={<StyledNode>{item.name}</StyledNode>}>
@@ -88,10 +63,9 @@ const Department = props => {
       </CCardHeader>
       {departments.map((item, index) => {
         return (
-          <StyledRootNode>
+          <StyledRootNode key={index}>
             <Tree
-              key={index}
-              sty
+
               lineWidth={'2px'}
               lineColor={'green'}
               lineBorderRadius={'10px'}

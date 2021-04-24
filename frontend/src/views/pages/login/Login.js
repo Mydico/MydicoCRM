@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import {Link, Redirect} from 'react-router-dom';
 import {
   CButton,
   CCard,
@@ -11,25 +11,25 @@ import {
   CInputGroup,
   CInputGroupPrepend,
   CInputGroupText,
-  CRow
+  CRow,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { freeSet } from '@coreui/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { login } from './authenticate.reducer';
-import { Field, Formik } from 'formik';
-import { FormFeedback, Input } from 'reactstrap';
-React.icons = { ...freeSet };
+import {freeSet} from '@coreui/icons';
+import {useDispatch, useSelector} from 'react-redux';
+import {login} from './authenticate.reducer';
+import {Field, Formik} from 'formik';
+import {FormFeedback, Input} from 'reactstrap';
+React.icons = {...freeSet};
 
-const Login = props => {
+const Login = (props) => {
   const dispatch = useDispatch();
-  const { errorMessage, isAuthenticated } = useSelector(state => state.authentication);
-  const onLogin = data => {
+  const {errorMessage, isAuthenticated} = useSelector((state) => state.authentication);
+  const onLogin = (data) => {
     dispatch(login(data));
   };
 
-  const { location } = props;
-  const { from } = location.state || { from: { pathname: '/', search: location.search } };
+  const {location} = props;
+  const {from} = location.state || {from: {pathname: '/', search: location.search}};
   if (isAuthenticated) {
     return <Redirect to={from} />;
   }
@@ -43,26 +43,25 @@ const Login = props => {
               <CCard className="p-4">
                 <CCardBody>
                   <Formik
-                    initialValues={{ username: '', password: '' }}
-                    validate={values => {
+                    initialValues={{username: '', password: ''}}
+                    validate={(values) => {
                       const errors = {};
                       if (!values.username) {
                         errors.username = 'Required';
                       }
                       return errors;
                     }}
-                    onSubmit={values => {
+                    onSubmit={(values) => {
                       onLogin(values);
                     }}
                   >
                     {({
-                      values,
+
                       errors,
-                      touched,
-                      handleChange,
-                      handleBlur,
-                      handleSubmit,
-                      isSubmitting
+
+
+                      handleSubmit
+                      ,
                       /* and other goodies */
                     }) => (
                       <CForm onSubmit={handleSubmit}>
@@ -103,7 +102,7 @@ const Login = props => {
                   </Formik>
                 </CCardBody>
               </CCard>
-              <CCard className="text-white bg-primary py-5 d-md-down-none" style={{ width: '44%' }}>
+              <CCard className="text-white bg-primary py-5 d-md-down-none" style={{width: '44%'}}>
                 <CCardBody className="text-center">
                   <div>
                     <h2>Đăng ký</h2>

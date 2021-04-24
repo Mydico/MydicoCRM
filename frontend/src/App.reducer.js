@@ -1,9 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
   sidebarShow: 'responsive',
   asideShow: false,
-  darkMode: false
+  darkMode: false,
 };
 
 const slice = createSlice({
@@ -18,12 +18,12 @@ const slice = createSlice({
     },
     setDarkMode: (state, action) => {
       state.darkMode = action.payload;
-    }
-  }
+    },
+  },
 });
 
 export default slice.reducer;
 
 // Actions
 
-export const { setAsideShow, setSidebarShow, setDarkMode } = slice.actions;
+export const {setAsideShow, setSidebarShow, setDarkMode} = slice.actions;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -14,91 +14,54 @@ import {
   CSelect,
   CCardTitle,
   CTextarea,
-  CInputCheckbox
+  CInputCheckbox,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingPromotion } from './promotion.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {creatingPromotion} from './promotion.api';
 
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedPromotionSelectors } from './promotion.reducer';
-import { PromotionStatus, UnitType } from './contants';
-import { currencyFormat } from '../../../../shared/utils/normalize';
-import { getCustomerType } from '../../customer/CustomerType/customer-type.api';
-import { globalizedcustomerTypeSelectors } from '../../customer/CustomerType/customer-type.reducer';
+
+import {useHistory} from 'react-router-dom';
+import {fetching} from './promotion.reducer';
+import {PromotionStatus} from './contants';
+
+import {getCustomerType} from '../../customer/CustomerType/customer-type.api';
+import {globalizedcustomerTypeSelectors} from '../../customer/CustomerType/customer-type.reducer';
 import Select from 'react-select';
-import { getProduct } from '../../product/ProductList/product.api';
-import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import {getProduct} from '../../product/ProductList/product.api';
+import {globalizedProductSelectors} from '../../product/ProductList/product.reducer';
 
-const validationSchema = function(values) {
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống')
+    endTime: Yup.string().required('Ngày kết thúc không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
 
 const CreatePromotion = () => {
-  const { initialState } = useSelector(state => state.promotion);
+  const {initialState} = useSelector((state) => state.promotion);
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const promotionGroup = [];
   const initialValues = useRef({
     name: '',
     description: '',
     startTime: new Date(),
     startTime: new Date(),
     isLock: false,
-    status: PromotionStatus[0].value
+    status: PromotionStatus[0].value,
   });
-  const { selectAll } = globalizedcustomerTypeSelectors;
+  const {selectAll} = globalizedcustomerTypeSelectors;
   const customerType = useSelector(selectAll);
-  const { selectAll: selectAllProduct } = globalizedProductSelectors;
+  const {selectAll: selectAllProduct} = globalizedProductSelectors;
   const products = useSelector(selectAllProduct);
   useEffect(() => {
     dispatch(getCustomerType());
@@ -106,7 +69,7 @@ const CreatePromotion = () => {
   }, []);
 
   const [productList, setProductList] = useState([]);
-  const [isLock, setIsLock] = useState(false);
+  const [,] = useState(false);
 
   useEffect(() => {
     if (customerType.length > 0) {
@@ -115,17 +78,17 @@ const CreatePromotion = () => {
   }, [customerType]);
 
   const onAddProduct = () => {
-    const data = { product: { id: '' }, buy: 0, gift: 0 };
+    const data = {product: {id: ''}, buy: 0, gift: 0};
     setProductList([...productList, data]);
   };
 
   const onSelectedProduct = (item, index) => {
     const copyArr = [...productList];
-    const foundedIndex = copyArr.findIndex(product => product.product.id === item.value);
+    const foundedIndex = copyArr.findIndex((product) => product.product.id === item.value);
     if (foundedIndex >= 0) {
       copyArr.splice(index, 1);
     } else {
-      copyArr[index].product = { id: item.value };
+      copyArr[index].product = {id: item.value};
     }
     setProductList(copyArr);
   };
@@ -136,7 +99,7 @@ const CreatePromotion = () => {
     setProductList(copyArr);
   };
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     values.customerType = values.current?.customerType;
     values.promotionProduct = productList;
@@ -151,7 +114,7 @@ const CreatePromotion = () => {
     }
   }, [initialState.updatingSuccess]);
 
-  const onRemoveProduct = index => {
+  const onRemoveProduct = (index) => {
     const copyArr = [...productList];
     copyArr.splice(index, 1);
     setProductList(copyArr);
@@ -168,16 +131,16 @@ const CreatePromotion = () => {
             values,
             errors,
             touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -222,12 +185,12 @@ const CreatePromotion = () => {
                       name="customerType"
                       id="customerType"
                       value={values.customerType}
-                      onChange={e => {
+                      onChange={(e) => {
                         setFieldValue('customerType', e.target.value);
                       }}
                     >
                       {customerType &&
-                        customerType.map(item => (
+                        customerType.map((item) => (
                           <option key={item.id} value={item.id}>
                             {item.name}
                           </option>
@@ -269,11 +232,11 @@ const CreatePromotion = () => {
                       name="status"
                       id="status"
                       value={values.status}
-                      onChange={e => {
+                      onChange={(e) => {
                         setFieldValue('status', e.target.value);
                       }}
                     >
-                      {PromotionStatus.map(item => (
+                      {PromotionStatus.map((item) => (
                         <option key={item.value} value={item.value}>
                           {item.title}
                         </option>
@@ -293,10 +256,10 @@ const CreatePromotion = () => {
                           <CLabel htmlFor="password">Sản phẩm</CLabel>
                           <Select
                             defaultValue={productList[index]?.id}
-                            onChange={event => onSelectedProduct(event, index)}
-                            options={products.map(item => ({
+                            onChange={(event) => onSelectedProduct(event, index)}
+                            options={products.map((item) => ({
                               value: item.id,
-                              label: `${item.code}-${item.name}`
+                              label: `${item.code}-${item.name}`,
                             }))}
                           />
                         </CCol>
@@ -308,7 +271,7 @@ const CreatePromotion = () => {
                             id="buy"
                             placeholder="Dung tích"
                             autoComplete="buy"
-                            onChange={event => onChangeProductPromotion(event.target.value, index, 'buy')}
+                            onChange={(event) => onChangeProductPromotion(event.target.value, index, 'buy')}
                             invalid={!productList[index].buy}
                             valid={productList[index].buy}
                             onBlur={handleBlur}
@@ -324,7 +287,7 @@ const CreatePromotion = () => {
                             id="gift"
                             placeholder="Dung tích"
                             autoComplete="gift"
-                            onChange={event => onChangeProductPromotion(event.target.value, index, 'gift')}
+                            onChange={(event) => onChangeProductPromotion(event.target.value, index, 'gift')}
                             invalid={!productList[index].gift}
                             valid={productList[index].gift}
                             onBlur={handleBlur}

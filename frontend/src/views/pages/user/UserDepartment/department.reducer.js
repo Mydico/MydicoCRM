@@ -1,22 +1,22 @@
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { creatingDepartment, getDepartment, getDetailDepartment, getTreeDepartment, updateDepartment } from './department.api';
+import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
+import {creatingDepartment, getDepartment, getDetailDepartment, getTreeDepartment, updateDepartment} from './department.api';
 
 const initialState = {
   loading: false,
   updatingSuccess: false,
-  totalItem: 0
+  totalItem: 0,
 };
 
 export const departmentAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: department => department.id
+  selectId: (department) => department.id,
   // Keep the "all IDs" array sorted based on book titles
   // sortComparer: (a, b) => a.login.localeCompare(b.login),
 });
 
 const slice = createSlice({
   name: 'department',
-  initialState: departmentAdapter.getInitialState({ initialState }),
+  initialState: departmentAdapter.getInitialState({initialState}),
   reducers: {
     fetching(state) {
       state.initialState.loading = true;
@@ -28,22 +28,22 @@ const slice = createSlice({
     departmentAddOne: departmentAdapter.addOne,
     departmentAddMany: departmentAdapter.addMany,
     departmentUpdate: departmentAdapter.updateOne,
-    departmentRemove: departmentAdapter.removeOne
+    departmentRemove: departmentAdapter.removeOne,
   },
   extraReducers: {
-    [creatingDepartment.fulfilled]: (state, action) => {
+    [creatingDepartment.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
-    [creatingDepartment.rejected]: (state, action) => {
+    [creatingDepartment.rejected]: (state ) => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
-    [updateDepartment.fulfilled]: (state, action) => {
+    [updateDepartment.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
-    [updateDepartment.rejected]: (state, action) => {
+    [updateDepartment.rejected]: (state ) => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
@@ -60,13 +60,13 @@ const slice = createSlice({
       departmentAdapter.setAll(state, action.payload.data);
       state.initialState.loading = false;
     },
-    [getDepartment.rejected]: (state, action) => {
+    [getDepartment.rejected]: (state ) => {
       state.loading = false;
-    }
-  }
+    },
+  },
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions;
+export const {fetching, reset} = slice.actions;
 
-export const globalizedDepartmentSelectors = departmentAdapter.getSelectors(state => state.department);
+export const globalizedDepartmentSelectors = departmentAdapter.getSelectors((state) => state.department);

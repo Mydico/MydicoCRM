@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { CCardBody, CButton, CDataTable } from '@coreui/react';
+import React, {useState} from 'react';
+import {CCardBody, CButton, CDataTable} from '@coreui/react';
 import usersData from '../../users/UsersData.js';
 
 const DemoTable = () => {
   const [currentItems, setCurrentItems] = useState(usersData);
 
-  const csvContent = currentItems.map(item => Object.values(item).join(',')).join('\n');
+  const csvContent = currentItems.map((item) => Object.values(item).join(',')).join('\n');
 
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 

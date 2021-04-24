@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -14,78 +14,42 @@ import {
   CSelect,
   CCardTitle,
   CTextarea,
-  CInputCheckbox
+  CInputCheckbox,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { creatingPromotion } from './promotion.api';
+import {useDispatch, useSelector} from 'react-redux';
+import {creatingPromotion} from './promotion.api';
 
-import Toaster from '../../../components/notifications/toaster/Toaster';
-import { current } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router-dom';
-import { fetching, globalizedPromotionSelectors } from './promotion.reducer';
-import { PromotionStatus, UnitType } from './contants';
-import { currencyFormat } from '../../../../shared/utils/normalize';
-import { getCustomerType } from '../../customer/CustomerType/customer-type.api';
-import { globalizedcustomerTypeSelectors } from '../../customer/CustomerType/customer-type.reducer';
+
+import {useHistory} from 'react-router-dom';
+import {fetching} from './promotion.reducer';
+import {PromotionStatus} from './contants';
+
+import {getCustomerType} from '../../customer/CustomerType/customer-type.api';
+import {globalizedcustomerTypeSelectors} from '../../customer/CustomerType/customer-type.reducer';
 import Select from 'react-select';
-import { getProduct } from '../../product/ProductList/product.api';
-import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
-import { globalizedproductGroupsSelectors } from '../../product/ProductGroup/product-group.reducer';
-import { getProductGroup } from '../../product/ProductGroup/product-group.api';
 
-const validationSchema = function(values) {
+
+import {globalizedproductGroupsSelectors} from '../../product/ProductGroup/product-group.reducer';
+import {getProductGroup} from '../../product/ProductGroup/product-group.api';
+
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-      .min(5, `Tên phải lớn hơn 5 kí tự`)
-      .required('Tên không để trống'),
+        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống')
+    endTime: Yup.string().required('Ngày kết thúc không để trống'),
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+import {validate} from '../../../../shared/utils/normalize';
 
-const getErrorsFromValidationError = validationError => {
-  const FIRST_ERROR = 0;
-  return validationError.inner.reduce((errors, error) => {
-    return {
-      ...errors,
-      [error.path]: error.errors[FIRST_ERROR]
-    };
-  }, {});
-};
-
-const findFirstError = (formName, hasError) => {
-  const form = document.forms[formName];
-  for (let i = 0; i < form.length; i++) {
-    if (hasError(form[i].name)) {
-      form[i].focus();
-      break;
-    }
-  }
-};
-
-const validateForm = errors => {
-  findFirstError('simpleForm', fieldName => {
-    return Boolean(errors[fieldName]);
-  });
-};
 
 const CreatePromotion = () => {
-  const { initialState } = useSelector(state => state.promotion);
+  const {initialState} = useSelector((state) => state.promotion);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -95,11 +59,11 @@ const CreatePromotion = () => {
     startTime: new Date(),
     endTime: new Date(),
     isLock: false,
-    status: PromotionStatus[0].value
+    status: PromotionStatus[0].value,
   });
-  const { selectAll } = globalizedcustomerTypeSelectors;
+  const {selectAll} = globalizedcustomerTypeSelectors;
   const customerType = useSelector(selectAll);
-  const { selectAll: selectAllProductGroup } = globalizedproductGroupsSelectors;
+  const {selectAll: selectAllProductGroup} = globalizedproductGroupsSelectors;
   const productGroups = useSelector(selectAllProductGroup);
   useEffect(() => {
     dispatch(getCustomerType());
@@ -107,7 +71,7 @@ const CreatePromotion = () => {
   }, []);
 
   const [promotionItemList, setPromotionItemList] = useState([]);
-  const [isLock, setIsLock] = useState(false);
+  const [,] = useState(false);
 
   useEffect(() => {
     if (customerType.length > 0) {
@@ -116,13 +80,13 @@ const CreatePromotion = () => {
   }, [customerType]);
 
   const onAddProduct = () => {
-    const data = { name: '', totalMoney: 0, reducePercent: 0, productGroup: {} };
+    const data = {name: '', totalMoney: 0, reducePercent: 0, productGroup: {}};
     setPromotionItemList([...promotionItemList, data]);
   };
 
   const onSelectedProduct = (item, index) => {
     const copyArr = [...promotionItemList];
-    copyArr[index].productGroup = { id: item.value };
+    copyArr[index].productGroup = {id: item.value};
     setPromotionItemList(copyArr);
   };
 
@@ -132,7 +96,7 @@ const CreatePromotion = () => {
     setPromotionItemList(copyArr);
   };
 
-  const onSubmit = (values, { setSubmitting, setErrors, setStatus, resetForm }) => {
+  const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     values.customerType = initialValues.current?.customerType;
     values.promotionItems = promotionItemList;
@@ -158,16 +122,16 @@ const CreatePromotion = () => {
             values,
             errors,
             touched,
-            status,
-            dirty,
+
+
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-            isSubmitting,
-            isValid,
-            handleReset,
-            setTouched
+
+
+            handleReset
+            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -212,12 +176,12 @@ const CreatePromotion = () => {
                       name="customerType"
                       id="customerType"
                       value={values.customerType}
-                      onChange={e => {
+                      onChange={(e) => {
                         setFieldValue('customerType', e.target.value);
                       }}
                     >
                       {customerType &&
-                        customerType.map(item => (
+                        customerType.map((item) => (
                           <option key={item.id} value={item.id}>
                             {item.name}
                           </option>
@@ -275,11 +239,11 @@ const CreatePromotion = () => {
                       name="status"
                       id="status"
                       value={values.status}
-                      onChange={e => {
+                      onChange={(e) => {
                         setFieldValue('status', e.target.value);
                       }}
                     >
-                      {PromotionStatus.map(item => (
+                      {PromotionStatus.map((item) => (
                         <option key={item.value} value={item.value}>
                           {item.title}
                         </option>
@@ -303,7 +267,7 @@ const CreatePromotion = () => {
                             id="name"
                             placeholder="Tên doanh số"
                             autoComplete="gnameift"
-                            onChange={event => onChangeProductPromotion(event.target.value, index, 'name')}
+                            onChange={(event) => onChangeProductPromotion(event.target.value, index, 'name')}
                             invalid={!promotionItemList[index].name}
                             valid={promotionItemList[index].name}
                             onBlur={handleBlur}
@@ -320,7 +284,7 @@ const CreatePromotion = () => {
                             min={0}
                             placeholder="Mức doanh thu"
                             autoComplete="totalMoney"
-                            onChange={event => onChangeProductPromotion(event.target.value, index, 'totalMoney')}
+                            onChange={(event) => onChangeProductPromotion(event.target.value, index, 'totalMoney')}
                             invalid={!promotionItemList[index].totalMoney}
                             valid={promotionItemList[index].totalMoney}
                             onBlur={handleBlur}
@@ -339,7 +303,7 @@ const CreatePromotion = () => {
                             min={0}
                             placeholder="Chiết khấu"
                             autoComplete="reducePercent"
-                            onChange={event => onChangeProductPromotion(event.target.value, index, 'reducePercent')}
+                            onChange={(event) => onChangeProductPromotion(event.target.value, index, 'reducePercent')}
                             invalid={promotionItemList[index].reducePercent < 0}
                             valid={promotionItemList[index].reducePercent}
                             onBlur={handleBlur}
@@ -352,10 +316,10 @@ const CreatePromotion = () => {
                         <CCol lg="3">
                           <CLabel htmlFor="password">Nhóm sản phẩm</CLabel>
                           <Select
-                            onChange={event => onSelectedProduct(event, index)}
-                            options={productGroups.map(item => ({
+                            onChange={(event) => onSelectedProduct(event, index)}
+                            options={productGroups.map((item) => ({
                               value: item.id,
-                              label: `${item?.productBrand?.name}-${item.name}`
+                              label: `${item?.productBrand?.name}-${item.name}`,
                             }))}
                           />
                         </CCol>

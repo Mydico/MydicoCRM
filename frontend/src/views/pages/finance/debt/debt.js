@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
+import React, {useEffect, useState} from 'react';
+import {CCardBody, CButton, CDataTable, CCard, CCardHeader, CRow, CPagination} from '@coreui/react';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getCustomerDebts, getTransaction } from './debt.api.js';
-import { useHistory } from 'react-router-dom';
-import { confirmAlert } from 'react-confirm-alert'; // Import
+import {useDispatch, useSelector} from 'react-redux';
+import {getCustomerDebts} from './debt.api.js';
+import {useHistory} from 'react-router-dom';
+// Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import { globalizedDebtsSelectors, reset } from './debt.reducer.js';
+import {globalizedDebtsSelectors, reset} from './debt.reducer.js';
 
-const Debt = props => {
-  const [details, setDetails] = useState([]);
-  const { initialState } = useSelector(state => state.debt);
+const Debt = (props) => {
+  const [,] = useState([]);
+  const {initialState} = useSelector((state) => state.debt);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
   const dispatch = useDispatch();
@@ -22,20 +22,20 @@ const Debt = props => {
 
   useEffect(() => {
     if (size != 20) {
-      dispatch(getCustomerDebts({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+      dispatch(getCustomerDebts({page: activePage - 1, size, sort: 'createdDate,desc'}));
     }
   }, [activePage, size]);
 
-  const { selectAll } = globalizedDebtsSelectors;
+  const {selectAll} = globalizedDebtsSelectors;
   const debts = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
+  const computedItems = (items) => {
+    return items.map((item) => {
       return {
         ...item,
         code: item.customer?.code || '',
         name: item.customer?.name || '',
         phone: item.customer?.phone || '',
-        sale: item.sale?.name || ''
+        sale: item.sale?.name || '',
       };
     });
   };
@@ -45,35 +45,35 @@ const Debt = props => {
     {
       key: 'order',
       label: 'STT',
-      _style: { width: '1%' },
-      filter: false
+      _style: {width: '1%'},
+      filter: false,
     },
-    { key: 'code', label: 'Mã khách hàng', _style: { width: '20%' } },
-    { key: 'name', label: 'Tên khách hàng', _style: { width: '15%' } },
-    { key: 'phone', label: 'Số điện thoại', _style: { width: '15%' } },
-    { key: 'debt', label: 'Tổng nợ', _style: { width: '10%' } },
-    { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '15%' } },
+    {key: 'code', label: 'Mã khách hàng', _style: {width: '20%'}},
+    {key: 'name', label: 'Tên khách hàng', _style: {width: '15%'}},
+    {key: 'phone', label: 'Số điện thoại', _style: {width: '15%'}},
+    {key: 'debt', label: 'Tổng nợ', _style: {width: '10%'}},
+    {key: 'sale', label: 'Nhân viên quản lý', _style: {width: '15%'}},
     {
       key: 'action',
       label: '',
-      _style: { width: '20%' },
-      filter: false
-    }
+      _style: {width: '20%'},
+      filter: false,
+    },
   ];
 
   const csvContent = computedItems(debts)
-    .map(item => Object.values(item).join(','))
-    .join('\n');
+      .map((item) => Object.values(item).join(','))
+      .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
-  const onFilterColumn = value => {
+  const onFilterColumn = (value) => {
     if (value) {
-      dispatch(getCustomerDebts({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getCustomerDebts({page: 0, size: size, sort: 'createdDate,desc', ...value}));
     }
   };
 
-  const toDetail = item => {
-    history.push({ pathname: `${props.match.url}/${item.customer.id}/detail`, state: { customer: item } });
+  const toDetail = (item) => {
+    history.push({pathname: `${props.match.url}/${item.customer.id}/detail`, state: {customer: item}});
   };
 
   return (
@@ -91,25 +91,25 @@ const Debt = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [10, 20, 30, 50]}}
           itemsPerPage={size}
           hover
           sorter
           loading={initialState.loading}
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
-          onPaginationChange={val => setSize(val)}
+          onPageChange={(val) => console.log('new page:', val)}
+          onPagesChange={(val) => console.log('new pages:', val)}
+          onPaginationChange={(val) => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
+          onTableFilterChange={(val) => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
-            debt: item => <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.debt)}</td>,
-            action: item => {
+            debt: (item) => <td>{new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(item.debt)}</td>,
+            action: (item) => {
               return (
-                <CRow style={{ justifyContent: 'center' }}>
+                <CRow style={{justifyContent: 'center'}}>
                   <CButton
                     onClick={() => {
                       toDetail(item);
@@ -124,13 +124,13 @@ const Debt = props => {
                   </CButton>
                 </CRow>
               );
-            }
+            },
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / size) + 1}
-          onActivePageChange={i => setActivePage(i)}
+          onActivePageChange={(i) => setActivePage(i)}
         />
       </CCardBody>
     </CCard>
