@@ -36,7 +36,7 @@ import Select from 'react-select';
 const validationSchema = function() {
   return Yup.object().shape({
     login: Yup.string()
-        .min(5 `Tên đăng nhập phải lớn hơn 5 kí tự`)
+        .min(5, `Tên đăng nhập phải lớn hơn 5 kí tự`)
         .required('Tên đăng nhập không để trống'),
     password: Yup.string()
         .min(5, `Mật khẩu phải lớn hơn 5 kí tự`)

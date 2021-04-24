@@ -34,7 +34,7 @@ import {getCodeByName} from '../../../../shared/utils/normalize';
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .min(5, `Tên phải lớn hơn 5 kí tự`)
         .required('Tên không để trống'),
     price: Yup.string().required('Giá tiền không để trống'),
     agentPrice: Yup.string().required('Giá tiền không để trống'),
@@ -50,14 +50,6 @@ export const mappingStatus = {
   DELETED: 'ĐÃ XÓA',
 };
 
-const dropzoneStyle = {
-  width: '100%',
-  height: 'auto',
-  borderWidth: 2,
-  borderColor: 'rgb(102, 102, 102)',
-  borderStyle: 'dashed',
-  borderRadius: 5,
-};
 const CreateProduct = () => {
   const {initialState} = useSelector((state) => state.product);
   const ref = useRef(null);

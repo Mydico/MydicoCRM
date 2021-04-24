@@ -31,7 +31,7 @@ import {getPermissionGroups} from '../UserPermission/permission.api';
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5 `Tên chức vụ phải lớn hơn 5 kí tự`)
+        .min(5, `Tên chức vụ phải lớn hơn 5 kí tự`)
         .required('Tên chức vụ không để trống'),
   });
 };

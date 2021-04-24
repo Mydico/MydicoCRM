@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as path from 'path';
 import { AuthModule } from './module/auth.module';
@@ -71,7 +71,7 @@ import { join } from 'path';
 
 @Module({
     imports: [
-        TypeOrmModule.forRoot(ormconfig),
+        CacheModule.register(),TypeOrmModule.forRoot(ormconfig),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, './', 'classes/static')
           }),

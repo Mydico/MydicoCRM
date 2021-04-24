@@ -32,7 +32,7 @@ import {globalizedDepartmentSelectors} from '../../user/UserDepartment/departmen
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .min(5, `Tên phải lớn hơn 5 kí tự`)
         .required('Tên không để trống'),
     department: Yup.object().required('Chi nhánh không để trống'),
   });

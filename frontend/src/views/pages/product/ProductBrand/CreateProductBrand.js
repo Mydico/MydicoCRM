@@ -25,7 +25,7 @@ import {fetching, reset} from './product-brand.reducer';
 const validationSchema = function() {
   return Yup.object().shape({
     code: Yup.string()
-        .min(1 `Mã thương hiệu phải lớn hơn 1 kí tự`)
+        .min(1, `Mã thương hiệu phải lớn hơn 1 kí tự`)
         .required('Mã thương hiệu không để trống')
         .nullable(),
     name: Yup.string()

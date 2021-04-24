@@ -32,7 +32,7 @@ import {validate} from '../../../../shared/utils/normalize';
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5 `Tên chi nhánh phải lớn hơn 5 kí tự`)
+        .min(5, `Tên chi nhánh phải lớn hơn 5 kí tự`)
         .required('Tên chi nhánh không để trống'),
     code: Yup.string()
         .min(2, `Mã chi nhánh phải lớn hơn 5 kí tự`)

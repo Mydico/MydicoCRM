@@ -28,7 +28,7 @@ import {fetching, globalizedcustomerStatuselectors} from './customer-status.redu
 const validationSchema = function() {
   return Yup.object().shape({
     description: Yup.string()
-        .min(5 `Mô tả liên lạc phải lớn hơn 5 kí tự`)
+        .min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`)
         .required('Tên liên lạc không để trống'),
     name: Yup.string()
         .min(5, `Tên phải lớn hơn 5 kí tự`)

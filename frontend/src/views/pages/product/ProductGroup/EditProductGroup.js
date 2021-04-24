@@ -29,7 +29,7 @@ import {getProductBrand} from '../ProductBrand/product-brand.api';
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .min(5, `Tên phải lớn hơn 5 kí tự`)
         .required('Tên không để trống'),
     code: Yup.string()
         .min(1, `Mã phải lớn hơn 1 kí tự`)

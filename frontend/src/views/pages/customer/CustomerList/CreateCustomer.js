@@ -31,7 +31,7 @@ const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2
 const validationSchema = function() {
   return Yup.object().shape({
     contactName: Yup.string()
-        .min(5 `Tên liên lạc phải lớn hơn 5 kí tự`)
+        .min(5, `Tên liên lạc phải lớn hơn 5 kí tự`)
         .required('Tên liên lạc không để trống'),
     name: Yup.string()
         .min(5, `Tên phải lớn hơn 5 kí tự`)
@@ -300,7 +300,9 @@ const CreateCustomer = () => {
                     <CLabel htmlFor="code">Trạng thái</CLabel>
                     <Select
                       name="status"
-                      onChange={handleChange}
+                      onChange={ (item) => {
+                        setFieldValue('status', item.value);
+                      }}
                       placeholder="Trạng thái"
                       options={initialState.status.map((item) => ({
                         value: item,

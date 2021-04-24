@@ -38,7 +38,7 @@ import {Table} from 'reactstrap';
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5 `Tên nhóm quyền phải lớn hơn 5 kí tự`)
+        .min(5, `Tên nhóm quyền phải lớn hơn 5 kí tự`)
         .required('Tên nhóm quyền không để trống'),
   });
 };

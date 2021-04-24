@@ -37,7 +37,7 @@ import Select from 'react-select';
 const validationSchema = function() {
   return Yup.object().shape({
     firstName: Yup.string()
-        .min(3 `Họ phải lớn hơn 5 kí tự`)
+        .min(3, `Họ phải lớn hơn 5 kí tự`)
         .required('Họ không để trống'),
     lastName: Yup.string()
         .min(3, `Tên phải lớn hơn 5 kí tự`)

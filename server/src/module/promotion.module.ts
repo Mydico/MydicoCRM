@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PromotionController } from '../web/rest/promotion.controller';
 import { PromotionRepository } from '../repository/promotion.repository';
@@ -7,7 +7,7 @@ import { PromotionProductModule } from './promotion-product.module';
 import { PromotionItemModule } from './promotion-item.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([PromotionRepository]), PromotionProductModule, PromotionItemModule],
+    imports: [CacheModule.register(),TypeOrmModule.forFeature([PromotionRepository]), PromotionProductModule, PromotionItemModule],
     controllers: [PromotionController],
     providers: [PromotionService],
     exports: [PromotionService],

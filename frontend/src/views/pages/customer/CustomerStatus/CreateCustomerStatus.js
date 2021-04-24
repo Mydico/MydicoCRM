@@ -27,7 +27,7 @@ import {validate} from '../../../../shared/utils/normalize';
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .min(5, `Tên phải lớn hơn 5 kí tự`)
         .required('Tên không để trống'),
   });
 };

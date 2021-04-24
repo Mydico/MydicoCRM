@@ -29,7 +29,7 @@ import {getCity, getDistrict, getWard} from '../../customer/customer.api';
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5 `Tên phải lớn hơn 5 kí tự`)
+        .min(5, `Tên phải lớn hơn 5 kí tự`)
         .required('Tên không để trống'),
     city: Yup.string()
         .nullable(true)

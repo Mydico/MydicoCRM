@@ -40,7 +40,7 @@ const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2
 const validationSchema = function() {
   return Yup.object().shape({
     contactName: Yup.string()
-        .min(5 `Tên liên lạc phải lớn hơn 5 kí tự`)
+        .min(5, `Tên liên lạc phải lớn hơn 5 kí tự`)
         .required('Tên liên lạc không để trống'),
     name: Yup.string()
         .min(5, `Tên phải lớn hơn 5 kí tự`)
