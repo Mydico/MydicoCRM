@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import Department from '../domain/department.entity';
 import { DepartmentRepository } from '../repository/department.repository';
+import { checkCodeContext } from './utils/normalizeString';
 
 const relationshipNames = [];
 relationshipNames.push('permissionGroups');
@@ -38,7 +39,11 @@ export class DepartmentService {
   }
 
   async save(department: Department): Promise<Department | undefined> {
-    return await this.departmentRepository.save(department);
+    const foundedDepartment = await this.departmentRepository.find({
+      code: Like(`%${department.code}%`)
+    });
+    const newDepartment = checkCodeContext(department, foundedDepartment);
+    return await this.departmentRepository.save(newDepartment);
   }
 
   async update(department: Department): Promise<Department | undefined> {

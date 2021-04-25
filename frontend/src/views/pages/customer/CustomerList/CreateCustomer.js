@@ -31,10 +31,10 @@ const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2
 const validationSchema = function() {
   return Yup.object().shape({
     contactName: Yup.string()
-        .min(5, `Tên liên lạc phải lớn hơn 5 kí tự`)
+        .min(3, `Tên liên lạc phải lớn hơn 3 kí tự`)
         .required('Tên liên lạc không để trống'),
     name: Yup.string()
-        .min(5, `Tên phải lớn hơn 5 kí tự`)
+        .min(3, `Tên phải lớn hơn 3 kí tự`)
         .required('Tên không để trống'),
     tel: Yup.string()
         .matches(phoneRegExp, 'Số điện thoại không đúng')
@@ -149,7 +149,6 @@ const CreateCustomer = () => {
                       required
                       onChange={async (e) => {
                         await handleChange(e);
-                        Promise.resolve();
                         renderCustomerCode();
                       }}
                       onBlur={handleBlur}
@@ -267,8 +266,7 @@ const CreateCustomer = () => {
                     <Select
                       name="type"
                       onChange={async (item) => {
-                        setFieldValue('type', item.value);
-                        await Promise.resolve();
+                        await setFieldValue('type', item.value);
                         renderCustomerCode();
                       }}
                       placeholder="Chọn loại khách hàng"
@@ -284,8 +282,7 @@ const CreateCustomer = () => {
                     <Select
                       name="department"
                       onChange={async (item) => {
-                        setFieldValue('department', item.value);
-                        await Promise.resolve();
+                        await setFieldValue('department', item.value);
                         renderCustomerCode();
                       }}
                       placeholder="Chi nhánh"

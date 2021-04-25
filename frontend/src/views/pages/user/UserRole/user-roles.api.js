@@ -16,7 +16,6 @@ export const getUserRole = createAsyncThunk(
 export const getDetailUserRole = createAsyncThunk('api/detail/user-roles', async (userId, thunkAPI) => {
   try {
     const result = await axios.get('api/user-roles/' + userId);
-    console.log(result);
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -26,7 +25,7 @@ export const getDetailUserRole = createAsyncThunk('api/detail/user-roles', async
 export const creatingUserRole = createAsyncThunk('api/create/user-roles', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/user-roles', body);
-    return result.data;
+    return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
@@ -35,7 +34,7 @@ export const creatingUserRole = createAsyncThunk('api/create/user-roles', async 
 export const updateUserRole = createAsyncThunk('api/update/user-roles', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/user-roles', body);
-    return result.data;
+    return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

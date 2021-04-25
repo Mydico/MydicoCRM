@@ -130,11 +130,16 @@ export class OrderService {
       const itemFounded = merged.filter(origin => origin.product.id === item.product.id);
       return {
         ...item,
-        quantity: item.quantity - itemFounded[0].quantity >= 0 ? item.quantity - itemFounded[0].quantity : 0
+        quantity: item.quantity - itemFounded[0].quantity
       };
     });
-    await this.productQuantityService.saveMany(productQuantityExported);
-    return true;
+    const checkExistInStore = productQuantityExported.filter(item => item.quantity < 0)
+    if (checkExistInStore.length > 0) {
+        return false;
+    } else {
+        await this.productQuantityService.saveMany(productQuantityExported);
+        return true;
+    }
   }
 
   async save(order: Order): Promise<Order | undefined> {
@@ -175,6 +180,8 @@ export class OrderService {
           ? Number(latestTransaction.earlyDebt) + Number(foundedOrder.realMoney)
           : Number(foundedOrder.realMoney);
         await this.transactionService.save(transaction);
+      }else{
+          
       }
     }
     return await this.save(order);

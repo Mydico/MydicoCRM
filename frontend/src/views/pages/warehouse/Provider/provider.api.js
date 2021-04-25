@@ -23,7 +23,7 @@ export const getDetailProvider = createAsyncThunk('api/detail/providers', async 
 export const creatingProvider = createAsyncThunk('api/create/providers', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/providers', body);
-    return result.data;
+    return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
@@ -32,7 +32,7 @@ export const creatingProvider = createAsyncThunk('api/create/providers', async (
 export const updateProvider = createAsyncThunk('api/update/providers', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/providers', body);
-    return result.data;
+    return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

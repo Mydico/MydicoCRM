@@ -42,7 +42,7 @@ export const getPromotionProduct = createAsyncThunk('api/product/promotions', as
 export const creatingPromotion = createAsyncThunk('api/create/promotions', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/promotions', body);
-    return result.data;
+    return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
@@ -51,7 +51,7 @@ export const creatingPromotion = createAsyncThunk('api/create/promotions', async
 export const updatePromotion = createAsyncThunk('api/update/promotions', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/promotions', body);
-    return result.data;
+    return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

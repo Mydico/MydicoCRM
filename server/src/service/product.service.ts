@@ -32,7 +32,6 @@ export class ProductService {
   }
 
   async save(product: Product): Promise<Product | undefined> {
-      console.log(product.code)
     if (!product.code) {
       const foundedCustomer = await this.productRepository.find({ code: Like(`%${product.code}%`) });
       if (foundedCustomer.length > 0) {

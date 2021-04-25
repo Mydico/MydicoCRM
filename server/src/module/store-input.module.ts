@@ -7,9 +7,10 @@ import { ProductQuantityModule } from './product-quantity.module';
 import { StoreHistoryModule } from './store-history.module';
 import { StoreInputDetailsModule } from './store-input-details.module';
 import { TransactionModule } from './transaction.module';
+import { OrderModule } from './order.module';
 
 @Module({
-    imports: [CacheModule.register(),TypeOrmModule.forFeature([StoreInputRepository]), ProductQuantityModule, StoreHistoryModule, StoreInputDetailsModule, TransactionModule],
+    imports: [CacheModule.register(),TypeOrmModule.forFeature([StoreInputRepository]), ProductQuantityModule, StoreHistoryModule, StoreInputDetailsModule, TransactionModule, OrderModule],
     controllers: [StoreInputController],
     providers: [StoreInputService],
     exports: [StoreInputService],

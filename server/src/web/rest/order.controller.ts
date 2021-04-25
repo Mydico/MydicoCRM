@@ -91,10 +91,13 @@ export class OrderController {
     HeaderUtil.addEntityUpdatedStatusHeaders(req.res, 'Order', order.id);
     const currentUser = req.user as User;
     order.lastModifiedBy = currentUser.login;
-    const canExport = await this.orderService.canExportStore(order);
-    if (!canExport) {
-      throw new HttpException('Sản phẩm trong kho không đủ để tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
+    if (order.status === OrderStatus.CREATE_COD) {
+      const canExport = await this.orderService.canExportStore(order);
+      if (!canExport) {
+        throw new HttpException('Sản phẩm trong kho không đủ để tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
+      }
     }
+
     return await this.orderService.update(order);
   }
 

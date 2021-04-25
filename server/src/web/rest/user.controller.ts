@@ -60,7 +60,7 @@ export class UserController {
         type: User,
     })
     async updateUser(@Req() req: Request, @Body() user: User): Promise<User> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'User', user.id);
+        HeaderUtil.addEntityUpdatedHeaders(req.res, 'User', user.id);
         return await this.userService.update(user);
     }
 

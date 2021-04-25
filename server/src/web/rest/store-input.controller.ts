@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import StoreInput from '../../domain/store-input.entity';
@@ -130,9 +130,13 @@ export class StoreInputController {
     })
     async put(@Req() req: Request, @Body() storeInput: StoreInput): Promise<StoreInput> {
         HeaderUtil.addEntityUpdatedHeaders(req.res, 'StoreInput', storeInput.id);
+        const currentUser = req.user as User;
+        storeInput.approver = currentUser;
         if(storeInput.status === StoreImportStatus.APPROVED){
-            const currentUser = req.user as User;
-            storeInput.approver = currentUser;
+            const canExport = await this.storeInputService.canExportStore(storeInput);
+            if (!canExport) {
+              throw new HttpException('Sản phẩm trong kho không đủ để tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
+            }            
         }
         return await this.storeInputService.update(storeInput);
     }

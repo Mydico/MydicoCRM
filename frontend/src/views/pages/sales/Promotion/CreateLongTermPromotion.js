@@ -198,7 +198,7 @@ const CreatePromotion = () => {
                       id="startTime"
                       name="startTime"
                       invalid={errors.startTime}
-                      value={values.startTime.toISOString().substr(0, 10)}
+                      value={values.startTime}
                       onChange={handleChange}
                       placeholder="Thời gian bắt đầu"
                     />
@@ -212,7 +212,7 @@ const CreatePromotion = () => {
                       id="endTime"
                       name="endTime"
                       invalid={errors.endTime}
-                      value={values.endTime.toISOString().substr(0, 10)}
+                      value={values.endTime}
                       onChange={handleChange}
                       placeholder="Thời gian kết thúc"
                     />

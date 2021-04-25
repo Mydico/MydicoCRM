@@ -30,6 +30,18 @@ const successMessageMapping = {
   'MydicoCRM.StoreInput.created': 'Tạo mới phiếu kho thành công',
   'MydicoCRM.StoreInput.updated': 'Chỉnh sửa phiếu kho thành công',
   'MydicoCRM.StoreInput.status.updated': 'Cập nhật trạng thái phiếu thành công',
+  'MydicoCRM.Promotion.created': 'Tạo mới chương trình thành công',
+  'MydicoCRM.Promotion.updated': 'Chỉnh sửa chương trình thành công',
+  'MydicoCRM.User.created': 'Tạo mới nhân viên thành công',
+  'MydicoCRM.User.updated': 'Chỉnh sửa nhân viên thành công',
+  'MydicoCRM.Department.created': 'Tạo mới phòng ban thành công',
+  'MydicoCRM.Department.updated': 'Chỉnh sửa phòng ban thành công',
+  'MydicoCRM.UserRole.created': 'Tạo mới chức vụ thành công',
+  'MydicoCRM.UserRole.updated': 'Chỉnh sửa chức vụ thành công',
+  'MydicoCRM.Provider.created': 'Tạo mới nhà cung cấp thành công',
+  'MydicoCRM.Provider.updated': 'Chỉnh sửa nhà cung cấp thành công',
+  'MydicoCRM.Receipt.created': 'Tạo mới phiếu thu thành công',
+  'MydicoCRM.Receipt.updated': 'Chỉnh sửa phiếu thu thành công',
 };
 
 // const addErrorAlert = (key?) => {

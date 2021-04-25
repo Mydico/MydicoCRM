@@ -13,7 +13,7 @@ export const getDetailBill = createAsyncThunk('api/detail/bills', async (userId,
 export const creatingBill = createAsyncThunk('api/create/bills', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/bills', body);
-    return result.data;
+    return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
@@ -22,7 +22,7 @@ export const creatingBill = createAsyncThunk('api/create/bills', async (body, th
 export const updateBill = createAsyncThunk('api/update/bills', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/bills', body);
-    return result.data;
+    return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

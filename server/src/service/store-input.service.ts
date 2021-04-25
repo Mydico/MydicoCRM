@@ -13,6 +13,7 @@ import ProductQuantity from '../domain/product-quantity.entity';
 import { TransactionService } from './transaction.service';
 import Transaction from '../domain/transaction.entity';
 import { TransactionType } from '../domain/enumeration/transaction-type';
+import { OrderService } from './order.service';
 
 const relationshipNames = [];
 relationshipNames.push('approver');
@@ -29,7 +30,8 @@ export class StoreInputService {
         @InjectRepository(StoreInputRepository) private storeInputRepository: StoreInputRepository,
         private readonly productQuantityService: ProductQuantityService,
         private readonly storeInputDetailsService: StoreInputDetailsService,
-        private readonly transactionService: TransactionService
+        private readonly transactionService: TransactionService,
+        private readonly orderService: OrderService
     ) {}
 
     async findById(id: string): Promise<StoreInput | undefined> {
@@ -44,6 +46,35 @@ export class StoreInputService {
     async findByfields(options: FindOneOptions<StoreInput>): Promise<StoreInput | undefined> {
         return await this.storeInputRepository.findOne(options);
     }
+
+    async canExportStore(storeInput: StoreInput): Promise<boolean> {
+        const foundedStoreInput = await this.findById(storeInput.id);
+        const merged = foundedStoreInput.storeInputDetails.reduce((previousValue, currentValue) => {
+          const sum = previousValue.find(e => e.product.id === currentValue.product.id);
+          if (!sum) {
+            previousValue.push(Object.assign({}, currentValue));
+          } else {
+            sum.quantity += currentValue.quantity;
+          }
+          return previousValue;
+        }, []);
+        const arrIds = merged.map(item => item.product.id);
+        const foundedProductInStore = await this.orderService.getProductInStore([...new Set(arrIds)], foundedStoreInput.store);
+        if (foundedProductInStore.length == 0) {
+          return false;
+        }
+        let canExport = true;
+        merged.forEach(item => {
+          const founded = foundedProductInStore.filter(store => store.product.id === item.product.id);
+          if (founded.length > 0) {
+            if (founded[0].quantity < item.quantity) {
+                canExport = false;
+              return
+            }
+          }
+        });
+        return canExport;
+      }
 
     async findAndCount(options: FindManyOptions<StoreInput>): Promise<[StoreInput[], number]> {
         options.relations = relationshipNames;

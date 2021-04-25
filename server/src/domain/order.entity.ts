@@ -31,15 +31,6 @@ export default class Order extends BaseEntity {
     @ManyToOne(type => Department, department => department.orders, { cascade: true })
     department?: Department;
 
-    @ManyToOne(type => City)
-    city?: City;
-
-    @ManyToOne(type => District)
-    district?: District;
-
-    @ManyToOne(type => Wards)
-    wards?: Wards;
-
     @Column({ name: 'address', length: 255, nullable: true })
     address?: string;
 

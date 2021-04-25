@@ -155,8 +155,8 @@ const CreateProduct = () => {
                       autoComplete="family-name"
                       invalid={errors.name}
                       required
-                      onChange={(e) => {
-                        handleChange(e);
+                      onChange={async (e) => {
+                        await handleChange(e);
                         renderProductCode();
                       }}
                       onBlur={handleBlur}
@@ -216,8 +216,8 @@ const CreateProduct = () => {
                       id="volume"
                       placeholder="Dung tích"
                       autoComplete="volume"
-                      onChange={(e) => {
-                        handleChange(e);
+                      onChange={async (e) => {
+                        await handleChange(e);
                         renderProductCode();
                       }}
                       invalid={errors.volume}

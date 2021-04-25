@@ -11,8 +11,8 @@ const TheFooter = () => {
         <span>&copy; 2021</span>
       </div>
       <div className="mfs-auto">
-        <span>Powered by</span>
-        <a href="https://coreui.io/react" target="_blank" rel="noopener noreferrer">
+        <span>Phát triển bởi </span>
+        <a href="https://dzung.dev" target="_blank" rel="noopener noreferrer">
           dungnd8594@gmail.com
         </a>
       </div>
