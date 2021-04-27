@@ -180,7 +180,7 @@ const CreateProduct = () => {
                     <CInvalidFeedback>{errors.description}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
-                    <CLabel htmlFor="productGroup">Loại sản phẩm</CLabel>
+                    <CLabel htmlFor="productGroup">Nhóm sản phẩm</CLabel>
                     <Select
                       name="productGroup"
                       onChange={async (item) => {

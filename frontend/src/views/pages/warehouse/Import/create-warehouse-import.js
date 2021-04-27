@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -11,53 +11,48 @@ import {
   CLabel,
   CInput,
   CRow,
-
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {creatingWarehouseImport} from './warehouse-import.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { creatingWarehouseImport } from './warehouse-import.api';
 
-
-import {useHistory} from 'react-router-dom';
-import {fetching} from './warehouse-import.reducer';
+import { useHistory } from 'react-router-dom';
+import { fetching } from './warehouse-import.reducer';
 import Select from 'react-select';
 
-
-import {FormFeedback, Table} from 'reactstrap';
-import {globalizedWarehouseSelectors} from '../Warehouse/warehouse.reducer';
-import {getWarehouse} from '../Warehouse/warehouse.api';
-import {globalizedProductSelectors} from '../../product/ProductList/product.reducer';
-import {getProduct} from '../../product/ProductList/product.api';
-import {WarehouseImportType} from './contants';
-import {confirmAlert} from 'react-confirm-alert'; // Import
+import { FormFeedback, Table } from 'reactstrap';
+import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
+import { getWarehouse } from '../Warehouse/warehouse.api';
+import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import { getProduct } from '../../product/ProductList/product.api';
+import { WarehouseImportType } from './contants';
+import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
 const validationSchema = function() {
   return Yup.object().shape({
-    store: Yup.object().required('Kho không để trống'),
+    store: Yup.object().required('Kho không để trống')
   });
 };
 
-import {validate} from '../../../../shared/utils/normalize';
-
+import { validate } from '../../../../shared/utils/normalize';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   INACTIVE: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
 
-
 const CreateWarehouse = () => {
-  const {initialState} = useSelector((state) => state.warehouseImport);
-  const {} = useSelector((state) => state.customer);
-  const {account} = useSelector((state) => state.authentication);
+  const { initialState } = useSelector(state => state.warehouseImport);
+  const {} = useSelector(state => state.customer);
+  const { account } = useSelector(state => state.authentication);
 
-  const {selectAll: selectAllWarehouse} = globalizedWarehouseSelectors;
-  const {selectAll: selectAllProduct} = globalizedProductSelectors;
+  const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
+  const { selectAll: selectAllProduct } = globalizedProductSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -71,15 +66,15 @@ const CreateWarehouse = () => {
 
   const initialValues = {
     store: '',
-    note: '',
+    note: ''
   };
-  const onSelectWarehouse = (value) => {
+  const onSelectWarehouse = value => {
     setSelectedWarehouse(value);
     setIsSelectedWarehouse(true);
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({department: JSON.stringify([account.department?.id || ''])}));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     dispatch(getProduct());
   }, []);
 
@@ -90,30 +85,27 @@ const CreateWarehouse = () => {
     dispatch(creatingWarehouseImport(values));
   };
 
-  const onChangeQuantity = ({target}, index) => {
+  const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = target.value;
     setProductList(copyArr);
   };
 
-  const onRemoveProduct = (index) => {
+  const onRemoveProduct = index => {
     const copyArr = [...productList];
     copyArr.splice(index, 1);
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({value}, index) => {
-    const arr = productList.filter((item) => item.product.id === value.id);
-    if (arr.length === 0) {
-      const copyArr = [...productList];
-      copyArr[index].product = value;
-      copyArr[index].quantity = 1;
-      setProductList(copyArr);
-    }
+  const onSelectedProduct = ({ value }, index) => {
+    const copyArr = [...productList];
+    copyArr[index].product = value;
+    copyArr[index].quantity = 1;
+    setProductList(copyArr);
   };
 
   const onAddProduct = () => {
-    const data = {product: {}, quantity: 1};
+    const data = { product: {}, quantity: 1 };
     setProductList([...productList, data]);
   };
 
@@ -123,7 +115,7 @@ const CreateWarehouse = () => {
     }
   }, [initialState.updatingSuccess]);
 
-  const editAlert = (values, {setSubmitting, setErrors}) => {
+  const editAlert = (values, { setSubmitting, setErrors }) => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn tạo phiếu này?',
@@ -132,12 +124,12 @@ const CreateWarehouse = () => {
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: onSubmit(values, {setSubmitting, setErrors}),
+          onClick: onSubmit(values, { setSubmitting, setErrors })
         },
         {
-          label: 'Hủy',
-        },
-      ],
+          label: 'Hủy'
+        }
+      ]
     });
   };
 
@@ -147,15 +139,12 @@ const CreateWarehouse = () => {
         {({
           values,
 
-
           handleChange,
           handleBlur,
           handleSubmit,
           setFieldValue,
 
-
           handleReset
-          ,
         }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
@@ -167,14 +156,14 @@ const CreateWarehouse = () => {
                   <CCol sm={4}>
                     <CLabel htmlFor="lastName">Chọn Kho</CLabel>
                     <Select
-                      onChange={(item) => {
+                      onChange={item => {
                         setFieldValue('store', item.value);
                         onSelectWarehouse(item.value);
                       }}
                       placeholder=""
-                      options={warehouses.map((item) => ({
+                      options={warehouses.map(item => ({
                         value: item,
-                        label: `${item.name}`,
+                        label: `${item.name}`
                       }))}
                     />
                     {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
@@ -224,23 +213,23 @@ const CreateWarehouse = () => {
                     {productList.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{width: 500}}>
+                          <td style={{ width: 500 }}>
                             <Select
                               value={{
                                 value: item,
-                                label: item?.product?.name,
+                                label: item?.product?.name
                               }}
-                              onChange={(event) => onSelectedProduct(event, index)}
+                              onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
-                              options={products.map((item) => ({
+                              options={products.map(item => ({
                                 value: item,
-                                label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`,
+                                label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`
                               }))}
                             />
                           </td>
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
-                          <td style={{width: 100}}>
+                          <td style={{ width: 100 }}>
                             {item.followIndex >= 0 ? (
                               item.quantity
                             ) : (
@@ -249,14 +238,14 @@ const CreateWarehouse = () => {
                                 min={1}
                                 name="code"
                                 id="code"
-                                onChange={(event) => onChangeQuantity(event, index)}
+                                onChange={event => onChangeQuantity(event, index)}
                                 onBlur={handleBlur}
                                 value={item.quantity}
                               />
                             )}
                           </td>
 
-                          <td style={{width: 100}}>
+                          <td style={{ width: 100 }}>
                             <CButton
                               color="danger"
                               variant="outline"

@@ -1,16 +1,11 @@
 import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
-import {creatingWarehouse, getWarehouse, getDetailWarehouse, updateWarehouse} from './warehouse.api';
+import {creatingWarehouse, getWarehouse, getDetailWarehouse, updateWarehouse, getAllWarehouse} from './warehouse.api';
 
 const initialState = {
   loading: false,
   updatingSuccess: false,
   totalItem: 0,
-  cities: [],
-  districts: [],
-  wards: [],
-  type: [],
-  branch: [],
-  status: [],
+  warehouses: [],
 };
 
 export const warehousesAdapter = createEntityAdapter({
@@ -52,6 +47,10 @@ const slice = createSlice({
     [getWarehouse.fulfilled]: (state, action) => {
       warehousesAdapter.setAll(state, action.payload.data);
       state.initialState.totalItem = action.payload.total;
+      state.initialState.loading = false;
+    },
+    [getAllWarehouse.fulfilled]: (state, action) => {
+      state.initialState.warehouses = action.payload.data;
       state.initialState.loading = false;
     },
     [getWarehouse.rejected]: (state ) => {

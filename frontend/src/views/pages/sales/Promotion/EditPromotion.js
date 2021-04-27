@@ -70,15 +70,13 @@ const EditPromotion = (props) => {
 
   useEffect(() => {
     dispatch(getCustomerType());
-    dispatch(getProduct());
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', status: "ACTIVE" }));
     dispatch(getDetailPromotion(props.match.params.id));
   }, []);
 
   useEffect(() => {
-    console.log(promotion);
     if (promotion) {
       setInitValues(promotion);
-      console.log(JSON.parse(JSON.stringify(promotion.promotionProduct)));
       setProductList(JSON.parse(JSON.stringify(promotion.promotionProduct)));
     }
   }, [entities]);

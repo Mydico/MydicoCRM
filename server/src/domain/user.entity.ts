@@ -9,6 +9,7 @@ import Department from './department.entity';
 import PermissionGroup from './permission-group.entity';
 import Bill from './bill.entity';
 import StoreInput from './store-input.entity';
+import { ProductStatus } from './enumeration/product-status';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -35,6 +36,9 @@ export class User extends BaseEntity {
   @JoinTable()
   @ApiModelProperty({ isArray: true, enum: ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_ANONYMOUS'], description: 'Array of permissions' })
   authorities?: any[];
+
+  @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
+  status?: ProductStatus;
 
   @ManyToMany(type => UserRole, userRole => userRole.users)
   roles?: UserRole[];

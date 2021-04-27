@@ -3,7 +3,15 @@ import axios from 'axios';
 
 export const getWarehouse = createAsyncThunk('api/stores', async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
   try {
-    console.log(params);
+    const result = await axios.get('api/stores', {params: params});
+    return {data: result.data, total: result.headers['x-total-count']};
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const getAllWarehouse = createAsyncThunk('api/all-stores', async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
+  try {
     const result = await axios.get('api/stores', {params: params});
     return {data: result.data, total: result.headers['x-total-count']};
   } catch (error) {

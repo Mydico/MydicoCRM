@@ -80,7 +80,7 @@ export default [
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'Loại sản phẩm',
+        name: 'Nhóm sản phẩm',
         to: '/product/group',
       },
       {
@@ -188,7 +188,7 @@ export default [
     icon: 'cil-layers',
     _children: [
       {
-        _tag: 'CSidebarNavDropdown',
+        _tag: 'CSidebarNavItem',
         name: 'Phân quyền',
         to: '/permission/',
       },

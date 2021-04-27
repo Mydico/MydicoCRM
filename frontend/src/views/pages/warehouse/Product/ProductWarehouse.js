@@ -55,7 +55,7 @@ const ProductWarehouse = (props) => {
     setDetails(newDetails);
   };
 
-  // Code	Tên sản phẩm	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại sản phẩm	Phân loại	Sửa	Tạo đơn
+  // Code	Tên sản phẩm	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Nhóm sản phẩm	Phân loại	Sửa	Tạo đơn
   const fields = [
     {
       key: 'order',

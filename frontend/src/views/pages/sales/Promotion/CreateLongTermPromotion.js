@@ -86,7 +86,7 @@ const CreatePromotion = () => {
 
   const onSelectedProduct = (item, index) => {
     const copyArr = [...promotionItemList];
-    copyArr[index].productGroup = {id: item.value};
+    copyArr[index].productGroup = item.value;
     setPromotionItemList(copyArr);
   };
 
@@ -318,7 +318,7 @@ const CreatePromotion = () => {
                           <Select
                             onChange={(event) => onSelectedProduct(event, index)}
                             options={productGroups.map((item) => ({
-                              value: item.id,
+                              value: item,
                               label: `${item?.productBrand?.name}-${item.name}`,
                             }))}
                           />

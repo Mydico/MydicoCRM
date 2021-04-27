@@ -23,11 +23,11 @@ export default class PromotionItem extends BaseEntity {
     @Column({ name: 'note', length: 512, nullable: true })
     note: string;
 
-    @ManyToOne(type => ProductGroup, productGroup => productGroup.product, { cascade: true })
+    @ManyToOne(type => ProductGroup, productGroup => productGroup.product)
     productGroup?: ProductGroup;
 
 
-    @ManyToOne(type => Promotion, promotion => promotion.promotionItems, { cascade: true })
+    @ManyToOne(type => Promotion, promotion => promotion.promotionItems)
     promotion?: Promotion;
 
 

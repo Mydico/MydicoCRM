@@ -35,15 +35,15 @@ export const UnitType = [
 
 export const ProductStatus = [
   {
-    title: 'ACTIVE',
+    title: 'Đang hoạt động',
     value: 'ACTIVE',
   },
   {
-    title: 'INACTIVE',
+    title: 'Không hoạt động',
     value: 'INACTIVE',
   },
   {
-    title: 'DELETED',
+    title: 'Đã xóa',
     value: 'DELETED',
   },
 ];

@@ -61,7 +61,6 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getProductInstore.fulfilled]: (state, action) => {
-      productWarehousesAdapter.setAll(state, action.payload);
       state.initialState.loading = false;
     },
     [getProductWarehouse.rejected]: (state ) => {

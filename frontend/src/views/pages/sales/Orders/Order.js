@@ -278,6 +278,17 @@ const Order = (props) => {
               <CIcon name="cil-pencil" />
               CHỈNH SỬA
             </CButton>
+            <CButton
+              onClick={() => {
+                cancelAlert(item);
+              }}
+              color="danger"
+              variant="outline"
+              shape="square"
+              size="sm"
+            >
+              HỦY ĐƠN HÀNG
+            </CButton>
           </CRow>
         );
       case OrderStatus.CREATE_COD:
@@ -411,11 +422,12 @@ const Order = (props) => {
                         <tr>
                           <th className="center">#</th>
                           <th>Tên sản phẩm</th>
-                          <th>Mô tả</th>
+                          <th>Dunh tích</th>
                           <th className="center">Số lượng</th>
                           <th className="right">Đơn giá</th>
                           <th className="right">Chiết khấu(%)</th>
                           <th className="right">Tổng</th>
+                          <th className="right">Thành tiền</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -424,7 +436,7 @@ const Order = (props) => {
                             <tr key={index}>
                               <td>{index + 1}</td>
                               <td>{item.product?.name}</td>
-                              <td>{item.product?.description}</td>
+                              <td>{item.product?.volume}</td>
                               <td>{item.quantity}</td>
                               <td>{item.product?.price?.toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}</td>
                               <td>{item.reducePercent}%</td>

@@ -268,43 +268,6 @@ const CreateUser = () => {
                 />
                 <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
               </CFormGroup>
-              {selectedDepartment.length > 0 ? (
-                <Table style={{marginTop: 15}}>
-                  <thead>
-                    <tr>
-                      <th className="hand  text-left index-column">
-                        <span>STT</span>
-                      </th>
-                      <th className="text-left">
-                        <span>Tên Chi nhánh</span>
-                      </th>
-                      <th className="text-center">
-                        <span>Thao tác</span>
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {selectedDepartment.map((gPermission, i) => {
-                      return (
-                        <tr key={gPermission.id}>
-                          <td className="text-left">{i + 1}</td>
-                          <td>{gPermission.name}</td>
-                          <td className="text-center">
-                            <CButton type="reset" size="lg" color="danger" onClick={() => removeDepartment(i)} className="ml-5">
-                              <CIcon name="cil-ban" />
-                            </CButton>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-              ) : (
-                <div className="alert alert-warning" style={{textAlign: 'center'}}>
-                  <span>Người dùng này chưa có Chi nhánh !</span>
-                </div>
-              )}
               <CFormGroup>
                 <CLabel htmlFor="userName">Chức vụ</CLabel>
                 <Select

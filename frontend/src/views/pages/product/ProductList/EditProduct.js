@@ -216,7 +216,7 @@ const EditProduct = (props) => {
                     <CInvalidFeedback>{errors.desc}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
-                    <CLabel htmlFor="productGroup">Loại sản phẩm</CLabel>
+                    <CLabel htmlFor="productGroup">Nhóm sản phẩm</CLabel>
                     <Select
                       name="productGroup"
                       onChange={async (item) => {

@@ -158,7 +158,7 @@ const CreateReceipt = () => {
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Chi nhánh:</dt>
-                          <dd className="col-sm-9">{selectedCustomer?.branch?.name}</dd>
+                          <dd className="col-sm-9">{selectedCustomer?.department?.name}</dd>
                         </dl>
                       </CCol>
                       <CCol lg="6">

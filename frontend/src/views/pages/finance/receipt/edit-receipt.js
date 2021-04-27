@@ -9,9 +9,9 @@ import {
   CTextarea,
   CFormGroup,
   CLabel,
-
+  
   CRow,
-
+  
   CCardTitle,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
@@ -27,8 +27,9 @@ import {FormFeedback} from 'reactstrap';
 import {getCustomer} from '../../customer/customer.api';
 
 import CurrencyInput from '../../../components/currency-input/currency-input';
-import {getDetailReceipt, updateReceipt} from './receipt.api';
+import { getDetailReceipt, updateReceipt} from './receipt.api';
 import {fetching, globalizedReceiptsSelectors} from './receipt.reducer';
+import { validate } from '../../../../shared/utils/normalize';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -37,17 +38,7 @@ const validationSchema = function() {
   });
 };
 
-const validate = (getValidationSchema) => {
-  return (values) => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, {abortEarly: false});
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
+
 
 
 const EditReceipt = (props) => {
@@ -85,7 +76,7 @@ const EditReceipt = (props) => {
     dispatch(getDetailReceipt(props.match.params.id));
   }, []);
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, {   resetForm}) => {
     dispatch(fetching());
     values.money = Number(values.money.replace(/\D/g, ''));
     dispatch(updateReceipt(values));
@@ -114,14 +105,15 @@ const EditReceipt = (props) => {
           {({
             values,
             errors,
-
-
+            
+            
+            
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-
-
+            
+            
             handleReset
             ,
           }) => (
@@ -167,7 +159,7 @@ const EditReceipt = (props) => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Chi nhánh:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.branch?.name}</dd>
+                      <dd className="col-sm-9">{selectedCustomer?.department?.name}</dd>
                     </dl>
                   </CCol>
                   <CCol lg="6">

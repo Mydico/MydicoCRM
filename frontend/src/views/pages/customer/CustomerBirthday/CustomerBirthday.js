@@ -30,7 +30,6 @@ const Customer = (props) => {
       return {
         ...item,
         typeName: item.type?.name,
-        branchName: item.branch?.name,
       };
     });
   };

@@ -65,7 +65,7 @@ const Bill = (props) => {
     return items.map((item) => {
       return {
         ...item,
-        customerName: `${item.customer?.contactName} \n ${item.customer?.address}`,
+        customerName: `${item.customer?.name} \n ${item.customer?.address}`,
         transporter: `${item.transporter?.login || 'Chưa có'}`,
         tel: item.customer?.tel,
         quantity: item.order.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
@@ -142,7 +142,7 @@ const Bill = (props) => {
   };
 
   const onFilterColumn = (value) => {
-    if (value) {
+    if (Object.keys(value).length > 0) {
       dispatch(getBill({page: 0, size: size, sort: 'createdDate,desc', ...value}));
     }
   };

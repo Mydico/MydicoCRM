@@ -108,6 +108,7 @@ export class OrderService {
       if (founded.length > 0) {
         if (founded[0].quantity < item.quantity) {
           canCreateBill = false;
+          return
         }
       }
     });

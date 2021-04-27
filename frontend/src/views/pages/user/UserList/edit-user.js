@@ -43,6 +43,7 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { ProductStatus } from '../../product/ProductList/contants';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -203,8 +204,7 @@ const EditUser = props => {
                           id="name"
                           placeholder="Họ"
                           autoComplete="family-name"
-                          valid={errors.firstName || null}
-                          invalid={touched.firstName && !!errors.firstName}
+                          invalid={errors.firstName}
                           required
                           onChange={handleChange}
                           onBlur={handleBlur}
@@ -222,8 +222,7 @@ const EditUser = props => {
                           id="lastName"
                           placeholder="Tên"
                           autoComplete="address"
-                          valid={errors.lastName || null}
-                          invalid={touched.lastName && !!errors.lastName}
+                          invalid={errors.lastName}
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.lastName}
@@ -242,16 +241,47 @@ const EditUser = props => {
                       id="phone"
                       placeholder="Số điện thoại"
                       autoComplete="phone"
-                      valid={errors.tel || null}
-                      invalid={touched.phone && !!errors.phone}
+                      invalid={errors.phone}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.phone}
                     />
                     <CInvalidFeedback className="d-block">{errors.phone}</CInvalidFeedback>
                   </CFormGroup>
+                  <CFormGroup>
+                    <CLabel htmlFor="userName">Trạng thái</CLabel>
+                    <Select
+                      name="status"
+                      onChange={e => {
+                        setFieldValue('status', e.value);
+                      }}
+                      placeholder="Chọn chi nhánh"
+                      value={{
+                        value: values.status,
+                        label: ProductStatus.filter(item => item.value === values.status)[0]?.title
+                      }}
+                      options={ProductStatus.map(item => ({
+                        value: item.value,
+                        label: item.title
+                      }))}
+                    />
+                    <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>
+                  </CFormGroup>
                 </CCol>
               </CRow>
+              <CFormGroup>
+                <CLabel htmlFor="userName">Mật khẩu</CLabel>
+                <CInput
+                  type="password"
+                  name="password"
+                  id="password"
+                  autoComplete="phone"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.password}
+                />
+                <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
+              </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="userName">Chi nhánh</CLabel>
                 <Select
@@ -260,6 +290,10 @@ const EditUser = props => {
                     setFieldValue('department', e.value);
                   }}
                   placeholder="Chọn chi nhánh"
+                  value={{
+                    value: values.department,
+                    label: values.department?.name
+                  }}
                   options={departments.map(item => ({
                     value: item,
                     label: item.name

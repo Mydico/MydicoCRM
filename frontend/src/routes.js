@@ -114,7 +114,7 @@ const routes = [
   {path: '/product/', name: 'Sản phẩm', component: Product, exact: true},
   {path: '/product/:id/edit/', name: 'Chỉnh sửa sản phẩm', component: EditProduct},
   {path: '/product/new/', name: 'Thêm mới sản phẩm', component: CreateProduct},
-  {path: '/product/group/', name: 'Loại sản phẩm', component: ProductGroup, exact: true},
+  {path: '/product/group/', name: 'Nhóm sản phẩm', component: ProductGroup, exact: true},
   {path: '/product/group/new/', name: 'Thêm mới', component: CreateProductGroup},
   {path: '/product/group/:id/edit/', name: 'Chỉnh sửa', component: EditProductGroup},
   {path: '/product/brand/', name: 'Thương hiệu', component: ProductBrand, exact: true},

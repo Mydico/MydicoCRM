@@ -65,7 +65,7 @@ const CreatePromotion = () => {
   const products = useSelector(selectAllProduct);
   useEffect(() => {
     dispatch(getCustomerType());
-    dispatch(getProduct());
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', status: "ACTIVE" }));
   }, []);
 
   const [productList, setProductList] = useState([]);
