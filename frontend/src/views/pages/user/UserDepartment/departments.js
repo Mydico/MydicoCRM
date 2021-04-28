@@ -1,11 +1,11 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {CButton, CCard, CCardHeader} from '@coreui/react';
+import React, { useEffect, useRef, useState } from 'react';
+import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CDataTable, CPagination, CRow, CCol } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import {useDispatch, useSelector} from 'react-redux';
-import {getTreeDepartment} from './department.api.js';
-import {globalizedDepartmentSelectors} from './department.reducer.js';
-import {useHistory} from 'react-router-dom';
-import {Tree, TreeNode} from 'react-organizational-chart';
+import { useDispatch, useSelector } from 'react-redux';
+import { getDepartment, getTreeDepartment } from './department.api.js';
+import { globalizedDepartmentSelectors, reset } from './department.reducer.js';
+import { useHistory } from 'react-router-dom';
+import { Tree, TreeNode } from 'react-organizational-chart';
 import styled from 'styled-components';
 
 const StyledNode = styled.div`
@@ -19,7 +19,12 @@ const StyledRootNode = styled.div`
   margin-top: 25px;
   margin-bottom: 8px;
 `;
-const Department = (props) => {
+const mappingStatus = {
+  ACTIVE: 'ĐANG HOẠT ĐỘNG',
+  INACTIVE: 'KHÔNG HOẠT ĐỘNG',
+  DELETED: 'ĐÃ XÓA'
+};
+const Department = props => {
   const isInitialMount = useRef(true);
 
   const [,] = useState(20);
@@ -31,19 +36,96 @@ const Department = (props) => {
     }
   });
   useEffect(() => {
-    // dispatch(fetching());
+    dispatch(reset());
     dispatch(getTreeDepartment());
-    // dispatch(reset());
   }, []);
 
-  const {selectAll} = globalizedDepartmentSelectors;
+  const { selectAll } = globalizedDepartmentSelectors;
   const departments = useSelector(selectAll);
+  const [details, setDetails] = useState([]);
+  const { initialState } = useSelector(state => state.provider);
+  const [activePage, setActivePage] = useState(1);
+  const [size, setSize] = useState(20);
 
+  useEffect(() => {
+    dispatch(getDepartment({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+  }, [activePage, size]);
+
+  const providers = useSelector(selectAll);
+  const computedItems = items => {
+    return items.map(item => {
+      return {
+        ...item,
+        code: item.code || ''
+      };
+    });
+  };
+  const toggleDetails = index => {
+    const position = details.indexOf(index);
+    let newDetails = details.slice();
+    if (position !== -1) {
+      newDetails.splice(position, 1);
+    } else {
+      newDetails = [...details, index];
+    }
+    setDetails(newDetails);
+  };
+
+  // Code	Tên nhà cung cấp	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại nhà cung cấp	Phân loại	Sửa	Tạo đơn
+  const fields = [
+    {
+      key: 'order',
+      label: 'STT',
+      _style: { width: '1%' },
+      filter: false
+    },
+    { key: 'code', label: 'Mã', _style: { width: '10%' } },
+    { key: 'name', label: 'Tên chi nhánh', _style: { width: '15%' } },
+    {
+      key: 'show_details',
+      label: '',
+      _style: { width: '1%' },
+      filter: false
+    }
+  ];
+
+  const getBadge = status => {
+    switch (status) {
+      case 'ACTIVE':
+        return 'success';
+      case 'INACTIVE':
+        return 'danger';
+      case 'DELETED':
+        return 'warning';
+      case 'Banned':
+        return 'danger';
+      default:
+        return 'primary';
+    }
+  };
+  const [,] = useState([]);
+  const csvContent = computedItems(providers)
+    .map(item => Object.values(item).join(','))
+    .join('\n');
+  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
+
+  const toEditDepartment = userId => {
+    history.push(`${props.match.url}${userId}/edit`);
+  };
 
   const toCreateDepartment = () => {
     history.push(`${props.match.url}new`);
   };
-  const renderChild = (children) => {
+  const toDepartmentStructure = () => {
+    history.push(`${props.match.url}structure`);
+  };
+
+  const onFilterColumn = value => {
+    if (Object.keys(value).length > 0) {
+      dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    }
+  };
+  const renderChild = children => {
     if (children && Array.isArray(children) && children.length > 0) {
       return children.map((item, index) => (
         <TreeNode key={index} label={<StyledNode>{item.name}</StyledNode>}>
@@ -60,43 +142,16 @@ const Department = (props) => {
         <CButton color="success" variant="outline" className="ml-3" onClick={toCreateDepartment}>
           <CIcon name="cil-plus" /> Thêm mới chi nhánh
         </CButton>
+        <CButton color="info" variant="outline" className="ml-3" onClick={toDepartmentStructure}>
+           Cấu trúc chi nhánh
+        </CButton>
       </CCardHeader>
-      {departments.map((item, index) => {
-        return (
-          <StyledRootNode key={index}>
-            <Tree
-
-              lineWidth={'2px'}
-              lineColor={'green'}
-              lineBorderRadius={'10px'}
-              label={<StyledNode>{item.name}</StyledNode>}
-            >
-              {renderChild(item.children)}
-            </Tree>
-          </StyledRootNode>
-        );
-      })}
-      {/* <Tree lineWidth={'2px'} lineColor={'green'} lineBorderRadius={'10px'} label={<StyledNode>Chi nhánh HN</StyledNode>}>
-        <TreeNode label={<StyledNode>CN Hải dương</StyledNode>}>
-          <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>} />
-        </TreeNode>
-        <TreeNode label={<StyledNode>CN Hải dương 2</StyledNode>}>
-          <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>}>
-            <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>} />
-            <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>} />
-          </TreeNode>
-        </TreeNode>
-        <TreeNode label={<StyledNode>CN Hải dương 3</StyledNode>}>
-          <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>} />
-          <TreeNode label={<StyledNode>CN Thanh miện</StyledNode>} />
-        </TreeNode>
-      </Tree> */}
-      {/* <CCardBody>
+      <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(users)}
+          items={computedItems(departments)}
           fields={fields}
           columnFilter
           tableFilter
@@ -158,34 +213,12 @@ const Department = (props) => {
                     <CRow>
                       <CCol lg="6">
                         <dl className="row">
-                          <dt className="col-sm-3">Tên Login:</dt>
-                          <dd className="col-sm-9">{item.login}</dd>
+                          <dt className="col-sm-3">Mã chi nhánh:</dt>
+                          <dd className="col-sm-9">{item.code}</dd>
                         </dl>
                         <dl className="row">
-                          <dt className="col-sm-3">Họ:</dt>
-                          <dd className="col-sm-9">{item.firstName}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Tên</dt>
-                          <dd className="col-sm-9">{item.lastName}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Số điện thoại</dt>
-                          <dd className="col-sm-9">{item.phone}</dd>
-                        </dl>
-                      </CCol>
-                      <CCol lg="6">
-                        <dl className="row">
-                          <dt className="col-sm-3">Email</dt>
-                          <dd className="col-sm-9">{item.email}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Ngày Tạo</dt>
-                          <dd className="col-sm-9">{item.createdDate}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Trạng thái</dt>
-                          <dd className="col-sm-9">{mappingStatus[item.status]}</dd>
+                          <dt className="col-sm-3">Tên chi nhánh:</dt>
+                          <dd className="col-sm-9">{item.name}</dd>
                         </dl>
                       </CCol>
                     </CRow>
@@ -200,7 +233,7 @@ const Department = (props) => {
           pages={Math.floor(initialState.totalItem / size) + 1}
           onActivePageChange={i => setActivePage(i)}
         />
-      </CCardBody> */}
+      </CCardBody>
     </CCard>
   );
 };

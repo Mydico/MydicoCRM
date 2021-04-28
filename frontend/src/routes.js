@@ -75,6 +75,7 @@ const EditUserRole = React.lazy(() => import('./views/pages/user/UserRole/edit-u
 const Department = React.lazy(() => import('./views/pages/user/UserDepartment/departments'));
 const CreateDepartment = React.lazy(() => import('./views/pages/user/UserDepartment/create-department'));
 const EditDepartment = React.lazy(() => import('./views/pages/user/UserDepartment/edit-department'));
+const DepartmentStructure = React.lazy(() => import('./views/pages/user/UserDepartment/departments-structure'));
 
 const Permission = React.lazy(() => import('./views/pages/user/UserPermission/permission'));
 const CreatePermission = React.lazy(() => import('./views/pages/user/UserPermission/create-permission'));
@@ -159,9 +160,10 @@ const routes = [
   {path: '/user-role/', name: 'chức vụ', component: UserRole, exact: true},
   {path: '/user-role/:id/edit', name: 'Chỉnh sửa', component: EditUserRole},
   {path: '/user-role/new', name: 'Tạo mới', component: CreateUserRole},
-  {path: '/department/', name: 'chi nhánh', component: Department, exact: true},
+  {path: '/department/', name: 'Chi nhánh', component: Department, exact: true},
   {path: '/department/:id/edit', name: 'Chỉnh sửa', component: EditDepartment},
   {path: '/department/new', name: 'Tạo mới', component: CreateDepartment},
+  {path: '/department/structure', name: 'Tạo mới', component: DepartmentStructure},
   {path: '/permission/', name: 'nhóm quyền', component: Permission, exact: true},
   {path: '/permission/:id/edit', name: 'Chỉnh sửa', component: EditPermission},
   {path: '/permission/new', name: 'Tạo mới', component: CreatePermission},

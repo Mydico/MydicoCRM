@@ -26,7 +26,9 @@ export class DepartmentService {
 
   async findById(id: string): Promise<Department | undefined> {
     const options = { relations: relationshipNames };
-    return await this.departmentRepository.findOne(id, options);
+    const child = await this.departmentRepository.findOne(id, options);
+    const parentsTree = await this.departmentRepository.findAncestorsTree(child);
+    return parentsTree;
   }
 
   async findByfields(options: FindOneOptions<Department>): Promise<Department | undefined> {
@@ -39,11 +41,13 @@ export class DepartmentService {
   }
 
   async save(department: Department): Promise<Department | undefined> {
-    const foundedDepartment = await this.departmentRepository.find({
-      code: Like(`%${department.code}%`)
-    });
-    const newDepartment = checkCodeContext(department, foundedDepartment);
-    return await this.departmentRepository.save(newDepartment);
+    if (!department.code) {
+      const foundedDepartment = await this.departmentRepository.find({
+        code: Like(`%${department.code}%`)
+      });
+      department = checkCodeContext(department, foundedDepartment);
+    }
+    return await this.departmentRepository.save(department);
   }
 
   async update(department: Department): Promise<Department | undefined> {
