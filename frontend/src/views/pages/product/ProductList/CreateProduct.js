@@ -249,7 +249,7 @@ const CreateProduct = () => {
                       }}
                       options={ProductStatus.map((item) => ({
                         value: item.value,
-                        label: mappingStatus[item.title],
+                        label: item.title,
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>

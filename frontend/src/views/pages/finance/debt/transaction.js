@@ -74,8 +74,8 @@ const Transaction = props => {
   }, []);
 
   const onFilterColumn = value => {
-    if (value) {
-      dispatch(getTransaction({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,desc', ...value }));
     }
   };
 

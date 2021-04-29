@@ -1,5 +1,5 @@
 export enum ProductStatus {
     ACTIVE = 'ACTIVE',
-    INACTIVE = 'INACTIVE',
+    DISABLED = 'DISABLED',
     DELETED = 'DELETED'
 }

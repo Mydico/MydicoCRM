@@ -93,7 +93,7 @@ const Bill = React.lazy(() => import('./views/pages/warehouse/Bill/Bill'));
 
 // https:/github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
-  {path: '/', exact: true, name: 'Home'},
+  {path: '/', exact: true, name: 'Trang chủ'},
   {path: '/dashboard', name: 'Thống kê', component: Dashboard},
   {path: '/invoice/', name: 'Thống kê', component: Invoice},
   {path: '/debt', name: 'Công nợ', component: Debts, exact: true},

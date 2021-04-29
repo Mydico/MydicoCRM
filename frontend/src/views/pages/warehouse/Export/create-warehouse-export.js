@@ -59,6 +59,7 @@ const CreateReceipt = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [importWarehouses, setImportWarehouses] = useState([]);
   const [selectedImportWarehouse, setSelectedImportWarehouse] = useState(null);
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
 
@@ -97,6 +98,15 @@ const CreateReceipt = () => {
     dispatch(creatingWarehouseImport(values));
     resetForm();
   };
+
+  useEffect(() => {
+    if (selectedWarehouse) {
+      const founedIndex = initialStateWarehouse.warehouses.findIndex(item => item.id === selectedWarehouse.id);
+      const copyArr = [...initialStateWarehouse.warehouses]
+      copyArr.splice(founedIndex, 1)
+      setImportWarehouses(copyArr);
+    }
+  }, [selectedWarehouse]);
 
   const onChangeQuantity = ({ target }, index) => {
     const quantity = target.value;
@@ -233,7 +243,7 @@ const CreateReceipt = () => {
                         setSelectedImportWarehouse(item.value);
                       }}
                       placeholder=""
-                      options={initialStateWarehouse.warehouses.map(item => ({
+                      options={importWarehouses.map(item => ({
                         value: item,
                         label: `${item.name}`
                       }))}

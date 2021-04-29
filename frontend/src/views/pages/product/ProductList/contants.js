@@ -40,7 +40,7 @@ export const ProductStatus = [
   },
   {
     title: 'Không hoạt động',
-    value: 'INACTIVE',
+    value: 'DISABLED',
   },
   {
     title: 'Đã xóa',

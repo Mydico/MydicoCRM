@@ -78,10 +78,10 @@ const CreateCustomer = () => {
   }, [selectedCity]);
 
   const onSubmit = (values, { resetForm }) => {
-    if (!isNaN(Number(values.name))) {
-      alert('Tên khách hàng phải có chữ cái');
-      return;
-    }
+    // if (!isNaN(Number(values.name))) {
+    //   alert('Tên khách hàng phải có chữ cái');
+    //   return;
+    // }
     dispatch(fetching());
     dispatch(creatingCustomer(values));
     resetForm();

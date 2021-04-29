@@ -117,15 +117,15 @@ module.exports = (options) => ({
     new CopyWebpackPlugin([
       {from: './node_modules/swagger-ui-dist/*.{js,css,html,png}', to: 'swagger-ui', flatten: true, ignore: ['index.html']},
       {from: './node_modules/axios/dist/axios.min.js', to: 'swagger-ui'},
-      {from: './swagger-ui/', to: 'swagger-ui'},
+      {from: './public/swagger-ui/', to: 'swagger-ui'},
       {from: './content/', to: 'content'},
-      {from: './favicon.ico', to: 'favicon.ico'},
-      {from: './manifest.webapp', to: 'manifest.webapp'},
-      // jhipster-needle-add-assets-to-webpack - JHipster will add/remove third-party resources in this array
-      {from: './robots.txt', to: 'robots.txt'},
+      {from: 'favicon.ico', to: 'favicon.ico'},
+      {from: './public/manifest.webapp', to: 'manifest.webapp'},
+      {from: './public/robots.txt', to: 'robots.txt'},
+      {from: './public/avatars', to: 'avatars'},
     ]),
     new HtmlWebpackPlugin({
-      template: './index.html',
+      template: './public/index.html',
       chunksSortMode: 'dependency',
       inject: 'body',
     }),

@@ -8,7 +8,7 @@ import {globalizedProductSelectors, reset} from './product.reducer.js';
 import {useHistory} from 'react-router-dom';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
-  INACTIVE: 'KHÔNG HOẠT ĐỘNG',
+  DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA',
 };
 const Product = (props) => {
@@ -73,7 +73,7 @@ const Product = (props) => {
     switch (status) {
       case 'ACTIVE':
         return 'success';
-      case 'INACTIVE':
+      case 'DISABLED':
         return 'danger';
       case 'DELETED':
         return 'warning';

@@ -296,7 +296,7 @@ const EditProduct = (props) => {
                       }}
                       options={ProductStatus.map((item) => ({
                         value: item.value,
-                        label: mappingStatus[item.title],
+                        label: item.title,
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>

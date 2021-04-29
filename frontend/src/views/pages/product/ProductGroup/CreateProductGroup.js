@@ -122,7 +122,7 @@ const CreateProductGroup = () => {
                     <CInvalidFeedback className="d-block">{errors.productBrand}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
-                    <CLabel htmlFor="lastName">Tên nhóm sản phẩm</CLabel>
+                    <CLabel htmlFor="lastName">Mã nhóm sản phẩm</CLabel>
                     <CInput
                       type="text"
                       name="code"
