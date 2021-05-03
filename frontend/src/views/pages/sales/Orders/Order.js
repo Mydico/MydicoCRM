@@ -13,7 +13,7 @@ const getBadge = status => {
   switch (status) {
     case 'ACTIVE':
       return 'success';
-    case 'INACTIVE':
+    case 'DISABLED':
       return 'danger';
     case 'DELETED':
       return 'warning';

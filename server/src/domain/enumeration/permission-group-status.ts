@@ -3,6 +3,6 @@
  */
 export enum PermissionGroupStatus {
     ACTIVE = 'ACTIVE',
-    INACTIVE = 'NONPUBLIC',
+    DISABLED = 'NONPUBLIC',
     DELETED = 'DELETED'
 }

@@ -329,7 +329,7 @@ entity PromotionProduct {
 buy Integer,
 	gift Integer, }
 enum DepartmentStatus {
-    ACTIVE, INACTIVE, DELETED
+    ACTIVE, DISABLED, DELETED
 }
 entity Department {
 	name String,
@@ -355,7 +355,7 @@ entity PermissionType {
     status PermissionGroupStatus
 }
 enum PermissionGroupStatus {
-	ACTIVE, INACTIVE, DELETED
+	ACTIVE, DISABLED, DELETED
 }
 entity PermissionGroup {
 	name String

@@ -4,8 +4,8 @@ export const UserStatus = [
     value: 'ACTIVE',
   },
   {
-    title: 'INACTIVE',
-    value: 'INACTIVE',
+    title: 'DISABLED',
+    value: 'DISABLED',
   },
   {
     title: 'DELETED',

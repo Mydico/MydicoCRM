@@ -1,5 +1,5 @@
 export enum StoreStatus {
     ACTIVE = 'ACTIVE',
-    INACTIVE = 'INACTIVE',
+    DISABLED = 'DISABLED',
     DELETED = 'DELETED'
 }

@@ -40,7 +40,7 @@
       },
       "states": {
         "ACTIVE": "Đang hoạt động",
-        "INACTIVE": "Không hoạt động"
+        "DISABLED": "Không hoạt động"
       },
       "placeHolder": {
         "facilityType": "Chọn Loại cơ sở",

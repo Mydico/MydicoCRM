@@ -45,17 +45,17 @@ async function bootstrap(): Promise<void> {
     );
 
     const staticClientPath = path.join(__dirname, '../dist/classes/static');
-    const staticFilePath = path.join(__dirname, '../uploads');
+    // const staticFilePath = path.join(__dirname, '../uploads');
     if (fs.existsSync(staticClientPath)) {
         app.use(express.static(staticClientPath));
         logger.log(`Serving static client resources on ${staticClientPath}`);
     } else {
         logger.log('No client it has been found');
     }
-    if (fs.existsSync(staticFilePath)) {
-        app.use('/images', express.static(staticFilePath));
-        logger.log(`Serving static file resources on ${staticFilePath}`);
-    } else {mkdirSync(staticFilePath);}
+    // if (fs.existsSync(staticFilePath)) {
+    //     app.use('/images', express.static(staticFilePath));
+    //     logger.log(`Serving static file resources on ${staticFilePath}`);
+    // } else {mkdirSync(staticFilePath);}
     setupSwagger(app);
 
     await app.listen(port);
@@ -84,7 +84,7 @@ async function bootstrap(): Promise<void> {
             description: `Quản lý ${desc}`,
             status:
         blackList.filter(value => type.includes(value)).length > 0 || type === 'reports'
-            ? PermissionGroupStatus.INACTIVE
+            ? PermissionGroupStatus.DISABLED
             : PermissionGroupStatus.ACTIVE,
         };
         element.methods.forEach(method => {

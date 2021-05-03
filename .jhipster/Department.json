@@ -8,7 +8,7 @@
         {
             "fieldName": "status",
             "fieldType": "DepartmentStatus",
-            "fieldValues": "ACTIVE,INACTIVE,DELETED"
+            "fieldValues": "ACTIVE,DISABLED,DELETED"
         }
     ],
     "relationships": [],

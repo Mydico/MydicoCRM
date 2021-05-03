@@ -12,7 +12,7 @@
         {
             "fieldName": "status",
             "fieldType": "PermissionGroupStatus",
-            "fieldValues": "ACTIVE,INACTIVE,DELETED"
+            "fieldValues": "ACTIVE,DISABLED,DELETED"
         }
     ],
     "relationships": [

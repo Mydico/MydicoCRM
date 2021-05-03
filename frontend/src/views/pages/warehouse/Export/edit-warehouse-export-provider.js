@@ -43,7 +43,7 @@ import {validate} from '../../../../shared/utils/normalize';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
-  INACTIVE: 'KHÔNG HOẠT ĐỘNG',
+  DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA',
 };
 

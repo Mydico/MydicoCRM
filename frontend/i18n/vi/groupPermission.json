@@ -11,7 +11,7 @@
       "createdBy": "Người tạo",
       "status": "Trạng thái",
       "ACTIVE": "Đang hoạt động",
-      "INACTIVE": "Không hoạt động",
+      "DISABLED": "Không hoạt động",
       "DELETED": "Đã xóa",
       "operation": "Thao tác",
       "permissionSelect": "Chọn nhóm chức năng",

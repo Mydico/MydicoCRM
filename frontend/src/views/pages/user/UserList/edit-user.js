@@ -47,7 +47,7 @@ import { ProductStatus } from '../../product/ProductList/contants';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
-  INACTIVE: 'KHÔNG HOẠT ĐỘNG',
+  DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
 

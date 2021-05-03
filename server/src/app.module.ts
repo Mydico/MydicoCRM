@@ -21,7 +21,6 @@ import { CustomerTempModule } from './module/customer-temp.module';
 import { CustomerTypeModule } from './module/customer-type.module';
 import { DistrictModule } from './module/district.module';
 import { FanpageModule } from './module/fanpage.module';
-import { MigrationModule } from './module/migration.module';
 import { OrderModule } from './module/order.module';
 import { OrderDetailsModule } from './module/order-details.module';
 import { OrderPushModule } from './module/order-push.module';
@@ -64,6 +63,7 @@ import { ProviderModule } from './module/provider.module';
 import { CustomerDebitModule } from './module/customer-debit.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { UserModule } from './module/user.module';
 
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
@@ -71,7 +71,8 @@ import { join } from 'path';
 
 @Module({
     imports: [
-        CacheModule.register(),TypeOrmModule.forRoot(ormconfig),
+        CacheModule.register(),
+        TypeOrmModule.forRoot(ormconfig),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, './', 'classes/static')
           }),
@@ -96,7 +97,6 @@ import { join } from 'path';
         CustomerTypeModule,
         DistrictModule,
         FanpageModule,
-        MigrationModule,
         OrderModule,
         OrderDetailsModule,
         OrderPushModule,
@@ -117,6 +117,7 @@ import { join } from 'path';
         TransportModule,
         TransportLogModule,
         UserDeviceTokenModule,
+        UserModule,
         UserNotifyModule,
         UserRoleModule,
         UserTeamModule,

@@ -40,7 +40,7 @@ export const PromotionStatus = [
   },
   {
     title: 'KHÔNG HOẠT ĐỘNG',
-    value: 'INACTIVE',
+    value: 'DISABLED',
   },
   {
     title: 'ĐÃ XÓA',

@@ -39,8 +39,8 @@ export const WarehouseStatus = [
     value: 'ACTIVE',
   },
   {
-    title: 'INACTIVE',
-    value: 'INACTIVE',
+    title: 'DISABLED',
+    value: 'DISABLED',
   },
   {
     title: 'DELETED',

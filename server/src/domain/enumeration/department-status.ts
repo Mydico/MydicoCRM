@@ -3,6 +3,6 @@
  */
 export enum DepartmentStatus {
     ACTIVE = 'ACTIVE',
-    INACTIVE = 'INACTIVE',
+    DISABLED = 'DISABLED',
     DELETED = 'DELETED'
 }
