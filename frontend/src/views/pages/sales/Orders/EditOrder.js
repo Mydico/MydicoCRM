@@ -56,6 +56,7 @@ const mappingType = {
 const EditOrder = props => {
   const { initialState } = useSelector(state => state.order);
   const { initialState: promotionState } = useSelector(state => state.promotion);
+  const { account } = useSelector(state => state.authentication);
 
   const initialValues = {
     customer: null,
@@ -90,7 +91,7 @@ const EditOrder = props => {
   useEffect(() => {
     dispatch(getPromotion({ isLock: 0 }));
     dispatch(getDetailOrder(props.match.params.id));
-    dispatch(getWarehouse());
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
   }, []);
 
   useEffect(() => {
@@ -184,14 +185,15 @@ const EditOrder = props => {
     const copyArr = [...productList];
     copyArr[index].quantity = Number(target.value);
     copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
-    if (Array.isArray(promotionState.promotionProducts)) {
+    if (Array.isArray(promotionState.promotionProducts) && copyArr[index].attachTo === null) {
       const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
       if (founded.length > 0) {
         if (target.value >= founded[0].buy) {
           const ratio = founded[0].gift / founded[0].buy;
           const gift = Math.floor(target.value * ratio);
-          const existExtraProductIndex = copyArr.findIndex(item => item.followIndex === index);
-          if (existExtraProductIndex != -1) {
+          const existExtraProductIndex = copyArr.findIndex(item => item.attachTo === index);
+          console.log(existExtraProductIndex);
+          if (existExtraProductIndex !== -1) {
             copyArr[existExtraProductIndex].quantity = gift;
           } else {
             const extraProduct = {
@@ -204,7 +206,7 @@ const EditOrder = props => {
             };
             copyArr.splice(index + 1, 0, extraProduct);
           }
-          copyArr[index].quantityAndGift = Number(gift)
+          copyArr[index].quantityAndGift = Number(gift);
         }
       }
     }
@@ -220,7 +222,6 @@ const EditOrder = props => {
         }
       });
     }
-    console.log(copyArr)
     setProductList(copyArr);
   };
 
@@ -409,7 +410,7 @@ const EditOrder = props => {
                         {Array.isArray(promotionState.promotionProducts) &&
                           promotionState.promotionProducts.map((item, index) => (
                             <dl className="row" key={index}>
-                              <dt className="col-sm-4">{`${item.product.name}`}</dt>
+                              <dt className="col-sm-6">{`${item.product.name} ${item.product.volume}ml`}</dt>
                               <dd className="col-sm-8">{`Mua ${item.buy} Tặng ${item.gift}`}</dd>
                             </dl>
                           ))}
@@ -506,7 +507,8 @@ const EditOrder = props => {
                         <tr
                           key={index}
                           style={
-                            item.quantity + (item.quantityAndGift || 0) > item.quantityInStore
+                            item.quantityInStore !== undefined &&
+                            Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
                               ? {
                                   boxShadow: '0px 0px 6px 5px red'
                                 }
@@ -539,9 +541,10 @@ const EditOrder = props => {
                               onBlur={handleBlur}
                               value={item.quantity}
                             />
-                            {item.quantity + (item.quantityAndGift || 0) > item.quantityInStore && (
-                              <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
-                            )}
+                            {item.quantityInStore !== undefined &&
+                              Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore && (
+                                <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
+                              )}
                           </td>
                           <td style={{ width: 150 }}>
                             {

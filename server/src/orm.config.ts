@@ -57,7 +57,7 @@ if (process.env.NODE_ENV === 'dev') {
     port: 3306,
     username: 'root',
     password: 'Dunghd@123',
-    logging: false,
+    logging: true,
     synchronize: true,
     entities: commonConf.ENTITIES,
     migrations: commonConf.MIGRATIONS,

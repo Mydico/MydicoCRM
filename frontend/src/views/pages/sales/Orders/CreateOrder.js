@@ -55,6 +55,7 @@ const mappingType = {
 const CreateOrder = props => {
   const {} = useSelector(state => state.order);
   const { initialState: promotionState } = useSelector(state => state.promotion);
+  const { account } = useSelector(state => state.authentication);
 
   const initialValues = {
     customer: null,
@@ -87,7 +88,7 @@ const CreateOrder = props => {
   useEffect(() => {
     dispatch(getCustomer());
     dispatch(getPromotion({ isLock: 0 }));
-    dispatch(getWarehouse());
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     const existOrder = localStorage.getItem('order');
     try {
       const data = JSON.parse(existOrder);
@@ -170,7 +171,7 @@ const CreateOrder = props => {
 
   const onAddProduct = () => {
     if (selectedWarehouse?.id) {
-      const data = { product: {}, quantity: 1, reducePercent: 0, priceReal: 0, store: { id: selectedWarehouse.id } };
+      const data = { product: {}, quantity: 1, quantityAndGift: 0, reducePercent: 0, priceReal: 0, store: { id: selectedWarehouse.id } };
       setProductList([...productList, data]);
     } else {
       setIsSelectedWarehouse(false);
@@ -197,10 +198,12 @@ const CreateOrder = props => {
               priceReal: Number(copyArr[index].product.price),
               reducePercent: 100,
               store: { id: selectedWarehouse.id },
+              attachTo: index,
               followIndex: index
             };
             copyArr.splice(index + 1, 0, extraProduct);
           }
+          copyArr[index].quantityAndGift = Number(gift);
         }
       }
     }
@@ -212,11 +215,11 @@ const CreateOrder = props => {
         })
       ).then(numberOfQuantityInStore => {
         if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
-          copyArr[index].quantityInStore = numberOfQuantityInStore.payload[0].quantity;
+          copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
+          setProductList(copyArr);
         }
       });
     }
-    setProductList(copyArr);
   };
 
   const onChangePrice = ({ target }, index) => {
@@ -397,8 +400,8 @@ const CreateOrder = props => {
                         {Array.isArray(promotionState.promotionProducts) &&
                           promotionState.promotionProducts.map((item, index) => (
                             <dl className="row" key={index}>
-                              <dt className="col-sm-4">{`${item.product.name}`}</dt>
-                              <dd className="col-sm-8">{`Mua ${item.buy} Tặng ${item.gift}`}</dd>
+                              <dt className="col-sm-6">{`${item.product.name} ${item.product.volume}ml`}</dt>
+                              <dd className="col-sm-6">{`Mua ${item.buy} Tặng ${item.gift}`}</dd>
                             </dl>
                           ))}
                       </CCol>
@@ -490,7 +493,7 @@ const CreateOrder = props => {
                         <tr
                           key={index}
                           style={
-                            item.quantity > item.quantityInStore
+                            item.quantityInStore !== undefined && Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
                               ? {
                                   boxShadow: '0px 0px 6px 5px red'
                                 }
@@ -524,8 +527,8 @@ const CreateOrder = props => {
                               value={item.quantity}
                             />
 
-                            {item.quantity > item.quantityInStore && (
-                              <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
+                            {item.quantityInStore !== undefined && Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore && (
+                              <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
                             )}
                           </td>
                           <td>

@@ -12,9 +12,6 @@ import Store from './store.entity';
 @Entity('order_details')
 export default class OrderDetails extends BaseEntity {
 
-    @Column({ type: 'boolean', name: 'is_del', nullable: true })
-    isDel: boolean;
-
     @ManyToOne(type => Product, promotion => promotion, { cascade: true })
     product: Product;
 
@@ -23,6 +20,9 @@ export default class OrderDetails extends BaseEntity {
 
     @Column({ type: 'bigint', name: 'price', nullable: true })
     price: number;
+
+    @Column({ name: 'attachTo', nullable: true })
+    attachTo: number;
 
     @ManyToOne(type => Store, promotion => promotion, { cascade: true })
     store: Store;

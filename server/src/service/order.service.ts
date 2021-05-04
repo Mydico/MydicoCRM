@@ -67,7 +67,7 @@ export class OrderService {
       .createQueryBuilder('Order')
       .leftJoinAndSelect('Order.customer', 'customer')
       .leftJoinAndSelect('Order.promotion', 'promotion')
-      .leftJoinAndSelect('Order.promotion.customerType', 'customerType')
+      .leftJoinAndSelect('promotion.customerType', 'customerType')
       .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
       .leftJoinAndSelect('orderDetails.product', 'product')
       .where(queryString)

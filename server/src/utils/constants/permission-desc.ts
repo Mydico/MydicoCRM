@@ -116,6 +116,8 @@ export const resourceDesc = {
     'stores':'kho hàng',
     'user-teams': 'đội nhóm',
     'transports':'vận chuyển',
+    'provider':'vận chuyển',
+    'providers':'nhà cung cấp',
 };
 
 export const actionDesc = {
@@ -145,6 +147,7 @@ export const blackList = [
     'input',
     'utils',
     'report',
+    'customer-debits',
     'token',
     'site',
     'attribute',
