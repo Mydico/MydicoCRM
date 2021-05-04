@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import Bill from '../../domain/bill.entity';
 import { BillService } from '../../service/bill.service';
@@ -12,7 +12,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('bills')
+
 export class BillController {
     logger = new Logger('BillController');
 
@@ -45,7 +45,7 @@ export class BillController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create bill' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -60,7 +60,7 @@ export class BillController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update bill' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -73,7 +73,7 @@ export class BillController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete bill' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors, HttpException, HttpStatus } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import StoreInput from '../../domain/store-input.entity';
 import { StoreInputService } from '../../service/store-input.service';
@@ -15,7 +15,7 @@ import { Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('store-inputs')
+
 export class StoreInputController {
     logger = new Logger('StoreInputController');
 
@@ -88,7 +88,7 @@ export class StoreInputController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create storeInput' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -105,7 +105,7 @@ export class StoreInputController {
 
     @Put('/status')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update storeInput' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -122,7 +122,7 @@ export class StoreInputController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update storeInput' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -143,7 +143,7 @@ export class StoreInputController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete storeInput' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

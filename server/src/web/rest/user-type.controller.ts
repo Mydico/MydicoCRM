@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import UserType from '../../domain/user-type.entity';
 import { UserTypeService } from '../../service/user-type.service';
@@ -12,7 +12,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('user-types')
+
 export class UserTypeController {
     logger = new Logger('UserTypeController');
 
@@ -49,7 +49,7 @@ export class UserTypeController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create userType' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -64,7 +64,7 @@ export class UserTypeController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update userType' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -77,7 +77,7 @@ export class UserTypeController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete userType' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

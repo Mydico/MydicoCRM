@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import SiteMapDomain from '../../domain/site-map-domain.entity';
 import { SiteMapDomainService } from '../../service/site-map-domain.service';
@@ -12,7 +12,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('site-map-domains')
+
 export class SiteMapDomainController {
     logger = new Logger('SiteMapDomainController');
 
@@ -49,7 +49,7 @@ export class SiteMapDomainController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create siteMapDomain' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -64,7 +64,7 @@ export class SiteMapDomainController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update siteMapDomain' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -77,7 +77,7 @@ export class SiteMapDomainController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete siteMapDomain' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

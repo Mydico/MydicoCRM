@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import ProductQuantity from '../../domain/product-quantity.entity';
 import { ProductQuantityService } from '../../service/product-quantity.service';
@@ -13,7 +13,7 @@ import { In, Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('product-quantities')
+
 export class ProductQuantityController {
   logger = new Logger('ProductQuantityController');
 
@@ -101,7 +101,7 @@ export class ProductQuantityController {
 
   @PostMethod('/')
   @Roles(RoleType.USER)
-  @ApiOperation({ title: 'Create productQuantity' })
+ 
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
@@ -116,7 +116,7 @@ export class ProductQuantityController {
 
   @Put('/')
   @Roles(RoleType.USER)
-  @ApiOperation({ title: 'Update productQuantity' })
+ 
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
@@ -129,7 +129,7 @@ export class ProductQuantityController {
 
   @Delete('/:id')
   @Roles(RoleType.USER)
-  @ApiOperation({ title: 'Delete productQuantity' })
+ 
   @ApiResponse({
     status: 204,
     description: 'The record has been successfully deleted.'

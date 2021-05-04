@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import CustomerStatus from '../../domain/customer-status.entity';
 import { CustomerStatusService } from '../../service/customer-status.service';
@@ -13,7 +13,7 @@ import { Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('customer-statuses')
+
 export class CustomerStatusController {
     logger = new Logger('CustomerStatusController');
 
@@ -59,7 +59,7 @@ export class CustomerStatusController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create customerStatus' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -74,7 +74,7 @@ export class CustomerStatusController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update customerStatus' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -87,7 +87,7 @@ export class CustomerStatusController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete customerStatus' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

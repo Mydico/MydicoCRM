@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import Receipt from '../../domain/receipt.entity';
 import { ReceiptService } from '../../service/receipt.service';
@@ -15,7 +15,7 @@ import { Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('receipts')
+
 export class ReceiptController {
   logger = new Logger('ReceiptController');
 
@@ -61,7 +61,7 @@ export class ReceiptController {
 
   @PostMethod('/')
   @Roles(RoleType.USER)
-  @ApiOperation({ title: 'Create receipt' })
+ 
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
@@ -78,7 +78,7 @@ export class ReceiptController {
 
   @Put('/')
   @Roles(RoleType.USER)
-  @ApiOperation({ title: 'Update receipt' })
+ 
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
@@ -95,7 +95,7 @@ export class ReceiptController {
 
   @Delete('/:id')
   @Roles(RoleType.USER)
-  @ApiOperation({ title: 'Delete receipt' })
+ 
   @ApiResponse({
     status: 204,
     description: 'The record has been successfully deleted.'

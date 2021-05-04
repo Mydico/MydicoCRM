@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import Codlog from '../../domain/codlog.entity';
 import { CodlogService } from '../../service/codlog.service';
@@ -12,7 +12,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('codlogs')
+
 export class CodlogController {
     logger = new Logger('CodlogController');
 
@@ -49,7 +49,7 @@ export class CodlogController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create codlog' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -64,7 +64,7 @@ export class CodlogController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update codlog' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -77,7 +77,7 @@ export class CodlogController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete codlog' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

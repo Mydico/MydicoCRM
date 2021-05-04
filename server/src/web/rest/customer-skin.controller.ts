@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import CustomerSkin from '../../domain/customer-skin.entity';
 import { CustomerSkinService } from '../../service/customer-skin.service';
@@ -12,7 +12,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('customer-skins')
+
 export class CustomerSkinController {
     logger = new Logger('CustomerSkinController');
 
@@ -49,7 +49,7 @@ export class CustomerSkinController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create customerSkin' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -64,7 +64,7 @@ export class CustomerSkinController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update customerSkin' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -77,7 +77,7 @@ export class CustomerSkinController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete customerSkin' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import Permission from '../../domain/permission.entity';
 import { PermissionService } from '../../service/permission.service';
@@ -13,7 +13,7 @@ import { Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('permissions')
+
 export class PermissionController {
     logger = new Logger('PermissionController');
 
@@ -59,7 +59,7 @@ export class PermissionController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create permission' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -74,7 +74,7 @@ export class PermissionController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update permission' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -87,7 +87,7 @@ export class PermissionController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete permission' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

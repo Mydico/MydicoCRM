@@ -21,8 +21,8 @@ export default class Attribute extends BaseEntity {
     @Column({ type: 'integer', name: 'site_id', nullable: true })
     siteId: number;
 
-    @ManyToOne(type => Product)
-    product: Product;
+    // @ManyToOne(type => Product)
+    // product: Product;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

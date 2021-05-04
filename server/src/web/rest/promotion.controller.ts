@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import Promotion from '../../domain/promotion.entity';
 import { PromotionService } from '../../service/promotion.service';
@@ -13,7 +13,7 @@ import { Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('promotions')
+
 export class PromotionController {
     logger = new Logger('PromotionController');
 
@@ -59,7 +59,7 @@ export class PromotionController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create promotion' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -74,7 +74,7 @@ export class PromotionController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update promotion' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -87,7 +87,7 @@ export class PromotionController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete promotion' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

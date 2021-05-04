@@ -15,14 +15,5 @@ export default class City extends BaseEntity {
     @Column({ name: 'code', length: 255, nullable: true })
     code: string;
 
-    @Column({ type: 'boolean', name: 'is_del', nullable: true })
-    isDel?: boolean;
-
-    @Column({ type: 'integer', name: 'store_id', nullable: true })
-    storeId?: number;
-
-    @Column({ name: 'cod_ids', length: 250, nullable: true })
-    codIds?: string;
-
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

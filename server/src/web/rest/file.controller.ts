@@ -14,7 +14,7 @@ import {
     UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { createReadStream, existsSync, mkdirSync } from 'fs';
 import { diskStorage } from 'multer';
@@ -31,7 +31,7 @@ import { DOMAIN_NAME } from '../../utils/constants/app.constsants';
 
 @Controller('api/files')
 @UseInterceptors(LoggingInterceptor)
-@ApiUseTags('files')
+
 export class FileController {
     logger = new Logger('FileController');
 
@@ -82,7 +82,7 @@ export class FileController {
     }
 
     @Put('/')
-    @ApiOperation({ title: 'Update file' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -94,7 +94,7 @@ export class FileController {
     }
 
     @Delete('/:id')
-    @ApiOperation({ title: 'Delete file' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',
@@ -105,7 +105,7 @@ export class FileController {
         return await this.fileService.delete(toDelete);
     }
     @PostMethod('/')
-    @ApiOperation({ title: 'upload' })
+   
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     @UseInterceptors(
         FilesInterceptor('file', 20, {
@@ -158,7 +158,7 @@ export class FileController {
     }
 
     @PostMethod('/ck-editor/upload')
-    @ApiOperation({ title: 'upload' })
+   
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     @UseInterceptors(
         FileInterceptor('upload', {

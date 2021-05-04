@@ -15,7 +15,7 @@ import CustomerType from './customer-type.entity';
 import CustomerRequest from './customer-request.entity';
 import Branch from './branch.entity';
 import { User } from './user.entity';
-import { ApiModelProperty } from '@nestjs/swagger';
+
 import Order from './order.entity';
 import Bill from './bill.entity';
 import StoreInput from './store-input.entity';
@@ -129,11 +129,11 @@ export default class Customer extends BaseEntity {
     @ManyToOne(type => CustomerSkin)
     skin?: CustomerSkin;
 
-    @ApiModelProperty({ example: '66ed8031-d40e-4f30-8ae4-8bf5c2ca87ff', description: 'Entity id' })
+    
     @ManyToOne(type => CustomerCategory)
     category?: CustomerCategory;
 
-    @ApiModelProperty({ example: '66ed8031-d40e-4f30-8ae4-8bf5c2ca87ff', description: 'Entity id' })
+    
     @ManyToOne(type => CustomerStatus)
     status?: CustomerStatus;
 

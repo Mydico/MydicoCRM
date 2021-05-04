@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import UserDeviceToken from '../../domain/user-device-token.entity';
 import { UserDeviceTokenService } from '../../service/user-device-token.service';
@@ -12,7 +12,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('user-device-tokens')
+
 export class UserDeviceTokenController {
     logger = new Logger('UserDeviceTokenController');
 
@@ -49,7 +49,7 @@ export class UserDeviceTokenController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create userDeviceToken' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -64,7 +64,7 @@ export class UserDeviceTokenController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update userDeviceToken' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -77,7 +77,7 @@ export class UserDeviceTokenController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete userDeviceToken' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

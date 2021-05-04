@@ -1,12 +1,9 @@
-import { ObjectIdColumn, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+
 
 export abstract class BaseEntity {
-    @ObjectIdColumn()
-    @PrimaryGeneratedColumn('uuid')
-    @ApiModelProperty({ example: '66ed8031-d40e-4f30-8ae4-8bf5c2ca87ff', description: 'Entity id' })
+    @PrimaryGeneratedColumn('increment')
     id?: string;
-
     @Column({ nullable: true })
     createdBy?: string;
     @CreateDateColumn()

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import Customer from '../../domain/customer.entity';
 import { CustomerService } from '../../service/customer.service';
@@ -14,7 +14,7 @@ import { User } from '../../domain/user.entity';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('customers')
+
 export class CustomerController {
     logger = new Logger('CustomerController');
 
@@ -89,7 +89,7 @@ export class CustomerController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create customer' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -106,7 +106,7 @@ export class CustomerController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update customer' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -119,7 +119,7 @@ export class CustomerController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete customer' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

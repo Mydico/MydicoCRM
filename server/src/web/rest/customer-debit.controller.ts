@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import CustomerDebit from '../../domain/customer-debit.entity';
 import { CustomerDebitService } from '../../service/customer-debit.service';
@@ -13,7 +13,7 @@ import { Like } from 'typeorm/find-options/operator/Like';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('customer-debits')
+
 export class CustomerDebitController {
     logger = new Logger('CustomerDebitController');
 
@@ -59,7 +59,7 @@ export class CustomerDebitController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create customerDebit' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -74,7 +74,7 @@ export class CustomerDebitController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update customerDebit' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -87,7 +87,7 @@ export class CustomerDebitController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete customerDebit' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

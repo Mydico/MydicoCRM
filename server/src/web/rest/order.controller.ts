@@ -13,7 +13,7 @@ import {
   HttpException,
   HttpStatus
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import Order from '../../domain/order.entity';
 import { OrderService } from '../../service/order.service';
@@ -29,7 +29,7 @@ import { User } from '../../domain/user.entity';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('orders')
+
 export class OrderController {
   logger = new Logger('OrderController');
 
@@ -63,7 +63,7 @@ export class OrderController {
 
   @PostMethod('/')
   @Roles(RoleType.USER)
-  @ApiOperation({ title: 'Create order' })
+ 
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
@@ -81,7 +81,7 @@ export class OrderController {
 
   @Put('/status')
   @Roles(RoleType.USER)
-  @ApiOperation({ title: 'Update order' })
+ 
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
@@ -103,7 +103,7 @@ export class OrderController {
 
   @Put('/')
   @Roles(RoleType.USER)
-  @ApiOperation({ title: 'Update order' })
+ 
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
@@ -122,7 +122,7 @@ export class OrderController {
 
   @Delete('/:id')
   @Roles(RoleType.USER)
-  @ApiOperation({ title: 'Delete order' })
+ 
   @ApiResponse({
     status: 204,
     description: 'The record has been successfully deleted.'

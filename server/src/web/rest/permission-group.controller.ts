@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors, HttpException, HttpStatus } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import PermissionGroup from '../../domain/permission-group.entity';
 import { PermissionGroupService } from '../../service/permission-group.service';
@@ -14,7 +14,7 @@ import { CreatePermissionGroupDTO, UpdatePermissionGroupDTO } from '../../servic
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('permission-groups')
+
 export class PermissionGroupController {
     logger = new Logger('PermissionGroupController');
 
@@ -51,7 +51,7 @@ export class PermissionGroupController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create permissionGroup' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -71,7 +71,7 @@ export class PermissionGroupController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update permissionGroup' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -90,7 +90,7 @@ export class PermissionGroupController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete permissionGroup' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

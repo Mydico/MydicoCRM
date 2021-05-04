@@ -20,8 +20,5 @@ export default class Wards extends BaseEntity {
     @Column({ name: 'district', length: 255, nullable: true })
     district: string;
 
-    @Column({ type: 'boolean', name: 'is_del', nullable: true })
-    isDel: boolean;
-
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

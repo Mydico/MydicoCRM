@@ -19,7 +19,7 @@ const TheHeaderDropdown = () => {
           Thông tin cá nhân
         </CDropdownItem>
         <CDropdownItem divider />
-        <CDropdownItem>
+        <CDropdownItem onClick>
           <CIcon name="cil-lock-locked" className="mfe-2" />
           Đăng xuất
         </CDropdownItem>

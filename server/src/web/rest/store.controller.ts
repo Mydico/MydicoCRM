@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import Store from '../../domain/store.entity';
 import { StoreService } from '../../service/store.service';
@@ -13,7 +13,7 @@ import { In, Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('stores')
+
 export class StoreController {
     logger = new Logger('StoreController');
 
@@ -60,7 +60,7 @@ export class StoreController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create store' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -75,7 +75,7 @@ export class StoreController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update store' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -88,7 +88,7 @@ export class StoreController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete store' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

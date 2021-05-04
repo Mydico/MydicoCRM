@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import ProductGroup from '../../domain/product-group.entity';
 import { ProductGroupService } from '../../service/product-group.service';
@@ -13,7 +13,7 @@ import { Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('product-groups')
+
 export class ProductGroupController {
     logger = new Logger('ProductGroupController');
 
@@ -59,7 +59,7 @@ export class ProductGroupController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create productGroup' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -74,7 +74,7 @@ export class ProductGroupController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update productGroup' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -87,7 +87,7 @@ export class ProductGroupController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete productGroup' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

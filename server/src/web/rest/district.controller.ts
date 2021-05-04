@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import District from '../../domain/district.entity';
 import { DistrictService } from '../../service/district.service';
@@ -12,7 +12,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('districts')
+
 export class DistrictController {
     logger = new Logger('DistrictController');
 
@@ -47,7 +47,7 @@ export class DistrictController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create district' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -62,7 +62,7 @@ export class DistrictController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update district' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -75,7 +75,7 @@ export class DistrictController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete district' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

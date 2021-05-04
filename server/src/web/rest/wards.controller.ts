@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import Wards from '../../domain/wards.entity';
 import { WardsService } from '../../service/wards.service';
@@ -12,7 +12,6 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('wards')
 export class WardsController {
     logger = new Logger('WardsController');
 
@@ -48,7 +47,6 @@ export class WardsController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create wards' })
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -63,7 +61,6 @@ export class WardsController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update wards' })
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -76,7 +73,6 @@ export class WardsController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete wards' })
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

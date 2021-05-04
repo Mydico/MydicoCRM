@@ -17,11 +17,11 @@ export default class AttributeMap extends BaseEntity {
     @Column({ type: 'integer', name: 'site_id', nullable: true })
     siteId: number;
 
-    @ManyToOne(type => ProductDetails)
-    detail: ProductDetails;
+    // @ManyToOne(type => ProductDetails)
+    // detail: ProductDetails;
 
-    @ManyToOne(type => AttributeValue)
-    value: AttributeValue;
+    // @ManyToOne(type => AttributeValue)
+    // value: AttributeValue;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

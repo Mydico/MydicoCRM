@@ -13,7 +13,7 @@ const TheFooter = () => {
       <div className="mfs-auto">
         <span>Phát triển bởi </span>
         <a href="https://dzung.dev" target="_blank" rel="noopener noreferrer">
-          dungnd8594@gmail.com
+          Nguyễn Đình Dũng
         </a>
       </div>
     </CFooter>

@@ -71,7 +71,6 @@ import { UserModule } from './module/user.module';
 
 @Module({
     imports: [
-        CacheModule.register(),
         TypeOrmModule.forRoot(ormconfig),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, './', 'classes/static')

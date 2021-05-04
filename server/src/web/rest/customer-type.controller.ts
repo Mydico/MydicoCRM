@@ -13,7 +13,7 @@ import {
     HttpException,
     HttpStatus,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import CustomerType from '../../domain/customer-type.entity';
 import { CustomerTypeService } from '../../service/customer-type.service';
@@ -27,7 +27,7 @@ import { Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-@ApiUseTags('customer-types')
+
 export class CustomerTypeController {
     logger = new Logger('CustomerTypeController');
 
@@ -73,7 +73,7 @@ export class CustomerTypeController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Create customerType' })
+   
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -108,7 +108,7 @@ export class CustomerTypeController {
 
     @Put('/')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Update customerType' })
+   
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -121,7 +121,7 @@ export class CustomerTypeController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-    @ApiOperation({ title: 'Delete customerType' })
+   
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',
