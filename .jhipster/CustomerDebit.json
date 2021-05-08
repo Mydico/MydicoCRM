@@ -1,36 +1,34 @@
 {
-    "name": "CustomerDebit",
-    "fields": [
-        {
-            "fieldName": "debt",
-            "fieldType": "Integer"
-        }
-    ],
-    "relationships": [
-        {
-            "relationshipType": "many-to-one",
-            "otherEntityName": "customer",
-            "otherEntityRelationshipName": "customerDebit",
-            "relationshipName": "customer",
-            "otherEntityField": "id"
-        },
-        {
-            "relationshipType": "many-to-one",
-            "otherEntityName": "user",
-            "otherEntityRelationshipName": "customerDebit",
-            "relationshipName": "sale",
-            "otherEntityField": "id"
-        }
-    ],
-    "changelogDate": "20210415211000",
-    "entityTableName": "customer_debit",
-    "dto": "mapstruct",
-    "pagination": "pagination",
-    "service": "serviceClass",
-    "jpaMetamodelFiltering": true,
-    "fluentMethods": true,
-    "readOnly": false,
-    "embedded": false,
-    "clientRootFolder": "",
-    "applications": "*"
+  "name": "CustomerDebit",
+  "fields": [
+    {
+      "fieldName": "debt",
+      "fieldType": "Integer"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "customer",
+      "otherEntityRelationshipName": "customerDebit",
+      "relationshipName": "customer"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "user",
+      "otherEntityRelationshipName": "customerDebit",
+      "relationshipName": "sale"
+    }
+  ],
+  "changelogDate": "20210415211000",
+  "entityTableName": "customer_debit",
+  "dto": "mapstruct",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
 }

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
 import ProductQuantity from '../domain/product-quantity.entity';
 import { ProductQuantityRepository } from '../repository/product-quantity.repository';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { PageRequest } from 'src/domain/base/pagination.entity';
 
 const relationshipNames = [];

@@ -7,9 +7,13 @@ import { ReceiptRepository } from '../repository/receipt.repository';
 import { TransactionService } from './transaction.service';
 import Transaction from '../domain/transaction.entity';
 import { TransactionType } from '../domain/enumeration/transaction-type';
+import { IncomeDashboardService } from './income-dashboard.service';
+import { DashboardType } from '../domain/enumeration/dashboard-type';
+import IncomeDashboard from '../domain/income-dashboard.entity';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
+relationshipNames.push('customer.sale');
 relationshipNames.push('approver');
 @Injectable()
 export class ReceiptService {
@@ -17,7 +21,8 @@ export class ReceiptService {
 
     constructor(
         @InjectRepository(ReceiptRepository) private receiptRepository: ReceiptRepository,
-        private readonly transactionService: TransactionService
+        private readonly transactionService: TransactionService,
+        private readonly incomeDashboardService: IncomeDashboardService
     ) {}
 
     async findById(id: string): Promise<Receipt | undefined> {
@@ -60,6 +65,11 @@ export class ReceiptService {
             transaction.previousDebt = latestTransaction ? latestTransaction.earlyDebt : 0;
             transaction.earlyDebt = latestTransaction?  Number(latestTransaction.earlyDebt) -  Number(entity.money) : 0 -  Number(entity.money);
             await this.transactionService.save(transaction);
+            const incomeItem = new IncomeDashboard();
+            incomeItem.amount = entity.money;
+            incomeItem.type = DashboardType.RETURN;
+            incomeItem.userId = entity.customer.sale.id;
+            await this.incomeDashboardService.save(incomeItem);
         }
         return await this.save(receipt);
     }

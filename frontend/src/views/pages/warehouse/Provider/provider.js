@@ -19,8 +19,6 @@ const Provider = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(fetching());
-    dispatch(getProvider());
     dispatch(reset());
   }, []);
 
@@ -97,7 +95,9 @@ const Provider = (props) => {
   };
 
   const onFilterColumn = (value) => {
-    dispatch(getProvider({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+    if(Object.keys(value).length > 0){
+      dispatch(getProvider({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+    }
   };
 
   return (

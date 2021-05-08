@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, In } from 'typeorm';
 import Store from '../domain/store.entity';
 import { StoreRepository } from '../repository/store.repository';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 const relationshipNames = [];
 relationshipNames.push('department');

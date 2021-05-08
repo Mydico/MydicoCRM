@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import Branch from '../../domain/branch.entity';
 import { BranchService } from '../../service/branch.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -26,7 +26,7 @@ export class BranchController {
         description: 'List all records',
         type: Branch,
     })
-    async getAll(@Req() req: Request): Promise<Branch[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<Branch[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const filter = {};
         Object.keys(req.query).forEach(item => {
@@ -42,7 +42,7 @@ export class BranchController {
                 ...filter,
             },
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -66,9 +66,9 @@ export class BranchController {
         type: Branch,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() branch: Branch): Promise<Branch> {
+    async post(@Res() res: Response, @Body() branch: Branch): Promise<Branch> {
         const created = await this.branchService.save(branch);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Branch', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'Branch', created.id);
         return created;
     }
 
@@ -80,8 +80,8 @@ export class BranchController {
         description: 'The record has been successfully updated.',
         type: Branch,
     })
-    async put(@Req() req: Request, @Body() branch: Branch): Promise<Branch> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Branch', branch.id);
+    async put(@Res() res: Response, @Body() branch: Branch): Promise<Branch> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'Branch', branch.id);
         return await this.branchService.update(branch);
     }
 
@@ -92,8 +92,8 @@ export class BranchController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<Branch> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'Branch', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<Branch> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'Branch', id);
         const toDelete = await this.branchService.findById(id);
         return await this.branchService.delete(toDelete);
     }

@@ -1,78 +1,72 @@
 {
-    "name": "StoreInput",
-    "fields": [
-        {
-            "fieldName": "isDel",
-            "fieldType": "Boolean"
-        },
-        {
-            "fieldName": "summary",
-            "fieldType": "String",
-            "fieldValidateRules": [
-                "maxlength"
-            ],
-            "fieldValidateRulesMaxlength": "255"
-        },
-        {
-            "fieldName": "type",
-            "javadoc": "Kiểu nhập kho : 0 - Nhập mới, 1 - Nhập trả",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "status",
-            "javadoc": "Trạng thái đơn nhập : 0 - Chưa duyệt, 1 - Đã duyệt, 2 - Hủy duyệt",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "customerId",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "orderId",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "totalMoney",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "note",
-            "fieldType": "String",
-            "fieldValidateRules": [
-                "maxlength"
-            ],
-            "fieldValidateRulesMaxlength": "255"
-        },
-        {
-            "fieldName": "siteId",
-            "fieldType": "Integer"
-        }
-    ],
-    "relationships": [
-        {
-            "relationshipType": "many-to-one",
-            "otherEntityName": "store",
-            "otherEntityRelationshipName": "storeInput",
-            "relationshipName": "storeOutput",
-            "otherEntityField": "id"
-        },
-        {
-            "relationshipType": "many-to-one",
-            "otherEntityName": "store",
-            "otherEntityRelationshipName": "storeInput",
-            "relationshipName": "storeInput",
-            "otherEntityField": "id"
-        }
-    ],
-    "changelogDate": "20201208202800",
-    "entityTableName": "store_input",
-    "dto": "mapstruct",
-    "pagination": "pagination",
-    "service": "serviceClass",
-    "jpaMetamodelFiltering": true,
-    "fluentMethods": true,
-    "readOnly": false,
-    "embedded": false,
-    "clientRootFolder": "",
-    "applications": "*"
+  "name": "StoreInput",
+  "fields": [
+    {
+      "fieldName": "isDel",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "summary",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "255"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "Integer",
+      "javadoc": "Kiểu nhập kho : 0 - Nhập mới, 1 - Nhập trả"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "Integer",
+      "javadoc": "Trạng thái đơn nhập : 0 - Chưa duyệt, 1 - Đã duyệt, 2 - Hủy duyệt"
+    },
+    {
+      "fieldName": "customerId",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "orderId",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "totalMoney",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "note",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "255"
+    },
+    {
+      "fieldName": "siteId",
+      "fieldType": "Integer"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "store",
+      "otherEntityRelationshipName": "storeInput",
+      "relationshipName": "storeOutput"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "store",
+      "otherEntityRelationshipName": "storeInput",
+      "relationshipName": "storeInput"
+    }
+  ],
+  "changelogDate": "20201208202800",
+  "entityTableName": "store_input",
+  "dto": "mapstruct",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
 }

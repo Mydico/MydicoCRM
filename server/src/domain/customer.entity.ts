@@ -137,6 +137,9 @@ export default class Customer extends BaseEntity {
     @ManyToOne(type => CustomerStatus)
     status?: CustomerStatus;
 
+    @ManyToOne(type => User)
+    sale?: User;
+
     @ManyToOne(type => CustomerType)
     type?: CustomerType;
 

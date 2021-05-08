@@ -4,7 +4,7 @@ import { PageRequest } from '../domain/base/pagination.entity';
 import { FindManyOptions, FindOneOptions, In } from 'typeorm';
 import Order from '../domain/order.entity';
 import { OrderRepository } from '../repository/order.repository';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { BillService } from './bill.service';
 import Bill from '../domain/bill.entity';
 import { OrderStatus } from '../domain/enumeration/order-status';
@@ -17,9 +17,13 @@ import Transaction from '../domain/transaction.entity';
 import { TransactionType } from '../domain/enumeration/transaction-type';
 import { User } from '../domain/user.entity';
 import { DepartmentService } from './department.service';
+import { IncomeDashboardService } from './income-dashboard.service';
+import IncomeDashboard from '../domain/income-dashboard.entity';
+import { DashboardType } from '../domain/enumeration/dashboard-type';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
+relationshipNames.push('customer.sale');
 relationshipNames.push('orderDetails');
 relationshipNames.push('orderDetails.product');
 relationshipNames.push('promotion');
@@ -34,7 +38,8 @@ export class OrderService {
     private readonly billService: BillService,
     private readonly productQuantityService: ProductQuantityService,
     private readonly transactionService: TransactionService,
-    private readonly departmentService: DepartmentService
+    private readonly departmentService: DepartmentService,
+    private readonly incomeDashboardService: IncomeDashboardService
   ) {}
 
   async findById(id: string): Promise<Order | undefined> {
@@ -182,6 +187,11 @@ export class OrderService {
           ? Number(latestTransaction.earlyDebt) + Number(foundedOrder.realMoney)
           : Number(foundedOrder.realMoney);
         await this.transactionService.save(transaction);
+        const incomeItem = new IncomeDashboard();
+        incomeItem.amount = foundedOrder.realMoney;
+        incomeItem.type = DashboardType.ORDER;
+        incomeItem.userId = foundedOrder.customer.sale.id;
+        await this.incomeDashboardService.save(incomeItem);
       }else{
           
       }

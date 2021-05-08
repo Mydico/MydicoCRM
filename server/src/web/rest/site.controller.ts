@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import Site from '../../domain/site.entity';
 import { SiteService } from '../../service/site.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class SiteController {
         description: 'List all records',
         type: Site,
     })
-    async getAll(@Req() req: Request): Promise<Site[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<Site[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.siteService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class SiteController {
         type: Site,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() site: Site): Promise<Site> {
+    async post(@Res() res: Response, @Body() site: Site): Promise<Site> {
         const created = await this.siteService.save(site);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Site', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'Site', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class SiteController {
         description: 'The record has been successfully updated.',
         type: Site,
     })
-    async put(@Req() req: Request, @Body() site: Site): Promise<Site> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Site', site.id);
+    async put(@Res() res: Response, @Body() site: Site): Promise<Site> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'Site', site.id);
         return await this.siteService.update(site);
     }
 
@@ -82,8 +82,8 @@ export class SiteController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<Site> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'Site', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<Site> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'Site', id);
         const toDelete = await this.siteService.findById(id);
         return await this.siteService.delete(toDelete);
     }

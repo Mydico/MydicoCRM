@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import CustomerCall from '../../domain/customer-call.entity';
 import { CustomerCallService } from '../../service/customer-call.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class CustomerCallController {
         description: 'List all records',
         type: CustomerCall,
     })
-    async getAll(@Req() req: Request): Promise<CustomerCall[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<CustomerCall[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.customerCallService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class CustomerCallController {
         type: CustomerCall,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() customerCall: CustomerCall): Promise<CustomerCall> {
+    async post(@Res() res: Response, @Body() customerCall: CustomerCall): Promise<CustomerCall> {
         const created = await this.customerCallService.save(customerCall);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerCall', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerCall', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class CustomerCallController {
         description: 'The record has been successfully updated.',
         type: CustomerCall,
     })
-    async put(@Req() req: Request, @Body() customerCall: CustomerCall): Promise<CustomerCall> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerCall', customerCall.id);
+    async put(@Res() res: Response, @Body() customerCall: CustomerCall): Promise<CustomerCall> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerCall', customerCall.id);
         return await this.customerCallService.update(customerCall);
     }
 
@@ -82,8 +82,8 @@ export class CustomerCallController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<CustomerCall> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'CustomerCall', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<CustomerCall> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'CustomerCall', id);
         const toDelete = await this.customerCallService.findById(id);
         return await this.customerCallService.delete(toDelete);
     }

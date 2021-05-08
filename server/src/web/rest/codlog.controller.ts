@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import Codlog from '../../domain/codlog.entity';
 import { CodlogService } from '../../service/codlog.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class CodlogController {
         description: 'List all records',
         type: Codlog,
     })
-    async getAll(@Req() req: Request): Promise<Codlog[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<Codlog[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.codlogService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class CodlogController {
         type: Codlog,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() codlog: Codlog): Promise<Codlog> {
+    async post(@Res() res: Response, @Body() codlog: Codlog): Promise<Codlog> {
         const created = await this.codlogService.save(codlog);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Codlog', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'Codlog', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class CodlogController {
         description: 'The record has been successfully updated.',
         type: Codlog,
     })
-    async put(@Req() req: Request, @Body() codlog: Codlog): Promise<Codlog> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Codlog', codlog.id);
+    async put(@Res() res: Response, @Body() codlog: Codlog): Promise<Codlog> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'Codlog', codlog.id);
         return await this.codlogService.update(codlog);
     }
 
@@ -82,8 +82,8 @@ export class CodlogController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<Codlog> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'Codlog', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<Codlog> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'Codlog', id);
         const toDelete = await this.codlogService.findById(id);
         return await this.codlogService.delete(toDelete);
     }

@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import CustomerAdvisory from '../../domain/customer-advisory.entity';
 import { CustomerAdvisoryService } from '../../service/customer-advisory.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class CustomerAdvisoryController {
         description: 'List all records',
         type: CustomerAdvisory,
     })
-    async getAll(@Req() req: Request): Promise<CustomerAdvisory[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<CustomerAdvisory[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.customerAdvisoryService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class CustomerAdvisoryController {
         type: CustomerAdvisory,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() customerAdvisory: CustomerAdvisory): Promise<CustomerAdvisory> {
+    async post(@Res() res: Response, @Body() customerAdvisory: CustomerAdvisory): Promise<CustomerAdvisory> {
         const created = await this.customerAdvisoryService.save(customerAdvisory);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerAdvisory', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerAdvisory', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class CustomerAdvisoryController {
         description: 'The record has been successfully updated.',
         type: CustomerAdvisory,
     })
-    async put(@Req() req: Request, @Body() customerAdvisory: CustomerAdvisory): Promise<CustomerAdvisory> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerAdvisory', customerAdvisory.id);
+    async put(@Res() res: Response, @Body() customerAdvisory: CustomerAdvisory): Promise<CustomerAdvisory> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerAdvisory', customerAdvisory.id);
         return await this.customerAdvisoryService.update(customerAdvisory);
     }
 
@@ -82,8 +82,8 @@ export class CustomerAdvisoryController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<CustomerAdvisory> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'CustomerAdvisory', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<CustomerAdvisory> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'CustomerAdvisory', id);
         const toDelete = await this.customerAdvisoryService.findById(id);
         return await this.customerAdvisoryService.delete(toDelete);
     }

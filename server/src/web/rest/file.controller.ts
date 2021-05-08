@@ -43,14 +43,14 @@ export class FileController {
         description: 'List all records',
         type: File,
     })
-    async getAll(@Req() req: Request): Promise<File[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<File[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.fileService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -88,8 +88,8 @@ export class FileController {
         description: 'The record has been successfully updated.',
         type: File,
     })
-    async put(@Req() req: Request, @Body() file: File): Promise<File> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'File', file.id);
+    async put(@Res() res: Response, @Body() file: File): Promise<File> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'File', file.id);
         return await this.fileService.update(file);
     }
 
@@ -99,8 +99,8 @@ export class FileController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<File> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'File', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<File> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'File', id);
         const toDelete = await this.fileService.findById(id);
         return await this.fileService.delete(toDelete);
     }

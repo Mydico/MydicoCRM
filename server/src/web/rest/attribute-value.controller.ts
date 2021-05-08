@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import AttributeValue from '../../domain/attribute-value.entity';
 import { AttributeValueService } from '../../service/attribute-value.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class AttributeValueController {
         description: 'List all records',
         type: AttributeValue,
     })
-    async getAll(@Req() req: Request): Promise<AttributeValue[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<AttributeValue[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.attributeValueService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class AttributeValueController {
         type: AttributeValue,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() attributeValue: AttributeValue): Promise<AttributeValue> {
+    async post(@Res() res: Response, @Body() attributeValue: AttributeValue): Promise<AttributeValue> {
         const created = await this.attributeValueService.save(attributeValue);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'AttributeValue', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'AttributeValue', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class AttributeValueController {
         description: 'The record has been successfully updated.',
         type: AttributeValue,
     })
-    async put(@Req() req: Request, @Body() attributeValue: AttributeValue): Promise<AttributeValue> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'AttributeValue', attributeValue.id);
+    async put(@Res() res: Response, @Body() attributeValue: AttributeValue): Promise<AttributeValue> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'AttributeValue', attributeValue.id);
         return await this.attributeValueService.update(attributeValue);
     }
 
@@ -82,8 +82,8 @@ export class AttributeValueController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<AttributeValue> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'AttributeValue', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<AttributeValue> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'AttributeValue', id);
         const toDelete = await this.attributeValueService.findById(id);
         return await this.attributeValueService.delete(toDelete);
     }

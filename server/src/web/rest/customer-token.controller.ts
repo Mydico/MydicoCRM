@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import CustomerToken from '../../domain/customer-token.entity';
 import { CustomerTokenService } from '../../service/customer-token.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class CustomerTokenController {
         description: 'List all records',
         type: CustomerToken,
     })
-    async getAll(@Req() req: Request): Promise<CustomerToken[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<CustomerToken[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.customerTokenService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class CustomerTokenController {
         type: CustomerToken,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() customerToken: CustomerToken): Promise<CustomerToken> {
+    async post(@Res() res: Response, @Body() customerToken: CustomerToken): Promise<CustomerToken> {
         const created = await this.customerTokenService.save(customerToken);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerToken', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerToken', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class CustomerTokenController {
         description: 'The record has been successfully updated.',
         type: CustomerToken,
     })
-    async put(@Req() req: Request, @Body() customerToken: CustomerToken): Promise<CustomerToken> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerToken', customerToken.id);
+    async put(@Res() res: Response, @Body() customerToken: CustomerToken): Promise<CustomerToken> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerToken', customerToken.id);
         return await this.customerTokenService.update(customerToken);
     }
 
@@ -82,8 +82,8 @@ export class CustomerTokenController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<CustomerToken> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'CustomerToken', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<CustomerToken> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'CustomerToken', id);
         const toDelete = await this.customerTokenService.findById(id);
         return await this.customerTokenService.delete(toDelete);
     }

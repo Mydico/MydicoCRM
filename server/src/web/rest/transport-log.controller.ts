@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import TransportLog from '../../domain/transport-log.entity';
 import { TransportLogService } from '../../service/transport-log.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class TransportLogController {
         description: 'List all records',
         type: TransportLog,
     })
-    async getAll(@Req() req: Request): Promise<TransportLog[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<TransportLog[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.transportLogService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class TransportLogController {
         type: TransportLog,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() transportLog: TransportLog): Promise<TransportLog> {
+    async post(@Res() res: Response, @Body() transportLog: TransportLog): Promise<TransportLog> {
         const created = await this.transportLogService.save(transportLog);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'TransportLog', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'TransportLog', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class TransportLogController {
         description: 'The record has been successfully updated.',
         type: TransportLog,
     })
-    async put(@Req() req: Request, @Body() transportLog: TransportLog): Promise<TransportLog> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'TransportLog', transportLog.id);
+    async put(@Res() res: Response, @Body() transportLog: TransportLog): Promise<TransportLog> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'TransportLog', transportLog.id);
         return await this.transportLogService.update(transportLog);
     }
 
@@ -82,8 +82,8 @@ export class TransportLogController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<TransportLog> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'TransportLog', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<TransportLog> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'TransportLog', id);
         const toDelete = await this.transportLogService.findById(id);
         return await this.transportLogService.delete(toDelete);
     }

@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import CustomerCategory from '../../domain/customer-category.entity';
 import { CustomerCategoryService } from '../../service/customer-category.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class CustomerCategoryController {
         description: 'List all records',
         type: CustomerCategory,
     })
-    async getAll(@Req() req: Request): Promise<CustomerCategory[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<CustomerCategory[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.customerCategoryService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class CustomerCategoryController {
         type: CustomerCategory,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() customerCategory: CustomerCategory): Promise<CustomerCategory> {
+    async post(@Res() res: Response, @Body() customerCategory: CustomerCategory): Promise<CustomerCategory> {
         const created = await this.customerCategoryService.save(customerCategory);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerCategory', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerCategory', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class CustomerCategoryController {
         description: 'The record has been successfully updated.',
         type: CustomerCategory,
     })
-    async put(@Req() req: Request, @Body() customerCategory: CustomerCategory): Promise<CustomerCategory> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerCategory', customerCategory.id);
+    async put(@Res() res: Response, @Body() customerCategory: CustomerCategory): Promise<CustomerCategory> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerCategory', customerCategory.id);
         return await this.customerCategoryService.update(customerCategory);
     }
 
@@ -82,8 +82,8 @@ export class CustomerCategoryController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<CustomerCategory> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'CustomerCategory', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<CustomerCategory> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'CustomerCategory', id);
         const toDelete = await this.customerCategoryService.findById(id);
         return await this.customerCategoryService.delete(toDelete);
     }

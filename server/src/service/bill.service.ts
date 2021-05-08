@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
 import Bill from '../domain/bill.entity';
 import { BillRepository } from '../repository/bill.repository';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { PageRequest } from '../domain/base/pagination.entity';
 import { BillStatus } from '../domain/enumeration/bill-status';
 

@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import Fanpage from '../../domain/fanpage.entity';
 import { FanpageService } from '../../service/fanpage.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class FanpageController {
         description: 'List all records',
         type: Fanpage,
     })
-    async getAll(@Req() req: Request): Promise<Fanpage[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<Fanpage[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.fanpageService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class FanpageController {
         type: Fanpage,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() fanpage: Fanpage): Promise<Fanpage> {
+    async post(@Res() res: Response, @Body() fanpage: Fanpage): Promise<Fanpage> {
         const created = await this.fanpageService.save(fanpage);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Fanpage', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'Fanpage', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class FanpageController {
         description: 'The record has been successfully updated.',
         type: Fanpage,
     })
-    async put(@Req() req: Request, @Body() fanpage: Fanpage): Promise<Fanpage> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Fanpage', fanpage.id);
+    async put(@Res() res: Response, @Body() fanpage: Fanpage): Promise<Fanpage> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'Fanpage', fanpage.id);
         return await this.fanpageService.update(fanpage);
     }
 
@@ -82,8 +82,8 @@ export class FanpageController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<Fanpage> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'Fanpage', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<Fanpage> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'Fanpage', id);
         const toDelete = await this.fanpageService.findById(id);
         return await this.fanpageService.delete(toDelete);
     }

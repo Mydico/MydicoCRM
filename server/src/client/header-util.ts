@@ -1,5 +1,5 @@
+import { Request, Response } from 'express';
 import { config } from '../config';
-import { Response } from 'express';
 import { Page } from '../domain/base/pagination.entity';
 
 const applicationName = config.get('jhipster.clientApp.name');
@@ -7,8 +7,8 @@ const enableTranslation = true;
 
 export class HeaderUtil {
     static createAlert(res: Response, message: string, param: string): any {
-        res.set('X-' + applicationName + '-alert', message);
-        res.set('X-' + applicationName + '-params', param);
+        res.header('X-' + applicationName + '-alert', message);
+        res.header('X-' + applicationName + '-params', param);
     }
 
     static addEntityCreatedHeaders(res: Response, entityName, param): any {
@@ -41,9 +41,9 @@ export class HeaderUtil {
         this.createAlert(res, message, param);
     }
 
-    static addPaginationHeaders<T>(res: Response, page: Page<T>): any {
-        const url = res.req.url;
-        res.set('X-Total-Count', page.total.toString());
+    static addPaginationHeaders<T>(req: Request,res: Response, page: Page<T>): any {
+        const url = req.url;
+        res.header('X-Total-Count', page.total.toString());
         const pageNumber = page.pageable.page;
         const pageSize = page.pageable.size;
         const links = [];
@@ -55,7 +55,7 @@ export class HeaderUtil {
         }
         links.push(this.prepareLink(url, page.total - 1, pageSize, 'last'));
         links.push(this.prepareLink(url, 0, pageSize, 'first'));
-        res.set('Link', links.join(','));
+        res.header('Link', links.join(','));
     }
 
     private static prepareLink(url, pageNumber, pageSize, relType): any {

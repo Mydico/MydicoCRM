@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import ReportDate from '../../domain/report-date.entity';
 import { ReportDateService } from '../../service/report-date.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class ReportDateController {
         description: 'List all records',
         type: ReportDate,
     })
-    async getAll(@Req() req: Request): Promise<ReportDate[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<ReportDate[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.reportDateService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class ReportDateController {
         type: ReportDate,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() reportDate: ReportDate): Promise<ReportDate> {
+    async post(@Res() res: Response, @Body() reportDate: ReportDate): Promise<ReportDate> {
         const created = await this.reportDateService.save(reportDate);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'ReportDate', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'ReportDate', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class ReportDateController {
         description: 'The record has been successfully updated.',
         type: ReportDate,
     })
-    async put(@Req() req: Request, @Body() reportDate: ReportDate): Promise<ReportDate> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'ReportDate', reportDate.id);
+    async put(@Res() res: Response, @Body() reportDate: ReportDate): Promise<ReportDate> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'ReportDate', reportDate.id);
         return await this.reportDateService.update(reportDate);
     }
 
@@ -82,8 +82,8 @@ export class ReportDateController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<ReportDate> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'ReportDate', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<ReportDate> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'ReportDate', id);
         const toDelete = await this.reportDateService.findById(id);
         return await this.reportDateService.delete(toDelete);
     }

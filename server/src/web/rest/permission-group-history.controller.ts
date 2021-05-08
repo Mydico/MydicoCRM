@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import PermissionGroupHistory from '../../domain/permission-group-history.entity';
 import { PermissionGroupHistoryService } from '../../service/permission-group-history.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class PermissionGroupHistoryController {
         description: 'List all records',
         type: PermissionGroupHistory,
     })
-    async getAll(@Req() req: Request): Promise<PermissionGroupHistory[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<PermissionGroupHistory[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.permissionGroupHistoryService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class PermissionGroupHistoryController {
         type: PermissionGroupHistory,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() permissionGroupHistory: PermissionGroupHistory): Promise<PermissionGroupHistory> {
+    async post(@Res() res: Response, @Body() permissionGroupHistory: PermissionGroupHistory): Promise<PermissionGroupHistory> {
         const created = await this.permissionGroupHistoryService.save(permissionGroupHistory);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'PermissionGroupHistory', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'PermissionGroupHistory', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class PermissionGroupHistoryController {
         description: 'The record has been successfully updated.',
         type: PermissionGroupHistory,
     })
-    async put(@Req() req: Request, @Body() permissionGroupHistory: PermissionGroupHistory): Promise<PermissionGroupHistory> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'PermissionGroupHistory', permissionGroupHistory.id);
+    async put(@Res() res: Response, @Body() permissionGroupHistory: PermissionGroupHistory): Promise<PermissionGroupHistory> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'PermissionGroupHistory', permissionGroupHistory.id);
         return await this.permissionGroupHistoryService.update(permissionGroupHistory);
     }
 
@@ -82,8 +82,8 @@ export class PermissionGroupHistoryController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<PermissionGroupHistory> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'PermissionGroupHistory', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<PermissionGroupHistory> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'PermissionGroupHistory', id);
         const toDelete = await this.permissionGroupHistoryService.findById(id);
         return await this.permissionGroupHistoryService.delete(toDelete);
     }

@@ -1,81 +1,80 @@
 {
-    "name": "OrderDetails",
-    "fields": [
-        {
-            "fieldName": "createdAt",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "createdBy",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "updatedAt",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "updatedBy",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "isDel",
-            "fieldType": "Boolean"
-        },
-        {
-            "fieldName": "productId",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "detailId",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "quantity",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "price",
-            "fieldType": "Double"
-        },
-        {
-            "fieldName": "storeId",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "priceTotal",
-            "fieldType": "Double"
-        },
-        {
-            "fieldName": "reducePercent",
-            "fieldType": "Float"
-        },
-        {
-            "fieldName": "priceReal",
-            "fieldType": "Double"
-        },
-        {
-            "fieldName": "siteId",
-            "fieldType": "Integer"
-        }
-    ],
-    "relationships": [
-        {
-            "relationshipType": "many-to-one",
-            "otherEntityName": "order",
-            "otherEntityRelationshipName": "orderDetails",
-            "relationshipName": "order",
-            "otherEntityField": "id"
-        }
-    ],
-    "changelogDate": "20201208201300",
-    "entityTableName": "order_details",
-    "dto": "mapstruct",
-    "pagination": "pagination",
-    "service": "serviceClass",
-    "jpaMetamodelFiltering": true,
-    "fluentMethods": true,
-    "readOnly": false,
-    "embedded": false,
-    "clientRootFolder": "",
-    "applications": "*"
+  "name": "OrderDetails",
+  "fields": [
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "createdBy",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "updatedAt",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "updatedBy",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "isDel",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "productId",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "detailId",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "quantity",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "price",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "storeId",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "priceTotal",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "reducePercent",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "priceReal",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "siteId",
+      "fieldType": "Integer"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "order",
+      "otherEntityRelationshipName": "orderDetails",
+      "relationshipName": "order"
+    }
+  ],
+  "changelogDate": "20201208201300",
+  "entityTableName": "order_details",
+  "dto": "mapstruct",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
 }

@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import CustomerSkin from '../../domain/customer-skin.entity';
 import { CustomerSkinService } from '../../service/customer-skin.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class CustomerSkinController {
         description: 'List all records',
         type: CustomerSkin,
     })
-    async getAll(@Req() req: Request): Promise<CustomerSkin[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<CustomerSkin[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.customerSkinService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class CustomerSkinController {
         type: CustomerSkin,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() customerSkin: CustomerSkin): Promise<CustomerSkin> {
+    async post(@Res() res: Response, @Body() customerSkin: CustomerSkin): Promise<CustomerSkin> {
         const created = await this.customerSkinService.save(customerSkin);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerSkin', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerSkin', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class CustomerSkinController {
         description: 'The record has been successfully updated.',
         type: CustomerSkin,
     })
-    async put(@Req() req: Request, @Body() customerSkin: CustomerSkin): Promise<CustomerSkin> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerSkin', customerSkin.id);
+    async put(@Res() res: Response, @Body() customerSkin: CustomerSkin): Promise<CustomerSkin> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerSkin', customerSkin.id);
         return await this.customerSkinService.update(customerSkin);
     }
 
@@ -82,8 +82,8 @@ export class CustomerSkinController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<CustomerSkin> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'CustomerSkin', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<CustomerSkin> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'CustomerSkin', id);
         const toDelete = await this.customerSkinService.findById(id);
         return await this.customerSkinService.delete(toDelete);
     }

@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import UserDeviceToken from '../../domain/user-device-token.entity';
 import { UserDeviceTokenService } from '../../service/user-device-token.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class UserDeviceTokenController {
         description: 'List all records',
         type: UserDeviceToken,
     })
-    async getAll(@Req() req: Request): Promise<UserDeviceToken[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<UserDeviceToken[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.userDeviceTokenService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class UserDeviceTokenController {
         type: UserDeviceToken,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() userDeviceToken: UserDeviceToken): Promise<UserDeviceToken> {
+    async post(@Res() res: Response, @Body() userDeviceToken: UserDeviceToken): Promise<UserDeviceToken> {
         const created = await this.userDeviceTokenService.save(userDeviceToken);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'UserDeviceToken', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'UserDeviceToken', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class UserDeviceTokenController {
         description: 'The record has been successfully updated.',
         type: UserDeviceToken,
     })
-    async put(@Req() req: Request, @Body() userDeviceToken: UserDeviceToken): Promise<UserDeviceToken> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'UserDeviceToken', userDeviceToken.id);
+    async put(@Res() res: Response, @Body() userDeviceToken: UserDeviceToken): Promise<UserDeviceToken> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'UserDeviceToken', userDeviceToken.id);
         return await this.userDeviceTokenService.update(userDeviceToken);
     }
 
@@ -82,8 +82,8 @@ export class UserDeviceTokenController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<UserDeviceToken> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'UserDeviceToken', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<UserDeviceToken> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'UserDeviceToken', id);
         const toDelete = await this.userDeviceTokenService.findById(id);
         return await this.userDeviceTokenService.delete(toDelete);
     }

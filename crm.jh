@@ -23,27 +23,28 @@ entity Promotion {
 }
 entity Attribute {
 	name String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
+entity IncomeRecord {
+	userId Integer,
+	type String,
+	amount Integer
+}
+entity DebtRecord {
+	userId Integer,
+	type String,
+	amount Integer
+}
 entity AttributeMap {
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	siteId Integer
 }
 entity AttributeValue {
 	name String required maxlength(255),
 	productId Integer,
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
@@ -55,10 +56,7 @@ entity Bill {
 	status Integer,
 	isDel Boolean,
 	note String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	/** mã vận đơn */
 	code String maxlength(255),
 	saleId Integer,
@@ -66,10 +64,7 @@ entity Bill {
 }
 entity City {
 	name String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	storeId Integer,
 	codIds String maxlength(250)
@@ -136,10 +131,7 @@ relationship ManyToMany {
 entity CustomerAdvisory {
 	name String maxlength(255),
 	desc String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
@@ -149,20 +141,14 @@ entity CustomerCall {
 	/** ghi chú */
 	comment String maxlength(255),
 	customerId Integer,
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
 entity CustomerCategory {
 	name String maxlength(255),
 	desc String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
@@ -189,20 +175,14 @@ entity CustomerRequest {
 entity CustomerSkin {
 	name String maxlength(255),
 	desc String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
 entity CustomerStatus {
 	name String maxlength(255),
 	desc String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
@@ -215,19 +195,13 @@ entity CustomerTemp {
 entity CustomerType {
 	name String maxlength(255),
 	desc String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
 entity District {
 	name String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	storeId Integer,
 	codIds String maxlength(250)
@@ -235,10 +209,7 @@ entity District {
 entity Fanpage {
 	name String maxlength(255),
 	link String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	code String maxlength(255),
 	siteId Integer
@@ -248,10 +219,7 @@ entity Migration {
 	applyTime Integer
 }
 entity Order {
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	customerId Integer,
 	customerName String maxlength(255),
@@ -278,10 +246,7 @@ entity Order {
 	siteId Integer
 }
 entity OrderDetails {
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	productId Integer,
 	detailId Integer,
@@ -311,10 +276,7 @@ entity Product {
 	name String required maxlength(255),
 	image String maxlength(255),
 	desc String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	code String maxlength(255),
 	status Integer,
@@ -377,10 +339,7 @@ relationship ManyToMany {
 }
 entity ProductDetails {
 	barcode String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	name String maxlength(250)
 }
@@ -406,10 +365,7 @@ entity ProductGroupMap {
 }
 entity ProductQuantity {
 	quantity Integer required,
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean
 }
 entity PromotionCustomerLevel {
@@ -442,10 +398,7 @@ entity Receipt {
 	note String maxlength(255),
 	/** Số tiền thu được của khách hàng */
 	money Integer,
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	/** 0 - Thu từ công nợ, 1 - Trừ công nợ do trả hàng */
 	type Integer,
 	/** đơn trả hàng */
@@ -499,10 +452,7 @@ entity Store {
 	name String required maxlength(255),
 	address String maxlength(255),
 	tel String maxlength(100),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	transportId Integer,
 	siteId Integer
@@ -553,10 +503,7 @@ entity Transaction {
 	status Integer,
 	isDel Boolean,
 	note String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	saleId Integer,
 	totalMoney Integer,
 	/** Số tiền hòa trả do trả hàng */
@@ -576,10 +523,7 @@ entity Transaction {
 entity Transport {
 	name String maxlength(255),
 	desc String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
@@ -645,29 +589,20 @@ entity UserTeam {
 	name String maxlength(255),
 	/** id user là leader */
 	leaderId Integer,
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
 entity UserType {
 	name String maxlength(255),
 	percent Integer,
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean,
 	siteId Integer
 }
 entity Wards {
 	name String maxlength(255),
-	createdAt Integer,
-	createdBy Integer,
-	updatedAt Integer,
-	updatedBy Integer,
+
 	isDel Boolean
 }
 entity UserToken {

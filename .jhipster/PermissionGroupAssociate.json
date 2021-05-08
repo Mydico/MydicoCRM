@@ -1,42 +1,41 @@
 {
-    "name": "PermissionGroupAssociate",
-    "fields": [
-        {
-            "fieldName": "resource",
-            "fieldType": "String"
-        },
-        {
-            "fieldName": "action",
-            "fieldType": "String"
-        },
-        {
-            "fieldName": "type",
-            "fieldType": "String"
-        },
-        {
-            "fieldName": "description",
-            "fieldType": "String"
-        }
-    ],
-    "relationships": [
-        {
-            "relationshipType": "many-to-many",
-            "otherEntityName": "permissionGroup",
-            "otherEntityRelationshipName": "permissionGroupAssociate",
-            "relationshipName": "permissionGroup",
-            "otherEntityField": "id",
-            "ownerSide": false
-        }
-    ],
-    "changelogDate": "20210306004600",
-    "entityTableName": "permission_group_associate",
-    "dto": "mapstruct",
-    "pagination": "pagination",
-    "service": "serviceClass",
-    "jpaMetamodelFiltering": true,
-    "fluentMethods": true,
-    "readOnly": false,
-    "embedded": false,
-    "clientRootFolder": "",
-    "applications": "*"
+  "name": "PermissionGroupAssociate",
+  "fields": [
+    {
+      "fieldName": "resource",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "action",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "permissionGroup",
+      "otherEntityRelationshipName": "permissionGroupAssociate",
+      "relationshipName": "permissionGroup",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210306004600",
+  "entityTableName": "permission_group_associate",
+  "dto": "mapstruct",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
 }

@@ -1,6 +1,19 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Post as PostMethod,
+  Put,
+  UseGuards,
+  Req,
+  UseInterceptors,
+  Res
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import Receipt from '../../domain/receipt.entity';
 import { ReceiptService } from '../../service/receipt.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -15,7 +28,6 @@ import { Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-
 export class ReceiptController {
   logger = new Logger('ReceiptController');
 
@@ -28,7 +40,7 @@ export class ReceiptController {
     description: 'List all records',
     type: Receipt
   })
-  async getAll(@Req() req: Request): Promise<Receipt[]> {
+  async getAll(@Req() req: Request, @Res() res): Promise<Receipt[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
     Object.keys(req.query).forEach(item => {
@@ -44,8 +56,8 @@ export class ReceiptController {
         ...filter
       }
     });
-    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
-    return results;
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
   }
 
   @Get('/:id')
@@ -55,53 +67,50 @@ export class ReceiptController {
     description: 'The found record',
     type: Receipt
   })
-  async getOne(@Param('id') id: string): Promise<Receipt> {
-    return await this.receiptService.findById(id);
+  async getOne(@Param('id') id: string, @Res() res: Response): Promise<Response> {
+    return res.send(await this.receiptService.findById(id));
   }
 
   @PostMethod('/')
   @Roles(RoleType.USER)
- 
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
     type: Receipt
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async post(@Req() req: Request, @Body() receipt: Receipt): Promise<Receipt> {
+  async post(@Req() req: Request, @Res() res: Response, @Body() receipt: Receipt): Promise<Response> {
     let currentUser = req.user as User;
     receipt.createdBy = currentUser.login;
     const created = await this.receiptService.save(receipt);
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'Receipt', created.id);
-    return created;
+    HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', created.id);
+    return res.send(created);
   }
 
   @Put('/')
   @Roles(RoleType.USER)
- 
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
     type: Receipt
   })
-  async put(@Req() req: Request, @Body() receipt: Receipt): Promise<Receipt> {
+  async put(@Req() req: Request, @Res() res: Response, @Body() receipt: Receipt): Promise<Response> {
     if (receipt.status === ReceiptStatus.APPROVED) {
       let currentUser = req.user as User;
       receipt.approver = currentUser;
     }
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'Receipt', receipt.id);
-    return await this.receiptService.update(receipt);
+    HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', receipt.id);
+    return res.send(await this.receiptService.update(receipt));
   }
 
   @Delete('/:id')
   @Roles(RoleType.USER)
- 
   @ApiResponse({
     status: 204,
     description: 'The record has been successfully deleted.'
   })
-  async remove(@Req() req: Request, @Param('id') id: string): Promise<Receipt> {
-    HeaderUtil.addEntityDeletedHeaders(req.res, 'Receipt', id);
+  async remove(@Res() res: Response, @Param('id') id: string): Promise<Receipt> {
+    HeaderUtil.addEntityDeletedHeaders(res, 'Receipt', id);
     const toDelete = await this.receiptService.findById(id);
     return await this.receiptService.delete(toDelete);
   }

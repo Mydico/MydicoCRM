@@ -33,7 +33,6 @@ const Promotion = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    dispatch(getPromotion());
     dispatch(reset());
   }, []);
 

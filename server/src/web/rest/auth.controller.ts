@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Logger, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { User } from '../../domain/user.entity';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';

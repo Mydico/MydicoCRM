@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import PromotionCustomerLevel from '../../domain/promotion-customer-level.entity';
 import { PromotionCustomerLevelService } from '../../service/promotion-customer-level.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class PromotionCustomerLevelController {
         description: 'List all records',
         type: PromotionCustomerLevel,
     })
-    async getAll(@Req() req: Request): Promise<PromotionCustomerLevel[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<PromotionCustomerLevel[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.promotionCustomerLevelService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class PromotionCustomerLevelController {
         type: PromotionCustomerLevel,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() promotionCustomerLevel: PromotionCustomerLevel): Promise<PromotionCustomerLevel> {
+    async post(@Res() res: Response, @Body() promotionCustomerLevel: PromotionCustomerLevel): Promise<PromotionCustomerLevel> {
         const created = await this.promotionCustomerLevelService.save(promotionCustomerLevel);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'PromotionCustomerLevel', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'PromotionCustomerLevel', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class PromotionCustomerLevelController {
         description: 'The record has been successfully updated.',
         type: PromotionCustomerLevel,
     })
-    async put(@Req() req: Request, @Body() promotionCustomerLevel: PromotionCustomerLevel): Promise<PromotionCustomerLevel> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'PromotionCustomerLevel', promotionCustomerLevel.id);
+    async put(@Res() res: Response, @Body() promotionCustomerLevel: PromotionCustomerLevel): Promise<PromotionCustomerLevel> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'PromotionCustomerLevel', promotionCustomerLevel.id);
         return await this.promotionCustomerLevelService.update(promotionCustomerLevel);
     }
 
@@ -82,8 +82,8 @@ export class PromotionCustomerLevelController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<PromotionCustomerLevel> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'PromotionCustomerLevel', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<PromotionCustomerLevel> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'PromotionCustomerLevel', id);
         const toDelete = await this.promotionCustomerLevelService.findById(id);
         return await this.promotionCustomerLevelService.delete(toDelete);
     }

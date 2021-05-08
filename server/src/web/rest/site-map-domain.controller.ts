@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import SiteMapDomain from '../../domain/site-map-domain.entity';
 import { SiteMapDomainService } from '../../service/site-map-domain.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class SiteMapDomainController {
         description: 'List all records',
         type: SiteMapDomain,
     })
-    async getAll(@Req() req: Request): Promise<SiteMapDomain[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<SiteMapDomain[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.siteMapDomainService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class SiteMapDomainController {
         type: SiteMapDomain,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() siteMapDomain: SiteMapDomain): Promise<SiteMapDomain> {
+    async post(@Res() res: Response, @Body() siteMapDomain: SiteMapDomain): Promise<SiteMapDomain> {
         const created = await this.siteMapDomainService.save(siteMapDomain);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'SiteMapDomain', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'SiteMapDomain', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class SiteMapDomainController {
         description: 'The record has been successfully updated.',
         type: SiteMapDomain,
     })
-    async put(@Req() req: Request, @Body() siteMapDomain: SiteMapDomain): Promise<SiteMapDomain> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'SiteMapDomain', siteMapDomain.id);
+    async put(@Res() res: Response, @Body() siteMapDomain: SiteMapDomain): Promise<SiteMapDomain> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'SiteMapDomain', siteMapDomain.id);
         return await this.siteMapDomainService.update(siteMapDomain);
     }
 
@@ -82,8 +82,8 @@ export class SiteMapDomainController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<SiteMapDomain> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'SiteMapDomain', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<SiteMapDomain> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'SiteMapDomain', id);
         const toDelete = await this.siteMapDomainService.findById(id);
         return await this.siteMapDomainService.delete(toDelete);
     }

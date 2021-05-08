@@ -1,29 +1,29 @@
 {
-    "name": "CustomerMap",
-    "fields": [
-        {
-            "fieldName": "customerId",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "userId",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldName": "siteId",
-            "fieldType": "Integer"
-        }
-    ],
-    "relationships": [],
-    "changelogDate": "20201208200300",
-    "entityTableName": "customer_map",
-    "dto": "mapstruct",
-    "pagination": "pagination",
-    "service": "serviceClass",
-    "jpaMetamodelFiltering": true,
-    "fluentMethods": true,
-    "readOnly": false,
-    "embedded": false,
-    "clientRootFolder": "",
-    "applications": "*"
+  "name": "CustomerMap",
+  "fields": [
+    {
+      "fieldName": "customerId",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "userId",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "siteId",
+      "fieldType": "Integer"
+    }
+  ],
+  "relationships": [],
+  "changelogDate": "20201208200300",
+  "entityTableName": "customer_map",
+  "dto": "mapstruct",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
 }

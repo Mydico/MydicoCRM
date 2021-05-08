@@ -1,6 +1,19 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Post as PostMethod,
+  Put,
+  UseGuards,
+  Req,
+  UseInterceptors,
+  Res
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import ProductQuantity from '../../domain/product-quantity.entity';
 import { ProductQuantityService } from '../../service/product-quantity.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -13,7 +26,6 @@ import { In, Like } from 'typeorm';
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-
 export class ProductQuantityController {
   logger = new Logger('ProductQuantityController');
 
@@ -26,14 +38,14 @@ export class ProductQuantityController {
     description: 'List all records',
     type: ProductQuantity
   })
-  async getQuantity(@Req() req: Request): Promise<ProductQuantity[]> {
+  async getQuantity(@Req() req: Request, @Res() res: Response): Promise<Response> {
     const results = await this.productQuantityService.findByfields({
       where: {
         product: req.query.productId,
         store: req.query.storeId
       }
     });
-    return results;
+    return res.send(results);
   }
 
   @Get('/field')
@@ -43,7 +55,7 @@ export class ProductQuantityController {
     description: 'List all records',
     type: ProductQuantity
   })
-  async getField(@Req() req: Request): Promise<ProductQuantity[]> {
+  async getField(@Req() req: Request, @Res() res): Promise<Response> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
     Object.keys(req.query).forEach(item => {
@@ -65,7 +77,7 @@ export class ProductQuantityController {
         ...filter
       }
     });
-    return results;
+    return res.send(results);
   }
 
   @Get('/')
@@ -75,7 +87,7 @@ export class ProductQuantityController {
     description: 'List all records',
     type: ProductQuantity
   })
-  async getAll(@Req() req: Request): Promise<ProductQuantity[]> {
+  async getAll(@Req() req: Request, @Res() res): Promise<Response> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
     Object.keys(req.query).forEach(item => {
@@ -84,8 +96,8 @@ export class ProductQuantityController {
       }
     });
     const [results, count] = await this.productQuantityService.findAndCount(pageRequest, req);
-    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
-    return results;
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
   }
 
   @Get('/:id')
@@ -95,47 +107,44 @@ export class ProductQuantityController {
     description: 'The found record',
     type: ProductQuantity
   })
-  async getOne(@Param('id') id: string): Promise<ProductQuantity> {
-    return await this.productQuantityService.findById(id);
+  async getOne(@Param('id') id: string, @Res() res: Response): Promise<Response> {
+    return res.send(await this.productQuantityService.findById(id));
   }
 
   @PostMethod('/')
   @Roles(RoleType.USER)
- 
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
     type: ProductQuantity
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async post(@Req() req: Request, @Body() productQuantity: ProductQuantity): Promise<ProductQuantity> {
+  async post(@Res() res: Response, @Body() productQuantity: ProductQuantity): Promise<Response> {
     const created = await this.productQuantityService.save(productQuantity);
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'ProductQuantity', created.id);
-    return created;
+    HeaderUtil.addEntityCreatedHeaders(res, 'ProductQuantity', created.id);
+    return res.send(created);
   }
 
   @Put('/')
   @Roles(RoleType.USER)
- 
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
     type: ProductQuantity
   })
-  async put(@Req() req: Request, @Body() productQuantity: ProductQuantity): Promise<ProductQuantity> {
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'ProductQuantity', productQuantity.id);
-    return await this.productQuantityService.update(productQuantity);
+  async put(@Res() res: Response, @Body() productQuantity: ProductQuantity): Promise<Response> {
+    HeaderUtil.addEntityCreatedHeaders(res, 'ProductQuantity', productQuantity.id);
+    return res.send(await this.productQuantityService.update(productQuantity));
   }
 
   @Delete('/:id')
   @Roles(RoleType.USER)
- 
   @ApiResponse({
     status: 204,
     description: 'The record has been successfully deleted.'
   })
-  async remove(@Req() req: Request, @Param('id') id: string): Promise<ProductQuantity> {
-    HeaderUtil.addEntityDeletedHeaders(req.res, 'ProductQuantity', id);
+  async remove(@Res() res: Response, @Param('id') id: string): Promise<ProductQuantity> {
+    HeaderUtil.addEntityDeletedHeaders(res, 'ProductQuantity', id);
     const toDelete = await this.productQuantityService.findById(id);
     return await this.productQuantityService.delete(toDelete);
   }

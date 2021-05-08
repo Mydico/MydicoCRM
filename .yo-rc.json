@@ -30,15 +30,79 @@
     "otherModules": [
       {
         "name": "generator-jhipster-nodejs",
-        "version": "1.3.0"
+        "version": "2.0.0-beta.1"
       }
     ],
     "enableTranslation": false,
     "blueprints": [
       {
         "name": "generator-jhipster-nodejs",
-        "version": "1.3.0"
+        "version": "2.0.0-beta.1"
       }
-    ]
+    ],
+    "entities": [
+      "Attribute",
+      "AttributeMap",
+      "AttributeValue",
+      "Customer",
+      "CustomerDebit",
+      "CustomerRequest",
+      "District",
+      "Migration",
+      "OrderDetails",
+      "Product",
+      "PromotionProduct",
+      "PermissionGroup",
+      "PermissionGroupAssociate",
+      "ProductDetails",
+      "ProductGroup",
+      "ProductQuantity",
+      "Store",
+      "StoreInput",
+      "StoreHistory",
+      "Provider",
+      "StoreInputDetails",
+      "Wards",
+      "CustomerToken",
+      "Promotion",
+      "Bill",
+      "City",
+      "Codlog",
+      "CustomerAdvisory",
+      "CustomerCall",
+      "CustomerCategory",
+      "CustomerMap",
+      "CustomerSkin",
+      "CustomerStatus",
+      "CustomerTemp",
+      "CustomerType",
+      "Fanpage",
+      "Order",
+      "OrderPush",
+      "ProductGroupMap",
+      "PromotionCustomerLevel",
+      "PromotionItem",
+      "Receipt",
+      "ReportCustomerCategoryDate",
+      "ReportDate",
+      "Site",
+      "SiteMapDomain",
+      "Transaction",
+      "Transport",
+      "TransportLog",
+      "UserDeviceToken",
+      "UserNotify",
+      "UserRole",
+      "UserTeam",
+      "UserType",
+      "UserToken",
+      "Branch",
+      "ProductBrand",
+      "Department",
+      "Permission",
+      "PermissionType",
+      "PermissionGroupHistory"
+    ],
+    "lastLiquibaseTimestamp": 1620307836000
   }
 }

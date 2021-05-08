@@ -1,6 +1,19 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Post as PostMethod,
+  Put,
+  UseGuards,
+  Req,
+  UseInterceptors,
+  Res
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import Wards from '../../domain/wards.entity';
 import { WardsService } from '../../service/wards.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -13,73 +26,35 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class WardsController {
-    logger = new Logger('WardsController');
+  logger = new Logger('WardsController');
 
-    constructor(private readonly wardsService: WardsService) {}
+  constructor(private readonly wardsService: WardsService) {}
 
-    @Get('/')
-    @Roles(RoleType.USER)
-    @ApiResponse({
-        status: 200,
-        description: 'List all records',
-        type: Wards,
-    })
-    async getAll(@Req() req: Request): Promise<Wards[]> {
-        const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-        const results = await this.wardsService.findAndCount({
-            where: {
-                district: req.query.district || '',
-            },
-        });
-        return results;
-    }
+  @Get('/')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: Wards
+  })
+  async getAll(@Req() req: Request, @Res() res): Promise<Wards[]> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const results = await this.wardsService.findAndCount({
+      where: {
+        district: req.query.district || ''
+      }
+    });
+    return res.send(results);
+  }
 
-    @Get('/:id')
-    @Roles(RoleType.USER)
-    @ApiResponse({
-        status: 200,
-        description: 'The found record',
-        type: Wards,
-    })
-    async getOne(@Param('id') id: string): Promise<Wards> {
-        return await this.wardsService.findById(id);
-    }
-
-    @PostMethod('/')
-    @Roles(RoleType.USER)
-    @ApiResponse({
-        status: 201,
-        description: 'The record has been successfully created.',
-        type: Wards,
-    })
-    @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() wards: Wards): Promise<Wards> {
-        const created = await this.wardsService.save(wards);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Wards', created.id);
-        return created;
-    }
-
-    @Put('/')
-    @Roles(RoleType.USER)
-    @ApiResponse({
-        status: 200,
-        description: 'The record has been successfully updated.',
-        type: Wards,
-    })
-    async put(@Req() req: Request, @Body() wards: Wards): Promise<Wards> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Wards', wards.id);
-        return await this.wardsService.update(wards);
-    }
-
-    @Delete('/:id')
-    @Roles(RoleType.USER)
-    @ApiResponse({
-        status: 204,
-        description: 'The record has been successfully deleted.',
-    })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<Wards> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'Wards', id);
-        const toDelete = await this.wardsService.findById(id);
-        return await this.wardsService.delete(toDelete);
-    }
+  @Get('/:id')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The found record',
+    type: Wards
+  })
+  async getOne(@Param('id') id: string, @Res() res: Response): Promise<Response> {
+    return res.send(await this.wardsService.findById(id));
+  }
 }

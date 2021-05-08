@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
+import { User } from 'src/domain/user.entity';
+import { FindManyOptions, FindOneOptions, In, Like } from 'typeorm';
 import Customer from '../domain/customer.entity';
 import { CustomerRepository } from '../repository/customer.repository';
-import { increment_alphanumeric_str, decrement_alphanumeric_str, checkCodeContext } from './utils/normalizeString';
+import { DepartmentService } from './department.service';
+import { checkCodeContext } from './utils/normalizeString';
 
 const relationshipNames = [];
 relationshipNames.push('city');
@@ -22,7 +24,10 @@ relationshipNames.push('users');
 export class CustomerService {
   logger = new Logger('CustomerService');
 
-  constructor(@InjectRepository(CustomerRepository) private customerRepository: CustomerRepository) {}
+  constructor(
+    @InjectRepository(CustomerRepository) private customerRepository: CustomerRepository,
+    private readonly departmentService: DepartmentService
+  ) {}
 
   async findById(id: string): Promise<Customer | undefined> {
     const options = { relations: relationshipNames };
@@ -33,8 +38,16 @@ export class CustomerService {
     return await this.customerRepository.findOne(options);
   }
 
-  async findAndCount(options: FindManyOptions<Customer>): Promise<[Customer[], number]> {
+  async findAndCount(options: FindManyOptions<Customer>, currentUser: User): Promise<[Customer[], number]> {
+    let departmentVisible = [];
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible.push(currentUser.department);
+    }
     options.relations = relationshipNames;
+    options.where = {
+      department: In(departmentVisible)
+    }
     return await this.customerRepository.findAndCount(options);
   }
 

@@ -16,9 +16,9 @@ const Dashboard = () => {
           <CRow>
             <CCol sm="5">
               <h4 id="traffic" className="card-title mb-0">
-                Traffic
+                Thống kê
               </h4>
-              <div className="small text-muted">November 2017</div>
+              {/* <div className="small text-muted">November 2017</div> */}
             </CCol>
             <CCol sm="7" className="d-none d-md-block">
               <CButton color="primary" className="float-right">
@@ -66,11 +66,11 @@ const Dashboard = () => {
         </CCardFooter>
       </CCard>
 
-      <WidgetsBrand withCharts />
+      {/* <WidgetsBrand withCharts /> */}
 
       <CRow>
         <CCol>
-          <CCard>
+          {/* <CCard>
             <CCardHeader>Traffic {' & '} Sales</CCardHeader>
             <CCardBody>
               <CRow>
@@ -272,9 +272,9 @@ const Dashboard = () => {
                 </CCol>
               </CRow>
 
-              <br />
+              {/* <br /> */}
 
-              <table className="table table-hover table-outline mb-0 d-none d-sm-table">
+              {/* <table className="table table-hover table-outline mb-0 d-none d-sm-table">
                 <thead className="thead-light">
                   <tr>
                     <th className="text-center">
@@ -501,7 +501,7 @@ const Dashboard = () => {
                 </tbody>
               </table>
             </CCardBody>
-          </CCard>
+          </CCard> */}
         </CCol>
       </CRow>
     </>

@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import AttributeMap from '../../domain/attribute-map.entity';
 import { AttributeMapService } from '../../service/attribute-map.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class AttributeMapController {
         description: 'List all records',
         type: AttributeMap,
     })
-    async getAll(@Req() req: Request): Promise<AttributeMap[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<AttributeMap[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.attributeMapService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class AttributeMapController {
         type: AttributeMap,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() attributeMap: AttributeMap): Promise<AttributeMap> {
+    async post(@Res() res: Response, @Body() attributeMap: AttributeMap): Promise<AttributeMap> {
         const created = await this.attributeMapService.save(attributeMap);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'AttributeMap', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'AttributeMap', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class AttributeMapController {
         description: 'The record has been successfully updated.',
         type: AttributeMap,
     })
-    async put(@Req() req: Request, @Body() attributeMap: AttributeMap): Promise<AttributeMap> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'AttributeMap', attributeMap.id);
+    async put(@Res() res: Response, @Body() attributeMap: AttributeMap): Promise<AttributeMap> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'AttributeMap', attributeMap.id);
         return await this.attributeMapService.update(attributeMap);
     }
 
@@ -82,8 +82,8 @@ export class AttributeMapController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<AttributeMap> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'AttributeMap', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<AttributeMap> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'AttributeMap', id);
         const toDelete = await this.attributeMapService.findById(id);
         return await this.attributeMapService.delete(toDelete);
     }

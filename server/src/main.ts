@@ -19,6 +19,8 @@ import { PermissionTypeService } from './service/permission-type.service';
 import listEndpoints from 'express-list-endpoints';
 import PermissionType from './domain/permission-type.entity';
 import { PermissionStatus } from './domain/enumeration/permission-status';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import compression from 'fastify-compress';
 
 const logger: Logger = new Logger('Main');
 const port = process.env.NODE_SERVER_PORT || config.get('server.port');
@@ -28,8 +30,32 @@ async function bootstrap(): Promise<void> {
   loadCloudConfig();
   registerAsEurekaService();
 
-  const appOptions = { cors: true };
-  const app = await NestFactory.create(AppModule, appOptions);
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
+  const fastifyInstance = app.getHttpAdapter().getInstance();
+  fastifyInstance.decorate('routes', []);
+  fastifyInstance.addHook('onRoute', routeOptions => {
+    const { method, schema, url, logLevel, prefix, bodyLimit, handler } = routeOptions;
+    if (
+      !url.includes('json') &&
+      !url.includes('png') &&
+      !url.includes('html') &&
+      !url.includes('js') &&
+      !url.includes('svg') &&
+      !url.includes('css') &&
+      !url.includes('txt') &&
+      !url.includes('gif') &&
+      !url.includes('ico') &&
+      !url.includes('jpg') &&
+      !url.includes('swagger') &&
+      !url.includes('docs') &&
+      !url.includes('webapp') &&
+      !url.includes('*')
+    ) {
+      const _method = Array.isArray(method) ? method : [method];
+      const route = { methods: _method, path: url };
+      fastifyInstance.routes.push(route);
+    }
+  });
   app.use(
     helmet({
       contentSecurityPolicy: false
@@ -43,34 +69,31 @@ async function bootstrap(): Promise<void> {
       exceptionFactory: (): BadRequestException => new BadRequestException('Validation error')
     })
   );
-
+  app.register(compression);
   const staticClientPath = path.join(__dirname, '../dist/classes/static');
-  // const staticFilePath = path.join(__dirname, '../uploads');
+  const staticFilePath = path.join(__dirname, '../uploads');
   if (fs.existsSync(staticClientPath)) {
     app.use(express.static(staticClientPath));
     logger.log(`Serving static client resources on ${staticClientPath}`);
   } else {
     logger.log('No client it has been found');
   }
-  // if (fs.existsSync(staticFilePath)) {
-  //     app.use('/images', express.static(staticFilePath));
-  //     logger.log(`Serving static file resources on ${staticFilePath}`);
-  // } else {mkdirSync(staticFilePath);}
+  if (fs.existsSync(staticFilePath)) {
+      app.use('/images', express.static(staticFilePath));
+      logger.log(`Serving static file resources on ${staticFilePath}`);
+  } else {mkdirSync(staticFilePath);}
   setupSwagger(app);
 
-  await app.listen(port);
+  await app.listen(port, () => {});
   logger.log(`Application listening on port ${port}`);
   const permissionServices = app.get(PermissionService);
   const permissionTypeServices = app.get(PermissionTypeService);
   await permissionServices.clear();
   await permissionTypeServices.clear();
-  const server = app.getHttpServer();
-  const router = server._events.request._router;
-  const endpointList = listEndpoints(router);
   const permissionList: Permission[] = [];
   const permissionTypeList: PermissionType[] = [];
 
-  endpointList.forEach(element => {
+  fastifyInstance.routes.forEach(element => {
     const length = element.path.split('/').length;
     const splitedEndpoint = element.path.split('/').splice(2, length - 1);
     let type = '';

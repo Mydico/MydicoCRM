@@ -98,6 +98,7 @@ const EditOrder = props => {
     if (order) {
       setInitValuesState(order);
       setSelectedCustomer(order.customer);
+      setSelectedPromotion(order.promotion)
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
       dispatch(getOrderDetail(props.match.params.id));
     }
@@ -192,7 +193,6 @@ const EditOrder = props => {
           const ratio = founded[0].gift / founded[0].buy;
           const gift = Math.floor(target.value * ratio);
           const existExtraProductIndex = copyArr.findIndex(item => item.attachTo === index);
-          console.log(existExtraProductIndex);
           if (existExtraProductIndex !== -1) {
             copyArr[existExtraProductIndex].quantity = gift;
           } else {
@@ -503,6 +503,7 @@ const EditOrder = props => {
                   </thead>
                   <tbody>
                     {productList.map((item, index) => {
+                      console.log(item.quantity,item.quantityAndGift,item.quantityInStore)
                       return (
                         <tr
                           key={index}

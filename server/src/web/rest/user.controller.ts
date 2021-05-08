@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
-import { Request } from 'express';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, UseGuards, Req, UseInterceptors, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { User } from '../../domain/user.entity';
@@ -24,15 +24,15 @@ export class UserController {
     description: 'List all records',
     type: User
   })
-  async getAllUsers(@Req() req: Request): Promise<User[]> {
+  async getAllUsers(@Req() req: Request, @Res() res): Promise<User[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const [results, count] = await this.userService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder()
     });
-    HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
-    return results;
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
   }
 
   @Post('/')
@@ -43,10 +43,10 @@ export class UserController {
     type: User
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async createUser(@Req() req: Request, @Body() user: User): Promise<User> {
+  async createUser(@Res() res: Response, @Body() user: User): Promise<Response> {
     const created = await this.userService.save(user);
-    HeaderUtil.addEntityCreatedHeaders(req.res, 'User', created.id);
-    return created;
+    HeaderUtil.addEntityCreatedHeaders(res, 'User', created.id);
+    return res.send(created);
   }
 
   @Put('/')
@@ -56,9 +56,9 @@ export class UserController {
     description: 'The record has been successfully updated.',
     type: User
   })
-  async updateUser(@Req() req: Request, @Body() user: User): Promise<User> {
-    HeaderUtil.addEntityUpdatedHeaders(req.res, 'User', user.id);
-    return await this.userService.update(user);
+  async updateUser(@Res() res: Response, @Body() user: User): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.id);
+    return res.send(await this.userService.update(user));
   }
 
   @Get('/:login')
@@ -67,8 +67,8 @@ export class UserController {
     description: 'The found record',
     type: User
   })
-  async getUser(@Param('login') loginValue: string): Promise<User> {
-    return await this.userService.find({ where: { login: loginValue } });
+  async getUser(@Param('login') loginValue: string, @Res() res: Response): Promise<Response> {
+    return res.send(await this.userService.find({ where: { login: loginValue } }));
   }
 
   @Delete('/:login')
@@ -77,8 +77,8 @@ export class UserController {
     description: 'The record has been successfully deleted.'
   })
   @Roles(RoleType.ADMIN)
-  async deleteUser(@Req() req: Request, @Param('login') loginValue: string): Promise<User> {
-    HeaderUtil.addEntityDeletedHeaders(req.res, 'User', loginValue);
+  async deleteUser(@Res() res: Response, @Param('login') loginValue: string): Promise<User> {
+    HeaderUtil.addEntityDeletedHeaders(res, 'User', loginValue);
     const userToDelete = await this.userService.find({ where: { login: loginValue } });
     return await this.userService.delete(userToDelete);
   }

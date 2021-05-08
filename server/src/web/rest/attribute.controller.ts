@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import Attribute from '../../domain/attribute.entity';
 import { AttributeService } from '../../service/attribute.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class AttributeController {
         description: 'List all records',
         type: Attribute,
     })
-    async getAll(@Req() req: Request): Promise<Attribute[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<Attribute[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.attributeService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class AttributeController {
         type: Attribute,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() attribute: Attribute): Promise<Attribute> {
+    async post(@Res() res: Response, @Body() attribute: Attribute): Promise<Attribute> {
         const created = await this.attributeService.save(attribute);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Attribute', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'Attribute', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class AttributeController {
         description: 'The record has been successfully updated.',
         type: Attribute,
     })
-    async put(@Req() req: Request, @Body() attribute: Attribute): Promise<Attribute> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'Attribute', attribute.id);
+    async put(@Res() res: Response, @Body() attribute: Attribute): Promise<Attribute> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'Attribute', attribute.id);
         return await this.attributeService.update(attribute);
     }
 
@@ -82,8 +82,8 @@ export class AttributeController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<Attribute> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'Attribute', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<Attribute> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'Attribute', id);
         const toDelete = await this.attributeService.findById(id);
         return await this.attributeService.delete(toDelete);
     }

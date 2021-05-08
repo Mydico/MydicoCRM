@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import CustomerMap from '../../domain/customer-map.entity';
 import { CustomerMapService } from '../../service/customer-map.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class CustomerMapController {
         description: 'List all records',
         type: CustomerMap,
     })
-    async getAll(@Req() req: Request): Promise<CustomerMap[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<CustomerMap[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.customerMapService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class CustomerMapController {
         type: CustomerMap,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() customerMap: CustomerMap): Promise<CustomerMap> {
+    async post(@Res() res: Response, @Body() customerMap: CustomerMap): Promise<CustomerMap> {
         const created = await this.customerMapService.save(customerMap);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerMap', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerMap', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class CustomerMapController {
         description: 'The record has been successfully updated.',
         type: CustomerMap,
     })
-    async put(@Req() req: Request, @Body() customerMap: CustomerMap): Promise<CustomerMap> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerMap', customerMap.id);
+    async put(@Res() res: Response, @Body() customerMap: CustomerMap): Promise<CustomerMap> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerMap', customerMap.id);
         return await this.customerMapService.update(customerMap);
     }
 
@@ -82,8 +82,8 @@ export class CustomerMapController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<CustomerMap> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'CustomerMap', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<CustomerMap> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'CustomerMap', id);
         const toDelete = await this.customerMapService.findById(id);
         return await this.customerMapService.delete(toDelete);
     }

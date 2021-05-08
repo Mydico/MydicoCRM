@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import OrderPush from '../../domain/order-push.entity';
 import { OrderPushService } from '../../service/order-push.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class OrderPushController {
         description: 'List all records',
         type: OrderPush,
     })
-    async getAll(@Req() req: Request): Promise<OrderPush[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<OrderPush[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.orderPushService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class OrderPushController {
         type: OrderPush,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() orderPush: OrderPush): Promise<OrderPush> {
+    async post(@Res() res: Response, @Body() orderPush: OrderPush): Promise<OrderPush> {
         const created = await this.orderPushService.save(orderPush);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'OrderPush', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'OrderPush', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class OrderPushController {
         description: 'The record has been successfully updated.',
         type: OrderPush,
     })
-    async put(@Req() req: Request, @Body() orderPush: OrderPush): Promise<OrderPush> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'OrderPush', orderPush.id);
+    async put(@Res() res: Response, @Body() orderPush: OrderPush): Promise<OrderPush> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'OrderPush', orderPush.id);
         return await this.orderPushService.update(orderPush);
     }
 
@@ -82,8 +82,8 @@ export class OrderPushController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<OrderPush> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'OrderPush', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<OrderPush> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'OrderPush', id);
         const toDelete = await this.orderPushService.findById(id);
         return await this.orderPushService.delete(toDelete);
     }

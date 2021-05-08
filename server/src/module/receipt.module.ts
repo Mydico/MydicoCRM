@@ -4,9 +4,10 @@ import { ReceiptController } from '../web/rest/receipt.controller';
 import { ReceiptRepository } from '../repository/receipt.repository';
 import { ReceiptService } from '../service/receipt.service';
 import { TransactionModule } from './transaction.module';
+import { IncomeDashboardModule } from './income-dashboard.module';
 
 @Module({
-    imports: [CacheModule.register(),TypeOrmModule.forFeature([ReceiptRepository]), TransactionModule],
+    imports: [CacheModule.register(),TypeOrmModule.forFeature([ReceiptRepository]), TransactionModule, IncomeDashboardModule],
     controllers: [ReceiptController],
     providers: [ReceiptService],
     exports: [ReceiptService],

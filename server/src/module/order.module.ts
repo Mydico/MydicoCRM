@@ -7,9 +7,10 @@ import { BillModule } from './bill.module';
 import { ProductQuantityModule } from './product-quantity.module';
 import { TransactionModule } from './transaction.module';
 import { DepartmentModule } from './department.module';
+import { IncomeDashboardModule } from './income-dashboard.module';
 
 @Module({
-    imports: [CacheModule.register(),TypeOrmModule.forFeature([OrderRepository]), BillModule, ProductQuantityModule, TransactionModule, DepartmentModule],
+    imports: [CacheModule.register(),TypeOrmModule.forFeature([OrderRepository]), BillModule, ProductQuantityModule, TransactionModule, DepartmentModule, IncomeDashboardModule],
     controllers: [OrderController],
     providers: [OrderService],
     exports: [OrderService],

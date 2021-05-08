@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import UserType from '../../domain/user-type.entity';
 import { UserTypeService } from '../../service/user-type.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,14 +25,14 @@ export class UserTypeController {
         description: 'List all records',
         type: UserType,
     })
-    async getAll(@Req() req: Request): Promise<UserType[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<UserType[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.userTypeService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return results;
     }
 
@@ -56,9 +56,9 @@ export class UserTypeController {
         type: UserType,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() userType: UserType): Promise<UserType> {
+    async post(@Res() res: Response, @Body() userType: UserType): Promise<UserType> {
         const created = await this.userTypeService.save(userType);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'UserType', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'UserType', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class UserTypeController {
         description: 'The record has been successfully updated.',
         type: UserType,
     })
-    async put(@Req() req: Request, @Body() userType: UserType): Promise<UserType> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'UserType', userType.id);
+    async put(@Res() res: Response, @Body() userType: UserType): Promise<UserType> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'UserType', userType.id);
         return await this.userTypeService.update(userType);
     }
 
@@ -82,8 +82,8 @@ export class UserTypeController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<UserType> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'UserType', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<UserType> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'UserType', id);
         const toDelete = await this.userTypeService.findById(id);
         return await this.userTypeService.delete(toDelete);
     }

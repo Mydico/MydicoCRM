@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post as PostMethod, Put, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import CustomerTemp from '../../domain/customer-temp.entity';
 import { CustomerTempService } from '../../service/customer-temp.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -25,15 +25,15 @@ export class CustomerTempController {
         description: 'List all records',
         type: CustomerTemp,
     })
-    async getAll(@Req() req: Request): Promise<CustomerTemp[]> {
+    async getAll(@Req() req: Request, @Res() res): Promise<CustomerTemp[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.customerTempService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
         });
-        HeaderUtil.addPaginationHeaders(req.res, new Page(results, count, pageRequest));
-        return results;
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+        return res.send(results);
     }
 
     @Get('/:id')
@@ -56,9 +56,9 @@ export class CustomerTempController {
         type: CustomerTemp,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Req() req: Request, @Body() customerTemp: CustomerTemp): Promise<CustomerTemp> {
+    async post(@Res() res: Response, @Body() customerTemp: CustomerTemp): Promise<CustomerTemp> {
         const created = await this.customerTempService.save(customerTemp);
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerTemp', created.id);
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerTemp', created.id);
         return created;
     }
 
@@ -70,8 +70,8 @@ export class CustomerTempController {
         description: 'The record has been successfully updated.',
         type: CustomerTemp,
     })
-    async put(@Req() req: Request, @Body() customerTemp: CustomerTemp): Promise<CustomerTemp> {
-        HeaderUtil.addEntityCreatedHeaders(req.res, 'CustomerTemp', customerTemp.id);
+    async put(@Res() res: Response, @Body() customerTemp: CustomerTemp): Promise<CustomerTemp> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'CustomerTemp', customerTemp.id);
         return await this.customerTempService.update(customerTemp);
     }
 
@@ -82,8 +82,8 @@ export class CustomerTempController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Req() req: Request, @Param('id') id: string): Promise<CustomerTemp> {
-        HeaderUtil.addEntityDeletedHeaders(req.res, 'CustomerTemp', id);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<CustomerTemp> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'CustomerTemp', id);
         const toDelete = await this.customerTempService.findById(id);
         return await this.customerTempService.delete(toDelete);
     }
