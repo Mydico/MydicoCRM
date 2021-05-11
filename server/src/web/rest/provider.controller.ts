@@ -104,6 +104,6 @@ export class ProviderController {
   async remove(@Res() res: Response, @Param('id') id: string): Promise<Response> {
     HeaderUtil.addEntityDeletedHeaders(res, 'Provider', id);
     const toDelete = await this.providerService.findById(id);
-    return  res.send(await this.providerService.delete(toDelete));
+    return res.send(await this.providerService.delete(toDelete));
   }
 }

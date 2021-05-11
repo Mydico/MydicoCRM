@@ -20,7 +20,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { Equal } from 'typeorm';
+import { Between, Equal } from 'typeorm';
 
 @Controller('api/income-dashboards')
 @UseGuards(AuthGuard, RolesGuard)
@@ -41,12 +41,18 @@ export class IncomeDashboardController {
   async getAll(@Req() req: Request, @Res() res): Promise<IncomeDashboard[]> {
     const filter = {};
     Object.keys(req.query).forEach(item => {
-      filter[item] = req.query[item];
-    });
-    const [results, count] = await this.incomeDashboardService.findAndCount({
-      where: {
-        ...filter
+      if (item !== 'startDate' && item !== 'endDate') {
+        filter[item] = req.query[item];
       }
+    });
+    const where = {
+      ...filter
+    };
+    if (req.query.startDate && req.query.endDate) {
+      where["createdDate"] = Between(req.query.startDate, req.query.endDate);
+    }
+    const [results, count] = await this.incomeDashboardService.findAndCount({
+      where
     });
     return res.send(results);
   }

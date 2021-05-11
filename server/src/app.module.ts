@@ -64,6 +64,8 @@ import { CustomerDebitModule } from './module/customer-debit.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UserModule } from './module/user.module';
+import { IncomeDashboardModule } from './module/income-dashboard.module';
+import { DebtDashboardModule } from './module/debt-dashboard.module';
 
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
@@ -135,6 +137,8 @@ import { UserModule } from './module/user.module';
         StoreHistoryModule,
         ProviderModule,
         CustomerDebitModule,
+        IncomeDashboardModule,
+        DebtDashboardModule
     // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
     ],
     controllers: [

@@ -1,13 +1,87 @@
-import React, {lazy} from 'react';
-import {CBadge, CButton, CButtonGroup, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CProgress, CRow, CCallout} from '@coreui/react';
+import React, { lazy, useEffect, useState } from 'react';
+import { CBadge, CButton, CButtonGroup, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CProgress, CRow, CCallout } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-
-import MainChartExample from '../../components/charts/MainChartExample.js';
+import moment from 'moment';
+import MainChart from '../../components/charts/MainChartExample.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { getDebtDashboard, getIncomeDashboard } from './dashboard.api.js';
+import { getStyle, hexToRgba } from '@coreui/utils';
 
 const WidgetsDropdown = lazy(() => import('../../components/widgets/WidgetsDropdown.js'));
 const WidgetsBrand = lazy(() => import('../../components/widgets/WidgetsBrand.js'));
-
+const brandSuccess = getStyle('success') || '#4dbd74';
+const brandInfo = getStyle('info') || '#20a8d8';
+const brandDanger = getStyle('danger') || '#f86c6b';
 const Dashboard = () => {
+  const dispatch = useDispatch();
+  const [incomeTotal, setIncomeTotal] = useState(0);
+  const [debt, setDebt] = useState(0);
+  const [total, setTotal] = useState(0);
+  const { account } = useSelector(state => state.authentication);
+  const [mode, setMode] = useState('week');
+  const transformData = data => {
+    return data
+      .sort((a, b) => moment(a.createdDate, 'YYYY-MM-DD HH:mm:ss').toDate() - moment(b.createdDate, 'YYYY-MM-DD HH:mm:ss').toDate())
+      .map(item => ({
+        ...item,
+        createdDate: moment(item.createdDate, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY')
+      }));
+  };
+
+  const getData = (startDate, endDate) => {
+    dispatch(getIncomeDashboard({ userId: account.id, startDate, endDate })).then(data => {
+      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+        const sum = transformData(data.payload).reduce(
+          (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),
+          {}
+        );
+        setIncomeTotal(sum);
+      }
+    });
+    dispatch(getIncomeDashboard({ userId: account.id, type: 'ORDER', startDate, endDate })).then(data => {
+      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+        const sum = transformData(data.payload).reduce(
+          (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),
+          {}
+        );
+        setTotal(sum);
+      }
+    });
+    dispatch(getDebtDashboard({ userId: account.id, startDate, endDate })).then(data => {
+      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+        const sum = transformData(data.payload).reduce(
+          (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),
+          {}
+        );
+        setDebt(sum);
+      }
+    });
+  };
+
+  useEffect(() => {
+    const today = moment();
+    let from_date = today;
+    let to_date = today;
+    switch (mode) {
+      case 'week':
+        from_date = today.startOf('week').format('YYYY-MM-DD');
+        to_date = today.endOf('week').format('YYYY-MM-DD');
+        getData(from_date, to_date);
+        break;
+      case 'month':
+        from_date = today.startOf('month').format('YYYY-MM-DD');
+        to_date = today.endOf('month').format('YYYY-MM-DD');
+        getData(from_date, to_date);
+        break;
+      case 'year':
+        from_date = today.startOf('year').format('YYYY-MM-DD');
+        to_date = today.endOf('year').format('YYYY-MM-DD');
+        getData(from_date, to_date);
+        break;
+      default:
+        break;
+    }
+  }, [mode]);
   return (
     <>
       <WidgetsDropdown />
@@ -25,45 +99,28 @@ const Dashboard = () => {
                 <CIcon name="cil-cloud-download" />
               </CButton>
               <CButtonGroup className="float-right mr-3">
-                {['Day', 'Month', 'Year'].map((value) => (
-                  <CButton color="outline-secondary" key={value} className="mx-0" active={value === 'Month'}>
-                    {value}
+                {[
+                  { label: 'Tuần', value: 'week' },
+                  { label: 'Tháng', value: 'month' },
+                  { label: 'Năm', value: 'year' }
+                ].map(item => (
+                  <CButton
+                    color="outline-secondary"
+                    key={item.value}
+                    onClick={() => setMode(item.value)}
+                    className="mx-0"
+                    active={item.value === mode}
+                  >
+                    {item.label}
                   </CButton>
                 ))}
               </CButtonGroup>
             </CCol>
           </CRow>
-          <MainChartExample style={{height: '300px', marginTop: '40px'}} />
+          <MainChart data={incomeTotal} name="Doanh thu thuần" color={brandSuccess} style={{ height: '300px', marginTop: '40px' }} />
+          <MainChart data={total} name="Doanh thu" color={brandInfo} style={{ height: '300px', marginTop: '40px' }} />
+          <MainChart data={debt} name="Công nợ" color={brandDanger} style={{ height: '300px', marginTop: '40px' }} />
         </CCardBody>
-        <CCardFooter>
-          <CRow className="text-center">
-            <CCol md sm="12" className="mb-sm-2 mb-0">
-              <div className="text-muted">Visits</div>
-              <strong>29.703 Users (40%)</strong>
-              <CProgress className="progress-xs mt-2" precision={1} color="success" value={40} />
-            </CCol>
-            <CCol md sm="12" className="mb-sm-2 mb-0 d-md-down-none">
-              <div className="text-muted">Unique</div>
-              <strong>24.093 Users (20%)</strong>
-              <CProgress className="progress-xs mt-2" precision={1} color="info" value={40} />
-            </CCol>
-            <CCol md sm="12" className="mb-sm-2 mb-0">
-              <div className="text-muted">Pageviews</div>
-              <strong>78.706 Views (60%)</strong>
-              <CProgress className="progress-xs mt-2" precision={1} color="warning" value={40} />
-            </CCol>
-            <CCol md sm="12" className="mb-sm-2 mb-0">
-              <div className="text-muted">New Users</div>
-              <strong>22.123 Users (80%)</strong>
-              <CProgress className="progress-xs mt-2" precision={1} color="danger" value={40} />
-            </CCol>
-            <CCol md sm="12" className="mb-sm-2 mb-0 d-md-down-none">
-              <div className="text-muted">Bounce Rate</div>
-              <strong>Average Rate (40.15%)</strong>
-              <CProgress className="progress-xs mt-2" precision={1} value={40} />
-            </CCol>
-          </CRow>
-        </CCardFooter>
       </CCard>
 
       {/* <WidgetsBrand withCharts /> */}
@@ -274,7 +331,7 @@ const Dashboard = () => {
 
               {/* <br /> */}
 
-              {/* <table className="table table-hover table-outline mb-0 d-none d-sm-table">
+          {/* <table className="table table-hover table-outline mb-0 d-none d-sm-table">
                 <thead className="thead-light">
                   <tr>
                     <th className="text-center">

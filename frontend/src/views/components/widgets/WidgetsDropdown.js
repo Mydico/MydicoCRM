@@ -34,7 +34,8 @@ const WidgetsDropdown = () => {
         setTotal(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sum));
       }
     });
-    dispatch(getDebtDashboard({ userId: account.id, type: 'ORDER' })).then(data => {
+    dispatch(getDebtDashboard({ userId: account.id })).then(data => {
+      console.log(data)
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         const sum = data.payload.reduce((curr, prev) => {
           return curr + Number(prev.amount);

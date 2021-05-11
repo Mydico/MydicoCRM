@@ -1,29 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {
+import React, { useEffect, useState } from 'react';
+import { CCard, CCardHeader, CCardBody, CCol, CRow } from '@coreui/react';
 
-  CCard,
-  CCardHeader,
-  CCardBody,
-  CCol,
-  CRow,
+import { useDispatch, useSelector } from 'react-redux';
+import { getDetailOrder } from './order.api';
 
-} from '@coreui/react';
+import { globalizedOrdersSelectors } from './order.reducer';
 
+import { Table } from 'reactstrap';
 
-import {useDispatch, useSelector} from 'react-redux';
-import {getDetailOrder} from './order.api';
-
-import {globalizedOrdersSelectors} from './order.reducer';
-
-import {Table} from 'reactstrap';
-
-
-const ViewOrder = (props) => {
+const ViewOrder = props => {
   const dispatch = useDispatch();
 
-  const {selectById} = globalizedOrdersSelectors;
+  const { selectById } = globalizedOrdersSelectors;
 
-  const order = useSelector((state) => selectById(state, props.match.params.id));
+  const order = useSelector(state => selectById(state, props.match.params.id));
 
   const [invoice, setInvoice] = useState(null);
 
@@ -74,9 +64,9 @@ const ViewOrder = (props) => {
                 <strong> {invoice?.promotion?.name}</strong>
               </div>
               <div>
-                {invoice?.promotion?.description.length > 200 ?
-                  `${invoice?.promotion?.description.substring(0, 200)}` :
-                  invoice?.promotion?.description}
+                {invoice?.promotion?.description.length > 200
+                  ? `${invoice?.promotion?.description.substring(0, 200)}`
+                  : invoice?.promotion?.description}
               </div>
               <div>Loại khách hàng: {invoice?.promotion?.customerType?.name}</div>
             </CCol>
@@ -102,16 +92,16 @@ const ViewOrder = (props) => {
                     <td>{item.product?.volume}</td>
                     <td>{item.quantity}</td>
 
-                    <td>{Number(item.priceReal).toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}</td>
+                    <td>{Number(item.priceReal).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                     <td>{item.reducePercent}%</td>
-                    <td>{(item.priceReal * item.quantity).toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}</td>
+                    <td>{(item.priceReal * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                     <td>
                       {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
-                          'it-IT',
-                          {
-                            style: 'currency',
-                            currency: 'VND',
-                          },
+                        'it-IT',
+                        {
+                          style: 'currency',
+                          currency: 'VND'
+                        }
                       ) || ''}
                     </td>
                   </tr>
@@ -132,8 +122,8 @@ const ViewOrder = (props) => {
                     </td>
                     <td className="right">
                       {invoice?.orderDetails
-                          .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
-                          .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
+                        .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
+                        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                     </td>
                   </tr>
                   <tr>
@@ -142,8 +132,8 @@ const ViewOrder = (props) => {
                     </td>
                     <td className="right">
                       {invoice?.orderDetails
-                          .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
-                          .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
+                        .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
+                        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                     </td>
                   </tr>
                   <tr>
@@ -153,13 +143,13 @@ const ViewOrder = (props) => {
                     <td className="right">
                       <strong>
                         {invoice?.orderDetails
-                            .reduce(
-                                (sum, current) =>
-                                  sum +
+                          .reduce(
+                            (sum, current) =>
+                              sum +
                               (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
-                                0,
-                            )
-                            .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
+                            0
+                          )
+                          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                       </strong>
                     </td>
                   </tr>

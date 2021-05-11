@@ -4,7 +4,7 @@ import {CLink} from '@coreui/react';
 const DocsLink = (props) => {
   const {name, text, ...rest} = props;
 
-  const href = name ? `https://coreui.io/react/docs/components/${name}` : props.href;
+  const href = name ? `https://dzung.dev/react/docs/components/${name}` : props.href;
 
   return (
     <div className="card-header-actions">

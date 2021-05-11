@@ -3,17 +3,9 @@
   "version": "1.0.0",
   "description": "Mydico CRM Professional",
   "author": {
-    "name": "CoreUI",
-    "url": "https://coreui.io",
-    "github": "https://github.com/coreui",
-    "twitter": "https://twitter.com/core_ui"
+    "name": "DzungNguyen",
+    "url": "https://dzung.dev"
   },
-  "contributors": [
-    {
-      "name": "CoreUI Team",
-      "url": "https://github.com/orgs/coreui/people"
-    }
-  ],
   "homepage": ".",
   "private": true,
   "proxy": "http://127.0.0.1:8082",

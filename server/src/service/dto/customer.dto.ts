@@ -3,7 +3,6 @@ import { ApiHideProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'class-validator';
 import { BaseDTO } from './base.dto';
 
-
 import { CityDTO } from './city.dto';
 import { BranchDTO } from './branch.dto';
 import { DistrictDTO } from './district.dto';
@@ -21,119 +20,90 @@ import { UserDTO } from './user.dto';
  * A Customer DTO object.
  */
 export class CustomerDTO extends BaseDTO {
+  @MaxLength(255)
+  name: string;
 
-            @MaxLength(255)
-            
-        name: string;
+  @MaxLength(100)
+  tel: string;
 
-            @MaxLength(100)
-            
-        tel: string;
+  @MaxLength(255)
+  address: string;
 
-            @MaxLength(255)
-            
-        address: string;
+  /**
+   * năm sinh
+   */
 
-        /**
-     * năm sinh
-     */
-            
-        yearOfBirth: number;
+  yearOfBirth: number;
 
-            
-        obclubJoinTime: number;
+  obclubJoinTime: number;
 
-        /**
-     * chiều cao (cm)
-     */
-            
-        estimateRevenueMonth: number;
+  /**
+   * chiều cao (cm)
+   */
 
-        /**
-     * cân nặng(kg)
-     */
-            
-        capacity: number;
+  estimateRevenueMonth: number;
 
-        /**
-     * tình trạng hôn nhân (đọc thân, đã kết hôn, đã ly hôn)
-     */
-            
-        marriage: boolean;
+  /**
+   * cân nặng(kg)
+   */
 
-            
-        isDel: boolean;
+  capacity: number;
 
-            
-        activated: boolean;
+  /**
+   * tình trạng hôn nhân (đọc thân, đã kết hôn, đã ly hôn)
+   */
 
-            @MaxLength(250)
-            
-        email: string;
+  marriage: boolean;
 
-            
-        level: number;
+  isDel: boolean;
 
-            @IsNotEmpty()
-    @MaxLength(256)
-            
-        code: string;
+  activated: boolean;
 
-            @IsNotEmpty()
-    @MaxLength(256)
-            
-        contactName: string;
+  @MaxLength(250)
+  email: string;
 
-            @MaxLength(500)
-            
-        note: string;
+  level: number;
 
-            
-        contactYearOfBirth: number;
+  @IsNotEmpty()
+  @MaxLength(256)
+  code: string;
 
-            
-        totalDebt: number;
+  @IsNotEmpty()
+  @MaxLength(256)
+  contactName: string;
 
-            
-        earlyDebt: number;
+  @MaxLength(500)
+  note: string;
 
-            
-        siteId: number;
+  contactYearOfBirth: number;
 
+  totalDebt: number;
 
-        
-        city: CityDTO;
+  earlyDebt: number;
 
-        
-        branch: BranchDTO;
+  siteId: number;
 
-        
-        district: DistrictDTO;
+  city: CityDTO;
 
-        
-        ward: WardsDTO;
+  branch: BranchDTO;
 
-        
-        fanpage: FanpageDTO;
+  district: DistrictDTO;
 
-        
-        skin: CustomerSkinDTO;
+  ward: WardsDTO;
 
-        
-        category: CustomerCategoryDTO;
+  fanpage: FanpageDTO;
 
-        
-        status: CustomerStatusDTO;
+  skin: CustomerSkinDTO;
 
-        
-        type: CustomerTypeDTO;
+  category: CustomerCategoryDTO;
 
-        
-        request: CustomerRequestDTO;
+  status: CustomerStatusDTO;
 
-        
-        users: UserDTO[];
+  type: CustomerTypeDTO;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+  request: CustomerRequestDTO;
 
-    }
+  users: UserDTO[];
+
+  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+}
