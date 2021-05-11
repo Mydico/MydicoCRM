@@ -1,23 +1,21 @@
-
 # Mydico CRM Professional
 
 CRM Professional is meant to be the UX game changer. Pure & transparent code is devoid of redundant components, so the app is light enough to offer ultimate user experience. This means mobile devices also, where the navigation is just as easy and intuitive as on a desktop or laptop. The CRM Professional Layout API lets you customize your project for almost any device – be it Mobile, Web or WebApp – CRM Professional covers them all!
 
 ## Table of Contents
 
-* [Versions](#versions)
-* [Mydico CRM Professional
-* [Installation](#installation)
-* [Basic usage](#create-react-app)
-* [What's included](#whats-included)
-* [Documentation](#documentation)
-* [Versioning](#versioning)
-* [Creators](#creators)
-* [Community](#community)
-* [Copyright and License](#copyright-and-license)
+- [Versions](#versions)
+- [Mydico CRM Professional
+- [Installation](#installation)
+- [Basic usage](#create-react-app)
+- [What's included](#whats-included)
+- [Documentation](#documentation)
+- [Versioning](#versioning)
+- [Creators](#creators)
+- [Community](#community)
+- [Copyright and License](#copyright-and-license)
 
 ## Mydico CRM Professional
-
 
 ## Installation
 
@@ -25,8 +23,8 @@ CRM Professional is meant to be the UX game changer. Pure & transparent code is 
 
 **Only customers with [Membership Plan](https://dzung.dev/pro/#buy) have access to private github repository.**
 
-
 ## Create React App
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app)
 
 see also:
@@ -34,7 +32,7 @@ see also:
 
 ### Basic usage
 
-``` bash
+```bash
 # dev server  with hot reload at http://localhost:3000
 $ npm start
 ```
@@ -61,7 +59,7 @@ CRM Professional-React#v3.0.0
 │   └── index.html   #html template
 │
 ├── src/             #project root
-│   ├── assets/  
+│   ├── assets/
 │   ├── containers/  #container source
 │   ├── scss/        #user scss/css source
 │   ├── views/       #views source
@@ -78,7 +76,6 @@ CRM Professional-React#v3.0.0
 ## Documentation
 
 The documentation for the CRM Professional Admin Template is hosted at our website [CRM Professional for React](https://dzung.dev/react/)
-
 
 ## Versioning
 
