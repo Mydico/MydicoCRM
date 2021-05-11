@@ -8,4 +8,16 @@ export const getIncomeDashboard = createAsyncThunk('api/income-dashboards', asyn
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
+  
+  
+});
+export const getDebtDashboard = createAsyncThunk('api/debt-dashboards', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/debt-dashboards', {params: params});
+    return result.data
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+  
+  
 });

@@ -1,4 +1,5 @@
 export enum DashboardType {
   ORDER = 'ORDER',
-  RETURN = 'RETURN'
+  RETURN = 'RETURN',
+  DEBT = 'DEBT',
 }

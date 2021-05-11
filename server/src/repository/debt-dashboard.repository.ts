@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import AttributeMap from '../domain/attribute-map.entity';
+import DebtDashboard from '../domain/debt-dashboard.entity';
 
-@EntityRepository(AttributeMap)
-export class AttributeMapRepository extends Repository<AttributeMap> {}
+@EntityRepository(DebtDashboard)
+export class DebtDashboardRepository extends Repository<DebtDashboard> {}

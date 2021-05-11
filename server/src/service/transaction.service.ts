@@ -6,6 +6,7 @@ import { TransactionRepository } from '../repository/transaction.repository';
 
 const relationshipNames = [];
 relationshipNames.push('customer')
+relationshipNames.push('customer.sale')
 relationshipNames.push('bill')
 relationshipNames.push('sale')
 relationshipNames.push('receipt')
