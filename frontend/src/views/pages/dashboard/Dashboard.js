@@ -8,7 +8,6 @@ import { getDebtDashboard, getIncomeDashboard } from './dashboard.api.js';
 import { getStyle, hexToRgba } from '@coreui/utils';
 
 const WidgetsDropdown = lazy(() => import('../../components/widgets/WidgetsDropdown.js'));
-const WidgetsBrand = lazy(() => import('../../components/widgets/WidgetsBrand.js'));
 const brandSuccess = getStyle('success') || '#4dbd74';
 const brandInfo = getStyle('info') || '#20a8d8';
 const brandDanger = getStyle('danger') || '#f86c6b';

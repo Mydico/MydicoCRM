@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { CWidgetDropdown, CRow, CCol, CDropdown, CDropdownMenu, CDropdownItem, CDropdownToggle } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import { CWidgetDropdown, CRow, CCol } from '@coreui/react/lib';
 import ChartLineSimple from '../charts/ChartLineSimple';
-import ChartBarSimple from '../charts/ChartBarSimple';
 import { getDebtDashboard, getIncomeDashboard } from '../../pages/dashboard/dashboard.api';
 import { useDispatch, useSelector } from 'react-redux';
 
