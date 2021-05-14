@@ -1,5 +1,5 @@
 import React from 'react';
-import {CBadge, CButton, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CRow} from '@coreui/react';
+import {CBadge, CButton, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CRow} from '@coreui/react/lib';
 import {DocsLink} from 'src/reusable';
 
 const Badges = () => {

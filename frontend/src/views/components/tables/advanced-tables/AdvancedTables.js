@@ -1,6 +1,6 @@
 import React from 'react';
-import {CCard, CCardHeader, CCol, CRow} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+import {CCard, CCardHeader, CCol, CRow} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import DemoTable from './DemoTable';
 import SelectTable from './SelectTable';
 import BackendTable from './BackendTable';

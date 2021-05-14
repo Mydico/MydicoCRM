@@ -1,5 +1,5 @@
 import React from 'react';
-import {CBadge, CCard, CCardBody, CCardHeader, CCol, CDataTable, CRow} from '@coreui/react';
+import {CBadge, CCard, CCardBody, CCardHeader, CCol, CDataTable, CRow} from '@coreui/react/lib';
 import {DocsLink} from 'src/reusable';
 
 import usersData from '../../users/UsersData';

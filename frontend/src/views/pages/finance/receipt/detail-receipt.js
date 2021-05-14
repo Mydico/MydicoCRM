@@ -14,7 +14,7 @@ import {
 
   CCardTitle,
   CBadge,
-} from '@coreui/react';
+} from '@coreui/react/lib';
 
 import {Formik} from 'formik';
 import * as Yup from 'yup';

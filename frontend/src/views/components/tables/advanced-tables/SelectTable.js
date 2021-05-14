@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {CDataTable, CCardBody, CInputCheckbox, CFormGroup, CLabel} from '@coreui/react';
+import {CDataTable, CCardBody, CInputCheckbox, CFormGroup, CLabel} from '@coreui/react/lib';
 import data from '../../users/UsersData.js';
 
 const SelectTable = () => {

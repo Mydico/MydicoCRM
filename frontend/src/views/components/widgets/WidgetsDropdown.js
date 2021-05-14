@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { CWidgetDropdown, CRow, CCol, CDropdown, CDropdownMenu, CDropdownItem, CDropdownToggle } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+import { CWidgetDropdown, CRow, CCol, CDropdown, CDropdownMenu, CDropdownItem, CDropdownToggle } from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import ChartLineSimple from '../charts/ChartLineSimple';
 import ChartBarSimple from '../charts/ChartBarSimple';
 import { getDebtDashboard, getIncomeDashboard } from '../../pages/dashboard/dashboard.api';
@@ -35,7 +35,6 @@ const WidgetsDropdown = () => {
       }
     });
     dispatch(getDebtDashboard({ userId: account.id })).then(data => {
-      console.log(data)
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         const sum = data.payload.reduce((curr, prev) => {
           return curr + Number(prev.amount);

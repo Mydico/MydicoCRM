@@ -6,7 +6,7 @@ import {creatingOrder} from './order.api';
 import {useDispatch, useSelector} from 'react-redux';
 import {reset} from './order.reducer';
 
-import {CButton, CCard, CCardHeader, CCardBody, CCol,    CRow,  CTextarea} from '@coreui/react';
+import {CButton, CCard, CCardHeader, CCardBody, CCol,    CRow,  CTextarea} from '@coreui/react/lib';
 const Invoice = () => {
   const location = useLocation();
   const dispatch = useDispatch();

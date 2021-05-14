@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { CButton, CCard, CCardHeader, CCardBody, CForm, CInvalidFeedback, CFormGroup, CLabel, CInput, CCardTitle } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+import { CButton, CCard, CCardHeader, CCardBody, CForm, CInvalidFeedback, CFormGroup, CLabel, CInput, CCardTitle } from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';

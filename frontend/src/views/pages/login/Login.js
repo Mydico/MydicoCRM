@@ -12,8 +12,8 @@ import {
   CInputGroupPrepend,
   CInputGroupText,
   CRow,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {freeSet} from '@coreui/icons';
 import {useDispatch, useSelector} from 'react-redux';
 import {login} from './authenticate.reducer';

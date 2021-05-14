@@ -10,14 +10,14 @@ import {
   CWidgetProgressIcon,
   CWidgetSimple,
   CProgress,
-} from '@coreui/react';
+} from '@coreui/react/lib';
 import WidgetsBrand from './WidgetsBrand';
 import WidgetsDropdown from './WidgetsDropdown';
 
 import ChartLineSimple from '../charts/ChartLineSimple';
 import ChartBarSimple from '../charts/ChartBarSimple';
 
-import CIcon from '@coreui/icons-react';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 
 const Widgets = () => {
   return (

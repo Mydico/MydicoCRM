@@ -1,5 +1,5 @@
 import React from 'react';
-import CIcon from '@coreui/icons-react';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 
 export default [
   {

@@ -4,7 +4,8 @@ import { Authority } from '../domain/authority.entity';
 import Department from '../domain/department.entity';
 import Store from '../domain/store.entity';
 import Branch from '../domain/branch.entity';
-
+import userhn from './excel/userhn.json';
+import { getLoginNameFromName, increment_alphanumeric_str } from '../service/utils/normalizeString';
 const departments = [
   { code: 'HN', store: 'KHN', name: 'Chi nhánh Hà Nội' },
   { code: 'HD', store: 'KHD', name: 'Chi nhánh Hải Dương' },
@@ -37,12 +38,12 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<any> {
     const conn = queryRunner.connection;
-    await conn
+    const resultDepartment = await conn
       .createQueryBuilder()
       .insert()
       .into(Department)
       .values(departments)
-      .execute()
+      .execute();
 
     await conn
       .createQueryBuilder()
@@ -52,17 +53,42 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
         departments.map(item => ({
           code: item.store,
           name: item.name,
-          address: "",
-          tel: "",
+          address: '',
+          tel: ''
         }))
       )
       .execute();
 
-    await conn
+    const resultBranch = await conn
       .createQueryBuilder()
       .insert()
       .into(Branch)
       .values(branches)
+      .execute();
+    const users = userhn.map(item => ({
+        login: getLoginNameFromName(item['Tên nhân viên']),
+        lastName: item['Tên nhân viên'].split(" ")[0],
+        firstName: item['Tên nhân viên'].split(" ").slice(1,item['Tên nhân viên'].split(" ").length).join(" "),
+        password: item['Mật Khẩu'],
+        email: item.Email || "",
+        phone: item['Số điện thoại']?.toString() || "",
+        activated: true,
+        branch: resultBranch.identifiers[branches.findIndex(branch => branch.code === item['Phòng Ban'])],
+        department: resultDepartment.identifiers[departments.findIndex(branch => branch.code === "HN")]
+    }));
+    for (let index = 0; index < users.length-1; index++) {
+        for (let innerIndex = index + 1; innerIndex < users.length; innerIndex++) {
+            if(users[innerIndex].login === users[index].login){
+                users[innerIndex].login = increment_alphanumeric_str(users[innerIndex].login)
+            }
+        }
+        
+    }
+    const resultUser = await conn
+      .createQueryBuilder()
+      .insert()
+      .into(User)
+      .values(users)
       .execute();
   }
 

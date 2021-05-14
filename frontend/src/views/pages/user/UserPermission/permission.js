@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react';
+import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react/lib';
 // import usersData from '../../../users/PermissionGroupssData.js';
-import CIcon from '@coreui/icons-react';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {useDispatch, useSelector} from 'react-redux';
 import {getPermissionGroups} from './permission.api.js';
 import {fetching, globalizedPermissionGroupsSelectors, reset} from './permission.reducer.js';

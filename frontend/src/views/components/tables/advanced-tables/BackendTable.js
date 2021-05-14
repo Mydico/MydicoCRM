@@ -1,5 +1,5 @@
 import React from 'react';
-import {CCardBody} from '@coreui/react';
+import {CCardBody} from '@coreui/react/lib';
 
 const BackendTable = () => {
   return (

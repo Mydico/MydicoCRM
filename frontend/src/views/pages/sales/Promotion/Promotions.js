@@ -15,9 +15,9 @@ import {
   CModalFooter,
   CModalHeader,
   CModalTitle,
-} from '@coreui/react';
+} from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
-import CIcon from '@coreui/icons-react';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {useDispatch, useSelector} from 'react-redux';
 import {getPromotion, updatePromotion} from './promotion.api.js';
 import {globalizedPromotionSelectors, reset} from './promotion.reducer.js';

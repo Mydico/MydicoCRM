@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import { useDispatch, useSelector } from 'react-redux';
 import { getOrder, updateStatusOrder } from './order.api';
 import { globalizedOrdersSelectors, reset } from './order.reducer';

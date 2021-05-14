@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {CCardBody, CBadge, CDataTable, CCard, CCardHeader, CPagination} from '@coreui/react';
+import {CCardBody, CBadge, CDataTable, CCard, CCardHeader, CPagination} from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
-import CIcon from '@coreui/icons-react';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {useDispatch, useSelector} from 'react-redux';
 import {getStoreHistory} from './warehouse-history.api.js';
 import {globalizedStoreHistorySelectors, reset} from './warehouse-history.reducer.js';

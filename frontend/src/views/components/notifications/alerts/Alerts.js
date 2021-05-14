@@ -1,5 +1,5 @@
 import React from 'react';
-import {CAlert, CButton, CCard, CCardBody, CCardHeader, CCol, CLink, CProgress, CRow} from '@coreui/react';
+import {CAlert, CButton, CCard, CCardBody, CCardHeader, CCol, CLink, CProgress, CRow} from '@coreui/react/lib';
 import {DocsLink} from 'src/reusable';
 
 const Alerts = () => {

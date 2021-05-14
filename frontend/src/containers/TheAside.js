@@ -14,8 +14,8 @@ import {
   CSidebar,
   CImg,
   CSidebarClose,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {setAsideShow} from '../App.reducer';
 const TheAside = () => {
   const show = useSelector((state) => state.app.asideShow);

@@ -1,5 +1,5 @@
 import React from 'react';
-import {CBadge} from '@coreui/react';
+import {CBadge} from '@coreui/react/lib';
 
 const ProBadge = (props) => {
   return (

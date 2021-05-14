@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {CCardBody, CButton, CDataTable, CCard, CCardHeader, CRow, CPagination} from '@coreui/react';
+import {CCardBody, CButton, CDataTable, CCard, CCardHeader, CRow, CPagination} from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
-import CIcon from '@coreui/icons-react';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {useDispatch, useSelector} from 'react-redux';
 import {getCustomerDebts} from './debt.api.js';
 import {useHistory} from 'react-router-dom';

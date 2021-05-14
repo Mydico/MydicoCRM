@@ -1,6 +1,6 @@
 import React, {Suspense} from 'react';
 import {Route, Switch} from 'react-router-dom';
-import {CContainer, CFade} from '@coreui/react';
+import {CContainer, CFade} from '@coreui/react/lib';
 
 // routes config
 import routes from '../routes';

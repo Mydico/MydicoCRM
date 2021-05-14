@@ -1,6 +1,6 @@
 import React, { lazy, useEffect, useState } from 'react';
-import { CBadge, CButton, CButtonGroup, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CProgress, CRow, CCallout } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+import { CBadge, CButton, CButtonGroup, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CProgress, CRow, CCallout } from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import moment from 'moment';
 import MainChart from '../../components/charts/MainChartExample.js';
 import { useDispatch, useSelector } from 'react-redux';

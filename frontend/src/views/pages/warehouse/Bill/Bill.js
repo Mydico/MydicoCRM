@@ -16,8 +16,8 @@ import {
   CModalFooter,
   CModalTitle,
   CLabel,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {useDispatch, useSelector} from 'react-redux';
 import {getBill, updateBill} from './bill.api';
 import {globalizedBillsSelectors, reset} from './bill.reducer';

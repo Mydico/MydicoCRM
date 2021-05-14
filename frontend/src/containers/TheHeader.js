@@ -10,8 +10,8 @@ import {
   CSubheader,
   CBreadcrumbRouter,
   CLink,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 
 // routes config
 import routes from '../routes';

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react';
+import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react/lib';
 // import usersData from '../../../users/UserRolesData.js';
-import CIcon from '@coreui/icons-react';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {useDispatch, useSelector} from 'react-redux';
 import {getUserRole} from './user-roles.api.js';
 import {globalizedUserRoleSelectors} from './user-roles.reducer.js';

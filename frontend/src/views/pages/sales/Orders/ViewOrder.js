@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CCard, CCardHeader, CCardBody, CCol, CRow } from '@coreui/react';
+import { CCard, CCardHeader, CCardBody, CCol, CRow } from '@coreui/react/lib';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getDetailOrder } from './order.api';

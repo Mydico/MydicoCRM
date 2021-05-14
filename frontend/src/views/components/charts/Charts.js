@@ -1,5 +1,5 @@
 import React from 'react';
-import {CCard, CCardBody, CCardGroup, CCardHeader} from '@coreui/react';
+import {CCard, CCardBody, CCardGroup, CCardHeader} from '@coreui/react/lib';
 import {CChartBar, CChartLine, CChartDoughnut, CChartRadar, CChartPie, CChartPolarArea} from '@coreui/react-chartjs';
 import {DocsLink} from 'src/reusable';
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import {CBadge, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CProgress} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+import {CBadge, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CProgress} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 
 const TheHeaderDropdownNotif = () => {
   const itemsCount = 5;

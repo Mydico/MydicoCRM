@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react';
+import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
-import CIcon from '@coreui/icons-react';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {useDispatch, useSelector} from 'react-redux';
 import {getProductWarehouse} from './product-warehouse.api.js';
 import {globalizedProductWarehouseSelectors, reset} from './product-warehouse.reducer.js';

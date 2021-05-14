@@ -3,7 +3,7 @@ import React from 'react';
 import MaskedInput from 'react-text-mask';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask';
 import {Field} from 'formik';
-import {CInput} from '@coreui/react';
+import {CInput} from '@coreui/react/lib';
 
 export const defaultMaskOptions = {
   prefix: '',

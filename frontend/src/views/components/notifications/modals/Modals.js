@@ -11,7 +11,7 @@ import {
   CModalHeader,
   CModalTitle,
   CRow,
-} from '@coreui/react';
+} from '@coreui/react/lib';
 import {DocsLink} from 'src/reusable';
 
 const Modals = () => {

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react';
+import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
-import CIcon from '@coreui/icons-react';
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import {useDispatch, useSelector} from 'react-redux';
 import {getWarehouse} from './warehouse.api.js';
 import {globalizedWarehouseSelectors, reset} from './warehouse.reducer.js';
@@ -89,11 +89,11 @@ const Warehouse = (props) => {
       .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateWarehouse = () => {
-    history.push(`${props.match.url}new`);
+    history.push(`${props.match.url}/new`);
   };
 
   const toEditWarehouse = (userId) => {
-    history.push(`${props.match.url}${userId}/edit`);
+    history.push(`${props.match.url}/${userId}/edit`);
   };
 
   const onFilterColumn = (value) => {

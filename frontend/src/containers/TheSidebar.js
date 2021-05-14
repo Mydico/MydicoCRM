@@ -12,8 +12,8 @@ import {
   CSidebarMinimizer,
   CSidebarNavDropdown,
   CSidebarNavItem,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 
 // sidebar nav config
 import navigation from './_nav';
@@ -22,6 +22,7 @@ import {setSidebarShow} from '../App.reducer';
 const TheSidebar = () => {
   const dispatch = useDispatch();
   const show = useSelector((state) => state.app.sidebarShow);
+  const { isAuthenticated, sessionHasBeenFetched, account } = useSelector(state => state.authentication);
 
   return (
     <CSidebar

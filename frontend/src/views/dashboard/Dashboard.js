@@ -1,6 +1,6 @@
 import React, {lazy} from 'react';
-import {CBadge, CButton, CButtonGroup, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CProgress, CRow, CCallout} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+import {CBadge, CButton, CButtonGroup, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CProgress, CRow, CCallout} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 
 import MainChartExample from '../../charts/MainChartExample.js';
 

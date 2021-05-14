@@ -15,8 +15,8 @@ import {
   CInputCheckbox,
   CButtonGroup,
   CTextarea
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -126,11 +126,9 @@ const CreatePermissionGroups = () => {
   };
 
   const handleSelectPermission = (e, values) => {
-    console.log(values);
     /* eslint-disable no-console */
     const type = initialState.permissions[0].type;
     const typeName = initialState.permissions[0].typeName;
-    console.log(type, typeName);
     const foundedIndex = selectedPermission.findIndex(per => per.type === type);
     if (values && Array.isArray(values) && values.length > 0) {
       if (foundedIndex > -1) {
@@ -148,12 +146,9 @@ const CreatePermissionGroups = () => {
         setSelectedPermission([...selectedPermission, selectedPermissionObj]);
       }
     } else if (values && Array.isArray(values) && values.length == 0) {
-      console.log(selectedPermission);
       if (foundedIndex > -1) {
         const arr = [...selectedPermission];
         arr.splice(foundedIndex, 1);
-        console.log(arr);
-
         setSelectedPermission(arr);
       }
     } else {

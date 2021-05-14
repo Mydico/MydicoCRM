@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {CCardBody, CButton, CDataTable} from '@coreui/react';
+import {CCardBody, CButton, CDataTable} from '@coreui/react/lib';
 import usersData from '../../users/UsersData.js';
 
 const DemoTable = () => {

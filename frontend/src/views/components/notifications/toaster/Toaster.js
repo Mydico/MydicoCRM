@@ -12,7 +12,7 @@ import {
   CContainer,
   CRow,
   CCol,
-} from '@coreui/react';
+} from '@coreui/react/lib';
 
 export const Toaster = React.forwardRef((props, ref) => {
   const positions = [

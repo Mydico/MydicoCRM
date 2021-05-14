@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react';
+import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
-import CIcon from '@coreui/icons-react';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {useDispatch, useSelector} from 'react-redux';
 import {getUser} from './user.api.js';
 import {globalizedUserSelectors, reset} from './user.reducer.js';
@@ -68,11 +68,11 @@ const User = (props) => {
       filter: false,
     },
     {key: 'login', label: 'Tên đăng nhập', _style: {width: '10%'}},
-    {key: 'firstName', label: 'Họ', _style: {width: '15%'}},
-    {key: 'lastName', label: 'Tên', _style: {width: '15%'}},
+    {key: 'name', label: 'Họ tên', _style: {width: '15%'}},
     {key: 'email', label: 'Email', _style: {width: '15%'}},
     {key: 'phone', label: 'Số điện thoại', _style: {width: '15%'}},
     {key: 'departments', label: 'Chi nhánh', _style: {width: '15%'}},
+    {key: 'branch', label: 'Phòng ban', _style: {width: '15%'}},
     {key: 'roles', label: 'Chức vụ', _style: {width: '15%'}},
     {key: 'createdDate', label: 'Ngày tạo', _style: {width: '15%'}},
     {key: 'status', label: 'Trạng thái', _style: {width: '15%'}},
@@ -156,6 +156,8 @@ const User = (props) => {
               </td>
             ),
             departments: (item) => <td>{item.department?.name || ''}</td>,
+            branch: (item) => <td>{item.branch?.name || ''}</td>,
+            name: (item) => <td>{item.lastName || ''} {item.firstName || ''}</td>,
             roles: (item) => <td>{item.roles.reduce((sum, currentValue) => sum + currentValue.name, '')}</td>,
             show_details: (item) => {
               return (

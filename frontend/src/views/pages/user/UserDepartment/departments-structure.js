@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CDataTable, CPagination, CRow, CCol } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CDataTable, CPagination, CRow, CCol } from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import { useDispatch, useSelector } from 'react-redux';
 import { getDepartment, getTreeDepartment } from './department.api.js';
 import { globalizedDepartmentSelectors, reset } from './department.reducer.js';

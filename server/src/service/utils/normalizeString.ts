@@ -10,6 +10,20 @@ export const test = str => {
   const count = str.match(/\d*$/);
   return count;
 };
+export const getLoginNameFromName = (name) => {
+  const normalName = name.trim()
+        .normalize('NFD')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+  const splitName = normalName.split(" ")
+  let suffix = ""
+  for (let index = 0; index < splitName.length - 1; index++) {
+    suffix += splitName[index][0]
+  }
+  return `${splitName[splitName.length -1]}${suffix}`
+}
 export const checkCodeContext = (entity, foundedEntity) => {
   if (foundedEntity.length > 0) {
     const reg = new RegExp(entity.code + '\\d*$');

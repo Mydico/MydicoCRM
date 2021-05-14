@@ -1,5 +1,5 @@
 import React from 'react';
-import {CLink} from '@coreui/react';
+import {CLink} from '@coreui/react/lib';
 
 const DocsLink = (props) => {
   const {name, text, ...rest} = props;

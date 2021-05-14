@@ -12,8 +12,8 @@ import {
   CInput,
   CRow,
   CCardTitle
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
+} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';;
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -286,7 +286,7 @@ const CreateUser = () => {
                     label: item.name
                   }))}
                 />
-                <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
+                <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
               </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="userName">Chức vụ</CLabel>

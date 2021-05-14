@@ -14,7 +14,7 @@ const commonConfig = require('./webpack.common.js');
 const ENV = 'production';
 
 module.exports = webpackMerge(commonConfig({ env: ENV }), {
-  devtool: false,
+  devtool: 'source-map',
   mode: ENV,
   entry: {
     main: './src/index.js'
@@ -46,7 +46,7 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
             options: { implementation: sass }
           }
         ]
-      }
+      },
     ]
   },
   optimization: {
@@ -90,6 +90,7 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
       filename: 'content/[name].[hash].css',
       chunkFilename: 'content/[name].[hash].css'
     }),
+    new webpack.optimize.AggressiveMergingPlugin(),
     new MomentLocalesPlugin({
       localesToKeep: [
         'en',

@@ -5,6 +5,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 const utils = require('./utils.js');
 
 const getJSLoaderRule = (env) => {
@@ -103,6 +105,7 @@ module.exports = (options) => ({
       'process.env': {
         NODE_ENV: `'${options.env}'`,
         BUILD_TIMESTAMP: `'${new Date().getTime()}'`,
+        '__REACT_DEVTOOLS_GLOBAL_HOOK__': '({ isDisabled: true })',
         // APP_VERSION is passed as an environment variable from the Gradle / Maven build tasks.
         VERSION: `'${process.env.hasOwnProperty('APP_VERSION') ? process.env.APP_VERSION : 'DEV'}'`,
         DEBUG_INFO_ENABLED: options.env === 'development',
