@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CDataTable, CPagination, CRow, CCol } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDepartment, getTreeDepartment } from './department.api.js';
-import { globalizedDepartmentSelectors, reset } from './department.reducer.js';
+import { getBranch } from './branch.api.js';
+import { globalizedBranchSelectors, reset } from './branch.reducer.js';
 import { useHistory } from 'react-router-dom';
-import { Tree, TreeNode } from 'react-organizational-chart';
 import styled from 'styled-components';
+import { globalizedDepartmentSelectors } from '../UserDepartment/department.reducer.js';
 
 const StyledNode = styled.div`
   padding: 5px;
@@ -24,10 +24,10 @@ const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
-const Department = props => {
+const Branch = props => {
   const isInitialMount = useRef(true);
 
-  const [,] = useState(20);
+  const [size, setSize] = useState(20);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -37,21 +37,19 @@ const Department = props => {
   });
   useEffect(() => {
     dispatch(reset());
-    dispatch(getTreeDepartment());
   }, []);
 
-  const { selectAll } = globalizedDepartmentSelectors;
-  const departments = useSelector(selectAll);
+  const { selectAll } = globalizedBranchSelectors;
+
+  const branchs = useSelector(selectAll);
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.provider);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
 
   useEffect(() => {
-    dispatch(getDepartment({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getBranch({ page: activePage - 1, size, sort: 'createdDate,desc' }));
   }, [activePage, size]);
 
-  const providers = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
       return {
@@ -80,7 +78,7 @@ const Department = props => {
       filter: false
     },
     { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên chi nhánh', _style: { width: '15%' } },
+    { key: 'name', label: 'Tên phòng ban', _style: { width: '15%' } },
     {
       key: 'show_details',
       label: '',
@@ -104,19 +102,19 @@ const Department = props => {
     }
   };
   const [,] = useState([]);
-  const csvContent = computedItems(providers)
+  const csvContent = computedItems(branchs)
     .map(item => Object.values(item).join(','))
     .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
-  const toEditDepartment = userId => {
+  const toEditBranch = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const toCreateDepartment = () => {
+  const toCreateBranch = () => {
     history.push(`${props.match.url}/new`);
   };
-  const toDepartmentStructure = () => {
+  const toBranchStructure = () => {
     history.push(`${props.match.url}structure`);
   };
 
@@ -125,25 +123,13 @@ const Department = props => {
       dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
     }
   };
-  const renderChild = children => {
-    if (children && Array.isArray(children) && children.length > 0) {
-      return children.map((item, index) => (
-        <TreeNode key={index} label={<StyledNode>{item.name}</StyledNode>}>
-          {renderChild(item.children)}
-        </TreeNode>
-      ));
-    }
-  };
 
   return (
     <CCard>
       <CCardHeader>
-        <CIcon name="cil-grid" /> Danh sách chi nhánh
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateDepartment}>
-          <CIcon name="cil-plus" /> Thêm mới chi nhánh
-        </CButton>
-        <CButton color="info" variant="outline" className="ml-3" onClick={toDepartmentStructure}>
-           Cấu trúc chi nhánh
+        <CIcon name="cil-grid" /> Danh sách phòng ban
+        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateBranch}>
+          <CIcon name="cil-plus" /> Thêm mới phòng ban
         </CButton>
       </CCardHeader>
       <CCardBody>
@@ -151,7 +137,7 @@ const Department = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(departments)}
+          items={computedItems(branchs)}
           fields={fields}
           columnFilter
           tableFilter
@@ -186,7 +172,7 @@ const Department = props => {
                     size="sm"
                     className="mr-3"
                     onClick={() => {
-                      toEditDepartment(item.id);
+                      toEditBranch(item.id);
                     }}
                   >
                     <CIcon name="cil-pencil" />
@@ -209,15 +195,15 @@ const Department = props => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
-                    <h5>Thông tin chi nhánh</h5>
+                    <h5>Thông tin phòng ban</h5>
                     <CRow>
                       <CCol lg="6">
                         <dl className="row">
-                          <dt className="col-sm-3">Mã chi nhánh:</dt>
+                          <dt className="col-sm-3">Mã phòng ban:</dt>
                           <dd className="col-sm-9">{item.code}</dd>
                         </dl>
                         <dl className="row">
-                          <dt className="col-sm-3">Tên chi nhánh:</dt>
+                          <dt className="col-sm-3">Tên phòng ban:</dt>
                           <dd className="col-sm-9">{item.name}</dd>
                         </dl>
                       </CCol>
@@ -238,4 +224,4 @@ const Department = props => {
   );
 };
 
-export default Department;
+export default Branch;

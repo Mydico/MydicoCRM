@@ -1,6 +1,6 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import {Storage} from 'react-jhipster';
+import { Storage } from 'react-jhipster';
 const AUTH_TOKEN_KEY = 'authenticationToken';
 
 const initialState = {
@@ -13,14 +13,14 @@ const initialState = {
   redirectMessage: null,
   sessionHasBeenFetched: false,
   idToken: null,
-  logoutUrl: null,
+  logoutUrl: null
 };
-export const login = createAsyncThunk('api/authenticate', async ({username, password, rememberMe}, thunkAPI) => {
+export const login = createAsyncThunk('api/authenticate', async ({ username, password, rememberMe }, thunkAPI) => {
   try {
     const result = await axios.post('api/authenticate', {
       username,
       password,
-      rememberMe,
+      rememberMe
     });
     const bearerToken = result.data.id_token;
     if (bearerToken) {
@@ -37,7 +37,7 @@ export const login = createAsyncThunk('api/authenticate', async ({username, pass
   }
 });
 
-export const getSession = createAsyncThunk('api/account', async (thunkAPI) => {
+export const getSession = createAsyncThunk('api/account', async  (args, thunkAPI) => {
   try {
     const accountResponse = await axios.get('api/account');
     return accountResponse.data;
@@ -45,30 +45,30 @@ export const getSession = createAsyncThunk('api/account', async (thunkAPI) => {
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
-
 const slice = createSlice({
-  name: 'user',
+  name: 'authenticate',
   initialState: initialState,
   reducers: {
-    request: (state ) => {
+    request: state => {
       state.loading = true;
       state.errorMessage = null;
     },
-    logout: (state ) => {
-      state = initialState;
-    },
-    clearAuthToken: () => {
+    logout: state => {
+      state.account = {};
+      state.isAuthenticated = false;
+      state.loading = false;
+      state.sessionHasBeenFetched = false;
       if (Storage.local.get(AUTH_TOKEN_KEY)) {
         Storage.local.remove(AUTH_TOKEN_KEY);
       }
       if (Storage.session.get(AUTH_TOKEN_KEY)) {
         Storage.session.remove(AUTH_TOKEN_KEY);
       }
-    },
+    }
   },
   extraReducers: {
     // Add reducers for additional action types here, and handle loading state as needed
-    [login.fulfilled]: (state ) => {
+    [login.fulfilled]: state => {
       state.loginSuccess = true;
       state.loading = false;
       state.loginError = false;
@@ -80,18 +80,24 @@ const slice = createSlice({
       state.loading = false;
       state.sessionHasBeenFetched = true;
     },
+    [getSession.rejected]: (state, action) => {
+      state.account = {};
+      state.isAuthenticated = false;
+      state.loading = false;
+      state.sessionHasBeenFetched = false;
+    },
     [login.rejected]: (state, action) => {
       state.loginError = action.payload.statusCode;
       state.errorMessage = action.payload.message;
-    },
-  },
+    }
+  }
 });
 
 export default slice.reducer;
 
 // Actions
 
-const {} = slice.actions;
+export const { logout } = slice.actions;
 
 // export const login = (username, password, rememberMe = false) => async (
 //   dispatch,

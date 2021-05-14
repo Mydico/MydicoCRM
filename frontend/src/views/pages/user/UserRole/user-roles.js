@@ -67,6 +67,7 @@ const UserRole = (props) => {
       _style: {width: '1%'},
       filter: false,
     },
+    {key: 'code', label: 'Mã chức vụ', _style: {width: '10%'}},
     {key: 'name', label: 'Tên chức vụ', _style: {width: '10%'}},
     {key: 'createdDate', label: 'Ngày tạo', _style: {width: '15%'}},
     {key: 'status', label: 'Trạng thái', _style: {width: '15%'}},
@@ -98,11 +99,11 @@ const UserRole = (props) => {
       .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateUserRole = () => {
-    history.push(`${props.match.url}new`);
+    history.push(`${props.match.url}/new`);
   };
 
   const toEditUserRole = (userId) => {
-    history.push(`${props.match.url}${userId}/edit`);
+    history.push(`${props.match.url}/${userId}/edit`);
   };
 
   const onFilterColumn = (value) => {

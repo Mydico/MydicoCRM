@@ -110,16 +110,16 @@ const Promotion = (props) => {
       .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreatePromotion = () => {
-    history.push(`${props.match.url}new`);
+    history.push(`${props.match.url}/new`);
   };
   const toCreateLongTermPromotion = () => {
-    history.push(`${props.match.url}new/longterm`);
+    history.push(`${props.match.url}/new/longterm`);
   };
   const toEditPromotion = (userId) => {
-    history.push(`${props.match.url}${userId}/edit`);
+    history.push(`${props.match.url}/${userId}/edit`);
   };
   const toEditLongTermPromotion = (userId) => {
-    history.push(`${props.match.url}${userId}/longterm`);
+    history.push(`${props.match.url}/${userId}/longterm`);
   };
 
   const onFilterColumn = (value) => {

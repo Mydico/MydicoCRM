@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -11,64 +11,54 @@ import {
   CLabel,
   CInput,
   CRow,
-
   CCardTitle,
   CInputCheckbox,
   CButtonGroup,
-  CTextarea,
+  CTextarea
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {
+import { useDispatch, useSelector } from 'react-redux';
+import { getDetailPermissionGroups, getPermissions, getPermissionType, updatePermissionGroups } from './permission.api';
 
-  getDetailPermissionGroups,
-  getPermissions,
-  getPermissionType,
-  updatePermissionGroups,
-} from './permission.api';
-
-
-import {useHistory} from 'react-router-dom';
-import {fetching, globalizedPermissionGroupsSelectors, reset} from './permission.reducer';
+import { useHistory } from 'react-router-dom';
+import { fetching, globalizedPermissionGroupsSelectors, reset } from './permission.reducer';
 import Select from 'react-select';
-import {Table} from 'reactstrap';
+import { Table } from 'reactstrap';
 
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5, `Tên nhóm quyền phải lớn hơn 5 kí tự`)
-        .required('Tên nhóm quyền không để trống'),
+      .min(5, `Tên nhóm quyền phải lớn hơn 5 kí tự`)
+      .required('Tên nhóm quyền không để trống')
   });
 };
 
-import {validate} from '../../../../shared/utils/normalize';
-
+import { validate } from '../../../../shared/utils/normalize';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
 
-
-const EditPermissionGroups = (props) => {
-  const {initialState} = useSelector((state) => state.permission);
+const EditPermissionGroups = props => {
+  const { initialState } = useSelector(state => state.permission);
   const checkboxRef = useRef();
 
   const dispatch = useDispatch();
   const history = useHistory();
   const [checkbox, setCheckbox] = useState({});
   const [selectedPermission, setSelectedPermission] = useState([]);
-  const {selectById} = globalizedPermissionGroupsSelectors;
-  const perGroup = useSelector((state) => selectById(state, props.match.params.id));
+  const { selectById } = globalizedPermissionGroupsSelectors;
+  const perGroup = useSelector(state => selectById(state, props.match.params.id));
 
   const [initValues, setInitValues] = useState(null);
 
   const initialValues = {
     name: '',
-    note: '',
+    note: ''
   };
 
   useEffect(() => {
@@ -87,30 +77,30 @@ const EditPermissionGroups = (props) => {
         r[a.type] = [...(r[a.type] || []), a];
         return r;
       }, {});
-      const data = Object.keys(group).map((key) => ({
+      const data = Object.keys(group).map(key => ({
         type: key,
         typeName: group[key][0].typeName,
-        permissions: group[key],
+        permissions: group[key]
       }));
       setSelectedPermission([...data]);
     }
   }, [perGroup]);
 
-  const onGetPermission = (value) => {
-    const params = {type: value};
+  const onGetPermission = value => {
+    const params = { type: value };
     dispatch(getPermissions(params));
   };
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, { resetForm }) => {
     let arrPermission = [];
     values = JSON.parse(JSON.stringify(values));
-    selectedPermission.forEach((selectPer) => {
+    selectedPermission.forEach(selectPer => {
       if (selectPer.permissions) {
         arrPermission = arrPermission.concat(selectPer.permissions);
       }
     });
     if (arrPermission.length === 0) return;
-    if (selectedPermission.map((permission) => permission.permissions).reduce((prev, current) => [...prev, ...current], []).length === 0) {
+    if (selectedPermission.map(permission => permission.permissions).reduce((prev, current) => [...prev, ...current], []).length === 0) {
       return;
     }
     values.permissions = arrPermission;
@@ -121,15 +111,15 @@ const EditPermissionGroups = (props) => {
   };
 
   const onCheck = (setCheckboxFunc, checkboxValue) => {
-    return (e) => {
+    return e => {
       e.persist();
-      setCheckboxFunc((prevState) => ({...prevState, [e.target.value]: !checkboxValue[e.target.value]}));
+      setCheckboxFunc(prevState => ({ ...prevState, [e.target.value]: !checkboxValue[e.target.value] }));
     };
   };
 
-  const onSelectAll = (checkedValue) => () => {
-    const copyCheckbox = {...checkbox};
-    Object.keys(copyCheckbox).forEach((key) => {
+  const onSelectAll = checkedValue => () => {
+    const copyCheckbox = { ...checkbox };
+    Object.keys(copyCheckbox).forEach(key => {
       copyCheckbox[key] = checkedValue;
     });
     setCheckbox(copyCheckbox);
@@ -141,7 +131,7 @@ const EditPermissionGroups = (props) => {
   useEffect(() => {
     if (checkbox && initialState.permissions && Array.isArray(initialState.permissions) && initialState.permissions.length > 0) {
       const selectedArr = [];
-      Object.keys(checkbox).forEach((key) => {
+      Object.keys(checkbox).forEach(key => {
         if (checkbox[key]) {
           selectedArr.push(key);
         }
@@ -150,7 +140,7 @@ const EditPermissionGroups = (props) => {
     }
   }, [checkbox]);
 
-  const removePermission = (index) => {
+  const removePermission = index => {
     const arr = [...selectedPermission];
     arr.splice(index, 1);
     setSelectedPermission(arr);
@@ -158,27 +148,33 @@ const EditPermissionGroups = (props) => {
 
   const handleSelectPermission = (e, values) => {
     /* eslint-disable no-console */
+    const type = initialState.permissions[0].type;
+    const typeName = initialState.permissions[0].typeName;
+    const foundedIndex = selectedPermission.findIndex(per => per.type === type);
     if (values && Array.isArray(values) && values.length > 0) {
-      const type = initialState.permissions[0].type;
-      const typeName = initialState.permissions[0].typeName;
-      const foundedIndex = selectedPermission.findIndex((per) => per.type === type);
       if (foundedIndex > -1) {
-        selectedPermission[foundedIndex].permissions = initialState.permissions.filter((permission) => values.includes(permission.id));
+        selectedPermission[foundedIndex].permissions = initialState.permissions.filter(permission =>
+          values.includes(permission.id.toString())
+        );
         setSelectedPermission([...selectedPermission]);
       } else {
         const selectedPermissionObj = {
           type,
           typeName,
-          permissions: initialState.permissions.filter((permission) => values.includes(permission.id)),
+          permissions: initialState.permissions.filter(permission => values.includes(permission.id.toString()))
         };
 
         setSelectedPermission([...selectedPermission, selectedPermissionObj]);
       }
     } else if (values && Array.isArray(values) && values.length == 0) {
-      setSelectedPermission(values);
+      if (foundedIndex > -1) {
+        const arr = [...selectedPermission];
+        arr.splice(foundedIndex, 1);
+        setSelectedPermission(arr);
+      }
     } else {
       const arr = [...selectedPermission];
-      const findEmpty = arr.findIndex((item) => item.permissions.length === 0);
+      const findEmpty = arr.findIndex(item => item.permissions.length === 0);
       if (findEmpty > -1) arr.splice(findEmpty, 1);
       setSelectedPermission(arr);
     }
@@ -187,7 +183,7 @@ const EditPermissionGroups = (props) => {
   useEffect(() => {
     if (initialState.permissions && Array.isArray(initialState.permissions)) {
       const tempPer = {};
-      initialState.permissions.forEach((per) => {
+      initialState.permissions.forEach(per => {
         tempPer[per.id] = false;
       });
       setCheckbox(tempPer);
@@ -212,14 +208,11 @@ const EditPermissionGroups = (props) => {
             values,
             errors,
 
-
             handleChange,
             handleBlur,
             handleSubmit,
 
-
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CCol lg="12">
@@ -242,13 +235,13 @@ const EditPermissionGroups = (props) => {
                   <CLabel htmlFor="userName">Chọn nhóm chức năng</CLabel>
                   <Select
                     name="department"
-                    onChange={(e) => {
+                    onChange={e => {
                       onGetPermission(e.value);
                     }}
                     placeholder="Chọn nhóm chức năng"
-                    options={initialState.permissionTypes.map((item) => ({
+                    options={initialState.permissionTypes.map(item => ({
                       value: item.name,
-                      label: item.description,
+                      label: item.description
                     }))}
                   />
                 </CFormGroup>
@@ -272,7 +265,7 @@ const EditPermissionGroups = (props) => {
                   </CRow>
                   <CCol md="9">
                     {initialState.permissions &&
-                      initialState.permissions.map((entity) => {
+                      initialState.permissions.map(entity => {
                         return (
                           <CFormGroup variant="checkbox" className="mb-2">
                             <CInputCheckbox
@@ -316,7 +309,7 @@ const EditPermissionGroups = (props) => {
                         <tr key={permission.type}>
                           <td className="text-center">{i + 1}</td>
                           <td>{permission.typeName}</td>
-                          <td>{permission.permissions ? permission.permissions.map((per) => per.description).join(' -- ') : ''}</td>
+                          <td>{permission.permissions ? permission.permissions.map(per => per.description).join(' -- ') : ''}</td>
                           <td className="text-center">
                             <CButton type="reset" size="lg" color="danger" onClick={() => removePermission(i)} className="ml-5">
                               <CIcon name="cil-ban" />

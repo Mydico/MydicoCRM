@@ -50,7 +50,7 @@ export class AccountController {
   })
   async getAccount(@Req() req: Request, @Res() res): Promise<any> {
     const user: any = req.user;
-    res.send(await this.authService.findUserWithAuthById(user.id));
+    res.send(await this.authService.findUserWithAuthById(user.login));
   }
 
   @Post('/account')

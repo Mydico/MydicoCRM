@@ -97,7 +97,7 @@ const ProductWarehouse = (props) => {
 
 
   const toEditProductWarehouse = (userId) => {
-    history.push(`${props.match.url}${userId}/edit`);
+    history.push(`${props.match.url}/${userId}/edit`);
   };
 
   const onFilterColumn = (value) => {

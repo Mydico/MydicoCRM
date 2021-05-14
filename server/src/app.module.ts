@@ -5,8 +5,6 @@ import { AuthModule } from './module/auth.module';
 import { ormconfig, roleBDConfig } from './orm.config';
 import { CustomerTokenModule } from './module/customer-token.module';
 import { PromotionModule } from './module/promotion.module';
-import { AttributeModule } from './module/attribute.module';
-import { AttributeValueModule } from './module/attribute-value.module';
 import { BillModule } from './module/bill.module';
 import { CityModule } from './module/city.module';
 import { CodlogModule } from './module/codlog.module';
@@ -20,7 +18,6 @@ import { CustomerStatusModule } from './module/customer-status.module';
 import { CustomerTempModule } from './module/customer-temp.module';
 import { CustomerTypeModule } from './module/customer-type.module';
 import { DistrictModule } from './module/district.module';
-import { FanpageModule } from './module/fanpage.module';
 import { OrderModule } from './module/order.module';
 import { OrderDetailsModule } from './module/order-details.module';
 import { OrderPushModule } from './module/order-push.module';
@@ -31,9 +28,7 @@ import { ProductQuantityModule } from './module/product-quantity.module';
 import { PromotionCustomerLevelModule } from './module/promotion-customer-level.module';
 import { PromotionItemModule } from './module/promotion-item.module';
 import { ReceiptModule } from './module/receipt.module';
-import { ReportCustomerCategoryDateModule } from './module/report-customer-category-date.module';
 import { ReportDateModule } from './module/report-date.module';
-import { SiteModule } from './module/site.module';
 import { StoreModule } from './module/store.module';
 import { StoreInputModule } from './module/store-input.module';
 import { StoreInputDetailsModule } from './module/store-input-details.module';
@@ -47,7 +42,6 @@ import { UserTeamModule } from './module/user-team.module';
 import { UserTypeModule } from './module/user-type.module';
 import { WardsModule } from './module/wards.module';
 import { UserTokenModule } from './module/user-token.module';
-import { BranchModule } from './module/branch.module';
 import { ProductBrandModule } from './module/product-brand.module';
 import { FileModule } from './module/file.module';
 import { RoleModule } from './module/role.module';
@@ -66,6 +60,7 @@ import { join } from 'path';
 import { UserModule } from './module/user.module';
 import { IncomeDashboardModule } from './module/income-dashboard.module';
 import { DebtDashboardModule } from './module/debt-dashboard.module';
+import { BranchModule } from './module/branch.module';
 
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
@@ -81,8 +76,6 @@ import { DebtDashboardModule } from './module/debt-dashboard.module';
         AuthModule,
         CustomerTokenModule,
         PromotionModule,
-        AttributeModule,
-        AttributeValueModule,
         BillModule,
         CityModule,
         FileModule,
@@ -97,7 +90,6 @@ import { DebtDashboardModule } from './module/debt-dashboard.module';
         CustomerTempModule,
         CustomerTypeModule,
         DistrictModule,
-        FanpageModule,
         OrderModule,
         OrderDetailsModule,
         OrderPushModule,
@@ -108,9 +100,7 @@ import { DebtDashboardModule } from './module/debt-dashboard.module';
         PromotionCustomerLevelModule,
         PromotionItemModule,
         ReceiptModule,
-        ReportCustomerCategoryDateModule,
         ReportDateModule,
-        SiteModule,
         StoreModule,
         StoreInputModule,
         StoreInputDetailsModule,
@@ -125,7 +115,6 @@ import { DebtDashboardModule } from './module/debt-dashboard.module';
         UserTypeModule,
         WardsModule,
         UserTokenModule,
-        BranchModule,
         ProductBrandModule,
         PromotionProductModule,
         DepartmentModule,
@@ -138,7 +127,8 @@ import { DebtDashboardModule } from './module/debt-dashboard.module';
         ProviderModule,
         CustomerDebitModule,
         IncomeDashboardModule,
-        DebtDashboardModule
+        DebtDashboardModule,
+        BranchModule
     // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
     ],
     controllers: [

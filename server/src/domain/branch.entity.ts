@@ -1,25 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Tree, TreeChildren, TreeParent } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
-
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
+import Department from './department.entity';
+import { DepartmentStatus } from './enumeration/department-status';
+import PermissionGroup from './permission-group.entity';
 
 /**
  * A Branch.
  */
 @Entity('branch')
 export default class Branch extends BaseEntity {
-    @Column({ name: 'name', length: 255, nullable: true })
-    name: string;
-
-    @Column({ name: 'code', length: 255, unique: true, nullable: false })
+    @Column({ name: 'code', nullable: true })
     code: string;
 
-    @Column({ name: 'description', length: 255, nullable: true })
-    description?: string;
+    @Column({ name: 'name', nullable: true })
+    name: string;
 
-    @Column({ type: 'boolean', name: 'is_del', nullable: true, default: false })
-    isDel?: boolean;
+    @Column({ type: 'simple-enum', name: 'status', enum: DepartmentStatus, default: DepartmentStatus.ACTIVE })
+    status: DepartmentStatus;
+    
+    @ManyToMany(type => PermissionGroup, other => other.branches)
+    permissionGroups?: PermissionGroup[];
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import Department from '../domain/department.entity';
 import { DepartmentRepository } from '../repository/department.repository';
+import { RoleService } from './role.service';
 import { checkCodeContext } from './utils/normalizeString';
 
 const relationshipNames = [];
@@ -12,7 +13,10 @@ relationshipNames.push('permissionGroups');
 export class DepartmentService {
   logger = new Logger('DepartmentService');
 
-  constructor(@InjectRepository(DepartmentRepository) private departmentRepository: DepartmentRepository) {}
+  constructor(
+    @InjectRepository(DepartmentRepository) private departmentRepository: DepartmentRepository,
+    private readonly roleService: RoleService
+  ) {}
 
   async findAllTree(): Promise<Department[]> {
     return await this.departmentRepository.findTrees();
@@ -47,7 +51,18 @@ export class DepartmentService {
       });
       department = checkCodeContext(department, foundedDepartment);
     }
-    return await this.departmentRepository.save(department);
+
+    const result = await this.departmentRepository.save(department);
+    if (department.permissionGroups && Array.isArray(department.permissionGroups)) {
+      const founded = await this.roleService.filterGroupingPolicies(1, result);
+      await this.roleService.removeGroupingPolicies(founded);
+      const newGroupingRules = [];
+      department.permissionGroups.map(perG => {
+        newGroupingRules.push([perG.id, result.code]);
+      });
+      await this.roleService.addGroupingPolicies(newGroupingRules);
+    }
+    return result;
   }
 
   async update(department: Department): Promise<Department | undefined> {

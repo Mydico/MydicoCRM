@@ -25,40 +25,40 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Chương trình bán hàng',
-        to: '/promotion/',
+        to: '/promotions',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Đơn hàng',
-        to: '/order',
+        to: '/orders',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Điều phối khách hàng',
-        to: '/customer/status',
+        to: '/customer-statuses',
       },
     ],
   },
   {
     _tag: 'CSidebarNavDropdown',
     name: 'Quản lý khách hàng',
-    route: '/customer',
+    route: '/customers',
     icon: 'cil-puzzle',
     _children: [
       {
         _tag: 'CSidebarNavItem',
         name: 'Danh sách',
-        to: '/customer/',
+        to: '/customers',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Phân loại',
-        to: '/customer/type',
+        to: '/customer-types',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Trạng thái',
-        to: '/customer/status',
+        to: '/customer-statuses',
       },
       {
         _tag: 'CSidebarNavItem',
@@ -70,84 +70,84 @@ export default [
   {
     _tag: 'CSidebarNavDropdown',
     name: 'Quản lý sản phẩm',
-    route: '/product',
+    route: '/products',
     icon: 'cil-puzzle',
     _children: [
       {
         _tag: 'CSidebarNavItem',
         name: 'Danh sách',
-        to: '/product/',
+        to: '/products',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Nhóm sản phẩm',
-        to: '/product/group',
+        to: '/product-groups',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Thương hiệu',
-        to: '/product/brand',
+        to: '/product-brands',
       },
     ],
   },
   {
     _tag: 'CSidebarNavDropdown',
     name: 'Quản lý Tài chính',
-    route: '/finance',
+    route: '/customer-debits',
     icon: 'cil-layers',
     _children: [
       {
         _tag: 'CSidebarNavItem',
         name: 'Công nợ',
-        to: '/debt',
+        to: '/customer-debits',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Phiếu thu',
-        to: '/receipt',
+        to: '/receipts',
       },
     ],
   },
   {
     _tag: 'CSidebarNavDropdown',
     name: 'Quản lý kho',
-    route: '/warehouse',
+    route: '/stores/',
     icon: 'cil-puzzle',
     _children: [
       {
         _tag: 'CSidebarNavItem',
         name: 'Kho hàng',
-        to: '/warehouse/',
+        to: '/stores',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Nhà cung cấp',
-        to: '/provider',
+        to: '/providers',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Sản phẩm trong kho',
-        to: '/inwarehouse/',
+        to: '/stores/product',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Vận đơn',
-        to: '/bill/',
+        to: '/bills',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Phiếu nhập kho',
-        to: '/warehouse/import',
+        to: '/stores/import',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Phiếu xuất kho',
-        to: '/warehouse/export',
+        to: '/stores/export',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Lịch sử xuất/nhập kho',
-        to: '/warehouse/histories/',
+        to: '/stores/histories',
       },
     ],
   },
@@ -161,36 +161,41 @@ export default [
   {
     _tag: 'CSidebarNavDropdown',
     name: 'Quản lý người dùng',
-    route: '/user',
+    route: '/users/',
     icon: 'cil-star',
     _children: [
       {
         _tag: 'CSidebarNavItem',
         name: 'Danh sách',
-        to: '/user/',
+        to: '/users',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Chức vụ',
-        to: '/user-role/',
+        to: '/user-roles',
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Phòng ban',
+        to: '/branches',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Chi nhánh',
-        to: '/department/',
+        to: '/departments',
       },
     ],
   },
   {
     _tag: 'CSidebarNavDropdown',
     name: 'Quản lý phân quyền',
-    route: '/apps',
+    route: '/permission-groups',
     icon: 'cil-layers',
     _children: [
       {
         _tag: 'CSidebarNavItem',
         name: 'Phân quyền',
-        to: '/permission/',
+        to: '/permission-groups',
       },
     ],
   },

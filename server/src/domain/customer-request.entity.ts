@@ -6,7 +6,6 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
 
 import Product from './product.entity';
 import CustomerType from './customer-type.entity';
-import Fanpage from './fanpage.entity';
 
 /**
  * A CustomerRequest.
@@ -46,8 +45,6 @@ export default class CustomerRequest extends BaseEntity {
     @ManyToOne(type => CustomerType)
     type: CustomerType;
 
-    @ManyToOne(type => Fanpage)
-    fanpage: Fanpage;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

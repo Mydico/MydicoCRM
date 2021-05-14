@@ -57,6 +57,7 @@ export class SeedUsersRoles1570200490073 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         const conn = queryRunner.connection;
+
         await conn
             .createQueryBuilder()
             .insert()

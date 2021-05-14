@@ -3,45 +3,60 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import Branch from '../domain/branch.entity';
 import { BranchRepository } from '../repository/branch.repository';
-import { increment_alphanumeric_str, decrement_alphanumeric_str } from './utils/normalizeString';
+import { RoleService } from './role.service';
+import { checkCodeContext } from './utils/normalizeString';
 
 const relationshipNames = [];
+relationshipNames.push('permissionGroups');
 
 @Injectable()
 export class BranchService {
-    logger = new Logger('BranchService');
+  logger = new Logger('BranchService');
 
-    constructor(@InjectRepository(BranchRepository) private branchRepository: BranchRepository) {}
+  constructor(
+    @InjectRepository(BranchRepository) private branchRepository: BranchRepository,
+    private readonly roleService: RoleService
+  ) {}
 
-    async findById(id: string): Promise<Branch | undefined> {
-        const options = { relations: relationshipNames };
-        return await this.branchRepository.findOne(id, options);
+  async findById(id: string): Promise<Branch | undefined> {
+    const options = { relations: relationshipNames };
+    return await this.branchRepository.findOne(id, options);
+  }
+
+  async findByfields(options: FindOneOptions<Branch>): Promise<Branch | undefined> {
+    return await this.branchRepository.findOne(options);
+  }
+
+  async findAndCount(options: FindManyOptions<Branch>): Promise<[Branch[], number]> {
+    options.relations = relationshipNames;
+    return await this.branchRepository.findAndCount(options);
+  }
+
+  async save(branch: Branch): Promise<Branch | undefined> {
+    if (!branch.code) {
+      const foundedBranch = await this.branchRepository.find({
+        code: Like(`%${branch.code}%`)
+      });
+      branch = checkCodeContext(branch, foundedBranch);
     }
-
-    async findByfields(options: FindOneOptions<Branch>): Promise<Branch | undefined> {
-        return await this.branchRepository.findOne(options);
+    const result = await this.branchRepository.save(branch);
+    if (branch.permissionGroups && Array.isArray(branch.permissionGroups)) {
+      const founded = await this.roleService.filterGroupingPolicies(1, result);
+      await this.roleService.removeGroupingPolicies(founded);
+      const newGroupingRules = [];
+      branch.permissionGroups.map(perG => {
+        newGroupingRules.push([perG.id, result.code]);
+      });
+      await this.roleService.addGroupingPolicies(newGroupingRules);
     }
+    return result;
+  }
 
-    async findAndCount(options: FindManyOptions<Branch>): Promise<[Branch[], number]> {
-        options.relations = relationshipNames;
-        return await this.branchRepository.findAndCount(options);
-    }
+  async update(branch: Branch): Promise<Branch | undefined> {
+    return await this.save(branch);
+  }
 
-    async save(branch: Branch): Promise<Branch | undefined> {
-        const foundedCustomer = await this.branchRepository.find({ code: Like(`%${branch.code}%`) });
-        if (foundedCustomer.length > 0) {
-            foundedCustomer.sort((a, b) => a.createdDate.valueOf() - b.createdDate.valueOf());
-            const res = increment_alphanumeric_str(foundedCustomer[foundedCustomer.length - 1].code);
-            branch.code = res;
-        }
-        return await this.branchRepository.save(branch);
-    }
-
-    async update(branch: Branch): Promise<Branch | undefined> {
-        return await this.save(branch);
-    }
-
-    async delete(branch: Branch): Promise<Branch | undefined> {
-        return await this.branchRepository.remove(branch);
-    }
+  async delete(branch: Branch): Promise<Branch | undefined> {
+    return await this.branchRepository.remove(branch);
+  }
 }

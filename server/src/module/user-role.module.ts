@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRoleController } from '../web/rest/user-role.controller';
 import { UserRoleRepository } from '../repository/user-role.repository';
 import { UserRoleService } from '../service/user-role.service';
+import { RoleModule } from './role.module';
 
 @Module({
-    imports: [CacheModule.register(),TypeOrmModule.forFeature([UserRoleRepository])],
+    imports: [CacheModule.register(),TypeOrmModule.forFeature([UserRoleRepository]), RoleModule],
     controllers: [UserRoleController],
     providers: [UserRoleService],
     exports: [UserRoleService],

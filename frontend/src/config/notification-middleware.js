@@ -42,6 +42,8 @@ const successMessageMapping = {
   'MydicoCRM.Provider.updated': 'Chỉnh sửa nhà cung cấp thành công',
   'MydicoCRM.Receipt.created': 'Tạo mới phiếu thu thành công',
   'MydicoCRM.Receipt.updated': 'Chỉnh sửa phiếu thu thành công',
+  'MydicoCRM.PermissionGroup.created': 'Tạo mới nhóm quyền thành công',
+  'MydicoCRM.PermissionGroup.updated': 'Chỉnh sửa nhóm quyền thành công',
 };
 
 // const addErrorAlert = (key?) => {
@@ -60,7 +62,7 @@ export default () => (next) => (action) => {
       });
       toastSuccess(successMessageMapping[alert]);
     } else {
-      toastError(action.payload.message || statusError[action.payload.statusCode]);
+      toastError(statusError[action.payload.statusCode]);
     }
   }
 

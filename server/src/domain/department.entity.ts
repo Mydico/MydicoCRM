@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Tree, TreeChildren, TreeParent } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
+import Branch from './branch.entity';
 
 import { DepartmentStatus } from './enumeration/department-status';
 import Order from './order.entity';
@@ -34,6 +35,7 @@ export default class Department extends BaseEntity {
 
     @OneToMany(type => Order, store => store.department)
     orders?: Store[];
+
 
     @ManyToMany(type => PermissionGroup, other => other.departments)
     permissionGroups?: PermissionGroup[];

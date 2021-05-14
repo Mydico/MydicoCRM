@@ -69,7 +69,7 @@ async function bootstrap(): Promise<void> {
       exceptionFactory: (): BadRequestException => new BadRequestException('Validation error')
     })
   );
-  app.register(compression);
+  app.register(compression, { encodings: ['gzip', 'deflate'] });
   const staticClientPath = path.join(__dirname, '../dist/classes/static');
   const staticFilePath = path.join(__dirname, '../uploads');
   if (fs.existsSync(staticClientPath)) {

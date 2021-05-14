@@ -89,13 +89,13 @@ module.exports = (options) => ({
   },
   optimization: {
     splitChunks: {
-      cacheGroups: {
-        commons: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      },
+      // cacheGroups: {
+      //   commons: {
+      //     test: /[\\/]node_modules[\\/]/,
+      //     name: 'vendors',
+      //     chunks: 'all',
+      //   },
+      // },
     },
   },
   plugins: [
@@ -115,10 +115,7 @@ module.exports = (options) => ({
     }),
     new ForkTsCheckerWebpackPlugin({eslint: true}),
     new CopyWebpackPlugin([
-      {from: './node_modules/swagger-ui-dist/*.{js,css,html,png}', to: 'swagger-ui', flatten: true, ignore: ['index.html']},
-      {from: './node_modules/axios/dist/axios.min.js', to: 'swagger-ui'},
-      {from: './public/swagger-ui/', to: 'swagger-ui'},
-      {from: './content/', to: 'content'},
+      // {from: './content/', to: 'content'},
       {from: 'favicon.ico', to: 'favicon.ico'},
       {from: './public/manifest.webapp', to: 'manifest.webapp'},
       {from: './public/robots.txt', to: 'robots.txt'},

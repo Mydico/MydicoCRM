@@ -8,6 +8,7 @@ import { PermissionGroupStatus } from './enumeration/permission-group-status';
 import { User } from './user.entity';
 import Department from './department.entity';
 import UserRole from './user-role.entity';
+import Branch from './branch.entity';
 
 /**
  * A PermissionGroup.
@@ -31,7 +32,7 @@ export default class PermissionGroup extends BaseEntity {
     })
     users?: User[];
 
-    @ManyToMany(type => Department, department => department.permissionGroups, { cascade: true })
+    @ManyToMany(type => Department, department => department.permissionGroups)
     @JoinTable({
         name: 'permission_group_department',
         joinColumn: { name: 'permission_group_id', referencedColumnName: 'id' },
@@ -39,7 +40,15 @@ export default class PermissionGroup extends BaseEntity {
     })
     departments?: Department[];
 
-    @ManyToMany(type => UserRole, pos => pos.permissionGroups, { cascade: true })
+    @ManyToMany(type => Branch, branch => branch.permissionGroups)
+    @JoinTable({
+        name: 'permission_group_branch',
+        joinColumn: { name: 'permission_group_id', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'branch_id', referencedColumnName: 'id' },
+    })
+    branches?: Branch[];
+
+    @ManyToMany(type => UserRole, pos => pos.permissionGroups)
     @JoinTable({
         name: 'permission_group_role',
         joinColumn: { name: 'permission_group_id', referencedColumnName: 'id' },

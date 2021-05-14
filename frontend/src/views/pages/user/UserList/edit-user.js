@@ -44,6 +44,8 @@ const validationSchema = function() {
 
 import { validate } from '../../../../shared/utils/normalize';
 import { ProductStatus } from '../../product/ProductList/contants';
+import { globalizedBranchSelectors } from '../UserBranch/branch.reducer';
+import { getBranch } from '../UserBranch/branch.api';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -69,21 +71,28 @@ const EditUser = props => {
   const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
   const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
   const { selectAll: selectAllRole } = globalizedUserRoleSelectors;
+  const { selectAll: selectAllBranch } = globalizedBranchSelectors;
+
   const user = useSelector(state => selectById(state, props.match.params.id));
+
   const [initValues, setInitValues] = useState(null);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState([]);
+
   const departments = useSelector(selectAllDepartment);
   const roles = useSelector(selectAllRole);
   const groupPermissions = useSelector(selectAllPermissionGroups);
+  const branches = useSelector(selectAllBranch);
 
   useEffect(() => {
     setInitValues(user);
     if (user) {
       setSelectedDepartment(user.departments);
-      setSelectedGroupPermission(user.permissionGroups);
-      setSelectedRoles(user.roles);
+      setSelectedGroupPermission(user.permissionGroups || []);
+      setSelectedRoles(user.roles || []);
+      setSelectedBranch(user.branch);
     }
   }, [user]);
 
@@ -92,6 +101,7 @@ const EditUser = props => {
     dispatch(getDepartment());
     dispatch(getPermissionGroups());
     dispatch(getUserRole());
+    dispatch(getBranch());
     return () => {
       dispatch(reset());
     };
@@ -138,14 +148,6 @@ const EditUser = props => {
     }
   };
 
-  const onSelectDepartment = ({ value }) => {
-    const checkExist = selectedDepartment.filter(selected => selected.id === value.id);
-    if (checkExist.length === 0) {
-      const newArr = [...selectedDepartment, value];
-      setSelectedDepartment(newArr);
-    }
-  };
-
   const onSelectRoles = ({ value }) => {
     const checkExist = selectedRoles.filter(selected => selected.id === value.id);
     if (checkExist.length === 0) {
@@ -166,18 +168,7 @@ const EditUser = props => {
           validate={validate(validationSchema)}
           onSubmit={onSubmit}
         >
-          {({
-            values,
-            errors,
-            touched,
-
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-
-            handleReset
-          }) => (
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
                 <CCol lg="6">
@@ -300,6 +291,25 @@ const EditUser = props => {
                   }))}
                 />
                 <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="userName">Phòng ban</CLabel>
+                <Select
+                  name="branch"
+                  onChange={e => {
+                    setFieldValue('branch', e.value);
+                  }}
+                  value={{
+                    value: values.branch,
+                    label: values.branch?.name
+                  }}
+                  placeholder="Chọn Phòng ban"
+                  options={branches.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
+                <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
               </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="userName">Chức vụ</CLabel>

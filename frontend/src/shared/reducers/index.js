@@ -16,6 +16,7 @@ import billReducer from '../../views/pages/warehouse/Bill/bill.reducer';
 import userReducer from '../../views/pages/user/UserList/user.reducer';
 import userRoleReducer from '../../views/pages/user/UserRole/user-roles.reducer';
 import departmentReducer from '../../views/pages/user/UserDepartment/department.reducer';
+import branchReducer from '../../views/pages/user/UserBranch/branch.reducer';
 import permissionReducer from '../../views/pages/user/UserPermission/permission.reducer';
 import warehouseHistoryReducer from '../../views/pages/warehouse/History/warehouse-history.reducer';
 import ProviderReducer from '../../views/pages/warehouse/Provider/provider.reducer';
@@ -39,6 +40,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   userRole: userRoleReducer,
   department: departmentReducer,
+  branch: branchReducer,
   permission: permissionReducer,
   warehouseImport: warehouseImportReducer,
   storeHistory: warehouseHistoryReducer,

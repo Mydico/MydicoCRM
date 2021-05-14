@@ -1,4 +1,4 @@
-import { IsArray, IsString, MinLength, IsUUID, IsOptional, MaxLength, IsEnum } from 'class-validator';
+import { IsArray, IsString, MinLength, IsUUID, IsOptional, MaxLength, IsEnum, IsNumber } from 'class-validator';
 import { User } from '../../domain/user.entity';
 import { PermissionGroupStatus } from '../../domain/enumeration/permission-group-status';
 
@@ -43,7 +43,7 @@ export class CreatePermissionGroupDTO {
 export class UpdatePermissionGroupDTO {
 
     
-    @IsUUID()
+    @IsNumber()
     readonly id: string;
 
     

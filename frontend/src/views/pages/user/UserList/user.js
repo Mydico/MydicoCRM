@@ -4,7 +4,7 @@ import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, C
 import CIcon from '@coreui/icons-react';
 import {useDispatch, useSelector} from 'react-redux';
 import {getUser} from './user.api.js';
-import {globalizedUserSelectors} from './user.reducer.js';
+import {globalizedUserSelectors, reset} from './user.reducer.js';
 import {useHistory} from 'react-router-dom';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -27,7 +27,7 @@ const User = (props) => {
   useEffect(() => {
     // dispatch(fetching());
     // dispatch(getUser());
-    // dispatch(reset());
+    dispatch(reset());
   }, []);
 
   useEffect(() => {
@@ -104,11 +104,11 @@ const User = (props) => {
       .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateUser = () => {
-    history.push(`${props.match.url}new`);
+    history.push(`${props.match.url}/new`);
   };
 
   const toEditUser = (userId) => {
-    history.push(`${props.match.url}${userId}/edit`);
+    history.push(`${props.match.url}/${userId}/edit`);
   };
 
   const onFilterColumn = (value) => {

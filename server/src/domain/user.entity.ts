@@ -10,6 +10,7 @@ import PermissionGroup from './permission-group.entity';
 import Bill from './bill.entity';
 import StoreInput from './store-input.entity';
 import { ProductStatus } from './enumeration/product-status';
+import Branch from './branch.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -45,6 +46,9 @@ export class User extends BaseEntity {
 
   @ManyToOne(type => Department)
   department?: Department;
+
+  @ManyToOne(type => Branch)
+  branch?: Branch;
 
   @OneToMany(type => Bill, other => other.transporter)
   bill?: Bill[];

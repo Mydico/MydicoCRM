@@ -79,7 +79,7 @@ const Customer = props => {
     .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {
-    history.push(`${props.match.url}new`);
+    history.push(`${props.match.url}/new`);
   };
 
   const toEditCustomer = userId => {

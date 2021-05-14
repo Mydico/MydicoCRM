@@ -7,13 +7,11 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
 import City from './city.entity';
 import District from './district.entity';
 import Wards from './wards.entity';
-import Fanpage from './fanpage.entity';
 import CustomerSkin from './customer-skin.entity';
 import CustomerCategory from './customer-category.entity';
 import CustomerStatus from './customer-status.entity';
 import CustomerType from './customer-type.entity';
 import CustomerRequest from './customer-request.entity';
-import Branch from './branch.entity';
 import { User } from './user.entity';
 
 import Order from './order.entity';
@@ -122,9 +120,6 @@ export default class Customer extends BaseEntity {
 
     @ManyToOne(type => Wards)
     ward?: Wards;
-
-    @ManyToOne(type => Fanpage)
-    fanpage?: Fanpage;
 
     @ManyToOne(type => CustomerSkin)
     skin?: CustomerSkin;

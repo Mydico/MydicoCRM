@@ -1,37 +1,67 @@
-import React from 'react';
-import {useSelector} from 'react-redux';
-import {Route, Redirect} from 'react-router-dom';
+import { TheAside, TheFooter, TheHeader, TheSidebar } from '../../containers';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { Route, Redirect } from 'react-router-dom';
+import { whiteList } from '../utils/constant';
 
-export const PrivateRouteComponent = ({component: Component, ...rest}) => {
-  const {isAuthenticated} = useSelector((state) => state.authentication);
-  // const checkAuthorities = props =>
-  //   isAuthorized ? (
-  //     // <ErrorBoundary>
-  //       <Component {...props} />
-  //     // </ErrorBoundary>
-  //   ) : (
-  //     <div className="insufficient-authority">
-  //       <div className="alert alert-danger">
-  //         <Translate contentKey="error.http.403">You are not authorized to access this page.</Translate>
-  //       </div>
-  //     </div>
-  //   );
-  const renderRedirect = (props) => {
-    // if (!sessionHasBeenFetched) {
-    //   return <div></div>;
-    // } else {
-    return isAuthenticated ? (
+export const PrivateRouteComponent = ({ component: Component, ...rest }) => {
+  const { isAuthenticated, sessionHasBeenFetched, account } = useSelector(state => state.authentication);
+  const checkAuthorities = props => {
+    const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+    const isWhiteList = whiteList.includes(props.location.pathname);
+    const isHasPermission =
+      account.role.filter(item => item.method === 'GET' && item.entity.includes(props.location.pathname)).length > 0 ||
+      account.role.filter(
+        item =>
+          item.method === 'POST' && item.entity.includes(props.location.pathname.split('/')[1]) && props.location.pathname.includes('new')
+      ).length > 0 ||
+      account.role.filter(item => item.method === 'PUT' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 ||
+      account.role.filter(item => item.method === 'DELETE' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0;
+    return isWhiteList || isHasPermission || isAdmin ? (
       <Component {...props} />
     ) : (
-      <Redirect
-        to={{
-          pathname: '/login',
-          search: props.location.search,
-          state: {from: props.location},
-        }}
-      />
+      <div>
+        <TheSidebar />
+        <TheAside />
+        <div className="c-wrapper">
+          <TheHeader />
+          <div className="c-body">
+            <div className="insufficient-authority">
+              <div className="alert alert-danger">
+                <span>Bạn không dc quyền truy cập vào trang này</span>
+              </div>
+            </div>
+          </div>
+          <TheFooter />
+        </div>
+      </div>
     );
-    // }
+  };
+
+  const renderRedirect = props => {
+    if (!sessionHasBeenFetched) {
+      return (
+        <Redirect
+          to={{
+            pathname: '/login',
+            search: props.location.search,
+            state: { from: props.location }
+          }}
+        />
+      );
+    } else {
+      return isAuthenticated ? (
+        checkAuthorities(props)
+      ) : (
+        <Redirect
+          to={{
+            pathname: '/login',
+            search: props.location.search,
+            state: { from: props.location }
+          }}
+        />
+      );
+    }
   };
 
   if (!Component) throw new Error(`A component needs to be specified for private route for path ${rest.path}`);

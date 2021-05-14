@@ -55,8 +55,9 @@ export class RoleService {
         await this.enforcer.removeFilteredPolicy(0, gPermissionId);
     }
 
-    public async getPermissions(userId: string) {
-        const groupPolicy = await this.enforcer.getFilteredGroupingPolicy(1, userId);
+    public async getPermissions(login: string) {
+        await this.enforcer.loadPolicy();
+        const groupPolicy = await this.enforcer.getFilteredGroupingPolicy(1, login);
         const groupNestedPolicy = await Promise.all(groupPolicy.map(async gPer => await this.enforcer.getFilteredGroupingPolicy(1, gPer[0])));
         const groupNestedPolicyReduced = groupNestedPolicy.reduce((prev, sum) => [...sum, ...prev], []);
         const combinedArr = [...groupPolicy, ...groupNestedPolicyReduced];

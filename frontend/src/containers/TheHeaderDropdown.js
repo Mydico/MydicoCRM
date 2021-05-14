@@ -1,8 +1,14 @@
 import React from 'react';
-import {CBadge, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CImg} from '@coreui/react';
+import { CBadge, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CImg } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
+import { useDispatch } from 'react-redux';
+import { logout } from '../views/pages/login/authenticate.reducer';
 
 const TheHeaderDropdown = () => {
+  const dispatch = useDispatch();
+  const onLogout = () => {
+    dispatch(logout());
+  };
   return (
     <CDropdown inNav className="c-header-nav-items mx-2" direction="down">
       <CDropdownToggle className="c-header-nav-link" caret={false}>
@@ -19,7 +25,7 @@ const TheHeaderDropdown = () => {
           Thông tin cá nhân
         </CDropdownItem>
         <CDropdownItem divider />
-        <CDropdownItem onClick>
+        <CDropdownItem onClick={onLogout}>
           <CIcon name="cil-lock-locked" className="mfe-2" />
           Đăng xuất
         </CDropdownItem>

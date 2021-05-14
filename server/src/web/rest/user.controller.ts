@@ -61,13 +61,13 @@ export class UserController {
     return res.send(await this.userService.update(user));
   }
 
-  @Get('/:login')
+  @Get('/:id')
   @ApiResponse({
     status: 200,
     description: 'The found record',
     type: User
   })
-  async getUser(@Param('login') loginValue: string, @Res() res: Response): Promise<Response> {
+  async getUser(@Param('id') loginValue: string, @Res() res: Response): Promise<Response> {
     return res.send(await this.userService.find({ where: { login: loginValue } }));
   }
 

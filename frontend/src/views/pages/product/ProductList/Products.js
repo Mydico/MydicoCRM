@@ -89,11 +89,11 @@ const Product = (props) => {
       .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateProduct = () => {
-    history.push(`${props.match.url}new`);
+    history.push(`${props.match.url}/new`);
   };
 
   const toEditProduct = (userId) => {
-    history.push(`${props.match.url}${userId}/edit`);
+    history.push(`${props.match.url}/${userId}/edit`);
   };
 
   const onFilterColumn = (value) => {
