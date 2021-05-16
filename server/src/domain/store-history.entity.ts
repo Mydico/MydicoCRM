@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { StoreHistoryType } from './enumeration/store-history-type';
 
@@ -12,9 +12,11 @@ import Store from './store.entity';
 @Entity('store_history')
 export default class StoreHistory extends BaseEntity {
     @Column({ type: 'integer', name: 'quantity', nullable: true })
+    @Index()
     quantity: number;
 
     @Column({ type: 'simple-enum', name: 'status', enum: StoreHistoryType, default: StoreHistoryType.IMPORT })
+    @Index()
     type: StoreHistoryType;
 
     @ManyToOne(type => Product)

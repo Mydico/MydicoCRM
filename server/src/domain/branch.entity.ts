@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Tree, TreeChildren, TreeParent } from 'typeorm';
+import { Entity, Column, ManyToMany, Index} from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import Department from './department.entity';
 import { DepartmentStatus } from './enumeration/department-status';
@@ -11,12 +11,15 @@ import PermissionGroup from './permission-group.entity';
 @Entity('branch')
 export default class Branch extends BaseEntity {
     @Column({ name: 'code', nullable: true })
+    @Index()
     code: string;
 
     @Column({ name: 'name', nullable: true })
+    @Index()
     name: string;
 
     @Column({ type: 'simple-enum', name: 'status', enum: DepartmentStatus, default: DepartmentStatus.ACTIVE })
+    @Index()
     status: DepartmentStatus;
     
     @ManyToMany(type => PermissionGroup, other => other.branches)

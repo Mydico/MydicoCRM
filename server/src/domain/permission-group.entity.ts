@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
 import PermissionGroupAssociate from './permission-group-associate.entity';
@@ -16,12 +16,15 @@ import Branch from './branch.entity';
 @Entity('permission_group')
 export default class PermissionGroup extends BaseEntity {
     @Column({ name: 'name', nullable: true })
+    @Index()
     name: string;
 
     @Column({ name: 'note', nullable: true })
+    @Index()
     note: string;
 
     @Column({ type: 'enum', name: 'status', enum: PermissionGroupStatus })
+    @Index()
     status: PermissionGroupStatus;
 
     @ManyToMany(type => User, user => user.permissionGroups)

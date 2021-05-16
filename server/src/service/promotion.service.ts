@@ -46,7 +46,6 @@ export class PromotionService {
     }
 
     async save(promotion: Promotion): Promise<Promotion | undefined> {
-        console.log(promotion);
         const saved = await this.promotionRepository.save(promotion);
         if (promotion.id) {
             const productList = await this.promotionProductService.findManyByfields({ where: { promotion: saved.id } });

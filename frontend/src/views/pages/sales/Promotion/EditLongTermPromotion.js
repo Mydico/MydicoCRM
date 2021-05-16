@@ -148,7 +148,6 @@ const EditPromotion = (props) => {
             handleReset
             ,
           }) => {
-            console.log(values);
             return (
               <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
                 <CRow>

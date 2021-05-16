@@ -98,8 +98,9 @@ export class PermissionGroupController {
     if (check && check.id !== permissionGroup.id) {
       throw new HttpException('NameExisted', HttpStatus.CONFLICT);
     }
-    this.permissionGroupService.updateDependency(permissionGroup.permissions, permissionGroup, permissionGroup.users);
-    return res.send(await this.permissionGroupService.update(permissionGroup));
+    await this.permissionGroupService.updateDependency(permissionGroup.permissions, permissionGroup, permissionGroup.users);
+    const updated = await this.permissionGroupService.update(permissionGroup);
+    return res.send(updated);
   }
 
   @Delete('/:id')

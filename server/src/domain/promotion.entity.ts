@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 import PromotionItem from './promotion-item.entity';
 import CustomerType from './customer-type.entity';
 import Product from './product.entity';
@@ -17,33 +16,43 @@ import { PromotionType } from './enumeration/promotion-type';
 @Entity('promotion')
 export default class Promotion extends BaseEntity {
     @Column({ name: 'start_time', nullable: true })
+    @Index()
     startTime: string;
 
     @Column({ name: 'end_time', nullable: true })
+    @Index()
     endTime: string;
 
     @Column({ name: 'name', length: 255, nullable: true })
+    @Index()
     name: string;
 
     @Column({ name: 'description', length: 512, nullable: true })
+    @Index()
     description: string;
 
     @Column({ type: 'bigint', name: 'total_revenue', nullable: true })
+    @Index()
     totalRevenue?: number;
 
     @Column({ type: 'integer', name: 'site_id', nullable: true })
+    @Index()
     siteId?: number;
 
     @Column({ type: 'boolean', name: 'isLock', nullable: false, default: false })
+    @Index()
     isLock: boolean;
 
     @Column({ name: 'image', length: 255, nullable: true })
+    @Index()
     image?: string;
 
     @Column({ type: 'simple-enum', name: 'status', enum: PromotionStatus, default: PromotionStatus.ACTIVE })
+    @Index()
     status?: PromotionStatus;
 
     @Column({ type: 'simple-enum', name: 'type', enum: PromotionType, default: PromotionType.SHORTTERM })
+    @Index()
     type?: PromotionType;
 
     @OneToMany(type => Order, other => other.promotion)
@@ -51,9 +60,6 @@ export default class Promotion extends BaseEntity {
 
     @OneToMany(type => PromotionItem, other => other.promotion)
     promotionItems? : PromotionItem[];
-
-    @OneToMany(type => Product, other => other.promotion)
-    products? : Product[];
 
     @OneToMany(type => PromotionProduct, other => other.promotion)
     promotionProduct? : PromotionProduct[];

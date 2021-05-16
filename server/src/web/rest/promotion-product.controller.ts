@@ -65,7 +65,6 @@ export class PromotionProductController {
     type: PromotionProduct
   })
   async getAllAtOnce(@Req() req: Request, @Res() res): Promise<PromotionProduct[]> {
-    console.log(req.query.ids);
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const [results, count] = await this.promotionProductService.findManyByManyId(JSON.parse(req.query.ids));
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));

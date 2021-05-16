@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 import { User } from './user.entity';
 import PermissionGroup from './permission-group.entity';
 
@@ -12,8 +11,10 @@ import PermissionGroup from './permission-group.entity';
 @Entity('user_role')
 export default class UserRole extends BaseEntity {
   @Column({ name: 'code', length: 255 })
+  @Index()
   code: string;
   @Column({ name: 'name', length: 255 })
+  @Index()
   name: string;
 
   @ManyToMany(type => User, other => other.roles)

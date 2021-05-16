@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getProduct} from './product.api.js';
 import {globalizedProductSelectors, reset} from './product.reducer.js';
 import {useHistory} from 'react-router-dom';
+import moment from 'moment'
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -33,6 +34,7 @@ const Product = (props) => {
       return {
         ...item,
         productGroup: item.productGroup?.name,
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

@@ -9,7 +9,7 @@ import {useHistory} from 'react-router-dom';
 import {WarehouseImportStatus, WarehouseImportType} from './contants.js';
 import {confirmAlert} from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-
+import moment from 'moment'
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -47,6 +47,7 @@ const WarehouseImport = (props) => {
         customer: item.customer?.name || '',
         approver: item.approver?.login || '',
         export: item.storeTransfer?.name || '',
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };
@@ -175,7 +176,6 @@ const WarehouseImport = (props) => {
           <CRow>
             <CButton
               onClick={() => {
-                console.log(item);
                 item.type === WarehouseImportType.NEW ? toEditWarehouseImport(item.id) : toEditWarehouseReturn(item.id);
               }}
               color="warning"

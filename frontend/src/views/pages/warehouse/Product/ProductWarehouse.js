@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getProductWarehouse} from './product-warehouse.api.js';
 import {globalizedProductWarehouseSelectors, reset} from './product-warehouse.reducer.js';
 import {useHistory} from 'react-router-dom';
+import moment from 'moment'
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -41,6 +42,7 @@ const ProductWarehouse = (props) => {
         code: item.product?.code,
         name: item.product?.name,
         store: item.store?.name,
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

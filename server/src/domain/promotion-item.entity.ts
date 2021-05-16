@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 import ProductGroup from './product-group.entity';
 import Promotion from './promotion.entity';
 
@@ -12,15 +11,19 @@ import Promotion from './promotion.entity';
 @Entity('promotion_item')
 export default class PromotionItem extends BaseEntity {
     @Column({ name: 'name', length: 255, nullable: true })
+    @Index()
     name: string;
 
     @Column({ type: 'bigint', name: 'total_money', nullable: true })
+    @Index()
     totalMoney: number;
 
     @Column({ type: 'integer', name: 'reduce_percent', nullable: true })
+    @Index()
     reducePercent: number;
 
     @Column({ name: 'note', length: 512, nullable: true })
+    @Index()
     note: string;
 
     @ManyToOne(type => ProductGroup, productGroup => productGroup.product)
@@ -32,6 +35,7 @@ export default class PromotionItem extends BaseEntity {
 
 
     @Column({ type: 'integer', name: 'site_id', nullable: true })
+    @Index()
     siteId: number;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

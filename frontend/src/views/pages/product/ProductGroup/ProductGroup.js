@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getProductGroup} from './product-group.api';
 import {globalizedproductGroupsSelectors, reset} from './product-group.reducer';
 import {useHistory} from 'react-router-dom';
-
+import moment from 'moment'
 const ProductGroup = (props) => {
   const [details, setDetails] = useState([]);
   const {initialState} = useSelector((state) => state.productGroup);
@@ -79,6 +79,7 @@ const ProductGroup = (props) => {
         ...item,
         productBrand: item.productBrand?.name || '',
         description: item.description || '',
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

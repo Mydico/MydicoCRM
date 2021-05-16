@@ -71,7 +71,6 @@ const EditPermissionGroups = props => {
 
   useEffect(() => {
     setInitValues(perGroup);
-    console.log(perGroup);
     if (perGroup && perGroup.permissionGroupAssociates) {
       const group = perGroup.permissionGroupAssociates.reduce((r, a) => {
         r[a.type] = [...(r[a.type] || []), a];
@@ -200,7 +199,7 @@ const EditPermissionGroups = props => {
   return (
     <CCard>
       <CCardHeader>
-        <CCardTitle className="card-title mb-0">Thêm mới nhóm quyền</CCardTitle>
+        <CCardTitle className="card-title mb-0">Chỉnh sửa nhóm quyền</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initValues || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
@@ -230,7 +229,7 @@ const EditPermissionGroups = props => {
                   <CInvalidFeedback className="d-block">{errors.name}</CInvalidFeedback>
                 </CFormGroup>
               </CCol>
-              <CCol lg="12">
+              <CCol lg="12" style={{ zIndex: 100 }}>
                 <CFormGroup>
                   <CLabel htmlFor="userName">Chọn nhóm chức năng</CLabel>
                   <Select

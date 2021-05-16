@@ -1,17 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column,  ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 
-import City from './city.entity';
-import District from './district.entity';
-import Wards from './wards.entity';
-import CustomerSkin from './customer-skin.entity';
-import CustomerCategory from './customer-category.entity';
 import CustomerStatus from './customer-status.entity';
 import CustomerType from './customer-type.entity';
-import CustomerRequest from './customer-request.entity';
 import { User } from './user.entity';
 
 import Order from './order.entity';
@@ -26,76 +19,79 @@ import Receipt from './receipt.entity';
 @Entity('customer')
 export default class Customer extends BaseEntity {
     @Column({ name: 'name', length: 255, nullable: true })
+    @Index()
     name: string;
 
     @Column({ name: 'tel', length: 100, nullable: true })
+    @Index()
     tel: string;
 
     @Column({ name: 'address', length: 255, nullable: true })
+    @Index()
     address: string;
 
     /**
    * năm sinh
    */
     @Column({ name: 'date_of_birth', nullable: true })
+    @Index()
     dateOfBirth: string;
 
     @Column({ name: 'obclub_join_time', nullable: true })
+    @Index()
     obclubJoinTime?: string;
 
     /**
    * chiều cao (cm)
    */
     @Column({ type: 'integer', name: 'estimate_revenue_month', nullable: true })
+    @Index()
     estimateRevenueMonth?: number;
 
     /**
    * cân nặng(kg)
    */
     @Column({ type: 'integer', name: 'capacity', nullable: true })
+    @Index()
     capacity?: number;
 
     /**
    * tình trạng hôn nhân (đọc thân, đã kết hôn, đã ly hôn)
    */
     @Column({ type: 'boolean', name: 'marriage', nullable: true })
+    @Index()
     marriage?: boolean;
 
     @Column({ type: 'boolean', name: 'is_del', nullable: true })
+    @Index()
     isDel?: boolean;
 
     @Column({ type: 'boolean', name: 'activated', nullable: true })
+    @Index()
     activated?: boolean;
 
     @Column({ name: 'email', length: 250, nullable: true })
+    @Index()
     email?: string;
-
-    @Column({ type: 'integer', name: 'level', nullable: true })
-    level?: number;
 
     @Column({ name: 'code', length: 256, unique: true, nullable: false })
     code: string;
 
     @Column({ name: 'contact_name', length: 256, nullable: true })
+    @Index()
     contactName?: string;
 
-    @Column({ name: 'created_year', length: 256, nullable: true })
-    createdYear?: string;
-
     @Column({ name: 'note', length: 500, nullable: true })
+    @Index()
     note?: string;
 
     @Column({ type: 'integer', name: 'contact_year_of_birth', nullable: true })
+    @Index()
     contactYearOfBirth?: number;
 
-    @Column({ type: 'integer', name: 'total_debt', nullable: true })
-    totalDebt?: number;
-
     @Column({ type: 'integer', name: 'early_debt', nullable: true })
+    @Index()
     earlyDebt?: number;
-
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    siteId?: number;
 
     @OneToMany(type => Order, other => other.customer)
     order? : Order[];
@@ -109,25 +105,20 @@ export default class Customer extends BaseEntity {
     @OneToMany(type => StoreInput, other => other.customer)
     storeInput? : StoreInput[];
 
-    @ManyToOne(type => City)
-    city?: City;
+    @Column({ name: 'city', length: 255, nullable: true })
+    @Index()
+    city?: string;
 
-    @ManyToOne(type => District)
-    district?: District;
+    @Column({ name: 'district', length: 255, nullable: true })
+    @Index()
+    district?: string;
 
     @ManyToOne(type => Department)
     department?: Department;
 
-    @ManyToOne(type => Wards)
-    ward?: Wards;
-
-    @ManyToOne(type => CustomerSkin)
-    skin?: CustomerSkin;
-
-    
-    @ManyToOne(type => CustomerCategory)
-    category?: CustomerCategory;
-
+    @Column({ name: 'ward', length: 255, nullable: true })
+    @Index()
+    ward?: string;
     
     @ManyToOne(type => CustomerStatus)
     status?: CustomerStatus;
@@ -137,9 +128,6 @@ export default class Customer extends BaseEntity {
 
     @ManyToOne(type => CustomerType)
     type?: CustomerType;
-
-    @ManyToOne(type => CustomerRequest)
-    request?: CustomerRequest;
 
     @ManyToMany(type => User)
     @JoinTable({

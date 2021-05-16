@@ -22,7 +22,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getPromotion, updatePromotion} from './promotion.api.js';
 import {globalizedPromotionSelectors, reset} from './promotion.reducer.js';
 import {useHistory} from 'react-router-dom';
-
+import moment from 'moment'
 const Promotion = (props) => {
   const [details, setDetails] = useState([]);
   const selectedPro = useRef({id: null, isLock: false});
@@ -48,6 +48,7 @@ const Promotion = (props) => {
         ...item,
         customerType: item.customerType?.name || '',
         description: item.description?.length > 10 ? `${item.description.substring(0, 250)}...` : item.description,
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

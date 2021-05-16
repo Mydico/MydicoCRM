@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
 import Customer from './customer.entity';
@@ -12,6 +12,7 @@ import { User } from './user.entity';
 @Entity('customer_debit')
 export default class CustomerDebit extends BaseEntity {
     @Column({ type: 'bigint', name: 'debt', nullable: true, default: 0 })
+    @Index()
     debt: number;
 
     @ManyToOne(type => Customer)

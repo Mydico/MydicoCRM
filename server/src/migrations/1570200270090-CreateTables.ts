@@ -6,7 +6,6 @@ export class CreateTables1570200270090 implements MigrationInterface {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.commitTransaction();
             }
-
             await queryRunner.connection.synchronize();
         }
     }

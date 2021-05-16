@@ -8,7 +8,7 @@ import {useHistory} from 'react-router-dom';
 // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import {globalizedDebtsSelectors, reset} from './debt.reducer.js';
-
+import moment from 'moment'
 const Debt = (props) => {
   const [,] = useState([]);
   const {initialState} = useSelector((state) => state.debt);
@@ -36,6 +36,7 @@ const Debt = (props) => {
         name: item.customer?.name || '',
         phone: item.customer?.phone || '',
         sale: item.sale?.name || '',
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

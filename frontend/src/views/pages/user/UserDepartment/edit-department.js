@@ -115,7 +115,6 @@ const EditDepartment = props => {
 
             handleReset
           }) => {
-            console.log(values.parent);
             return (
               <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
                 <CFormGroup>

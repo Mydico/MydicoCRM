@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 
 import Product from './product.entity';
 
@@ -12,13 +11,14 @@ import Product from './product.entity';
 @Entity('product_details')
 export default class ProductDetails extends BaseEntity {
     @Column({ name: 'barcode', length: 255, nullable: true })
+    @Index()
     barcode: string;
 
 
-    @Column({ type: 'boolean', name: 'is_del', nullable: true })
-    isDel: boolean;
+
 
     @Column({ name: 'name', length: 250, nullable: true })
+    @Index()
     name: string;
 
     @ManyToOne(type => Product)

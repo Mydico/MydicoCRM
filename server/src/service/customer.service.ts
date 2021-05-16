@@ -8,15 +8,8 @@ import { DepartmentService } from './department.service';
 import { checkCodeContext } from './utils/normalizeString';
 
 const relationshipNames = [];
-relationshipNames.push('city');
-relationshipNames.push('district');
-relationshipNames.push('ward');
-relationshipNames.push('fanpage');
-relationshipNames.push('skin');
-relationshipNames.push('category');
 relationshipNames.push('status');
 relationshipNames.push('type');
-relationshipNames.push('request');
 relationshipNames.push('department');
 relationshipNames.push('users');
 
@@ -40,14 +33,17 @@ export class CustomerService {
 
   async findAndCount(options: FindManyOptions<Customer>, currentUser: User): Promise<[Customer[], number]> {
     let departmentVisible = [];
+    console.log(currentUser)
     if (currentUser.department) {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible.push(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id)
+      departmentVisible.push(currentUser.department.id);
     }
-    options.relations = relationshipNames;
+    console.log(departmentVisible)
     options.where = {
       department: In(departmentVisible)
     }
+    options.relations = relationshipNames;
     return await this.customerRepository.findAndCount(options);
   }
 
@@ -56,19 +52,6 @@ export class CustomerService {
       code: Like(`%${customer.code}%`)
     });
     const newCustomer = checkCodeContext(customer, foundedCustomer);
-    // if (foundedCustomer.length > 0) {
-    //     const reg = new RegExp(customer.code + '\\d*$');
-    //     const founded = [];
-    //     foundedCustomer.forEach(item => {
-    //         if (reg.test(item.code)) {
-    //             founded.push(item.code);
-    //         }
-    //     });
-    //     if (founded.length > 0) {
-    //         const res = increment_alphanumeric_str(founded[founded.length - 1]);
-    //         customer.code = res;
-    //     }
-    // }
     return await this.customerRepository.save(newCustomer);
   }
 

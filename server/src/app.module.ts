@@ -6,7 +6,6 @@ import { ormconfig, roleBDConfig } from './orm.config';
 import { CustomerTokenModule } from './module/customer-token.module';
 import { PromotionModule } from './module/promotion.module';
 import { BillModule } from './module/bill.module';
-import { CityModule } from './module/city.module';
 import { CodlogModule } from './module/codlog.module';
 import { CustomerModule } from './module/customer.module';
 import { CustomerAdvisoryModule } from './module/customer-advisory.module';
@@ -17,7 +16,6 @@ import { CustomerSkinModule } from './module/customer-skin.module';
 import { CustomerStatusModule } from './module/customer-status.module';
 import { CustomerTempModule } from './module/customer-temp.module';
 import { CustomerTypeModule } from './module/customer-type.module';
-import { DistrictModule } from './module/district.module';
 import { OrderModule } from './module/order.module';
 import { OrderDetailsModule } from './module/order-details.module';
 import { OrderPushModule } from './module/order-push.module';
@@ -40,7 +38,6 @@ import { UserNotifyModule } from './module/user-notify.module';
 import { UserRoleModule } from './module/user-role.module';
 import { UserTeamModule } from './module/user-team.module';
 import { UserTypeModule } from './module/user-type.module';
-import { WardsModule } from './module/wards.module';
 import { UserTokenModule } from './module/user-token.module';
 import { ProductBrandModule } from './module/product-brand.module';
 import { FileModule } from './module/file.module';
@@ -77,7 +74,6 @@ import { BranchModule } from './module/branch.module';
         CustomerTokenModule,
         PromotionModule,
         BillModule,
-        CityModule,
         FileModule,
         CodlogModule,
         CustomerModule,
@@ -89,7 +85,6 @@ import { BranchModule } from './module/branch.module';
         CustomerStatusModule,
         CustomerTempModule,
         CustomerTypeModule,
-        DistrictModule,
         OrderModule,
         OrderDetailsModule,
         OrderPushModule,
@@ -113,7 +108,6 @@ import { BranchModule } from './module/branch.module';
         UserRoleModule,
         UserTeamModule,
         UserTypeModule,
-        WardsModule,
         UserTokenModule,
         ProductBrandModule,
         PromotionProductModule,

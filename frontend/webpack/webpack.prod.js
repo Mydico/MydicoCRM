@@ -51,6 +51,7 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
   },
   optimization: {
     runtimeChunk: false,
+    usedExports: true,
     minimizer: [
       new TerserPlugin({
         cache: true,

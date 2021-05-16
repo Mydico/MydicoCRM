@@ -503,7 +503,6 @@ const EditOrder = props => {
                   </thead>
                   <tbody>
                     {productList.map((item, index) => {
-                      console.log(item.quantity,item.quantityAndGift,item.quantityInStore)
                       return (
                         <tr
                           key={index}

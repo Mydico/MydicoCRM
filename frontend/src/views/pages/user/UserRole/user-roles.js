@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getUserRole} from './user-roles.api.js';
 import {globalizedUserRoleSelectors} from './user-roles.reducer.js';
 import {useHistory} from 'react-router-dom';
+import moment from 'moment'
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -24,11 +25,7 @@ const UserRole = (props) => {
       isInitialMount.current = false;
     }
   });
-  useEffect(() => {
-    // dispatch(fetching());
-    // dispatch(getUserRole());
-    // dispatch(reset());
-  }, []);
+
 
   useEffect(() => {
     if (!isInitialMount.current) {
@@ -42,9 +39,7 @@ const UserRole = (props) => {
     return items.map((item) => {
       return {
         ...item,
-        ward: item.ward?.name,
-        district: item.district?.name,
-        city: item.city?.name,
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

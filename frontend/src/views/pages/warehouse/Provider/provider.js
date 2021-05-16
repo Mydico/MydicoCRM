@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getProvider} from './provider.api.js';
 import {fetching, globalizedProviderSelectors, reset} from './provider.reducer.js';
 import {useHistory} from 'react-router-dom';
+import moment from 'moment'
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -33,6 +34,7 @@ const Provider = (props) => {
       return {
         ...item,
         department: item.department?.name || '',
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

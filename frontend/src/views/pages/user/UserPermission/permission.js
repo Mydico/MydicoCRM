@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getPermissionGroups} from './permission.api.js';
 import {fetching, globalizedPermissionGroupsSelectors, reset} from './permission.reducer.js';
 import {useHistory} from 'react-router-dom';
+import moment from 'moment'
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -42,9 +43,7 @@ const PermissionGroups = (props) => {
     return items.map((item) => {
       return {
         ...item,
-        ward: item.ward?.name,
-        district: item.district?.name,
-        city: item.city?.name,
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

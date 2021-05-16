@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
 import Order from './order.entity';
@@ -12,31 +12,38 @@ import Store from './store.entity';
 @Entity('order_details')
 export default class OrderDetails extends BaseEntity {
 
-    @ManyToOne(type => Product, promotion => promotion, { cascade: true })
+    @ManyToOne(type => Product, promotion => promotion)
     product: Product;
 
     @Column({ type: 'integer', name: 'quantity', nullable: true })
+    @Index()
     quantity: number;
 
     @Column({ type: 'bigint', name: 'price', nullable: true })
+    @Index()
     price: number;
 
     @Column({ name: 'attachTo', nullable: true })
+    @Index()
     attachTo: number;
 
-    @ManyToOne(type => Store, promotion => promotion, { cascade: true })
+    @ManyToOne(type => Store, promotion => promotion)
     store: Store;
 
     @Column({ type: 'double', name: 'price_total', nullable: true })
+    @Index()
     priceTotal: number;
 
     @Column({ type: 'float', name: 'reduce_percent', nullable: true })
+    @Index()
     reducePercent: number;
 
     @Column({ type: 'double', name: 'price_real', nullable: true })
+    @Index()
     priceReal: number;
 
     @Column({ type: 'integer', name: 'site_id', nullable: true })
+    @Index()
     siteId: number;
 
     @ManyToOne(type => Order)

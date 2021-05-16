@@ -4,7 +4,7 @@ import { CBadge, CCard, CCardHeader, CCardBody, CCol, CDataTable, CRow, CPaginat
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useHistory } from 'react-router-dom';
-
+import moment from 'moment'
 import { getTransaction } from './debt.api';
 const getBadge = status => {
   switch (status) {
@@ -40,7 +40,8 @@ const Transaction = props => {
           code: item.customer?.code || '',
           name: item.customer?.name || '',
           phone: item.customer?.phone || '',
-          sale: item.sale?.name || ''
+          sale: item.sale?.name || '',
+          createdDate: moment(item.createdDate).format("DD-MM-YYYY")
         };
       })
       .sort((a, b) => {

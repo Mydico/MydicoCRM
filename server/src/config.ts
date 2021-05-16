@@ -77,7 +77,6 @@ export class Config {
     }
 
     private processTemplate(template, variables): any {
-    // console.log(template);
         if (typeof template === 'string') {
             return template.replace(new RegExp('\\${[^{]+}', 'g'), name => variables[name.substring(2, name.length - 1)]);
         }

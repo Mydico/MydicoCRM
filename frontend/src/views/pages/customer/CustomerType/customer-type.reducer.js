@@ -31,12 +31,10 @@ const slice = createSlice({
   },
   extraReducers: {
     [creatingCustomerType.fulfilled]: (state, action) => {
-      console.log(action);
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
     [creatingCustomerType.rejected]: (state, action) => {
-      console.log(action);
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },

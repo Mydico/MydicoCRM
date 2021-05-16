@@ -7,6 +7,7 @@ import { globalizedOrdersSelectors, reset } from './order.reducer';
 import { useHistory } from 'react-router-dom';
 import { Table } from 'reactstrap';
 import { OrderStatus } from './order-status';
+import moment from 'moment'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 const getBadge = status => {
@@ -54,6 +55,7 @@ const Order = props => {
         customerName: item.customer?.name,
         tel: item.customer?.tel,
         quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY"),
         total: item.orderDetails
           ?.reduce((sum, current) => sum + current.priceTotal, 0)
           .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })

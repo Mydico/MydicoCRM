@@ -25,6 +25,9 @@ import { fetching } from '../customer.reducer';
 import { getDepartment } from '../../user/UserDepartment/department.api';
 import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
 import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
+import cities from '../../../../shared/utils/city'
+import district from '../../../../shared/utils/district.json'
+
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = function() {
@@ -41,7 +44,7 @@ const validationSchema = function() {
     type: Yup.object().required('Loại khách hàng không để trống'),
     dateOfBirth: Yup.date().required('Ngày tháng năm sinh không để trống'),
     department: Yup.object().required('Chi nhánh không để trống'),
-    city: Yup.object().required('Thành phố không để trống')
+    city: Yup.string().required('Thành phố không để trống')
   });
 };
 
@@ -62,6 +65,7 @@ const CreateCustomer = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedCity, setSelectedCity] = useState(null);
+  const [districts, setDistricts] = useState([])
   const { selectAll } = globalizedDepartmentSelectors;
   const departments = useSelector(selectAll);
   useEffect(() => {
@@ -73,15 +77,11 @@ const CreateCustomer = () => {
 
   useEffect(() => {
     if (selectedCity) {
-      dispatch(getDistrict({ city: selectedCity.code }));
+      setDistricts(district.filter(item => item.parent_code === selectedCity))
     }
   }, [selectedCity]);
 
   const onSubmit = (values, { resetForm }) => {
-    // if (!isNaN(Number(values.name))) {
-    //   alert('Tên khách hàng phải có chữ cái');
-    //   return;
-    // }
     dispatch(fetching());
     dispatch(creatingCustomer(values));
     resetForm();
@@ -226,9 +226,9 @@ const CreateCustomer = () => {
                             setSelectedCity(e.value);
                           }}
                           placeholder="Chọn thành phố"
-                          options={initialState.cities.map(item => ({
-                            value: item,
-                            label: item.name
+                          options={cities.map(item => ({
+                            value: item.value,
+                            label: item.label
                           }))}
                         />
                         <CInvalidFeedback className="d-block">{errors.city}</CInvalidFeedback>
@@ -243,9 +243,9 @@ const CreateCustomer = () => {
                             setFieldValue('district', e.value);
                           }}
                           placeholder="Chọn Quận huyện"
-                          options={initialState.districts.map(item => ({
-                            value: item,
-                            label: item.name
+                          options={districts.map(item => ({
+                            value: item.value,
+                            label: item.label
                           }))}
                         />
                         <CInvalidFeedback className="d-block">{errors.districts}</CInvalidFeedback>

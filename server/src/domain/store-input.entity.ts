@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 
 import Store from './store.entity';
 import { StoreImportStatus } from './enumeration/store-import-status';
@@ -19,24 +18,29 @@ import Provider from './provider.entity';
 export default class StoreInput extends BaseEntity {
 
     @Column({ type: 'simple-enum', name: 'type', enum: StoreImportType, default: StoreImportType.NEW })
+    @Index()
     type?: StoreImportType;
 
     @Column({ type: 'simple-enum', name: 'status', enum: StoreImportStatus, default: StoreImportStatus.WAITING })
+    @Index()
     status?: StoreImportStatus;
 
-    @ManyToOne(type => Customer, customer => customer.storeInput, { cascade: true })
+    @ManyToOne(type => Customer, customer => customer.storeInput)
     customer?: Customer;
 
     @Column({ type: 'bigint', name: 'totalMoney', nullable: true })
+    @Index()
     totalMoney?: number;
 
-    @ManyToOne(type => User, user => user.storeInput, { cascade: true })
+    @ManyToOne(type => User, user => user.storeInput)
     approver?: User;
 
     @Column({ name: 'note', length: 255, nullable: true })
+    @Index()
     note: string;
 
     @Column({ type: 'integer', name: 'site_id', nullable: true })
+    @Index()
     siteId: number;
 
     @OneToMany(type => StoreInputDetails, other => other.storeInput)

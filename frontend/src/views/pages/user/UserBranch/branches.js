@@ -6,8 +6,7 @@ import { getBranch } from './branch.api.js';
 import { globalizedBranchSelectors, reset } from './branch.reducer.js';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { globalizedDepartmentSelectors } from '../UserDepartment/department.reducer.js';
-
+import moment from 'moment'
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -54,7 +53,8 @@ const Branch = props => {
     return items.map(item => {
       return {
         ...item,
-        code: item.code || ''
+        code: item.code || '',
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

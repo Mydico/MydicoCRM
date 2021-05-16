@@ -1,49 +1,72 @@
-// import { MigrationInterface, QueryRunner } from 'typeorm';
-// import Product from '../domain/product.entity';
-// import faker from 'faker';
-// import ProductGroup from '../domain/product-group.entity';
-// import { UnitType } from '../domain/enumeration/unit';
-// import { ProductStatus } from '../domain/enumeration/product-status';
+import { MigrationInterface, QueryRunner } from 'typeorm';
+import ProductGroup from '../domain/product-group.entity';
+import { ProductStatus } from '../domain/enumeration/product-status';
+import brands from './excel/brand.json';
+import ProductBrand from '../domain/product-brand.entity';
+import productGroups from './excel/product-group.json';
+import products from './excel/product.json';
+import { getProductCode } from '../service/utils/normalizeString';
+import Product from '../domain/product.entity';
+import { UnitType } from '../domain/enumeration/unit';
+export class SeedProduct1570200490064 implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<any> {
+    const conn = queryRunner.connection;
 
-// export class SeedProduct1570200490064 implements MigrationInterface {
-//   type1: ProductGroup = { description: 'Salon', name: 'Salon' };
-//   type2: ProductGroup = { description: 'Đại lý', name: 'Đại lý' };
+    const brand = brands.map(item => ({
+      code: item['Mã thương hiệu'],
+      name: item['tên thương hiệu']
+    }));
+    const resultBrand = await conn
+      .createQueryBuilder()
+      .insert()
+      .into(ProductBrand)
+      .values(brand)
+      .execute();
+    const productGroup = productGroups.map(item => ({
+      code: item['Mã nhóm SP'],
+      name: item['Tên nhóm sản phẩm'],
+      productBrand: resultBrand.identifiers[brands.findIndex(brand => brand['Mã thương hiệu'] === item['tên thương hiệu'])]
+    }));
 
-//   public async up(queryRunner: QueryRunner): Promise<any> {
-//     const conn = queryRunner.connection;
+    const resultProductGroup = await conn
+      .createQueryBuilder()
+      .insert()
+      .into(ProductGroup)
+      .values(productGroup)
+      .execute();
 
-//     const typesArr = await conn
-//       .createQueryBuilder()
-//       .insert()
-//       .into(ProductGroup)
-//       .values([this.type1, this.type2])
-//       .execute();
+    const savedProductGroups = productGroup.map((item, index) => ({
+      ...item,
+      id: resultProductGroup.identifiers[index]
+    }));
 
-//     const newsArr = [];
-//     console.log(typesArr)
-//     for (let index = 0; index < 50; index++) {
-//       const product: Product = {
-//         name: faker.commerce.productName(),
-//         code: faker.finance.currencyCode(),
-//         image: faker.image.imageUrl(),
-//         price: 10000000,
-//         agentPrice: 1000000,
-//         desc: 'sản phẩm test',
-//         status: ProductStatus.ACTIVE,
-//         unit: UnitType.cai,
-//         barcode: 'xxxxxx',
-//         productGroup: typesArr.identifiers[Math.floor(Math.random() * 2)]
-//       };
-//       newsArr.push(product);
-//     }
-//     await conn
-//       .createQueryBuilder()
-//       .insert()
-//       .into(Product)
-//       .values(newsArr)
-//       .execute();
-//   }
+    const productList = products.map(item => ({
+      code: getProductCode(item['Tên Sản Phẩm'], item['Mã Thương Hiệu'], item['Tên nhóm loại SP mới'], item['Dung tích']),
+      name: item['Tên Sản Phẩm'],
+      status: ProductStatus.ACTIVE,
+      price: item['Giá bán'],
+      volume: isNaN(Number(item['Dung tích'].replace(/ml/g, ''))) ? 0 : Number(item['Dung tích'].replace(/ml/g, '')),
+      agentPrice: item['Giá bán'],
+      unit: UnitType[item['ĐVT chính']],
+      productGroup:
+        savedProductGroups[
+          savedProductGroups.findIndex(
+            pGroup =>
+              pGroup.productBrand ===
+                resultBrand.identifiers[brands.findIndex(brand => brand['Mã thương hiệu'] === item['Mã Thương Hiệu'])] &&
+              pGroup.code === item['Tên nhóm loại SP mới']
+          )
+        ].id,
+      productBrand: resultBrand.identifiers[brands.findIndex(brand => brand['Mã thương hiệu'] === item['Mã Thương Hiệu'])]
+    }));
+    await conn
+      .createQueryBuilder()
+      .insert()
+      .into(Product)
+      .values(productList)
+      .execute();
+  }
 
-//   // eslint-disable-next-line
-//   public async down(queryRunner: QueryRunner): Promise<any> {}
-// }
+  // eslint-disable-next-line
+  public async down(queryRunner: QueryRunner): Promise<any> {}
+}

@@ -13,7 +13,6 @@ export const getUser = createAsyncThunk('api/users', async (params = {page: 0, s
 export const getDetailUser = createAsyncThunk('api/detail/users', async (userId, thunkAPI) => {
   try {
     const result = await axios.get('api/users/' + userId);
-    console.log(result);
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

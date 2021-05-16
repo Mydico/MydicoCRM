@@ -108,7 +108,7 @@ const routes = [
   {path: '/customers/', name: 'Khách hàng', component: Customer, exact: true},
   {path: '/customers/:id/edit/', name: 'Chỉnh sửa khách hàng', component: EditCustomer},
   {path: '/customers/new/', name: 'Thêm mới khách hàng', component: CreateCustomer},
-  {path: '/customers-types/', name: 'Loại khách hàng', component: CustomeType, exact: true},
+  {path: '/customer-types/', name: 'Loại khách hàng', component: CustomeType, exact: true},
   {path: '/customer-statuses/', name: 'Trạng thái', component: CustomerStatus, exact: true},
   {path: '/customer-statuses/new/', name: 'Thêm mới', component: CreateCustomerStatus},
   {path: '/customer-statuses/:id/edit/', name: 'Chỉnh sửa', component: EditCustomerStatus},

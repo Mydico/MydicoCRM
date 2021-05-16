@@ -72,7 +72,7 @@ export class RoleService {
                 entity: policy[1],
             }));
         }
-
+        console.log(arrPermission)
         return arrPermission;
     }
 

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerBirthday } from '../customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
 import { useHistory } from 'react-router-dom';
-
+import moment from 'moment'
 const Customer = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.customer);
@@ -28,7 +28,8 @@ const Customer = props => {
     return items.map(item => {
       return {
         ...item,
-        typeName: item.type?.name
+        typeName: item.type?.name,
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

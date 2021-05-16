@@ -82,7 +82,6 @@ const CreatePermissionGroups = () => {
       }
       values.permissions = arrPermission;
     } catch (e) {
-      console.log(e);
     }
     dispatch(fetching());
     dispatch(creatingPermissionGroups(values));

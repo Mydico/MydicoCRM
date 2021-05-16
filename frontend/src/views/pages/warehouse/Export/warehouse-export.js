@@ -9,7 +9,7 @@ import {useHistory} from 'react-router-dom';
 import {WarehouseImportStatus, WarehouseImportType} from './contants.js';
 import {confirmAlert} from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-
+import moment from 'moment'
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -40,6 +40,7 @@ const WarehouseImport = (props) => {
         ...item,
         store: item.store?.name || '',
         approver: item.approver?.login || '',
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

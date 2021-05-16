@@ -6,7 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getStoreHistory} from './warehouse-history.api.js';
 import {globalizedStoreHistorySelectors, reset} from './warehouse-history.reducer.js';
 import {useHistory} from 'react-router-dom';
-
+import moment from 'moment'
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
   IMPORT: 'NHẬP KHO',
@@ -44,6 +44,7 @@ const StoreHistory = () => {
         ...item,
         store: item.store?.name,
         product: item.product?.name,
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

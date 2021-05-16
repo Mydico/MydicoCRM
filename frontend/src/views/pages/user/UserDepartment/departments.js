@@ -7,7 +7,7 @@ import { globalizedDepartmentSelectors, reset } from './department.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { Tree, TreeNode } from 'react-organizational-chart';
 import styled from 'styled-components';
-
+import moment from 'moment'
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -56,7 +56,8 @@ const Department = props => {
     return items.map(item => {
       return {
         ...item,
-        code: item.code || ''
+        code: item.code || '',
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };
@@ -117,7 +118,7 @@ const Department = props => {
     history.push(`${props.match.url}/new`);
   };
   const toDepartmentStructure = () => {
-    history.push(`${props.match.url}structure`);
+    history.push(`${props.match.url}/structure`);
   };
 
   const onFilterColumn = value => {

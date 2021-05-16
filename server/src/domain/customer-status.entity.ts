@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 
 /**
  * A CustomerStatus.
@@ -10,16 +9,20 @@ import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } 
 @Entity('customer_status')
 export default class CustomerStatus extends BaseEntity {
     @Column({ name: 'name', length: 255, nullable: true })
+    @Index()
     name: string;
 
     @Column({ name: 'description', length: 255, nullable: true })
+    @Index()
     description: string;
 
 
     @Column({ type: 'boolean', name: 'is_del', nullable: true })
+    @Index()
     isDel?: boolean;
 
     @Column({ type: 'integer', name: 'site_id', nullable: true })
+    @Index()
     siteId?: number;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

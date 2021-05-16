@@ -9,6 +9,7 @@ import {confirmAlert} from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import {globalizedReceiptsSelectors, reset} from './receipt.reducer.js';
 import {ReceiptStatus} from './constant.js';
+import moment from 'moment'
 const getBadge = (status) => {
   switch (status) {
     case 'APPROVED':
@@ -52,6 +53,7 @@ const Receipt = (props) => {
         customer: item.customer?.name || '',
         createdBy: item.createdBy || '',
         approver: item.approver?.login || '',
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };

@@ -121,7 +121,6 @@ const CreateProduct = () => {
       <CCardBody>
         <Formik initialValues={initialValues} innerRef={ref} validate={validate(validationSchema)} onSubmit={onSubmit}>
           {({ values, errors, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset }) => {
-            console.log(errors)
             return (
               <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
                 <CRow>

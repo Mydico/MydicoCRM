@@ -5,47 +5,47 @@
     "Phòng Ban": "KT",
     "Số điện thoại": 987585626,
     "Email": "hn_ktt_phamtuananh@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "20",
     "Tên nhân viên": "Trương Ngọc Tú",
-    "Phòng Ban": "KT",
+    "Phòng Ban": "KTT",
     "Số điện thoại": 961195479,
     "Email": "hn_ktt_truongngoctu@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "21",
     "Tên nhân viên": "Trần Tiến Đạt",
-    "Phòng Ban": "KT",
+    "Phòng Ban": "KTT",
     "Số điện thoại": 1272260997,
     "Email": "hn_ktt_trantiendat@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "22",
     "Tên nhân viên": "Nguyễn Tuấn Thành",
-    "Phòng Ban": "KT",
+    "Phòng Ban": "KTT",
     "Số điện thoại": 367319894,
     "Email": "hn_ktt_nguyentuanthanh@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "23",
     "Tên nhân viên": "Nguyễn Anh Tuấn",
-    "Phòng Ban": "KT",
+    "Phòng Ban": "KTT",
     "Số điện thoại": 945080287,
     "Email": "hn_ktt_nguyenanhtuan@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "24",
     "Tên nhân viên": "Trần Hoài Lương",
-    "Phòng Ban": "KT",
+    "Phòng Ban": "KTT",
     "Số điện thoại": 337892923,
     "Email": "hn_ktt_tranhoailuong@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "15",
@@ -53,7 +53,7 @@
     "Phòng Ban": "MAR",
     "Số điện thoại": 904589821,
     "Email": "hn_mar_lethuha@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "16",
@@ -61,7 +61,7 @@
     "Phòng Ban": "MAR",
     "Số điện thoại": 963838869,
     "Email": "hn_mar_nguyenthingan@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "17",
@@ -69,7 +69,7 @@
     "Phòng Ban": "HR",
     "Số điện thoại": 984517810,
     "Email": "hn_hr_dothingocbich@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "18",
@@ -77,213 +77,213 @@
     "Phòng Ban": "KT",
     "Số điện thoại": 934568981,
     "Email": "hn_it_leanhtuan@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "4",
     "Tên nhân viên": "Tạ Thị Đào",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 978616768,
     "Email": "hn_kt_tathidao@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "5",
     "Tên nhân viên": "Trần Thị Thìn",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 986702642,
     "Email": "hn_kt_tranthithin@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "6",
     "Tên nhân viên": "Đinh Thị Huế",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 989194264,
     "Email": "hn_kt_dinhthihue@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "7",
     "Tên nhân viên": "Trần Thị Ánh Hoa",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 904660290,
     "Email": "hn_kt_tranthianhhoa@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "8",
     "Tên nhân viên": "Phan Thị Hương",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 977901193,
     "Email": "hn_kt_phanthihuong@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "9",
     "Tên nhân viên": "Trần Thị Mai",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 376876727,
     "Email": "hn_kt_tranthimai@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "10",
     "Tên nhân viên": "Trương Thị Khánh Huyền",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 973972372,
     "Email": "hn_kt_truongthikhanhhuyen@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "11",
     "Tên nhân viên": "Phan Thị Phượng",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 982771343,
     "Email": "hn_kt_phanthiphuong@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "12",
     "Tên nhân viên": "Phạm Thùy Chi",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 774224546,
     "Email": "hn_kt_phamthuychi@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "13",
     "Tên nhân viên": "Đỗ Thúy Hồng",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 912639899,
     "Email": "hn_kt_dothuyhong@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": "14",
     "Tên nhân viên": "Nguyễn Dương Thăng",
-    "Phòng Ban": "KTN",
+    "Phòng Ban": "KT",
     "Số điện thoại": 974146836,
     "Email": "hn_kt_nguyenduongthang@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 1,
     "Tên nhân viên": "Trần Văn Tuấn",
     "Phòng Ban": "KD",
     "Email": "hn_kd_tranvantuan@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 2,
     "Tên nhân viên": "Nguyễn Thị Bích Nhàn",
     "Phòng Ban": "KD",
     "Email": "hn_kd_nguyenthibichnhan@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 3,
     "Tên nhân viên": "Đinh Thị Hiền",
     "Phòng Ban": "KD",
     "Email": "hn_kd_dinhthihien@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 4,
     "Tên nhân viên": "Ngô Thị Hồng Mây",
     "Phòng Ban": "KD",
     "Email": "hn_kd_ngothihongmay@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 5,
     "Tên nhân viên": "Dương Mạnh Tiến",
     "Phòng Ban": "KD",
     "Email": "hn_kd_duongmanhtien@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 6,
     "Tên nhân viên": "Trần Trung Hiếu",
     "Phòng Ban": "KD",
     "Email": "hn_kd_trantrunghieu@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 7,
     "Tên nhân viên": "Nguyễn Tiến Nghị",
     "Phòng Ban": "KD",
     "Email": "hn_kd_nguyentiennghi@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 8,
     "Tên nhân viên": "Vũ Văn Dụ",
     "Phòng Ban": "KD",
     "Email": "hn_kd_vuvandu@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 9,
     "Tên nhân viên": "Trịnh Minh Hiền",
     "Phòng Ban": "KD",
     "Email": "hn_kd_trinhminhhien@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 10,
     "Tên nhân viên": "Nguyễn Đình Sơn",
     "Phòng Ban": "KD",
     "Email": "hn_kd_nguyendinhson@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 11,
     "Tên nhân viên": "Lý Quốc Khánh",
     "Phòng Ban": "KD",
     "Email": "hn_kd_lyquockhanh@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 12,
     "Tên nhân viên": "Trần Văn Hải",
     "Phòng Ban": "KD",
     "Email": "hn_kd_tranvanhai@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 13,
     "Tên nhân viên": "Trương Thị Hiếu",
     "Phòng Ban": "KD",
     "Email": "hn_kd_truongthihieu@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 14,
     "Tên nhân viên": "Trần Trọng Nam",
     "Phòng Ban": "KD",
     "Email": "hn_kd_trantrongnam@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 15,
     "Tên nhân viên": "Vũ Trung Kiên",
     "Phòng Ban": "KD",
     "Email": "hn_kd_vutrungkien@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 16,
     "Tên nhân viên": "Vũ Thanh Tuyền",
     "Phòng Ban": "KD",
     "Email": "hn_kd_vuthanhtuyen@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   },
   {
     "STT": 17,
     "Tên nhân viên": "TRẦN THỊ THANH HÀ ",
     "Phòng Ban": "KD",
     "Email": "hn_kd_tranthithanhha@mydico",
-    "Mật Khẩu": "abc@123456"
+    "Mật Khẩu": 12345
   }
 ]

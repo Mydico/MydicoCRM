@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Tree, TreeChildren, TreeParent } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Tree, TreeChildren, TreeParent, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import Branch from './branch.entity';
 
@@ -16,12 +16,15 @@ import { User } from './user.entity';
 @Tree('materialized-path')
 export default class Department extends BaseEntity {
     @Column({ name: 'code', nullable: true })
+    @Index()
     code: string;
 
     @Column({ name: 'name', nullable: true })
+    @Index()
     name: string;
 
     @Column({ type: 'simple-enum', name: 'status', enum: DepartmentStatus })
+    @Index()
     status: DepartmentStatus;
 
     @TreeChildren()
@@ -30,7 +33,7 @@ export default class Department extends BaseEntity {
     @TreeParent()
     parent?: Department;
 
-    @OneToMany(type => Store, store => store.department, { cascade: true })
+    @OneToMany(type => Store, store => store.department)
     stores?: Store[];
 
     @OneToMany(type => Order, store => store.department)

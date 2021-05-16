@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
 import Product from './product.entity';
@@ -11,9 +11,11 @@ import Promotion from './promotion.entity';
 @Entity('promotion_product')
 export default class PromotionProduct extends BaseEntity {
     @Column({ type: 'integer', name: 'buy', nullable: true })
+    @Index()
     buy?: number;
 
     @Column({ type: 'integer', name: 'gift', nullable: true })
+    @Index()
     gift?: number;
 
     @ManyToOne(type => Product)

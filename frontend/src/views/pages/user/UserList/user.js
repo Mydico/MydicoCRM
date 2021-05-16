@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getUser} from './user.api.js';
 import {globalizedUserSelectors, reset} from './user.reducer.js';
 import {useHistory} from 'react-router-dom';
+import moment from 'moment'
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -45,6 +46,7 @@ const User = (props) => {
         ward: item.ward?.name,
         district: item.district?.name,
         city: item.city?.name,
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };
@@ -69,7 +71,7 @@ const User = (props) => {
     },
     {key: 'login', label: 'Tên đăng nhập', _style: {width: '10%'}},
     {key: 'name', label: 'Họ tên', _style: {width: '15%'}},
-    {key: 'email', label: 'Email', _style: {width: '15%'}},
+    {key: 'code', label: 'Mã nhân viên', _style: {width: '15%'}},
     {key: 'phone', label: 'Số điện thoại', _style: {width: '15%'}},
     {key: 'departments', label: 'Chi nhánh', _style: {width: '15%'}},
     {key: 'branch', label: 'Phòng ban', _style: {width: '15%'}},
@@ -98,7 +100,6 @@ const User = (props) => {
         return 'primary';
     }
   };
-  const [,] = useState([]);
   const csvContent = computedItems(users)
       .map((item) => Object.values(item).join(','))
       .join('\n');

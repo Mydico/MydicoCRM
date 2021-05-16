@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -11,52 +11,43 @@ import {
   CLabel,
   CInput,
   CRow,
-
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-
-
-  getCity,
-  getCustomerStatus,
-  getCustomerType,
-  getDetailCustomer,
-  getDistrict,
-  updateCustomer,
-} from '../customer.api';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { getCustomerStatus, getCustomerType, getDetailCustomer, getDistrict, updateCustomer } from '../customer.api';
 import Select from 'react-select';
-import {useHistory} from 'react-router-dom';
-import {fetching, globalizedCustomerSelectors} from '../customer.reducer';
-import {getDepartment} from '../../user/UserDepartment/department.api';
-import {globalizedDepartmentSelectors} from '../../user/UserDepartment/department.reducer';
-import {getCodeByCustomer, validate} from '../../../../shared/utils/normalize';
+import { useHistory } from 'react-router-dom';
+import { fetching, globalizedCustomerSelectors } from '../customer.reducer';
+import { getDepartment } from '../../user/UserDepartment/department.api';
+import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
+import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
+import cities from '../../../../shared/utils/city'
+import district from '../../../../shared/utils/district.json'
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = function() {
   return Yup.object().shape({
     contactName: Yup.string()
-        .min(3, `Tên liên lạc phải lớn hơn 3 kí tự`)
-        .required('Tên liên lạc không để trống'),
+      .min(3, `Tên liên lạc phải lớn hơn 3 kí tự`)
+      .required('Tên liên lạc không để trống').nullable(),
     name: Yup.string()
-        .min(3, `Tên phải lớn hơn 3 kí tự`)
-        .required('Tên không để trống'),
+      .min(3, `Tên phải lớn hơn 3 kí tự`)
+      .required('Tên không để trống'),
     tel: Yup.string()
-        .matches(phoneRegExp, 'Số điện thoại không đúng')
-        .required('Số điện thoại không để trống'),
+      .matches(phoneRegExp, 'Số điện thoại không đúng')
+      .required('Số điện thoại không để trống'),
     type: Yup.object().required('Loại khách hàng không để trống'),
     department: Yup.object().required('Chi nhánh không để trống'),
-    city: Yup.object().required('Thành phố không để trống'),
+    city: Yup.string().required('Thành phố không để trống').nullable()
   });
 };
 
-const EditCustomer = (props) => {
+const EditCustomer = props => {
   const ref = useRef(null);
-  const {initialState} = useSelector((state) => state.customer);
+  const { initialState } = useSelector(state => state.customer);
   const initialValues = {
     code: '',
     name: '',
@@ -67,23 +58,23 @@ const EditCustomer = (props) => {
     address: '',
     createdYear: '',
     obclubJoinTime: '',
-    status: null,
+    status: null
   };
 
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedCity, setSelectedCity] = useState(null);
   const [initValues, setInitValues] = useState(null);
+  const [districts, setDistricts] = useState([])
 
-  const {selectAll} = globalizedDepartmentSelectors;
-  const {selectById} = globalizedCustomerSelectors;
+  const { selectAll } = globalizedDepartmentSelectors;
+  const { selectById } = globalizedCustomerSelectors;
 
   const departments = useSelector(selectAll);
-  const customer = useSelector((state) => selectById(state, props.match.params.id));
+  const customer = useSelector(state => selectById(state, props.match.params.id));
 
   useEffect(() => {
     dispatch(getDetailCustomer(props.match.params.id));
-    dispatch(getCity());
     dispatch(getCustomerType());
     dispatch(getDepartment());
     dispatch(getCustomerStatus());
@@ -92,18 +83,19 @@ const EditCustomer = (props) => {
   useEffect(() => {
     if (customer) {
       setInitValues(customer);
+      setSelectedCity(customer.city)
     }
   }, [customer]);
 
   useEffect(() => {
     if (selectedCity) {
-      dispatch(getDistrict({city: selectedCity.code}));
+      setDistricts(district.filter(item => item.parent_code === selectedCity))
     }
   }, [selectedCity]);
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, { resetForm }) => {
     if (!isNaN(Number(values.name))) {
-      alert('Tên khách hàng phải có chữ cái');
+      alert('Tên cửa hàng/đại lý phải có chữ cái');
       return;
     }
     dispatch(fetching());
@@ -140,15 +132,12 @@ const EditCustomer = (props) => {
             values,
             errors,
 
-
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
 
-
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -176,7 +165,7 @@ const EditCustomer = (props) => {
                       autoComplete="family-name"
                       invalid={errors.name}
                       required
-                      onChange={async (e) => {
+                      onChange={async e => {
                         await handleChange(e);
                         renderCustomerCode();
                       }}
@@ -251,18 +240,18 @@ const EditCustomer = (props) => {
                         <CLabel htmlFor="password">Tỉnh thành</CLabel>
                         <Select
                           name="city"
-                          onChange={(e) => {
-                            setFieldValue('city', e.value);
-                            setSelectedCity(e.value);
-                          }}
                           placeholder="Chọn thành phố"
                           value={{
                             value: values.city,
-                            label: values.city?.name,
+                            label: cities.filter(item => item.value === values?.city)[0]?.label || ""
                           }}
-                          options={initialState.cities.map((item) => ({
-                            value: item,
-                            label: item.name,
+                          onChange={e => {
+                            setFieldValue('city', e.value);
+                            setSelectedCity(e.value);
+                          }}
+                          options={cities.map(item => ({
+                            value: item.value,
+                            label: item.label
                           }))}
                         />
                         <CInvalidFeedback className="d-block">{errors.city}</CInvalidFeedback>
@@ -273,17 +262,17 @@ const EditCustomer = (props) => {
                         <CLabel htmlFor="password">Quận huyện</CLabel>
                         <Select
                           name="district"
-                          onChange={(e) => {
+                          onChange={e => {
                             setFieldValue('district', e.value);
                           }}
                           placeholder="Chọn Quận huyện"
                           value={{
                             value: values.district,
-                            label: values.district?.name,
+                            label: districts.filter(item => item.value === values?.district)[0]?.label || ""
                           }}
-                          options={initialState.districts.map((item) => ({
-                            value: item,
-                            label: item.name,
+                          options={districts.map(item => ({
+                            value: item.value,
+                            label: item.label
                           }))}
                         />
                         <CInvalidFeedback className="d-block">{errors.districts}</CInvalidFeedback>
@@ -309,18 +298,18 @@ const EditCustomer = (props) => {
                     <CLabel htmlFor="code">Loại khách hàng</CLabel>
                     <Select
                       name="type"
-                      onChange={async (item) => {
+                      onChange={async item => {
                         await setFieldValue('type', item.value);
                         renderCustomerCode();
                       }}
                       value={{
                         value: values.type,
-                        label: values.type?.name,
+                        label: values.type?.name
                       }}
                       placeholder="Chọn loại khách hàng"
-                      options={initialState.type.map((item) => ({
+                      options={initialState.type.map(item => ({
                         value: item,
-                        label: item.name,
+                        label: item.name
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.type}</CInvalidFeedback>
@@ -329,18 +318,18 @@ const EditCustomer = (props) => {
                     <CLabel htmlFor="code">Chi nhánh</CLabel>
                     <Select
                       name="department"
-                      onChange={async (item) => {
+                      onChange={async item => {
                         await setFieldValue('department', item.value);
                         renderCustomerCode();
                       }}
                       value={{
                         value: values.department,
-                        label: values.department?.name,
+                        label: values.department?.name
                       }}
                       placeholder="Chi nhánh"
-                      options={departments.map((item) => ({
+                      options={departments.map(item => ({
                         value: item,
-                        label: item.name,
+                        label: item.name
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
@@ -350,17 +339,17 @@ const EditCustomer = (props) => {
                     <Select
                       name="status"
                       onChange={handleChange}
-                      onChange={(item) => {
+                      onChange={item => {
                         setFieldValue('status', item.value);
                       }}
                       placeholder="Trạng thái"
                       value={{
                         value: values.status,
-                        label: values.status?.name,
+                        label: values.status?.name
                       }}
-                      options={initialState.status.map((item) => ({
+                      options={initialState.status.map(item => ({
                         value: item,
-                        label: item.name,
+                        label: item.name
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>

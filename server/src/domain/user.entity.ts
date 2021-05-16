@@ -1,5 +1,5 @@
 import { Authority } from './authority.entity';
-import { Entity, Column, ManyToMany, JoinTable, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable, OneToMany, ManyToOne, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
 import { config } from '../config';
@@ -14,31 +14,39 @@ import Branch from './branch.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
-  
   @Column({ unique: true })
   login: string;
-  
+
   @Column()
+  @Index()
+  code?: string;
+
+  @Column()
+  @Index()
   firstName: string;
-  
+
   @Column()
+  @Index()
   lastName: string;
-  
+
   @Column({ nullable: true })
+  @Index()
   email?: string;
-  
+
   @Column({ nullable: true })
+  @Index()
   phone?: string;
-  
+
   @Column({ default: true })
+  @Index()
   activated: boolean;
 
   @ManyToMany(type => Authority)
   @JoinTable()
-  
   authorities?: any[];
 
   @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
+  @Index()
   status?: ProductStatus;
 
   @ManyToMany(type => UserRole, userRole => userRole.users)
@@ -59,7 +67,6 @@ export class User extends BaseEntity {
   @ManyToMany(type => PermissionGroup, other => other.users)
   permissionGroups?: PermissionGroup[];
 
-  
   @Column({
     type: 'varchar',
     transformer: new EncryptionTransformer({
@@ -71,8 +78,11 @@ export class User extends BaseEntity {
     select: false
   })
   password: string;
+
   @Column({ nullable: true })
+  @Index()
   imageUrl?: string;
   @Column({ nullable: true })
+  @Index()
   resetDate?: Date;
 }

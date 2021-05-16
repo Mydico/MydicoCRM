@@ -4,7 +4,7 @@ import { ConnectionOptions } from 'typeorm/connection/ConnectionOptions';
 const commonConf = {
   SYNCRONIZE: false,
   ENTITIES: [__dirname + '/domain/*.entity{.ts,.js}'],
-  MIGRATIONS: [__dirname + '/migrations/**/*{.ts,.js}'],
+  MIGRATIONS: [__dirname + '/migrations/*{.ts,.js}'],
   CLI: {
     migrationsDir: 'src/migrations'
   },
@@ -50,7 +50,6 @@ if (process.env.NODE_ENV === 'prod') {
 
 if (process.env.NODE_ENV === 'dev') {
   ormconfig = {
-    name: 'default',
     type: 'mysql',
     database: 'MydicoCRM',
     host: 'localhost',

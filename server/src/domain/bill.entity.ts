@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, ManyToOne, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
-import { validate, Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max } from 'class-validator';
 import Order from './order.entity';
 import Customer from './customer.entity';
 import Store from './store.entity';
@@ -14,45 +13,47 @@ import { User } from './user.entity';
  */
 @Entity('bill')
 export default class Bill extends BaseEntity {
+  @ManyToOne(type => Customer, customer => customer.bill)
+  customer: Customer;
 
-    @ManyToOne(type => Customer, customer => customer.bill, { cascade: true })
-    customer: Customer;
+  @ManyToOne(type => User, user => user.bill)
+  transporter: User;
 
-    @ManyToOne(type => User, user => user.bill, { cascade: true })
-    transporter: User;
+  @ManyToOne(type => Order, order => order.bill)
+  order: Order;
 
-    // @ManyToOne(type => Store, store => store.product, { cascade: true })
-    // store?: Store;
-    @ManyToOne(type => Order, order => order.bill, { cascade: true })
-    order: Order;
+  @ManyToOne(type => Store, store => store.bill)
+  store: Store;
 
-
-    @ManyToOne(type => Store, store => store.bill, { cascade: true })
-    store: Store;
-
-    /**
+  /**
    * 0 : khởi tạo chờ duyệt, -1 : hủy duyệt, 1: duyệt đơn và xuất kho, trừ số lượng trong kho (không hủy được nữa), 2 : đang vận chuyển , 3 : giao thành công (tạo công nợ cho khách), 4 : khách hủy đơn (phải tạo dơn nhập lại hàng vào kho)
    */
-    @Column({ type: 'simple-enum', name: 'status', enum: BillStatus, default: BillStatus.CREATED })
-    status?: BillStatus;
+  @Column({ type: 'simple-enum', name: 'status', enum: BillStatus, default: BillStatus.CREATED })
+  @Index()
+  status?: BillStatus;
 
-    @Column({ type: 'boolean', name: 'is_del', nullable: true })
-    isDel?: boolean;
+  @Column({ type: 'boolean', name: 'is_del', nullable: true })
+  @Index()
+  isDel?: boolean;
 
-    @Column({ name: 'note', length: 255, nullable: true })
-    note?: string;
+  @Column({ name: 'note', length: 255, nullable: true })
+  @Index()
+  note?: string;
 
-    /**
+  /**
    * mã vận đơn
    */
-    @Column({ name: 'code', length: 255, nullable: true })
-    code: string;
+  @Column({ name: 'code', length: 255, nullable: true })
+  @Index()
+  code: string;
 
-    @Column({ type: 'integer', name: 'sale_id', nullable: true })
-    saleId?: number;
+  @Column({ type: 'integer', name: 'sale_id', nullable: true })
+  @Index()
+  saleId?: number;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    siteId?: number;
+  @Column({ type: 'integer', name: 'site_id', nullable: true })
+  @Index()
+  siteId?: number;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

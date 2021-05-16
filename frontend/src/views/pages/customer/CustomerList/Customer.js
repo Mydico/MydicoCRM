@@ -6,7 +6,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getCustomer} from '../customer.api.js';
 import {globalizedCustomerSelectors, reset} from '../customer.reducer.js';
 import {useHistory} from 'react-router-dom';
-
+import cities from '../../../../shared/utils/city'
+import district from '../../../../shared/utils/district.json'
+import moment from 'moment'
 const Customer = (props) => {
   const [details, setDetails] = useState([]);
   const {initialState} = useSelector((state) => state.customer);
@@ -30,6 +32,7 @@ const Customer = (props) => {
         ...item,
         typeName: item.type?.name,
         department: item.department?.name || '',
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };
@@ -119,7 +122,7 @@ const Customer = (props) => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [20, 30, 50]}}
+          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [20, 50, 100, 200, 500]}}
           itemsPerPage={size}
           hover
           sorter
@@ -203,11 +206,11 @@ const Customer = (props) => {
                       <CCol lg="6">
                         <dl className="row">
                           <dt className="col-sm-3">Tỉnh thành:</dt>
-                          <dd className="col-sm-9">{item.city?.name}</dd>
+                          <dd className="col-sm-9">{cities.filter(city => city.value === item?.city)[0]?.label || ""}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Quận huyện:</dt>
-                          <dd className="col-sm-9">{item.district?.name}</dd>
+                          <dd className="col-sm-9">{district.filter(dist => dist.value === item?.district)[0]?.label || ""}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Địa chỉ:</dt>

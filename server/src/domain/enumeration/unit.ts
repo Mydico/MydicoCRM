@@ -2,12 +2,13 @@
  * The AttributeDataType enumeration.
  */
 export enum UnitType {
-    cai = 'Cái',
-    hop = 'Hộp',
-    chai = 'Chai',
-    tui = 'Túi',
-    tuyp = 'Tuýp',
-    hu = 'Hũ',
-    lo = 'Lọ',
-    cap = 'Cặp'
+    'Cái' = 'Cái',
+    "Hộp" = 'Hộp',
+    "Chai" = 'Chai',
+    "Túi" = 'Túi',
+    "Tuýp" = 'Tuýp',
+    "Hũ" = 'Hũ',
+    "Lọ" = 'Lọ',
+    "Cặp" = 'Cặp',
+    "Thùng" = "Thùng"
 }

@@ -10,20 +10,47 @@ export const test = str => {
   const count = str.match(/\d*$/);
   return count;
 };
-export const getLoginNameFromName = (name) => {
-  const normalName = name.trim()
-        .normalize('NFD')
-        .replace(/đ/g, 'd')
-        .replace(/Đ/g, 'D')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-  const splitName = normalName.split(" ")
-  let suffix = ""
+export const getLoginNameFromName = name => {
+  const normalName = name
+    .trim()
+    .normalize('NFD')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+  const splitName = normalName.split(' ');
+  let suffix = '';
   for (let index = 0; index < splitName.length - 1; index++) {
-    suffix += splitName[index][0]
+    suffix += splitName[index][0];
   }
-  return `${splitName[splitName.length -1]}${suffix}`
-}
+  return `${splitName[splitName.length - 1]}${suffix}`;
+};
+export const getCodeByCustomer = (name) => {
+  if (!name) return name;
+  return name
+      .trim()
+      .replace(/' '/g, '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D')
+      .toUpperCase();
+};
+export const getProductCode = (name, brand, group, volume) => {
+  const normalName = name
+    .trim()
+    .split(' ')
+    .map(string => string[0])
+    .join('')
+    .replace(/ /g, '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toUpperCase();
+
+  return `${brand}_${group}_${normalName}${volume === "0" ? '' : '_' + volume.replace(/ml/g, '')}`;
+};
 export const checkCodeContext = (entity, foundedEntity) => {
   if (foundedEntity.length > 0) {
     const reg = new RegExp(entity.code + '\\d*$');
