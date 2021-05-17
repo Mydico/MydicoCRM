@@ -57,7 +57,7 @@
     "rxjs": "^6.5.2",
     "shelljs": "0.8.3",
     "swagger-ui-express": "^4.0.7",
-    "typeorm": "^0.2.29",
+    "typeorm": "^0.2.32",
     "typeorm-adapter": "^1.4.0",
     "typeorm-encrypted": "0.5.6",
     "xlsx": "^0.16.9"

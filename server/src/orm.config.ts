@@ -23,8 +23,8 @@ let ormconfig: TypeOrmModuleOptions = {
   migrationsRun: commonConf.MIGRATIONS_RUN
 };
 const roleBDConfig: ConnectionOptions = {
-  type: 'mysql',
   database: 'MydicoCRM',
+  type: 'mysql',
   host: 'localhost',
   port: 3306,
   username: 'root',
@@ -58,9 +58,11 @@ if (process.env.NODE_ENV === 'dev') {
     password: 'Dunghd@123',
     logging: true,
     synchronize: true,
+    autoLoadEntities: true,
     entities: commonConf.ENTITIES,
     migrations: commonConf.MIGRATIONS,
     cli: commonConf.CLI,
+    verboseRetryLog: true,
     migrationsRun: commonConf.MIGRATIONS_RUN
   };
 }
