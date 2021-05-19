@@ -27,19 +27,18 @@ export class UserController {
   })
   async getAllUsers(@Req() req: Request, @Res() res): Promise<User[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = {};
+    const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort') {
-        filter[item] = Like(`%${req.query[item]}%`);
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
+    console.log(filter);
     const [results, count] = await this.userService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
-      where: {
-        ...filter
-      }
+      where: [{ firstname: Like('%John%') }, { lastname: Like('%Doe%') }]
     });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);

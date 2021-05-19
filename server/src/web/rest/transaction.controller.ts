@@ -20,7 +20,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { Like } from 'typeorm';
+import { Equal, Like } from 'typeorm';
 
 @Controller('api/transactions')
 @UseGuards(AuthGuard, RolesGuard)
@@ -32,7 +32,6 @@ export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
   @Get('/')
-  @Roles(RoleType.USER)
   @ApiResponse({
     status: 200,
     description: 'List all records',
@@ -43,7 +42,7 @@ export class TransactionController {
     const filter = {};
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort') {
-        filter[item] = Like(`%${req.query[item]}%`);
+        filter[item] = Equal(`${req.query[item]}`);
       }
     });
     const [results, count] = await this.transactionService.findAndCount({
@@ -59,7 +58,6 @@ export class TransactionController {
   }
 
   @Get('/:id')
-  @Roles(RoleType.USER)
   @ApiResponse({
     status: 200,
     description: 'The found record',
@@ -70,7 +68,6 @@ export class TransactionController {
   }
 
   @PostMethod('/')
-  @Roles(RoleType.USER)
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
@@ -84,7 +81,6 @@ export class TransactionController {
   }
 
   @Put('/')
-  @Roles(RoleType.USER)
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
@@ -96,7 +92,6 @@ export class TransactionController {
   }
 
   @Delete('/:id')
-  @Roles(RoleType.USER)
   @ApiResponse({
     status: 204,
     description: 'The record has been successfully deleted.'

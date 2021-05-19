@@ -132,6 +132,14 @@ const EditWarehouseReturn = props => {
     setProductList([...productList, data]);
   };
 
+  const onSearchProduct = (value) => {
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+  }
+
+  const onSearchCustomer = value => {
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, address: value, contactName: value }));
+  };
+
   useEffect(() => {
     if (initialState.updatingSuccess) {
       history.goBack();
@@ -240,6 +248,7 @@ const EditWarehouseReturn = props => {
                           setFieldValue('customer', item.value);
                           onSelectCustomer(item);
                         }}
+                        onInputChange={onSearchCustomer}
                         value={{
                           value: values.customer,
                           label: `${values.customer?.name}`
@@ -319,6 +328,7 @@ const EditWarehouseReturn = props => {
                                 value: item,
                                 label: item?.product?.name
                               }}
+                              onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
                               options={products.map(item => ({

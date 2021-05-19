@@ -91,7 +91,7 @@ export class PermissionGroupController {
     type: PermissionGroup
   })
   async put(@Req() req: Request, @Res() res: Response, @Body() permissionGroup: UpdatePermissionGroupDTO): Promise<Response> {
-    HeaderUtil.addEntityUpdatedHeaders(res, 'PermissionGroup', permissionGroup.name);
+    HeaderUtil.addEntityUpdatedHeaders(res, 'PermissionGroup', permissionGroup.id);
     const currentUser = req.user as User;
     permissionGroup.createdBy = currentUser.login;
     const check = await this.permissionGroupService.findByName(permissionGroup.name.trim());

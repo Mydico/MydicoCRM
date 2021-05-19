@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -11,50 +11,46 @@ import {
   CLabel,
   CInput,
   CRow,
-
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {getDetailWarehouseImport, updateWarehouseImport} from '../Import/warehouse-import.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { getDetailWarehouseImport, updateWarehouseImport } from '../Import/warehouse-import.api';
 
-
-import {useHistory} from 'react-router-dom';
-import {fetching, globalizedWarehouseImportSelectors} from '../Import/warehouse-import.reducer';
+import { useHistory } from 'react-router-dom';
+import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
-import {currencyMask} from '../../../components/currency-input/currency-input';
+import { currencyMask } from '../../../components/currency-input/currency-input';
 import MaskedInput from 'react-text-mask';
-import {FormFeedback, Table} from 'reactstrap';
-import {globalizedWarehouseSelectors} from '../Warehouse/warehouse.reducer';
-import {getWarehouse} from '../Warehouse/warehouse.api';
-import {globalizedProductSelectors} from '../../product/ProductList/product.reducer';
-import {getProduct} from '../../product/ProductList/product.api';
-import {WarehouseImportType} from './contants';
+import { FormFeedback, Table } from 'reactstrap';
+import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
+import { getWarehouse } from '../Warehouse/warehouse.api';
+import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import { getProduct } from '../../product/ProductList/product.api';
+import { WarehouseImportType } from './contants';
 const validationSchema = function() {
   return Yup.object().shape({
-    store: Yup.object().required('Kho không để trống'),
+    store: Yup.object().required('Kho không để trống')
   });
 };
 
-import {validate} from '../../../../shared/utils/normalize';
-
+import { validate } from '../../../../shared/utils/normalize';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
 
+const EditWarehouseExport = props => {
+  const { initialState } = useSelector(state => state.warehouseImport);
+  const { account } = useSelector(state => state.authentication);
 
-const EditWarehouseExport = (props) => {
-  const {initialState} = useSelector((state) => state.warehouseImport);
-  const {account} = useSelector((state) => state.authentication);
-
-  const {selectAll: selectAllWarehouse} = globalizedWarehouseSelectors;
-  const {selectAll: selectAllProduct} = globalizedProductSelectors;
-  const {selectById} = globalizedWarehouseImportSelectors;
+  const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
+  const { selectAll: selectAllProduct } = globalizedProductSelectors;
+  const { selectById } = globalizedWarehouseImportSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -65,21 +61,21 @@ const EditWarehouseExport = (props) => {
 
   const warehouses = useSelector(selectAllWarehouse);
   const products = useSelector(selectAllProduct);
-  const warehouseImport = useSelector((state) => selectById(state, props.match.params.id));
+  const warehouseImport = useSelector(state => selectById(state, props.match.params.id));
 
   const [productList, setProductList] = useState([]);
 
   const initialValues = {
     store: '',
-    note: '',
+    note: ''
   };
-  const onSelectWarehouse = (value) => {
+  const onSelectWarehouse = value => {
     setSelectedWarehouse(value);
     setIsSelectedWarehouse(true);
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({department: JSON.stringify([account.department?.id || ''])}));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     dispatch(getProduct());
     dispatch(getDetailWarehouseImport(props.match.params.id));
   }, []);
@@ -92,7 +88,7 @@ const EditWarehouseExport = (props) => {
     }
   }, [warehouseImport]);
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, { resetForm }) => {
     values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
@@ -101,35 +97,36 @@ const EditWarehouseExport = (props) => {
     resetForm();
   };
 
-  const onChangeQuantity = ({target}, index) => {
+  const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = target.value;
     setProductList(copyArr);
   };
 
-  const onRemoveProduct = (index) => {
+  const onRemoveProduct = index => {
     const copyArr = [...productList];
     copyArr.splice(index, 1);
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({value}, index) => {
-    const arr = productList.filter((item) => item.product.id === value.id);
-    if (arr.length === 0) {
-      const copyArr = [...productList];
-      copyArr[index].product = value;
-      copyArr[index].price = Number(value.price);
-      copyArr[index].quantity = 1;
-      setProductList(copyArr);
-    }
+  const onSelectedProduct = ({ value }, index) => {
+    const copyArr = [...productList];
+    copyArr[index].product = value;
+    copyArr[index].price = Number(value.price);
+    copyArr[index].quantity = 1;
+    setProductList(copyArr);
+  };
+
+  const onSearchProduct = value => {
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
   };
 
   const onAddProduct = () => {
-    const data = {product: {}, quantity: 1};
+    const data = { product: {}, quantity: 1 };
     setProductList([...productList, data]);
   };
 
-  const onChangePrice = ({target}, index) => {
+  const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].price = Number(target.value.replace(/\D/g, ''));
     setProductList(copyArr);
@@ -147,15 +144,12 @@ const EditWarehouseExport = (props) => {
         {({
           values,
 
-
           handleChange,
           handleBlur,
           handleSubmit,
           setFieldValue,
 
-
           handleReset
-          ,
         }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
@@ -167,18 +161,18 @@ const EditWarehouseExport = (props) => {
                   <CCol sm={4}>
                     <CLabel htmlFor="lastName">Chọn Kho</CLabel>
                     <Select
-                      onChange={(item) => {
+                      onChange={item => {
                         setFieldValue('store', item.value);
                         onSelectWarehouse(item.value);
                       }}
                       placeholder=""
                       value={{
                         value: values.store,
-                        label: `${values.store.name}`,
+                        label: `${values.store.name}`
                       }}
-                      options={warehouses.map((item) => ({
+                      options={warehouses.map(item => ({
                         value: item,
-                        label: `${item.name}`,
+                        label: `${item.name}`
                       }))}
                     />
                     {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
@@ -217,18 +211,18 @@ const EditWarehouseExport = (props) => {
                   <CCol sm={4}>
                     <CLabel htmlFor="lastName">Chọn Kho</CLabel>
                     <Select
-                      onChange={(item) => {
+                      onChange={item => {
                         setFieldValue('storeTransfer', item.value);
                         onSelectWarehouse(item.value);
                       }}
                       placeholder=""
                       value={{
                         value: values.storeTransfer,
-                        label: `${values.storeTransfer?.name}`,
+                        label: `${values.storeTransfer?.name}`
                       }}
-                      options={warehouses.map((item) => ({
+                      options={warehouses.map(item => ({
                         value: item,
-                        label: `${item.name}`,
+                        label: `${item.name}`
                       }))}
                     />
                     {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
@@ -278,17 +272,18 @@ const EditWarehouseExport = (props) => {
                     {productList?.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{width: 500}}>
+                          <td style={{ width: 500 }}>
                             <Select
                               value={{
                                 value: item,
-                                label: item?.product?.name,
+                                label: item?.product?.name
                               }}
-                              onChange={(event) => onSelectedProduct(event, index)}
+                              onInputChange={onSearchProduct}
+                              onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
-                              options={products?.map((item) => ({
+                              options={products?.map(item => ({
                                 value: item,
-                                label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`,
+                                label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`
                               }))}
                             />
                           </td>
@@ -298,19 +293,19 @@ const EditWarehouseExport = (props) => {
                             {
                               <MaskedInput
                                 mask={currencyMask}
-                                onChange={(event) => onChangePrice(event, index)}
+                                onChange={event => onChangePrice(event, index)}
                                 value={
-                                  typeof productList[index].price !== 'number' ?
-                                    new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(
-                                        productList[index].price,
-                                    ) :
-                                    productList[index].price
+                                  typeof productList[index].price !== 'number'
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                        productList[index].price
+                                      )
+                                    : productList[index].price
                                 }
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
                           </td>
-                          <td style={{width: 100}}>
+                          <td style={{ width: 100 }}>
                             {item.followIndex >= 0 ? (
                               item.quantity
                             ) : (
@@ -319,14 +314,14 @@ const EditWarehouseExport = (props) => {
                                 min={1}
                                 name="code"
                                 id="code"
-                                onChange={(event) => onChangeQuantity(event, index)}
+                                onChange={event => onChangeQuantity(event, index)}
                                 onBlur={handleBlur}
                                 value={item.quantity}
                               />
                             )}
                           </td>
 
-                          <td style={{width: 100}}>
+                          <td style={{ width: 100 }}>
                             <CButton
                               color="danger"
                               variant="outline"
@@ -386,7 +381,7 @@ const EditWarehouseExport = (props) => {
                                 min={1}
                                 name="code"
                                 id="code"
-                                onChange={(event) => {
+                                onChange={event => {
                                   setFieldValue('totalMoney', event.target.value);
                                 }}
                                 defaultValue={productList.reduce((sum, current) => sum + current.price * current.quantity, 0)}

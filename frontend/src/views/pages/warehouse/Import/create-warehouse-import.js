@@ -109,6 +109,10 @@ const CreateWarehouse = () => {
     setProductList([...productList, data]);
   };
 
+  const onSearchProduct = (value) => {
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+  }
+
   useEffect(() => {
     if (initialState.updatingSuccess) {
       history.goBack();
@@ -219,6 +223,7 @@ const CreateWarehouse = () => {
                                 value: item,
                                 label: item?.product?.name
                               }}
+                              onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
                               options={products.map(item => ({

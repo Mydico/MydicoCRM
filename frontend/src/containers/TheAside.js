@@ -1,5 +1,5 @@
 import React from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   CNav,
   CNavItem,
@@ -13,17 +13,18 @@ import {
   CProgress,
   CSidebar,
   CImg,
-  CSidebarClose,
+  CSidebarClose
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {setAsideShow} from '../App.reducer';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { setAsideShow } from '../App.reducer';
 const TheAside = () => {
-  const show = useSelector((state) => state.app.asideShow);
+  const show = useSelector(state => state.app.asideShow);
   const dispatch = useDispatch();
-  const setState = (state) => dispatch(setAsideShow(state));
+  const setState = state => dispatch(setAsideShow(state));
+  const { account } = useSelector(state => state.authentication);
 
   return (
-    <CSidebar aside colorScheme="light" size="lg" overlaid show={show} onShowChange={(state) => setState(state)}>
+    <CSidebar aside colorScheme="light" size="lg" overlaid show={show} onShowChange={state => setState(state)}>
       <CSidebarClose onClick={() => setState(false)} />
       <CTabs>
         <CNav variant="tabs" className="nav-underline nav-underline-primary">
@@ -48,113 +49,42 @@ const TheAside = () => {
           <CTabPane>
             <CListGroup accent>
               <CListGroupItem accent="secondary" className="bg-light text-center font-weight-bold text-muted text-uppercase c-small">
-                Today
+                Xin chào <strong>{account.firstName}</strong>
               </CListGroupItem>
               <CListGroupItem accent="warning" href="#" className="list-group-item-divider">
-                <div className="c-avatar float-right">
-                  <CImg className="c-avatar-img" src="avatars/7.jpg" alt="admin@bootstrapmaster.com" />
-                </div>
                 <div>
-                  Meeting with <strong>Lucas</strong>
+                  Họ tên:
+                  <strong>
+                    {account.lastName} {account.firstName}
+                  </strong>
                 </div>
-                <small className="text-muted mr-3">
-                  <CIcon name="cil-calendar" /> 1 - 3pm
-                </small>
-                <small className="text-muted">
-                  <CIcon name="cil-location-pin" /> Palo Alto, CA
-                </small>
               </CListGroupItem>
               <CListGroupItem accent="info" href="#">
-                <div className="c-avatar float-right">
-                  <CImg className="c-avatar-img" src="avatars/4.jpg" alt="admin@bootstrapmaster.com" />
-                </div>
                 <div>
-                  Skype with <strong>Megan</strong>
+                  Số điện thoại: <strong>{account.tel}</strong>
                 </div>
-                <small className="text-muted mr-3">
-                  <CIcon name="cil-calendar" /> 4 - 5pm
-                </small>
-                <small className="text-muted">
-                  <CIcon name="cib-skype" /> On-line
-                </small>
               </CListGroupItem>
-              <hr className="transparent mx-3 my-0" />
-              <CListGroupItem color="secondary" className="bg-light text-center font-weight-bold text-muted text-uppercase c-small">
-                Tomorrow
-              </CListGroupItem>
-              <CListGroupItem accent="danger" href="#" className="list-group-item-divider">
+              <CListGroupItem accent="info" href="#">
                 <div>
-                  New UI Project - <strong>deadline</strong>
-                </div>
-                <small className="text-muted mr-3">
-                  <CIcon name="cil-calendar" /> 10 - 11pm
-                </small>
-                <small className="text-muted">
-                  <CIcon name="cil-home" /> creativeLabs HQ
-                </small>
-                <div className="c-avatars-stack mt-2">
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/2.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/3.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/4.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/5.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/6.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
+                  Mã nhân viên: <strong>{account.code}</strong>
                 </div>
               </CListGroupItem>
-              <CListGroupItem accent="success" href="#" className="c-list-group-item-divider">
+              <CListGroupItem accent="info" href="#">
                 <div>
-                  <strong>#10 Startups.Garden</strong> Meetup
+                  Chi nhánh: <strong>{account.department?.name}</strong>
                 </div>
-                <small className="text-muted mr-3">
-                  <CIcon name="cil-calendar" /> 1 - 3pm
-                </small>
-                <small className="text-muted">
-                  <CIcon name="cil-location-pin" /> Palo Alto, CA
-                </small>
               </CListGroupItem>
-              <CListGroupItem accent="primary" href="#" className="c-list-group-item-divider">
+              <CListGroupItem accent="info" href="#">
                 <div>
-                  <strong>Team meeting</strong>
-                </div>
-                <small className="text-muted mr-3">
-                  <CIcon name="cil-calendar" /> 4 - 6pm
-                </small>
-                <small className="text-muted">
-                  <CIcon name="cil-home" /> creativeLabs HQ
-                </small>
-                <div className="c-avatars-stack mt-2">
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/2.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/3.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/4.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/5.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/6.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/7.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
-                  <div className="c-avatar c-avatar-xs">
-                    <CImg className="c-avatar-img" src="avatars/8.jpg" alt="admin@bootstrapmaster.com" />
-                  </div>
+                  Phòng ban: <strong>{account.branch?.name}</strong>
                 </div>
               </CListGroupItem>
+              <CListGroupItem accent="info" href="#">
+                <div>
+                  Email: <strong>{account.email}</strong>
+                </div>
+              </CListGroupItem>
+
             </CListGroup>
           </CTabPane>
 

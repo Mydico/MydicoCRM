@@ -13,7 +13,7 @@ import {
   CRow,
   CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,7 +30,7 @@ import { getAllWarehouse, getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 import { getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
-import { getProductInstore } from '../Product/product-warehouse.api';
+import { getProductInstore, getProductWarehouse } from '../Product/product-warehouse.api';
 const validationSchema = function() {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -62,9 +62,8 @@ const CreateReceipt = () => {
   const [importWarehouses, setImportWarehouses] = useState([]);
   const [selectedImportWarehouse, setSelectedImportWarehouse] = useState(null);
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
-
+  const [products, setProducts] = useState([]);
   const warehouses = useSelector(selectAllWarehouse);
-  const products = useSelector(selectAllProduct);
 
   const [productList, setProductList] = useState([]);
 
@@ -80,7 +79,7 @@ const CreateReceipt = () => {
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
     dispatch(getAllWarehouse());
-    dispatch(getProduct());
+    // dispatch(getProduct());
   }, []);
 
   const onSubmit = (values, { resetForm }) => {
@@ -102,9 +101,18 @@ const CreateReceipt = () => {
   useEffect(() => {
     if (selectedWarehouse) {
       const founedIndex = initialStateWarehouse.warehouses.findIndex(item => item.id === selectedWarehouse.id);
-      const copyArr = [...initialStateWarehouse.warehouses]
-      copyArr.splice(founedIndex, 1)
+      const copyArr = [...initialStateWarehouse.warehouses];
+      copyArr.splice(founedIndex, 1);
       setImportWarehouses(copyArr);
+      dispatch(
+        getProductWarehouse({
+          storeId: selectedWarehouse.id
+        })
+      ).then(resp => {
+        if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
+          setProducts(resp.payload.data);
+        }
+      });
     }
   }, [selectedWarehouse]);
 
@@ -119,7 +127,7 @@ const CreateReceipt = () => {
         })
       ).then(numberOfQuantityInStore => {
         if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
-          copyArr[index].quantity = quantity;
+          copyArr[index].quantity = Number(quantity);
           copyArr[index].quantityInStore = numberOfQuantityInStore.payload[0].quantity;
           setProductList(copyArr);
         }
@@ -141,19 +149,20 @@ const CreateReceipt = () => {
   };
 
   const onSelectedProduct = ({ value }, index) => {
-    const arr = productList.filter(item => item.product.id === value.id);
-    if (arr.length === 0) {
-      const copyArr = [...productList];
-      copyArr[index].product = value;
-      copyArr[index].price = Number(value.price);
-      copyArr[index].quantity = 1;
-      setProductList(copyArr);
-    }
+    const copyArr = [...productList];
+    copyArr[index].product = value;
+    copyArr[index].price = Number(value.price);
+    copyArr[index].quantity = 1;
+    setProductList(copyArr);
   };
 
   const onAddProduct = () => {
     const data = { product: {}, quantity: 1, quantityInStore: 1 };
     setProductList([...productList, data]);
+  };
+
+  const onSearchProduct = value => {
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
   };
 
   const onChangePrice = ({ target }, index) => {
@@ -307,14 +316,15 @@ const CreateReceipt = () => {
                           <td style={{ width: 500 }}>
                             <Select
                               value={{
-                                value: item,
+                                value: item.product,
                                 label: item?.product?.name
                               }}
+                              onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
                               options={products.map(item => ({
-                                value: item,
-                                label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`
+                                value: item.product,
+                                label: `${item?.product?.productBrand?.name}-${item?.product?.name}-${item?.product?.volume}`
                               }))}
                             />
                           </td>

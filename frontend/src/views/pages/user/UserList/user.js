@@ -73,7 +73,7 @@ const User = (props) => {
     {key: 'name', label: 'Họ tên', _style: {width: '15%'}},
     {key: 'code', label: 'Mã nhân viên', _style: {width: '15%'}},
     {key: 'phone', label: 'Số điện thoại', _style: {width: '15%'}},
-    {key: 'departments', label: 'Chi nhánh', _style: {width: '15%'}},
+    {key: 'department', label: 'Chi nhánh', _style: {width: '15%'}},
     {key: 'branch', label: 'Phòng ban', _style: {width: '15%'}},
     {key: 'roles', label: 'Chức vụ', _style: {width: '15%'}},
     {key: 'createdDate', label: 'Ngày tạo', _style: {width: '15%'}},
@@ -156,7 +156,7 @@ const User = (props) => {
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
-            departments: (item) => <td>{item.department?.name || ''}</td>,
+            department: (item) => <td>{item.department?.name || ''}</td>,
             branch: (item) => <td>{item.branch?.name || ''}</td>,
             name: (item) => <td>{item.lastName || ''} {item.firstName || ''}</td>,
             roles: (item) => <td>{item.roles.reduce((sum, currentValue) => sum + currentValue.name, '')}</td>,

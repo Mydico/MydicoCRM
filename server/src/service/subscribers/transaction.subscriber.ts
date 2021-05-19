@@ -20,12 +20,12 @@ export class TransactionSubscriber implements EntitySubscriberInterface<Transact
   async afterInsert(event: InsertEvent<Transaction>): Promise<any> {
     const customerDebitRepo = event.manager.getRepository(CustomerDebit);
     const customerRepo = event.manager.getRepository(Customer);
-    const foundedCustomer = await customerRepo.findOne({ where: { customer: event.entity.customer }, relations: ['sale'] });
+    const foundedCustomer = await customerRepo.findOne({ where: { id: event.entity.customer.id }, relations: ['sale'] });
     const debtRepo = event.manager.getRepository(DebtDashboard);
     const debtDashboard = new DebtDashboard();
     if (event.entity.type === TransactionType.DEBIT || event.entity.type === TransactionType.PAYMENT) {
       debtDashboard.amount = event.entity.totalMoney;
-      debtDashboard.userId = await foundedCustomer.sale.id;
+      debtDashboard.userId = foundedCustomer.sale?.id || null;
       debtDashboard.type = DashboardType.DEBT;
     }
     await debtRepo.save(debtDashboard);

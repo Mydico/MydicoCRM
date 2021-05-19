@@ -32,7 +32,8 @@ const Customer = (props) => {
         ...item,
         typeName: item.type?.name,
         department: item.department?.name || '',
-        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
+        createdDate: moment(item.createdDate).format("DD-MM-YYYY"),
+        sale: item.sale?.code || ''
       };
     });
   };
@@ -57,10 +58,9 @@ const Customer = (props) => {
     },
     {key: 'code', label: 'Mã', _style: {width: '10%'}},
     {key: 'name', label: 'Tên cửa hàng/đại lý', _style: {width: '15%'}},
-    {key: 'contactName', label: 'Người liên lạc', _style: {width: '15%'}},
-    {key: 'dateOfBirth', label: 'Năm Sinh', _style: {width: '15%'}},
+    {key: 'address', label: 'Địa chỉ', _style: {width: '15%'}},
     {key: 'tel', label: 'Điện thoại', _style: {width: '15%'}},
-    {key: 'users', label: 'Nhân viên quản lý', _style: {width: '15%'}},
+    {key: 'sale', label: 'Nhân viên quản lý', _style: {width: '15%'}},
     {key: 'typeName', label: 'Loại khách hàng', _style: {width: '10%'}},
     {key: 'department', label: 'Chi nhánh', _style: {width: '20%'}},
     {

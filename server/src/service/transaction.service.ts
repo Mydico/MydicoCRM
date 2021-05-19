@@ -5,13 +5,13 @@ import Transaction from '../domain/transaction.entity';
 import { TransactionRepository } from '../repository/transaction.repository';
 
 const relationshipNames = [];
-relationshipNames.push('customer')
-relationshipNames.push('customer.sale')
-relationshipNames.push('bill')
-relationshipNames.push('sale')
-relationshipNames.push('receipt')
-relationshipNames.push('order')
-relationshipNames.push('storeInput')
+relationshipNames.push('customer');
+relationshipNames.push('customer.sale');
+relationshipNames.push('bill');
+relationshipNames.push('sale');
+relationshipNames.push('receipt');
+relationshipNames.push('order');
+relationshipNames.push('storeInput');
 @Injectable()
 export class TransactionService {
   logger = new Logger('TransactionService');
@@ -33,7 +33,7 @@ export class TransactionService {
   }
 
   async save(transaction: Transaction): Promise<Transaction | undefined> {
-    return await this.transactionRepository.save(transaction);
+     return await this.transactionRepository.save(transaction);
   }
 
   async update(transaction: Transaction): Promise<Transaction | undefined> {

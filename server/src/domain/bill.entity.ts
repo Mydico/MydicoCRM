@@ -32,10 +32,6 @@ export default class Bill extends BaseEntity {
   @Index()
   status?: BillStatus;
 
-  @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  @Index()
-  isDel?: boolean;
-
   @Column({ name: 'note', length: 255, nullable: true })
   @Index()
   note?: string;
@@ -47,13 +43,6 @@ export default class Bill extends BaseEntity {
   @Index()
   code: string;
 
-  @Column({ type: 'integer', name: 'sale_id', nullable: true })
-  @Index()
-  saleId?: number;
-
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  @Index()
-  siteId?: number;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

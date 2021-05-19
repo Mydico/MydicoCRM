@@ -12,6 +12,7 @@ import Bill from './bill.entity';
 import StoreInput from './store-input.entity';
 import Department from './department.entity';
 import Receipt from './receipt.entity';
+import Transaction from './transaction.entity';
 
 /**
  * A Customer.
@@ -105,6 +106,9 @@ export default class Customer extends BaseEntity {
     @OneToMany(type => StoreInput, other => other.customer)
     storeInput? : StoreInput[];
 
+    @OneToMany(type => Transaction, other => other.customer)
+    transaction? : Transaction[];
+
     @Column({ name: 'city', length: 255, nullable: true })
     @Index()
     city?: string;
@@ -128,14 +132,6 @@ export default class Customer extends BaseEntity {
 
     @ManyToOne(type => CustomerType)
     type?: CustomerType;
-
-    @ManyToMany(type => User)
-    @JoinTable({
-        name: 'customer_user',
-        joinColumn: { name: 'customer_id', referencedColumnName: 'id' },
-        inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
-    })
-    users?: User[];
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

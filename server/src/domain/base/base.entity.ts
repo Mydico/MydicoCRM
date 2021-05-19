@@ -8,7 +8,7 @@ export abstract class BaseEntity {
   createdBy?: string;
 
   @CreateDateColumn()
-  @Column({ nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ default: () => 'CURRENT_TIMESTAMP' })
   createdDate?: Date;
 
   @Column({ nullable: true })

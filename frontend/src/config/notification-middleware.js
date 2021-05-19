@@ -1,12 +1,11 @@
-
-import {toastError, toastSuccess} from './toast-style';
+import { toastError, toastSuccess } from './toast-style';
 const statusError = {
   401: 'Bạn chưa đăng nhập vào hệ thống',
   400: 'Bạn đã nhập dữ liệu không đúng',
   403: 'Bạn không có quyền thực hiện hành động này',
   409: 'Dữ liệu đã tồn tại trên hệ thống.',
   500: 'Lỗi hệ thống. Vui lòng thử lại',
-  422: 'Lỗi hệ thống. Vui lòng thử lại',
+  422: 'Lỗi hệ thống. Vui lòng thử lại'
 };
 
 const successMessageMapping = {
@@ -43,14 +42,14 @@ const successMessageMapping = {
   'MydicoCRM.Receipt.created': 'Tạo mới phiếu thu thành công',
   'MydicoCRM.Receipt.updated': 'Chỉnh sửa phiếu thu thành công',
   'MydicoCRM.PermissionGroup.created': 'Tạo mới nhóm quyền thành công',
-  'MydicoCRM.PermissionGroup.updated': 'Chỉnh sửa nhóm quyền thành công',
+  'MydicoCRM.PermissionGroup.updated': 'Chỉnh sửa nhóm quyền thành công'
 };
 
 // const addErrorAlert = (key?) => {
 //   toast.error(statusError[key.status] ? statusError[key.status] : key.error, centerToast);
 // };
 
-export default () => (next) => (action) => {
+export default () => next => action => {
   if (action.payload) {
     if (action.payload && (action.payload.statusCode === 201 || action.payload.statusCode === 200)) {
       const headers = action.payload.headers;
@@ -62,7 +61,7 @@ export default () => (next) => (action) => {
       });
       toastSuccess(successMessageMapping[alert]);
     } else {
-      toastError(statusError[action.payload.statusCode]);
+      toastError(action.payload.statusCode === 422 ? action.payload.message : statusError[action.payload.statusCode]);
     }
   }
 

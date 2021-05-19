@@ -14,7 +14,7 @@ import {
   CFormGroup,
   CTextarea
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,7 +33,8 @@ import { getDetailProductPromotion } from '../Promotion/promotion.api';
 import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
 import { getProductInstore, getProductWarehouse } from '../../warehouse/Product/product-warehouse.api';
 import { FormFeedback, Table } from 'reactstrap';
-
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object()
@@ -109,6 +110,14 @@ const CreateOrder = props => {
 
   const toOrderInvoice = data => {
     history.push({ pathname: `${props.match.url}/invoice`, state: data });
+  };
+
+  const onSearchCustomer = value => {
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, address: value, contactName: value }));
+  };
+
+  const onSearchPromition = value => {
+    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,desc', name: value }));
   };
 
   const onSubmit = (values, {}) => {
@@ -270,6 +279,7 @@ const CreateOrder = props => {
                       <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
                       <Select
                         name="customer"
+                        onInputChange={onSearchCustomer}
                         onChange={item => {
                           setFieldValue('customer', { id: item.value, name: item.label });
                           onSelectCustomer(item);
@@ -314,11 +324,11 @@ const CreateOrder = props => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.city?.name}</dd>
+                      <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.district?.name}</dd>
+                      <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Loại khách hàng: </dt>
@@ -338,6 +348,7 @@ const CreateOrder = props => {
                     <CCol sm={4}>
                       <CLabel htmlFor="lastName">Chọn chương trình bán hàng</CLabel>
                       <Select
+                        onInputChange={onSearchPromition}
                         onChange={item => {
                           setFieldValue('promotion', { id: item.value, name: item.label });
                           onSelectPromotion(item);
@@ -493,7 +504,8 @@ const CreateOrder = props => {
                         <tr
                           key={index}
                           style={
-                            item.quantityInStore !== undefined && Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
+                            item.quantityInStore !== undefined &&
+                            Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
                               ? {
                                   boxShadow: '0px 0px 6px 5px red'
                                 }
@@ -527,9 +539,10 @@ const CreateOrder = props => {
                               value={item.quantity}
                             />
 
-                            {item.quantityInStore !== undefined && Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore && (
-                              <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
-                            )}
+                            {item.quantityInStore !== undefined &&
+                              Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore && (
+                                <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
+                              )}
                           </td>
                           <td>
                             {

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -12,43 +12,42 @@ import {
   CInput,
   CRow,
   CSelect,
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {creatingWarehouse, getDetailWarehouse} from './warehouse.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { creatingWarehouse, getDetailWarehouse } from './warehouse.api';
 
-
-import {useHistory} from 'react-router-dom';
-import {fetching, globalizedWarehouseSelectors} from './warehouse.reducer';
-import {WarehouseStatus} from './contants';
+import { useHistory } from 'react-router-dom';
+import { fetching, globalizedWarehouseSelectors } from './warehouse.reducer';
+import { WarehouseStatus } from './contants';
 import Select from 'react-select';
-import {getCity, getDistrict, getWard} from '../../customer/customer.api';
-import {globalizedDepartmentSelectors} from '../../user/UserDepartment/department.reducer';
-import {getDepartment} from '../../user/UserDepartment/department.api';
-import {validate} from '../../../../shared/utils/normalize';
+import { getCity, getDistrict, getWard } from '../../customer/customer.api';
+import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
+import { getDepartment } from '../../user/UserDepartment/department.api';
+import { validate } from '../../../../shared/utils/normalize';
 
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5, `Tên phải lớn hơn 5 kí tự`)
-        .required('Tên không để trống'),
-    department: Yup.object().required('Thành phố không để trống'),
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
+    department: Yup.object().required('Thành phố không để trống')
   });
 };
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
 
-const EditWarehouse = (props) => {
-  const {initialState} = useSelector((state) => state.warehouse);
-  const {} = useSelector((state) => state.customer);
-  const {selectAll} = globalizedDepartmentSelectors;
+const EditWarehouse = props => {
+  const { initialState } = useSelector(state => state.warehouse);
+  const {} = useSelector(state => state.customer);
+  const { selectAll } = globalizedDepartmentSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -58,12 +57,12 @@ const EditWarehouse = (props) => {
     code: '',
     name: '',
     address: '',
-    tel: '',
+    tel: ''
   });
   const [selectedCity] = useState(null);
   const [selectedDistrict] = useState(null);
-  const {selectById} = globalizedWarehouseSelectors;
-  const warehouse = useSelector((state) => selectById(state, props.match.params.id));
+  const { selectById } = globalizedWarehouseSelectors;
+  const warehouse = useSelector(state => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
@@ -78,17 +77,17 @@ const EditWarehouse = (props) => {
 
   useEffect(() => {
     if (selectedCity) {
-      dispatch(getDistrict({city: selectedCity}));
+      dispatch(getDistrict({ city: selectedCity }));
     }
   }, [selectedCity]);
 
   useEffect(() => {
     if (selectedDistrict) {
-      dispatch(getWard({district: selectedDistrict}));
+      dispatch(getWard({ district: selectedDistrict }));
     }
   }, [selectedDistrict]);
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
     dispatch(creatingWarehouse(values));
     resetForm();
@@ -115,16 +114,11 @@ const EditWarehouse = (props) => {
           {({
             values,
             errors,
-
-
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-
-
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -136,7 +130,6 @@ const EditWarehouse = (props) => {
                       name="code"
                       id="code"
                       placeholder="Mã kho"
-                      disabled
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.code}
@@ -179,17 +172,17 @@ const EditWarehouse = (props) => {
                     <CLabel htmlFor="password">Chọn chi nhánh</CLabel>
                     <Select
                       name="department"
-                      onChange={(item) => {
+                      onChange={item => {
                         setFieldValue('department', item.value);
                       }}
                       value={{
                         value: values.department,
-                        label: `${values.department?.name}`,
+                        label: `${values.department?.name}`
                       }}
                       placeholder="Chọn chi nhánh"
-                      options={departments.map((item) => ({
+                      options={departments.map(item => ({
                         value: item,
-                        label: `${item.name}`,
+                        label: `${item.name}`
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
@@ -217,11 +210,11 @@ const EditWarehouse = (props) => {
                       name="status"
                       id="status"
                       value={values.status}
-                      onChange={(e) => {
+                      onChange={e => {
                         setFieldValue('status', e.target.value);
                       }}
                     >
-                      {WarehouseStatus.map((item) => (
+                      {WarehouseStatus.map(item => (
                         <option key={item.value} value={item.value}>
                           {mappingStatus[item.title]}
                         </option>

@@ -71,7 +71,7 @@ const DetailReceipt = (props) => {
   const [initValuesState, setInitValuesState] = useState(null);
 
   const customers = useSelector(selectAllCustomer);
-  const receipt = useSelector((state) => selectById(state, props.match.params.id));
+  const receipt = useSelector((state) => selectById(state, props.match.params.receiptId));
 
   const initialValues = {
     customer: {},
@@ -90,7 +90,7 @@ const DetailReceipt = (props) => {
 
   useEffect(() => {
     dispatch(getCustomer());
-    dispatch(getDetailReceipt(props.match.params.id));
+    dispatch(getDetailReceipt(props.match.params.receiptId));
   }, []);
 
   return (

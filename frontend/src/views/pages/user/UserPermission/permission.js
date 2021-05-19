@@ -185,34 +185,27 @@ const PermissionGroups = (props) => {
                     <CRow>
                       <CCol lg="6">
                         <dl className="row">
-                          <dt className="col-sm-3">Tên Login:</dt>
-                          <dd className="col-sm-9">{item.login}</dd>
+                          <dt className="col-sm-3">Tên nhóm quyền:</dt>
+                          <dd className="col-sm-9">{item.name}</dd>
                         </dl>
                         <dl className="row">
-                          <dt className="col-sm-3">Họ:</dt>
-                          <dd className="col-sm-9">{item.firstName}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Tên</dt>
-                          <dd className="col-sm-9">{item.lastName}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Số điện thoại</dt>
-                          <dd className="col-sm-9">{item.phone}</dd>
-                        </dl>
-                      </CCol>
-                      <CCol lg="6">
-                        <dl className="row">
-                          <dt className="col-sm-3">Email</dt>
-                          <dd className="col-sm-9">{item.email}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Ngày Tạo</dt>
+                          <dt className="col-sm-3">Ngày tạo:</dt>
                           <dd className="col-sm-9">{item.createdDate}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Trạng thái</dt>
                           <dd className="col-sm-9">{mappingStatus[item.status]}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Nhóm quyền</dt>
+                          <dd className="col-sm-9">{item.permissionGroupAssociates
+                          ? Object.keys(
+                            item.permissionGroupAssociates.reduce((r, a) => {
+                                r[a.typeName] = [[]];
+                                return r;
+                              }, {})
+                            ).join(',')
+                          : ''}</dd>
                         </dl>
                       </CCol>
                     </CRow>

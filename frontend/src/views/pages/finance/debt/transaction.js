@@ -85,16 +85,16 @@ const Transaction = props => {
     let href = '';
     if (item.order) {
       link = `Đơn hàng ${item.order.code}`;
-      href = `order/${item.order.id}/detail`;
+      href = `${props.match.url}/order/${item.order.id}`
     } else if (item.receipt) {
       link = `Phiếu thu ${item.receipt.code}`;
-      href = `receipt/${item.receipt.id}/detail`;
+      href = `${props.match.url}/receipt/${item.receipt.id}`
     } else {
       link = `Đơn trả hàng`;
-      href = `warehouse/import/return/${item.storeInput.id}/detail`;
+      href = `${props.match.url}/store/${item.storeInput.id}`
     }
     return (
-      <CLink href={href} target="_blank">
+      <CLink onClick={() => history.push({pathname: href})} target="_blank">
         {link}
       </CLink>
     );

@@ -40,7 +40,7 @@ export class OrderService {
     private readonly transactionService: TransactionService,
     private readonly departmentService: DepartmentService,
     private readonly incomeDashboardService: IncomeDashboardService
-  ) {}
+  ) { }
 
   async findById(id: string): Promise<Order | undefined> {
     const options = { relations: relationshipNames };
@@ -114,7 +114,7 @@ export class OrderService {
       if (founded.length > 0) {
         if (founded[0].quantity < item.quantity) {
           canCreateBill = false;
-          return
+          return;
         }
       }
     });
@@ -140,12 +140,12 @@ export class OrderService {
         quantity: item.quantity - itemFounded[0].quantity
       };
     });
-    const checkExistInStore = productQuantityExported.filter(item => item.quantity < 0)
+    const checkExistInStore = productQuantityExported.filter(item => item.quantity < 0);
     if (checkExistInStore.length > 0) {
-        return false;
+      return false;
     } else {
-        await this.productQuantityService.saveMany(productQuantityExported);
-        return true;
+      await this.productQuantityService.saveMany(productQuantityExported);
+      return true;
     }
   }
 
@@ -178,7 +178,7 @@ export class OrderService {
         });
         const transaction = new Transaction();
         transaction.customer = foundedOrder.customer;
-        transaction.order = foundedOrder;
+        transaction.order = order;
         transaction.bill = createdBill;
         transaction.totalMoney = foundedOrder.realMoney;
         transaction.type = TransactionType.DEBIT;
@@ -190,10 +190,8 @@ export class OrderService {
         const incomeItem = new IncomeDashboard();
         incomeItem.amount = foundedOrder.realMoney;
         incomeItem.type = DashboardType.ORDER;
-        incomeItem.userId = foundedOrder.customer.sale.id;
+        incomeItem.userId = foundedOrder.customer.sale?.id || null;
         await this.incomeDashboardService.save(incomeItem);
-      }else{
-          
       }
     }
     return await this.save(order);

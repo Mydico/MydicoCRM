@@ -71,6 +71,10 @@ const EditReceipt = (props) => {
     }
   }, [receipt]);
 
+  const onSearchCustomer = value => {
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, address: value, contactName: value }));
+  };
+
   useEffect(() => {
     dispatch(getCustomer());
     dispatch(getDetailReceipt(props.match.params.id));
@@ -125,6 +129,7 @@ const EditReceipt = (props) => {
                       <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
                       <Select
                         name="customer"
+                        onInputChange={onSearchCustomer}
                         onChange={(item) => {
                           setSelectedCustomer(item.value);
                           setFieldValue('customer', item.value);

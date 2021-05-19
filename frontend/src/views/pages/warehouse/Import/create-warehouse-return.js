@@ -34,6 +34,7 @@ import { currencyMask } from '../../../components/currency-input/currency-input'
 import MaskedInput from 'react-text-mask';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { validate } from '../../../../shared/utils/normalize';
 
 const validationSchema = function(values) {
   return Yup.object().shape({
@@ -42,17 +43,6 @@ const validationSchema = function(values) {
   });
 };
 
-const validate = getValidationSchema => {
-  return values => {
-    const validationSchema = getValidationSchema(values);
-    try {
-      validationSchema.validateSync(values, { abortEarly: false });
-      return {};
-    } catch (error) {
-      return getErrorsFromValidationError(error);
-    }
-  };
-};
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -101,6 +91,15 @@ const CreateWarehouse = () => {
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
   };
+
+  const onSearchProduct = (value) => {
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+  }
+
+  const onSearchCustomer = value => {
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, address: value, contactName: value }));
+  };
+
 
   const onSelectCustomer = ({ value }) => {
     setSelectedCustomer(value);
@@ -241,6 +240,7 @@ const CreateWarehouse = () => {
                       <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
                       <Select
                         name="customer"
+                        onInputChange={onSearchCustomer}
                         onChange={item => {
                           setFieldValue('customer', item.value);
                           onSelectCustomer(item);
@@ -324,6 +324,7 @@ const CreateWarehouse = () => {
                                 value: item,
                                 label: item?.product?.name
                               }}
+                              onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
                               options={products.map(item => ({

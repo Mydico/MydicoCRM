@@ -29,7 +29,7 @@ export const getCodeByCustomer = (name) => {
   if (!name) return name;
   return name
       .trim()
-      .replace(/' '/g, '')
+      .replace(/\s+/g, '')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/đ/g, 'd')
@@ -42,7 +42,7 @@ export const getProductCode = (name, brand, group, volume) => {
     .split(' ')
     .map(string => string[0])
     .join('')
-    .replace(/ /g, '')
+    .replace(/\s+/g, '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/đ/g, 'd')

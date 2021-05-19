@@ -11,7 +11,7 @@ const relationshipNames = [];
 relationshipNames.push('status');
 relationshipNames.push('type');
 relationshipNames.push('department');
-relationshipNames.push('users');
+relationshipNames.push('sale');
 
 @Injectable()
 export class CustomerService {
@@ -33,16 +33,13 @@ export class CustomerService {
 
   async findAndCount(options: FindManyOptions<Customer>, currentUser: User): Promise<[Customer[], number]> {
     let departmentVisible = [];
-    console.log(currentUser)
     if (currentUser.department) {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
       departmentVisible = departmentVisible.map(item => item.id)
       departmentVisible.push(currentUser.department.id);
     }
-    console.log(departmentVisible)
-    options.where = {
-      department: In(departmentVisible)
-    }
+    options.where["department"] = In(departmentVisible)
+ 
     options.relations = relationshipNames;
     return await this.customerRepository.findAndCount(options);
   }

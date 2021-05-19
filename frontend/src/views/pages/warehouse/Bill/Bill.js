@@ -438,12 +438,12 @@ const Bill = props => {
                       <CCol sm="4">
                         <h6 className="mb-3">Tới:</h6>
                         <div>
-                          <strong>{item?.customer.contactName}</strong>
+                          <strong>{item?.customer?.name}</strong>
                         </div>
                         <div>{item?.address}</div>
-                        <div>{`${item?.customer?.district?.name}, ${item?.customer?.city?.name}`}</div>
-                        <div>Email: {item?.customer.email}</div>
-                        <div>Phone: {item?.customer.tel}</div>
+                        <div>{`${item?.customer?.district}, ${item?.customer?.city}`}</div>
+                        <div>Email: {item?.customer?.email}</div>
+                        <div>Phone: {item?.customer?.tel}</div>
                       </CCol>
                       <CCol sm="4">
                         <h6 className="mb-3">Chương trình bán hàng:</h6>

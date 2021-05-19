@@ -14,7 +14,7 @@ import {
   CFormGroup,
   CTextarea
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -98,7 +98,8 @@ const EditOrder = props => {
     if (order) {
       setInitValuesState(order);
       setSelectedCustomer(order.customer);
-      setSelectedPromotion(order.promotion)
+      setSelectedPromotion(order.promotion);
+      setSelectedWarehouse(order.store)
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
       dispatch(getOrderDetail(props.match.params.id));
     }
@@ -142,6 +143,7 @@ const EditOrder = props => {
     }
     dispatch(updateOrder(values));
   };
+
 
   const onSelectPromotion = ({ value }) => {
     const arr = promotions.filter(customer => customer.id === value);
@@ -243,11 +245,8 @@ const EditOrder = props => {
   };
 
   const onSelectWarehouse = ({ value }) => {
-    const arr = warehouses.filter(customer => customer.id === value);
-    if (arr.length === 1) {
-      setSelectedWarehouse(arr[0]);
-      setIsSelectedWarehouse(true);
-    }
+    setSelectedWarehouse(value);
+    setIsSelectedWarehouse(true);
   };
 
   const editAlert = (values, { setSubmitting, setErrors }) => {
@@ -421,65 +420,63 @@ const EditOrder = props => {
               </CCardBody>
             </CCard>
             {productList.length === 0 && (
-              <CCol xs="12" sm="6" md="12">
-                <CCard className="card-accent-info">
-                  <CCardHeader>
-                    <CCardTitle>Kho hàng</CCardTitle>
-                  </CCardHeader>
-                  <CCardBody>
-                    <CRow className="mb-3">
-                      <CCol sm={4}>
-                        <CLabel htmlFor="lastName">Chọn Kho</CLabel>
-                        <Select
-                          onChange={item => {
-                            setFieldValue('store', item.value);
-                            onSelectWarehouse(item.value);
-                          }}
-                          value={{
-                            value: values.store,
-                            label: values.store?.name
-                          }}
-                          options={warehouses.map(item => ({
-                            value: item,
-                            label: `${item.name}`
-                          }))}
-                        />
-                        {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
-                      </CCol>
-                    </CRow>
-                    <CRow>
-                      <CCol lg="6">
-                        <dl className="row">
-                          <dt className="col-sm-3">Tên kho:</dt>
-                          <dd className="col-sm-9">{selectedWarehouse?.name}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Số điện thoại:</dt>
-                          <dd className="col-sm-9">{selectedWarehouse?.tel}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Địa chỉ:</dt>
-                          <dd className="col-sm-9">{selectedWarehouse?.address}</dd>
-                        </dl>
-                      </CCol>
-                      <CCol lg="6">
-                        <dl className="row">
-                          <dt className="col-sm-3">Thành phố:</dt>
-                          <dd className="col-sm-9">{selectedWarehouse?.city?.name}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Quận huyện:</dt>
-                          <dd className="col-sm-9">{selectedWarehouse?.district?.name}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Xã phường:</dt>
-                          <dd className="col-sm-9">{selectedWarehouse?.ward?.name}</dd>
-                        </dl>
-                      </CCol>
-                    </CRow>
-                  </CCardBody>
-                </CCard>
-              </CCol>
+              <CCard className="card-accent-info">
+                <CCardHeader>
+                  <CCardTitle>Kho hàng</CCardTitle>
+                </CCardHeader>
+                <CCardBody>
+                  <CRow className="mb-3">
+                    <CCol sm={4}>
+                      <CLabel htmlFor="lastName">Chọn Kho</CLabel>
+                      <Select
+                        onChange={item => {
+                          setFieldValue('store', item.value);
+                          onSelectWarehouse(item);
+                        }}
+                        value={{
+                          value: values.store,
+                          label: values.store?.name
+                        }}
+                        options={warehouses.map(item => ({
+                          value: item,
+                          label: `${item.name}`
+                        }))}
+                      />
+                      {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
+                    </CCol>
+                  </CRow>
+                  <CRow>
+                    <CCol lg="6">
+                      <dl className="row">
+                        <dt className="col-sm-3">Tên kho:</dt>
+                        <dd className="col-sm-9">{selectedWarehouse?.name}</dd>
+                      </dl>
+                      <dl className="row">
+                        <dt className="col-sm-3">Số điện thoại:</dt>
+                        <dd className="col-sm-9">{selectedWarehouse?.tel}</dd>
+                      </dl>
+                      <dl className="row">
+                        <dt className="col-sm-3">Địa chỉ:</dt>
+                        <dd className="col-sm-9">{selectedWarehouse?.address}</dd>
+                      </dl>
+                    </CCol>
+                    <CCol lg="6">
+                      <dl className="row">
+                        <dt className="col-sm-3">Thành phố:</dt>
+                        <dd className="col-sm-9">{selectedWarehouse?.city?.name}</dd>
+                      </dl>
+                      <dl className="row">
+                        <dt className="col-sm-3">Quận huyện:</dt>
+                        <dd className="col-sm-9">{selectedWarehouse?.district?.name}</dd>
+                      </dl>
+                      <dl className="row">
+                        <dt className="col-sm-3">Xã phường:</dt>
+                        <dd className="col-sm-9">{selectedWarehouse?.ward?.name}</dd>
+                      </dl>
+                    </CCol>
+                  </CRow>
+                </CCardBody>
+              </CCard>
             )}
 
             <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>

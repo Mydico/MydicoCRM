@@ -50,6 +50,11 @@ export class User extends BaseEntity {
   status?: ProductStatus;
 
   @ManyToMany(type => UserRole, userRole => userRole.users)
+  @JoinTable({
+    name: 'user_roles_list',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'user_role_id', referencedColumnName: 'id' },
+  })
   roles?: UserRole[];
 
   @ManyToOne(type => Department)

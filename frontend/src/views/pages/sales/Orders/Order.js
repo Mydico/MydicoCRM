@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOrder, updateStatusOrder } from './order.api';
 import { globalizedOrdersSelectors, reset } from './order.reducer';
 import { useHistory } from 'react-router-dom';
 import { Table } from 'reactstrap';
 import { OrderStatus } from './order-status';
-import moment from 'moment'
+import moment from 'moment';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 const getBadge = status => {
@@ -55,10 +55,8 @@ const Order = props => {
         customerName: item.customer?.name,
         tel: item.customer?.tel,
         quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
-        createdDate: moment(item.createdDate).format("DD-MM-YYYY"),
-        total: item.orderDetails
-          ?.reduce((sum, current) => sum + current.priceTotal, 0)
-          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+        total: Number(item.realMoney)?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''
       };
     });
   };
@@ -141,23 +139,35 @@ const Order = props => {
   }, [initialState.updatingSuccess]);
 
   const approveOrder = order => () => {
-    order.status = OrderStatus.APPROVED;
-    dispatch(updateStatusOrder(order));
+    const newOrder = {
+      id: order.id,
+      status: OrderStatus.APPROVED
+    };
+    dispatch(updateStatusOrder(newOrder));
   };
 
   const cancelOrder = order => () => {
-    order.status = OrderStatus.CANCEL;
-    dispatch(updateStatusOrder(order));
+    const newOrder = {
+      id: order.id,
+      status: OrderStatus.CANCEL
+    };
+    dispatch(updateStatusOrder(newOrder));
   };
 
   const deleteOrder = order => () => {
-    order.status = OrderStatus.DELETED;
-    dispatch(updateStatusOrder(order));
+    const newOrder = {
+      id: order.id,
+      status: OrderStatus.DELETED
+    };
+    dispatch(updateStatusOrder(newOrder));
   };
 
   const createCodOrder = order => () => {
-    order.status = OrderStatus.CREATE_COD;
-    dispatch(updateStatusOrder(order));
+    const newOrder = {
+      id: order.id,
+      status: OrderStatus.CREATE_COD
+    };
+    dispatch(updateStatusOrder(newOrder));
   };
 
   const approveAlert = item => {
@@ -432,32 +442,38 @@ const Order = props => {
                         </tr>
                       </thead>
                       <tbody>
-                        {JSON.parse(JSON.stringify(item?.orderDetails || []))
-                          .map((item, index) => {
-                            return (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{item.product?.name}</td>
-                                <td>{item.product?.volume}</td>
-                                <td>{item.quantity}</td>
-                                <td>{Number(item.product?.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
-                                <td>{item.reducePercent}%</td>
-                                <td>
-                                  {(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
-                                    ''}
-                                </td>
-                                <td>
-                                  {(
-                                    item.product?.price * item.quantity -
-                                    (item.product?.price * item.quantity * item.reducePercent) / 100
-                                  ).toLocaleString('it-IT', {
-                                    style: 'currency',
-                                    currency: 'VND'
-                                  }) || ''}
-                                </td>
-                              </tr>
-                            );
-                          })}
+                        {JSON.parse(JSON.stringify(item?.orderDetails || [])).map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>{index + 1}</td>
+                              <td>{item.product?.name}</td>
+                              <td>{item.product?.volume}</td>
+                              <td>{item.quantity}</td>
+                              <td>
+                                {Number(item.priceReal || item.product?.price).toLocaleString('it-IT', {
+                                  style: 'currency',
+                                  currency: 'VND'
+                                }) || ''}
+                              </td>
+                              <td>{item.reducePercent}%</td>
+                              <td>
+                                {(Number(item.priceReal || item.product?.price) * item.quantity).toLocaleString('it-IT', {
+                                  style: 'currency',
+                                  currency: 'VND'
+                                }) || ''}
+                              </td>
+                              <td>
+                                {(
+                                  Number(item.priceReal || item.product?.price) * item.quantity -
+                                  (Number(item.priceReal || item.product?.price) * item.quantity * item.reducePercent) / 100
+                                ).toLocaleString('it-IT', {
+                                  style: 'currency',
+                                  currency: 'VND'
+                                }) || ''}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </Table>
                     <CRow>
@@ -478,9 +494,7 @@ const Order = props => {
                                 <strong>Tổng tiền</strong>
                               </td>
                               <td className="right">
-                                {item?.orderDetails
-                                  .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
-                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                {Number(item?.totalMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                               </td>
                             </tr>
                             <tr>
@@ -488,12 +502,7 @@ const Order = props => {
                                 <strong>Chiết khấu</strong>
                               </td>
                               <td className="right">
-                                {item?.orderDetails
-                                  .reduce(
-                                    (sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100,
-                                    0
-                                  )
-                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                {Number(item?.reduceMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                               </td>
                             </tr>
                             <tr>
@@ -502,15 +511,7 @@ const Order = props => {
                               </td>
                               <td className="right">
                                 <strong>
-                                  {item?.orderDetails
-                                    .reduce(
-                                      (sum, current) =>
-                                        sum +
-                                        (current.product?.price * current.quantity -
-                                          (current.product?.price * current.quantity * current.reducePercent) / 100),
-                                      0
-                                    )
-                                    .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                  {Number(item?.realMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                                 </strong>
                               </td>
                             </tr>

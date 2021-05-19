@@ -1,59 +1,41 @@
-import React, {useEffect, useState} from 'react';
-import {
+import React, { useEffect, useState } from 'react';
+import { CCard, CCardHeader, CCardBody, CCol, CForm, CTextarea, CFormGroup, CLabel, CRow, CCardTitle } from '@coreui/react/lib';
 
-  CCard,
-  CCardHeader,
-  CCardBody,
-  CCol,
-  CForm,
-  CTextarea,
-  CFormGroup,
-  CLabel,
-
-  CRow,
-
-  CCardTitle,
-} from '@coreui/react/lib';
-
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {getDetailWarehouseImport, updateWarehouseImport} from './warehouse-import.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { getDetailWarehouseImport, updateWarehouseImport } from './warehouse-import.api';
 
+import { useHistory } from 'react-router-dom';
+import { fetching, globalizedWarehouseImportSelectors } from './warehouse-import.reducer';
 
-import {useHistory} from 'react-router-dom';
-import {fetching, globalizedWarehouseImportSelectors} from './warehouse-import.reducer';
+import { Table } from 'reactstrap';
 
+import { getWarehouse } from '../Warehouse/warehouse.api';
 
-import {Table} from 'reactstrap';
+import { getProduct } from '../../product/ProductList/product.api';
+import { WarehouseImportType } from './contants';
 
-import {getWarehouse} from '../Warehouse/warehouse.api';
-
-import {getProduct} from '../../product/ProductList/product.api';
-import {WarehouseImportType} from './contants';
-
-import {getCustomer} from '../../customer/customer.api';
+import { getCustomer } from '../../customer/customer.api';
 const validationSchema = function() {
   return Yup.object().shape({
-    store: Yup.object().required('Kho không để trống'),
+    store: Yup.object().required('Kho không để trống')
   });
 };
 
-import {validate} from '../../../../shared/utils/normalize';
-
+import { validate } from '../../../../shared/utils/normalize';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
 
+const DetailWarehouseReturn = props => {
+  const { initialState } = useSelector(state => state.warehouseImport);
+  const { account } = useSelector(state => state.authentication);
 
-const DetailWarehouseReturn = (props) => {
-  const {initialState} = useSelector((state) => state.warehouseImport);
-  const {account} = useSelector((state) => state.authentication);
-
-  const {selectById} = globalizedWarehouseImportSelectors;
+  const { selectById } = globalizedWarehouseImportSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -61,20 +43,19 @@ const DetailWarehouseReturn = (props) => {
   const [initValuesState, setInitValuesState] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-  const warehouseImport = useSelector((state) => selectById(state, props.match.params.id));
+  const warehouseImport = useSelector(state => selectById(state, props.match.params.storeId));
 
   const [productList, setProductList] = useState([]);
 
   const initialValues = {
     store: '',
-    note: '',
+    note: ''
   };
 
-
   useEffect(() => {
-    dispatch(getWarehouse({department: JSON.stringify([account.department?.id || ''])}));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.storeId || '']) }));
     dispatch(getProduct());
-    dispatch(getDetailWarehouseImport(props.match.params.id));
+    dispatch(getDetailWarehouseImport(props.match.params.storeId));
     dispatch(getCustomer());
   }, []);
 
@@ -87,7 +68,7 @@ const DetailWarehouseReturn = (props) => {
     }
   }, [warehouseImport]);
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, { resetForm }) => {
     values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.RETURN;
@@ -95,7 +76,6 @@ const DetailWarehouseReturn = (props) => {
     dispatch(updateWarehouseImport(values));
     resetForm();
   };
-
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
@@ -108,14 +88,7 @@ const DetailWarehouseReturn = (props) => {
       <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
         {({
           values,
-
-
-          handleChange,
-          handleBlur,
           handleSubmit
-
-
-          ,
         }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
@@ -208,19 +181,54 @@ const DetailWarehouseReturn = (props) => {
                     {productList.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{width: 500}}>{`${item?.product?.productBrand?.name || ''}-${item?.product?.name || ''}-${item
-                              ?.product?.volume || ''}`}</td>
+                          <td style={{ width: 500 }}>{`${item?.product?.productBrand?.name || ''}-${item?.product?.name || ''}-${item
+                            ?.product?.volume || ''}`}</td>
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
-                          <td style={{width: 100}}>{item.quantity}</td>
+                          <td>
+                            {Number(item?.price || item?.product?.price).toLocaleString('it-IT', {
+                              style: 'currency',
+                              currency: 'VND'
+                            }) || ''}
+                          </td>
+                          <td style={{ width: 100 }}>{item.quantity}</td>
                         </tr>
                       );
                     })}
                   </tbody>
                 </Table>
+                <CRow>
+                  <CCol lg="4" sm="5">
+                    Ghi chú: <strong>{values.note}</strong>
+                  </CCol>
+                  <CCol lg="4" sm="5" className="ml-auto">
+                    <Table className="table-clear">
+                      <tbody>
+                        <tr>
+                          <td className="left">
+                            <strong>Tiền thanh toán</strong>
+                          </td>
+                          <td className="right">
+                            <strong>
+                              {productList
+                                .reduce(
+                                  (sum, current) =>
+                                    sum +
+                                    (Number(current.price || current.product.price) * current.quantity -
+                                      (Number(current.price || current.product.price)  * current.quantity * current.reducePercent) / 100),
+                                  0
+                                )
+                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                            </strong>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </CCol>
+                </CRow>
               </CCardBody>
             </CCard>
-            <CCard>
+            {/* <CCard>
               <CCardBody>
                 <CFormGroup>
                   <CLabel htmlFor="userName">Ghi chú</CLabel>
@@ -236,7 +244,7 @@ const DetailWarehouseReturn = (props) => {
                   />
                 </CFormGroup>
               </CCardBody>
-            </CCard>
+            </CCard> */}
           </CForm>
         )}
       </Formik>

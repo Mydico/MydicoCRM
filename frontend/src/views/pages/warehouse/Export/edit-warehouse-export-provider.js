@@ -113,6 +113,10 @@ const EditWarehouseExportProvider = (props) => {
     setProductList(copyArr);
   };
 
+  const onSearchProduct = (value) => {
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+  }
+
   const onSelectedProduct = ({value}, index) => {
     const arr = productList.filter((item) => item.product.id === value.id);
     if (arr.length === 0) {
@@ -146,14 +150,10 @@ const EditWarehouseExportProvider = (props) => {
       <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
         {({
           values,
-
-
           handleChange,
           handleBlur,
           handleSubmit,
           setFieldValue,
-
-
           handleReset
           ,
         }) => (
@@ -284,6 +284,7 @@ const EditWarehouseExportProvider = (props) => {
                                 value: item,
                                 label: item?.product?.name,
                               }}
+                              onInputChange={onSearchProduct}
                               onChange={(event) => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
                               options={products.map((item) => ({

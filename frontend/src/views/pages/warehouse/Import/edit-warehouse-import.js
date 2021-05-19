@@ -115,6 +115,10 @@ const EditWarehouseImport = props => {
     setProductList(copyArr);
   };
 
+  const onSearchProduct = (value) => {
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+  }
+  
   const onAddProduct = () => {
     const data = { product: {}, quantity: 1 };
     setProductList([...productList, data]);
@@ -237,6 +241,7 @@ const EditWarehouseImport = props => {
                                 value: item,
                                 label: item?.product?.name
                               }}
+                              onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
                               options={products.map(item => ({

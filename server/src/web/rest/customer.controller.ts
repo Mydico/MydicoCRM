@@ -41,10 +41,10 @@ export class CustomerController {
   })
   async getBirthdayAll(@Req() req: Request, @Res() res): Promise<Customer[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = {};
+    const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort') {
-        filter[item] = Like(`%${req.query[item]}%`);
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
     const currentUser = req.user as User;
@@ -53,10 +53,7 @@ export class CustomerController {
         skip: +pageRequest.page * pageRequest.size,
         take: +pageRequest.size,
         order: pageRequest.sort.asOrder(),
-        where: {
-          dateOfBirth: Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7))),
-          ...filter
-        }
+        where : filter
       },
       currentUser
     );
@@ -73,10 +70,10 @@ export class CustomerController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Customer[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = {};
+    const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department') {
-        filter[item] = Like(`%${req.query[item]}%`);
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
     const currentUser = req.user as User;
@@ -85,9 +82,7 @@ export class CustomerController {
         skip: +pageRequest.page * pageRequest.size,
         take: +pageRequest.size,
         order: pageRequest.sort.asOrder(),
-        where: {
-          ...filter
-        }
+        where : filter
       },
       currentUser
     );

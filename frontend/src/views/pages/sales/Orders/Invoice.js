@@ -38,7 +38,7 @@ const Invoice = () => {
     if (initialState.updatingSuccess) {
       dispatch(reset());
       localStorage.setItem('order', JSON.stringify({}));
-      history.push('/order');
+      history.push('/orders');
     }
   }, [initialState.updatingSuccess]);
 

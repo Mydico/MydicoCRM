@@ -138,6 +138,10 @@ const CreateWarehouseExportProvider = () => {
     setProductList(copyArr);
   };
 
+  const onSearchProduct = (value) => {
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+  }
+
   useEffect(() => {
     if (initialState.updatingSuccess) {
       history.goBack();
@@ -149,16 +153,11 @@ const CreateWarehouseExportProvider = () => {
       <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit} innerRef={formikRef}>
         {({
           values,
-
-
           handleChange,
           handleBlur,
           handleSubmit,
           setFieldValue,
-
-
           handleReset
-          ,
         }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
@@ -280,6 +279,7 @@ const CreateWarehouseExportProvider = () => {
                                 value: item,
                                 label: item?.product?.name,
                               }}
+                              onInputChange={onSearchProduct}
                               onChange={(event) => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
                               options={products.map((item) => ({
