@@ -17,13 +17,13 @@ import { Request, Response } from 'express';
 import Promotion from '../../domain/promotion.entity';
 import { PromotionService } from '../../service/promotion.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { Like } from 'typeorm';
 
 @Controller('api/promotions')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class PromotionController {

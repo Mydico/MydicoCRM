@@ -4,12 +4,12 @@ import { Request, Response } from 'express';
 import CustomerCategory from '../../domain/customer-category.entity';
 import { CustomerCategoryService } from '../../service/customer-category.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 
 @Controller('api/customer-categories')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 

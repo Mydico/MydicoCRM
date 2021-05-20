@@ -33,9 +33,9 @@ const Debt = (props) => {
       return {
         ...item,
         code: item.customer?.code || '',
+        tel: item.customer?.tel || '',
         name: item.customer?.name || '',
-        phone: item.customer?.phone || '',
-        sale: item.sale?.name || '',
+        sale: item.customer?.sale?.code || '',
         createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
@@ -51,7 +51,7 @@ const Debt = (props) => {
     },
     {key: 'code', label: 'Mã khách hàng', _style: {width: '20%'}},
     {key: 'name', label: 'Tên khách hàng', _style: {width: '15%'}},
-    {key: 'phone', label: 'Số điện thoại', _style: {width: '15%'}},
+    {key: 'tel', label: 'Số điện thoại', _style: {width: '15%'}},
     {key: 'debt', label: 'Tổng nợ', _style: {width: '10%'}},
     {key: 'sale', label: 'Nhân viên quản lý', _style: {width: '15%'}},
     {

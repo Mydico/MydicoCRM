@@ -15,8 +15,9 @@ export const PrivateRouteComponent = ({ component: Component, ...rest }) => {
         item =>
           item.method === 'POST' && item.entity.includes(props.location.pathname.split('/')[1]) && props.location.pathname.includes('new')
       ).length > 0 ||
-      account.role.filter(item => item.method === 'PUT' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 ||
+      account.role.filter(item => item.method === 'PUT' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 && props.location.pathname.includes('edit') ||
       account.role.filter(item => item.method === 'DELETE' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0;
+
     return isWhiteList || isHasPermission || isAdmin ? (
       <Component {...props} />
     ) : (

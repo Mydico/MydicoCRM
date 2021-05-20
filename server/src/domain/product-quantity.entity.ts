@@ -4,6 +4,7 @@ import { BaseEntity } from './base/base.entity';
 
 import Store from './store.entity';
 import Product from './product.entity';
+import Department from './department.entity';
 
 /**
  * A ProductQuantity.
@@ -14,9 +15,8 @@ export default class ProductQuantity extends BaseEntity {
     @Index()
     quantity: number;
 
-    @Column({ type: 'boolean', name: 'is_del', nullable: true })
-    @Index()
-    isDel?: boolean;
+    @ManyToOne(type => Department)
+    department: Department;
 
     @ManyToOne(type => Store)
     store: Store;

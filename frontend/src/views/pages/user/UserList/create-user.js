@@ -34,16 +34,16 @@ import Select from 'react-select';
 const validationSchema = function() {
   return Yup.object().shape({
     login: Yup.string()
-      .min(5, `Tên đăng nhập phải lớn hơn 5 kí tự`)
+      .min(3, `Tên đăng nhập phải lớn hơn 5 kí tự`)
       .required('Tên đăng nhập không để trống'),
     password: Yup.string()
       .min(5, `Mật khẩu phải lớn hơn 5 kí tự`)
       .required('Mật khẩu không để trống'),
     firstName: Yup.string()
-      .min(3, `Họ phải lớn hơn 5 kí tự`)
+      .min(1, `Họ phải lớn hơn 5 kí tự`)
       .required('Họ không để trống'),
     lastName: Yup.string()
-      .min(3, `Tên phải lớn hơn 5 kí tự`)
+      .min(1, `Tên phải lớn hơn 5 kí tự`)
       .required('Tên không để trống')
   });
 };

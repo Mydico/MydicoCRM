@@ -1,50 +1,35 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  CButton,
-  CCard,
-  CCardHeader,
-  CCardBody,
-  CCol,
-  CForm,
-  CTextarea,
-  CFormGroup,
-  CLabel,
-
-  CRow,
-
-  CCardTitle,
-} from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import React, { useEffect, useRef, useState } from 'react';
+import { CButton, CCard, CCardHeader, CCardBody, CCol, CForm, CTextarea, CFormGroup, CLabel, CRow, CCardTitle } from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-
-import {useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
-import {globalizedCustomerSelectors} from '../../customer/customer.reducer';
-import {FormFeedback} from 'reactstrap';
-import {getCustomer} from '../../customer/customer.api';
+import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
+import { FormFeedback } from 'reactstrap';
+import { getCustomer } from '../../customer/customer.api';
 
 import CurrencyInput from '../../../components/currency-input/currency-input';
-import {creatingReceipt} from './receipt.api';
-import {fetching} from './receipt.reducer';
-import {getCustomerDebts} from '../debt/debt.api';
-
+import { creatingReceipt } from './receipt.api';
+import { fetching } from './receipt.reducer';
+import { getCustomerDebts } from '../debt/debt.api';
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object().required('Khách hàng không để trống'),
-    money: Yup.string().required('Tiền không để trống'),
+    money: Yup.string().required('Tiền không để trống')
   });
 };
 
-import {validate} from '../../../../shared/utils/normalize';
-
+import { validate } from '../../../../shared/utils/normalize';
 
 const CreateReceipt = () => {
   const formikRef = useRef();
-  const {initialState} = useSelector((state) => state.receipt);
-  const {selectAll: selectAllCustomer} = globalizedCustomerSelectors;
+  const { initialState } = useSelector(state => state.receipt);
+  const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -55,14 +40,14 @@ const CreateReceipt = () => {
   const initialValues = {
     customer: {},
     money: '',
-    note: '',
+    note: ''
   };
 
   useEffect(() => {
     dispatch(getCustomer());
   }, []);
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
     values.money = Number(values.money.replace(/\D/g, ''));
     dispatch(creatingReceipt(values));
@@ -71,7 +56,7 @@ const CreateReceipt = () => {
 
   useEffect(() => {
     if (selectedCustomer) {
-      dispatch(getCustomerDebts({customer: selectedCustomer.id})).then((resp) => {
+      dispatch(getCustomerDebts({ customer: selectedCustomer.id })).then(resp => {
         if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
           setCustomerDebt(resp.payload.data[0]);
         } else {
@@ -97,15 +82,12 @@ const CreateReceipt = () => {
             values,
             errors,
 
-
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
 
-
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CCol lg="12">
@@ -121,13 +103,13 @@ const CreateReceipt = () => {
                           <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
                           <Select
                             name="customer"
-                            onChange={(item) => {
+                            onChange={item => {
                               setSelectedCustomer(item.value);
                               setFieldValue('customer', item.value);
                             }}
-                            options={customers.map((item) => ({
+                            options={customers.map(item => ({
                               value: item,
-                              label: `[${item.code}] ${item.name} ${item.address}`,
+                              label: `[${item.code}] ${item.name} ${item.address}`
                             }))}
                           />
                         </CCol>
@@ -137,9 +119,9 @@ const CreateReceipt = () => {
                     <dl className="row">
                       <dt className="col-sm-3">Công nợ hiện tại</dt>
                       <dd className="col-sm-9">
-                        {customerDebt ?
-                          new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(customerDebt?.debt) :
-                          0}
+                        {customerDebt
+                          ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(customerDebt?.debt)
+                          : 0}
                       </dd>
                     </dl>
                     <CRow>
@@ -168,11 +150,11 @@ const CreateReceipt = () => {
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Thành phố:</dt>
-                          <dd className="col-sm-9">{selectedCustomer?.city?.name}</dd>
+                          <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Quận huyện:</dt>
-                          <dd className="col-sm-9">{selectedCustomer?.district?.name}</dd>
+                          <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Loại khách hàng: </dt>

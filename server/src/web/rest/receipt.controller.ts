@@ -17,7 +17,7 @@ import { Request, Response } from 'express';
 import Receipt from '../../domain/receipt.entity';
 import { ReceiptService } from '../../service/receipt.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { ReceiptStatus } from '../../domain/enumeration/receipt-status';
@@ -25,7 +25,7 @@ import { User } from '../../domain/user.entity';
 import { Like } from 'typeorm';
 
 @Controller('api/receipts')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class ReceiptController {

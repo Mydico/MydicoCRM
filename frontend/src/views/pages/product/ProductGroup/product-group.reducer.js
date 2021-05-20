@@ -35,6 +35,10 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [creatingProductGroup.rejected]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
     [getDetailProductGroup.fulfilled]: (state, action) => {
       productGroupsAdapter.addOne(state, action.payload);
       state.initialState.loading = false;
@@ -45,6 +49,10 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [updateProductGroup.fulfilled]: (state ) => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
+    [updateProductGroup.rejected]: state => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
     },

@@ -103,7 +103,9 @@ const ProductWarehouse = (props) => {
   };
 
   const onFilterColumn = (value) => {
-    if (!isFirstRender.current) dispatch(getProductWarehouse({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+    if(Object.keys(value).length > 0){
+      if (!isFirstRender.current) dispatch(getProductWarehouse({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+    }
   };
 
   return (

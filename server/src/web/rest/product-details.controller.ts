@@ -17,12 +17,12 @@ import { Request, Response } from 'express';
 import ProductDetails from '../../domain/product-details.entity';
 import { ProductDetailsService } from '../../service/product-details.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 
 @Controller('api/product-details')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class ProductDetailsController {

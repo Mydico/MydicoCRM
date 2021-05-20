@@ -166,11 +166,11 @@ export class OrderService {
       const canCreateBill = await this.exportStore(foundedOrder);
       if (canCreateBill) {
         const bill = new Bill();
-        bill.code = `VD-${order.code}`;
-        bill.customer = order.customer;
-        bill.order = order;
+        bill.code = `VD-${foundedOrder.code}`;
+        bill.customer = foundedOrder.customer;
+        bill.order = foundedOrder;
         bill.store = order.store;
-        bill.createdBy = order.lastModifiedBy;
+        bill.createdBy = foundedOrder.lastModifiedBy;
         const createdBill = await this.billService.save(bill);
         const latestTransaction = await this.transactionService.findByfields({
           where: { customer: foundedOrder.customer },

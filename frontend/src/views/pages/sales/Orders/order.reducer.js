@@ -39,6 +39,10 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [creatingOrder.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
     [getDetailOrder.fulfilled]: (state, action) => {
       orderAdapter.addOne(state, action.payload);
       state.initialState.loading = false;
@@ -57,6 +61,10 @@ const slice = createSlice({
       state.initialState.updatingSuccess = false;
     },
     [updateOrder.fulfilled]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
+    [updateOrder.rejected]: state => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
     }

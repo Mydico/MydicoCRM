@@ -55,6 +55,10 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [updateWarehouseImport.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
     [getDetailWarehouseImport.fulfilled]: (state, action) => {
       warehouseImportAdapter.addOne(state, action.payload);
       state.initialState.loading = false;

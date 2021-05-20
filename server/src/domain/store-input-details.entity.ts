@@ -20,9 +20,9 @@ export default class StoreInputDetails extends BaseEntity {
     @Index()
     price?: number;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
+    @Column({ name: 'reduce_percent', nullable: true })
     @Index()
-    siteId?: number;
+    reducePercent?: number;
 
     @ManyToOne(type => StoreInput)
     storeInput: StoreInput;

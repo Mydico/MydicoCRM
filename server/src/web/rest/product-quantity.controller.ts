@@ -17,19 +17,21 @@ import { Request, Response } from 'express';
 import ProductQuantity from '../../domain/product-quantity.entity';
 import { ProductQuantityService } from '../../service/product-quantity.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { In, Like } from 'typeorm';
+import { User } from '../../domain/user.entity';
+import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/product-quantities')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class ProductQuantityController {
   logger = new Logger('ProductQuantityController');
 
-  constructor(private readonly productQuantityService: ProductQuantityService) {}
+  constructor(private readonly productQuantityService: ProductQuantityService, private readonly departmentService: DepartmentService) {}
 
   @Get('/quantity')
   @Roles(RoleType.USER)
@@ -89,13 +91,26 @@ export class ProductQuantityController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Response> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = {};
+    const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort') {
-        filter[item] = Like(`%${req.query[item]}%`);
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
-    const [results, count] = await this.productQuantityService.findAndCount(pageRequest, req);
+    let departmentVisible = [];
+    const currentUser = req.user as User;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    filter.push({ department: In(departmentVisible) });
+    const [results, count] = await this.productQuantityService.findAndCount({
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+      where: filter
+    });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }

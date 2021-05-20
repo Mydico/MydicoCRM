@@ -19,8 +19,11 @@ const relationshipNames = [];
 relationshipNames.push('approver');
 relationshipNames.push('store');
 relationshipNames.push('customer');
+relationshipNames.push('customer.department');
+relationshipNames.push('customer.type');
 relationshipNames.push('storeTransfer');
 relationshipNames.push('provider');
+relationshipNames.push('store.department');
 
 @Injectable()
 export class StoreInputService {
@@ -166,6 +169,7 @@ export class StoreInputService {
             .map(item => ({
                 product: item.product,
                 store: entity.store,
+                department: entity.store.department,
                 quantity: item.quantity,
                 type: StoreHistoryType.IMPORT,
             }));

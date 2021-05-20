@@ -52,9 +52,17 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [creatingProduct.rejected]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
     [updateProduct.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
+    },
+    [updateProduct.rejected]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
     },
     [getDetailProduct.fulfilled]: (state, action) => {
       productsAdapter.setAll(state, [action.payload]);

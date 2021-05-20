@@ -49,6 +49,10 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [creatingPromotion.rejected]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
     [updatePromotion.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;

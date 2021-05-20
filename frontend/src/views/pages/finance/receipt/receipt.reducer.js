@@ -36,6 +36,10 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [creatingReceipt.rejected]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
     [getDetailReceipt.fulfilled]: (state, action) => {
       receiptAdapter.addOne(state, action.payload);
       state.initialState.loading = false;
@@ -46,6 +50,10 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [updateReceipt.fulfilled]: (state ) => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
+    [updateReceipt.rejected]: state => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
     },

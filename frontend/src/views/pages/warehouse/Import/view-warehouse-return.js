@@ -10,13 +10,10 @@ import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from './warehouse-import.reducer';
 
 import { Table } from 'reactstrap';
-
-import { getWarehouse } from '../Warehouse/warehouse.api';
-
-import { getProduct } from '../../product/ProductList/product.api';
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 import { WarehouseImportType } from './contants';
 
-import { getCustomer } from '../../customer/customer.api';
 const validationSchema = function() {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -53,10 +50,7 @@ const DetailWarehouseReturn = props => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([account.department?.storeId || '']) }));
-    dispatch(getProduct());
     dispatch(getDetailWarehouseImport(props.match.params.storeId));
-    dispatch(getCustomer());
   }, []);
 
   useEffect(() => {
@@ -152,11 +146,11 @@ const DetailWarehouseReturn = props => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.city?.name}</dd>
+                      <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.district?.name}</dd>
+                      <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Loại khách hàng: </dt>
@@ -174,6 +168,7 @@ const DetailWarehouseReturn = props => {
                       <th>Sản phẩm</th>
                       <th>Đơn vị</th>
                       <th>Dung tích</th>
+                      <th>Giá</th>
                       <th>Số lượng</th>
                     </tr>
                   </thead>
@@ -214,8 +209,7 @@ const DetailWarehouseReturn = props => {
                                 .reduce(
                                   (sum, current) =>
                                     sum +
-                                    (Number(current.price || current.product.price) * current.quantity -
-                                      (Number(current.price || current.product.price)  * current.quantity * current.reducePercent) / 100),
+                                    (Number(current.price || current.product.price) * current.quantity),
                                   0
                                 )
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}

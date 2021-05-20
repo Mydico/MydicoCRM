@@ -6,7 +6,7 @@ import { CustomerDebitRepository } from '../repository/customer-debit.repository
 
 const relationshipNames = [];
 relationshipNames.push('customer');
-relationshipNames.push('sale');
+relationshipNames.push('customer.sale');
 
 @Injectable()
 export class CustomerDebitService {

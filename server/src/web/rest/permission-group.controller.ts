@@ -19,14 +19,14 @@ import { Request, Response } from 'express';
 import PermissionGroup from '../../domain/permission-group.entity';
 import { PermissionGroupService } from '../../service/permission-group.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { User } from '../../domain/user.entity';
 import { CreatePermissionGroupDTO, UpdatePermissionGroupDTO } from '../../service/dto/permission-group.dto';
 
 @Controller('api/permission-groups')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class PermissionGroupController {

@@ -41,8 +41,16 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [creatingProvider.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
     [updateProvider.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [updateProvider.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
     [getDetailProvider.fulfilled]: (state, action) => {

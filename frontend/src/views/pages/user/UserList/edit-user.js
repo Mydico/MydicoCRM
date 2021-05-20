@@ -34,10 +34,10 @@ import Select from 'react-select';
 const validationSchema = function() {
   return Yup.object().shape({
     firstName: Yup.string()
-      .min(3, `Họ phải lớn hơn 5 kí tự`)
+      .min(1, `Họ phải lớn hơn 5 kí tự`)
       .required('Họ không để trống'),
     lastName: Yup.string()
-      .min(3, `Tên phải lớn hơn 5 kí tự`)
+      .min(1, `Tên phải lớn hơn 5 kí tự`)
       .required('Tên không để trống')
   });
 };
@@ -46,6 +46,7 @@ import { validate } from '../../../../shared/utils/normalize';
 import { ProductStatus } from '../../product/ProductList/contants';
 import { globalizedBranchSelectors } from '../UserBranch/branch.reducer';
 import { getBranch } from '../UserBranch/branch.api';
+import { getSession } from '../../login/authenticate.reducer';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -110,6 +111,7 @@ const EditUser = props => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       dispatch(reset());
+      dispatch(getSession())
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -260,19 +262,6 @@ const EditUser = props => {
                   </CFormGroup>
                 </CCol>
               </CRow>
-              <CFormGroup>
-                <CLabel htmlFor="userName">Mật khẩu</CLabel>
-                <CInput
-                  type="password"
-                  name="password"
-                  id="password"
-                  autoComplete="phone"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.password}
-                />
-                <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
-              </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="userName">Chi nhánh</CLabel>
                 <Select

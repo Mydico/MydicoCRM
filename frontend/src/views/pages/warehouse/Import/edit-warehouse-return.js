@@ -33,7 +33,8 @@ import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { getCustomer } from '../../customer/customer.api';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 const validationSchema = function() {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -289,11 +290,11 @@ const EditWarehouseReturn = props => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.city?.name}</dd>
+                      <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.district?.name}</dd>
+                      <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Loại khách hàng: </dt>

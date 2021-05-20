@@ -17,14 +17,14 @@ import { Request, Response } from 'express';
 import Permission from '../../domain/permission.entity';
 import { PermissionService } from '../../service/permission.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { Like } from 'typeorm';
 import { PermissionStatus } from '../../domain/enumeration/permission-status';
 
 @Controller('api/permissions')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class PermissionController {

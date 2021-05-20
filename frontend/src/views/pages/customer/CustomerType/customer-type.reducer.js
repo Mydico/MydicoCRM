@@ -51,6 +51,10 @@ const slice = createSlice({
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
     },
+    [updateCustomerType.rejected]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
   },
 });
 

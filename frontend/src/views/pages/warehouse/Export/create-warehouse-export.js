@@ -313,7 +313,7 @@ const CreateReceipt = () => {
                               : {}
                           }
                         >
-                          <td style={{ width: 500 }}>
+                          <td style={{ width: 300 }}>
                             <Select
                               value={{
                                 value: item.product,
@@ -330,7 +330,7 @@ const CreateReceipt = () => {
                           </td>
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
-                          <td style={{ width: 200 }}>
+                          <td style={{ width: 300 }}>
                             <CInput
                               type="number"
                               min={1}

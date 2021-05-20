@@ -36,8 +36,16 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [creatingWarehouse.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
     [updateWarehouse.fulfilled]: (state ) => {
       state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [updateWarehouse.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
     [getDetailWarehouse.fulfilled]: (state, action) => {

@@ -17,12 +17,12 @@ import { Request, Response } from 'express';
 import Bill from '../../domain/bill.entity';
 import { BillService } from '../../service/bill.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, Roles, RolesGuard, RoleType, PermissionGuard } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 
 @Controller('api/bills')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class BillController {
@@ -77,7 +77,7 @@ export class BillController {
     type: Bill
   })
   async put(@Res() res: Response, @Body() bill: Bill): Promise<Response> {
-    HeaderUtil.addEntityCreatedHeaders(res, 'Bill', bill.id);
+    HeaderUtil.addEntityUpdatedHeaders(res, 'Bill', bill.id);
     return res.send(await this.billService.update(bill));
   }
 

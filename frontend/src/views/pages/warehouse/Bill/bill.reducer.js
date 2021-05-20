@@ -36,8 +36,16 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [creatingBill.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
     [getDetailBill.fulfilled]: (state, action) => {
       billAdapter.addOne(state, action.payload);
+      state.initialState.loading = false;
+    },
+    [updateBill.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
     [getBillDetail.fulfilled]: (state, action) => {

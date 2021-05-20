@@ -19,7 +19,7 @@ import { Request, Response } from 'express';
 import Order from '../../domain/order.entity';
 import { OrderService } from '../../service/order.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { Like, Not } from 'typeorm';
@@ -27,7 +27,7 @@ import { OrderStatus } from '../../domain/enumeration/order-status';
 import { User } from '../../domain/user.entity';
 
 @Controller('api/orders')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class OrderController {

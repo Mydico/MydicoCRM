@@ -19,7 +19,6 @@ export class CustomerService {
 
   constructor(
     @InjectRepository(CustomerRepository) private customerRepository: CustomerRepository,
-    private readonly departmentService: DepartmentService
   ) {}
 
   async findById(id: string): Promise<Customer | undefined> {
@@ -31,15 +30,7 @@ export class CustomerService {
     return await this.customerRepository.findOne(options);
   }
 
-  async findAndCount(options: FindManyOptions<Customer>, currentUser: User): Promise<[Customer[], number]> {
-    let departmentVisible = [];
-    if (currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id)
-      departmentVisible.push(currentUser.department.id);
-    }
-    options.where["department"] = In(departmentVisible)
- 
+  async findAndCount(options: FindManyOptions<Customer>): Promise<[Customer[], number]> {
     options.relations = relationshipNames;
     return await this.customerRepository.findAndCount(options);
   }

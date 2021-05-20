@@ -13,7 +13,7 @@ import {
   CRow,
   CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,14 +35,14 @@ import MaskedInput from 'react-text-mask';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { validate } from '../../../../shared/utils/normalize';
-
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 const validationSchema = function(values) {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống'),
     customer: Yup.object().required('Khách hàng không để trống')
   });
 };
-
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -87,19 +87,23 @@ const CreateWarehouse = () => {
   const onSubmit = (values, {}) => () => {
     values.storeInputDetails = productList;
     values.totalMoney = productList.reduce((sum, current) => sum + current.price * current.quantity, 0);
+    values.realMoney = productList.reduce(
+      (sum, current) => sum + (current.price * current.quantity - (current.price * current.quantity * current.reducePercent) / 100),
+      0
+    );
+    values.reduceMoney = productList.reduce((sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100, 0);
     values.type = WarehouseImportType.RETURN;
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
   };
 
-  const onSearchProduct = (value) => {
+  const onSearchProduct = value => {
     dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
-  }
+  };
 
   const onSearchCustomer = value => {
     dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, address: value, contactName: value }));
   };
-
 
   const onSelectCustomer = ({ value }) => {
     setSelectedCustomer(value);
@@ -281,11 +285,11 @@ const CreateWarehouse = () => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.city?.name}</dd>
+                      <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.district?.name}</dd>
+                      <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Loại khách hàng: </dt>
@@ -318,7 +322,7 @@ const CreateWarehouse = () => {
                     {productList.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{ width: 500 }}>
+                          <td style={{ width: 300 }}>
                             <Select
                               value={{
                                 value: item,
@@ -335,7 +339,7 @@ const CreateWarehouse = () => {
                           </td>
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
-                          <td style={{ width: 100 }}>
+                          <td>
                             {item.followIndex >= 0 ? (
                               item.quantity
                             ) : (
@@ -350,7 +354,7 @@ const CreateWarehouse = () => {
                               />
                             )}
                           </td>
-                          <td>
+                          <td style={{ width: 200 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}

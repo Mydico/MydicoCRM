@@ -29,7 +29,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Select from 'react-select';
 import { getUser } from '../../user/UserList/user.api';
 import { globalizedUserSelectors } from '../../user/UserList/user.reducer';
-import moment from 'moment'
+import moment from 'moment';
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -360,9 +360,12 @@ const Bill = props => {
 
   const onSaveTransporter = () => {
     if (selectedBill.current && selectedTransporter.current) {
-      selectedBill.current.transporter = selectedTransporter.current;
-      selectedBill.current.status = BillStatus.SUPPLY_WAITING;
-      dispatch(updateBill(selectedBill.current));
+      const copyObject = {
+        id: selectedBill.current.id,
+        transporter: selectedTransporter.current,
+        status: BillStatus.SUPPLY_WAITING
+      };
+      dispatch(updateBill(copyObject));
     }
   };
 

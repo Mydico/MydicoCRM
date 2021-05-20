@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post, Put, UseGuards, Req, UseInterceptors, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { User } from '../../domain/user.entity';
 import { HeaderUtil } from '../../client/header-util';
@@ -10,7 +10,7 @@ import { UserService } from '../../service/user.service';
 import { Like } from 'typeorm';
 
 @Controller('api/users')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class UserController {
@@ -33,12 +33,11 @@ export class UserController {
         filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
-    console.log(filter);
     const [results, count] = await this.userService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
-      where: [{ firstname: Like('%John%') }, { lastname: Like('%Doe%') }]
+      where: filter
     });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);

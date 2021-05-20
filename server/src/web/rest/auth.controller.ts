@@ -1,6 +1,6 @@
 import { Controller, Get, Logger, UseGuards, Req,  UseInterceptors, Res } from '@nestjs/common';
 import { User } from '../../domain/user.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from '../../service/auth.service';

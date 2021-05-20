@@ -19,7 +19,7 @@ import { Request, Response } from 'express';
 import StoreInput from '../../domain/store-input.entity';
 import { StoreInputService } from '../../service/store-input.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { User } from '../../domain/user.entity';
@@ -27,7 +27,7 @@ import { StoreImportStatus } from '../../domain/enumeration/store-import-status'
 import { Like } from 'typeorm';
 
 @Controller('api/store-inputs')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class StoreInputController {

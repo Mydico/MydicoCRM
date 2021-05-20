@@ -4,9 +4,10 @@ import { ProductQuantityController } from '../web/rest/product-quantity.controll
 import { ProductQuantityRepository } from '../repository/product-quantity.repository';
 import { ProductQuantityService } from '../service/product-quantity.service';
 import { ProductQuantitySubscriber } from '../service/subscribers/product-quantity.subscriber';
+import { DepartmentModule } from './department.module';
 
 @Module({
-    imports: [CacheModule.register(),TypeOrmModule.forFeature([ProductQuantityRepository])],
+    imports: [CacheModule.register(),TypeOrmModule.forFeature([ProductQuantityRepository]), DepartmentModule],
     controllers: [ProductQuantityController],
     providers: [ProductQuantityService, ProductQuantitySubscriber],
     exports: [ProductQuantityService],

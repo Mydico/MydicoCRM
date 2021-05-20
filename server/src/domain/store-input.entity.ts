@@ -28,9 +28,17 @@ export default class StoreInput extends BaseEntity {
     @ManyToOne(type => Customer, customer => customer.storeInput)
     customer?: Customer;
 
-    @Column({ type: 'bigint', name: 'totalMoney', nullable: true })
+    @Column({ type: 'bigint', name: 'total_money', nullable: true })
     @Index()
     totalMoney?: number;
+
+    @Column({ type: 'bigint', name: 'real_money', nullable: true })
+    @Index()
+    realMoney?: number;
+
+    @Column({ type: 'bigint', name: 'reduce_money', nullable: true })
+    @Index()
+    reduceMoney?: number;
 
     @ManyToOne(type => User, user => user.storeInput)
     approver?: User;
@@ -39,9 +47,6 @@ export default class StoreInput extends BaseEntity {
     @Index()
     note: string;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
 
     @OneToMany(type => StoreInputDetails, other => other.storeInput)
     storeInputDetails? : StoreInputDetails[];

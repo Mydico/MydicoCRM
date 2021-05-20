@@ -17,20 +17,21 @@ import { Request, Response } from 'express';
 import Customer from '../../domain/customer.entity';
 import { CustomerService } from '../../service/customer.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
-import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { Between, Like } from 'typeorm';
+import { Between, In, Like } from 'typeorm';
 import { User } from '../../domain/user.entity';
+import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/customers')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class CustomerController {
   logger = new Logger('CustomerController');
 
-  constructor(private readonly customerService: CustomerService) {}
+  constructor(private readonly customerService: CustomerService, private readonly departmentService: DepartmentService) {}
 
   @Get('/birthday')
   @Roles(RoleType.USER)
@@ -53,9 +54,8 @@ export class CustomerController {
         skip: +pageRequest.page * pageRequest.size,
         take: +pageRequest.size,
         order: pageRequest.sort.asOrder(),
-        where : filter
+        where: filter
       },
-      currentUser
     );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return results;
@@ -76,15 +76,22 @@ export class CustomerController {
         filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
+    let departmentVisible = [];
+
     const currentUser = req.user as User;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    filter.push({ department: In(departmentVisible) });
     const [results, count] = await this.customerService.findAndCount(
       {
         skip: +pageRequest.page * pageRequest.size,
         take: +pageRequest.size,
         order: pageRequest.sort.asOrder(),
-        where : filter
+        where: filter
       },
-      currentUser
     );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);

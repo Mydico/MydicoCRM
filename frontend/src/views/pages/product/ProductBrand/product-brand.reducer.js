@@ -35,6 +35,10 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
+    [creatingProductBrand.rejected]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
     [getDetailProductBrand.fulfilled]: (state, action) => {
       productBrandsAdapter.addOne(state, action.payload);
       state.initialState.loading = false;
@@ -45,6 +49,10 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [updateProductBrand.fulfilled]: (state ) => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
+    [updateProductBrand.rejected]: state => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
     },
