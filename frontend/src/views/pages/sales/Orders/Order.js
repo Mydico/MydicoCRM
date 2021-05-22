@@ -37,6 +37,8 @@ const Order = props => {
   const [size] = useState(20);
   const dispatch = useDispatch();
   const history = useHistory();
+  const { account } = useSelector(state => state.authentication);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   useEffect(() => {
     dispatch(reset());
     localStorage.setItem('order', JSON.stringify({}));
@@ -277,18 +279,20 @@ const Order = props => {
             >
               TẠO VẬN ĐƠN
             </CButton>
-            <CButton
-              onClick={() => {
-                toEditOrder(item.id);
-              }}
-              color="warning"
-              variant="outline"
-              shape="square"
-              size="sm"
-            >
-              <CIcon name="cil-pencil" />
-              CHỈNH SỬA
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
+              <CButton
+                onClick={() => {
+                  toEditOrder(item.id);
+                }}
+                color="warning"
+                variant="outline"
+                shape="square"
+                size="sm"
+              >
+                <CIcon name="cil-pencil" />
+                CHỈNH SỬA
+              </CButton>
+            )}
             <CButton
               onClick={() => {
                 cancelAlert(item);
@@ -311,19 +315,21 @@ const Order = props => {
       case OrderStatus.CANCEL:
         return (
           <CCol>
-            <CButton
-              onClick={() => {
-                toEditOrder(item.id);
-              }}
-              color="warning"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              <CIcon name="cil-pencil" />
-              CHỈNH SỬA
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
+              <CButton
+                onClick={() => {
+                  toEditOrder(item.id);
+                }}
+                color="warning"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                <CIcon name="cil-pencil" />
+                CHỈNH SỬA
+              </CButton>
+            )}
             <CButton
               onClick={() => {
                 deleteAlert(item);
@@ -346,10 +352,12 @@ const Order = props => {
   return (
     <CCard>
       <CCardHeader>
-        <CIcon name="cil-grid" /> Danh sách đơn hàngg
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateOrder}>
-          <CIcon name="cil-plus" /> Thêm mới
-        </CButton>
+        <CIcon name="cil-grid" /> Danh sách đơn hàng
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/orders').length > 0) && (
+          <CButton color="success" variant="outline" className="ml-3" onClick={toCreateOrder}>
+            <CIcon name="cil-plus" /> Thêm mới
+          </CButton>
+        )}
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="customertypes.csv" target="_blank">

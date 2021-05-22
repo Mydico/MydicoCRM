@@ -84,9 +84,9 @@ const CreateWarehouseExportProvider = () => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({department: JSON.stringify([account.department?.id || ''])}));
-    dispatch(getProduct());
-    dispatch(getProvider());
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProvider({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   const onSubmit = (values, {resetForm}) => {
@@ -139,7 +139,7 @@ const CreateWarehouseExportProvider = () => {
   };
 
   const onSearchProduct = (value) => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: "ACTIVE" }));
   }
 
   useEffect(() => {

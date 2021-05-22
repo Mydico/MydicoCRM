@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -13,7 +13,7 @@ import {
   CRow,
   CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,13 +22,15 @@ import { creatingWarehouseImport } from './warehouse-import.api';
 import { useHistory } from 'react-router-dom';
 import { fetching } from './warehouse-import.reducer';
 import Select from 'react-select';
-
+import _ from 'lodash';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 import { getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
+import useDebounce from '../../../../shared/utils/debound';
+
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
@@ -74,8 +76,8 @@ const CreateWarehouse = () => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
-    dispatch(getProduct());
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   const onSubmit = (values, {}) => () => {
@@ -109,9 +111,16 @@ const CreateWarehouse = () => {
     setProductList([...productList, data]);
   };
 
-  const onSearchProduct = (value) => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
-  }
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+    }, 1000),
+    [] // will be created only once initially
+  );
+
+  const onSearchProduct = value => {
+    debouncedSearchProduct(value);
+  };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {

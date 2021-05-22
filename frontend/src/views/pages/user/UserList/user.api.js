@@ -10,9 +10,9 @@ export const getUser = createAsyncThunk('api/users', async (params = {page: 0, s
   }
 });
 
-export const getDetailUser = createAsyncThunk('api/detail/users', async (userId, thunkAPI) => {
+export const getDetailUser = createAsyncThunk('api/detail/users', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/users/' + userId);
+    const result = await axios.get('api/users/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

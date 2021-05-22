@@ -67,7 +67,7 @@ const EditProvider = (props) => {
   }, [provider]);
 
   useEffect(() => {
-    dispatch(getDetailProvider(props.match.params.id));
+    dispatch(getDetailProvider({id: props.match.params.id, dependency: true }));
   }, []);
 
   const onSubmit = (values, {resetForm}) => {

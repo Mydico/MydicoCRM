@@ -69,9 +69,9 @@ const EditPromotion = (props) => {
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
-    dispatch(getCustomerType());
-    dispatch(getProductGroup());
-    dispatch(getDetailPromotion(props.match.params.id));
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDetailPromotion({ id: props.match.params.id, dependency: true }));
   }, []);
 
   useEffect(() => {

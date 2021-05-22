@@ -57,7 +57,7 @@ const CreateProductGroup = () => {
   const productBrand = useSelector(selectAll);
 
   useEffect(() => {
-    dispatch(getProductBrand());
+    dispatch(getProductBrand({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
     return () => {
       dispatch(reset());
     };

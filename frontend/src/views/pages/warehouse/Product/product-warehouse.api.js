@@ -25,9 +25,9 @@ export const getProductWarehouseByField = createAsyncThunk(
   }
 );
 
-export const getDetailProductWarehouse = createAsyncThunk('api/detail/product-quantities', async (userId, thunkAPI) => {
+export const getDetailProductWarehouse = createAsyncThunk('api/detail/product-quantities', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/product-quantities/' + userId);
+    const result = await axios.get('api/product-quantities/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

@@ -13,9 +13,9 @@ export const getPermissionGroups = createAsyncThunk(
     },
 );
 
-export const getDetailPermissionGroups = createAsyncThunk('api/detail/permission-groups', async (userId, thunkAPI) => {
+export const getDetailPermissionGroups = createAsyncThunk('api/detail/permission-groups', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/permission-groups/' + userId);
+    const result = await axios.get('api/permission-groups/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

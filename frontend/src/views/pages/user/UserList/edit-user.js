@@ -98,11 +98,11 @@ const EditUser = props => {
   }, [user]);
 
   useEffect(() => {
-    dispatch(getDetailUser(props.match.params.id));
-    dispatch(getDepartment());
-    dispatch(getPermissionGroups());
-    dispatch(getUserRole());
-    dispatch(getBranch());
+    dispatch(getDetailUser({ id: props.match.params.id, dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getUserRole({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
     return () => {
       dispatch(reset());
     };

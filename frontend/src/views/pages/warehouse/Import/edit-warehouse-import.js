@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -13,7 +13,7 @@ import {
   CRow,
   CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +22,7 @@ import { getDetailWarehouseImport, updateWarehouseImport } from './warehouse-imp
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from './warehouse-import.reducer';
 import Select from 'react-select';
-
+import _ from 'lodash';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
@@ -75,9 +75,9 @@ const EditWarehouseImport = props => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
-    dispatch(getProduct());
-    dispatch(getDetailWarehouseImport(props.match.params.id));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
   }, []);
 
   useEffect(() => {
@@ -115,10 +115,17 @@ const EditWarehouseImport = props => {
     setProductList(copyArr);
   };
 
-  const onSearchProduct = (value) => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
-  }
-  
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+    }, 1000),
+    []
+  );
+
+  const onSearchProduct = value => {
+    debouncedSearchProduct(value)
+  };
+
   const onAddProduct = () => {
     const data = { product: {}, quantity: 1 };
     setProductList([...productList, data]);

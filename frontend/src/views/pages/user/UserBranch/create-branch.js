@@ -50,8 +50,8 @@ const CreateBranch = () => {
   };
 
   useEffect(() => {
-    dispatch(getPermissionGroups());
-    dispatch(getBranch());
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
     return () => {
       dispatch(reset());
     };

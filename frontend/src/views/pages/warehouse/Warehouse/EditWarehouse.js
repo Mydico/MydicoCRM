@@ -70,22 +70,9 @@ const EditWarehouse = props => {
   }, [warehouse]);
 
   useEffect(() => {
-    dispatch(getDetailWarehouse(props.match.params.id));
-    dispatch(getCity());
-    dispatch(getDepartment());
+    dispatch(getDetailWarehouse({id: props.match.params.id, dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
-
-  useEffect(() => {
-    if (selectedCity) {
-      dispatch(getDistrict({ city: selectedCity }));
-    }
-  }, [selectedCity]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
-      dispatch(getWard({ district: selectedDistrict }));
-    }
-  }, [selectedDistrict]);
 
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
@@ -111,15 +98,7 @@ const EditWarehouse = props => {
           validate={validate(validationSchema)}
           onSubmit={onSubmit}
         >
-          {({
-            values,
-            errors,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-            handleReset
-          }) => (
+          {({ values, errors, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
                 <CCol lg="6">

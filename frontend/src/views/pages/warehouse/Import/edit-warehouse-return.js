@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -13,7 +13,7 @@ import {
   CRow,
   CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +22,7 @@ import { getDetailWarehouseImport, updateWarehouseImport } from './warehouse-imp
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from './warehouse-import.reducer';
 import Select from 'react-select';
-
+import _ from 'lodash';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
@@ -82,10 +82,10 @@ const EditWarehouseReturn = props => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
-    dispatch(getProduct());
-    dispatch(getDetailWarehouseImport(props.match.params.id));
-    dispatch(getCustomer());
+    dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   useEffect(() => {
@@ -98,8 +98,13 @@ const EditWarehouseReturn = props => {
   }, [warehouseImport]);
 
   const onSubmit = (values, {}) => () => {
-    values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
+    values.totalMoney = productList.reduce((sum, current) => sum + current.price * current.quantity, 0);
+    values.realMoney = productList.reduce(
+      (sum, current) => sum + (current.price * current.quantity - (current.price * current.quantity * current.reducePercent) / 100),
+      0
+    );
+    values.reduceMoney = productList.reduce((sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100, 0);
     values.type = WarehouseImportType.RETURN;
     dispatch(fetching());
     dispatch(updateWarehouseImport(values));
@@ -108,6 +113,12 @@ const EditWarehouseReturn = props => {
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = target.value;
+    setProductList(copyArr);
+  };
+
+  const onChangePrice = ({ target }, index) => {
+    const copyArr = JSON.parse(JSON.stringify(productList));
+    copyArr[index].price = Number(target.value.replace(/\D/g, ''));
     setProductList(copyArr);
   };
 
@@ -129,16 +140,32 @@ const EditWarehouseReturn = props => {
   };
 
   const onAddProduct = () => {
-    const data = { product: {}, quantity: 1 };
+    const data = { product: {}, quantity: 1, reducePercent: 0 };
     setProductList([...productList, data]);
   };
 
-  const onSearchProduct = (value) => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
-  }
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+    }, 1000),
+    []
+  );
+
+  const onSearchProduct = value => {
+    debouncedSearchProduct(value)
+  };
 
   const onSearchCustomer = value => {
     dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, address: value, contactName: value }));
+  };
+
+  const onChangeReducePercent = ({ target }, index) => {
+    const copyArr = [...productList];
+    copyArr[index].reducePercent = target.value;
+    copyArr[index].priceTotal =
+      copyArr[index].price * copyArr[index].quantity -
+      (copyArr[index].price * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
+    setProductList(copyArr);
   };
 
   useEffect(() => {
@@ -317,6 +344,9 @@ const EditWarehouseReturn = props => {
                       <th>Đơn vị</th>
                       <th>Dung tích</th>
                       <th>Số lượng</th>
+                      <th>Giá</th>
+                      <th>Chiết khấu</th>
+                      <th>Thành tiền</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -341,21 +371,49 @@ const EditWarehouseReturn = props => {
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
                           <td style={{ width: 100 }}>
-                            {item.followIndex >= 0 ? (
-                              item.quantity
-                            ) : (
-                              <CInput
-                                type="number"
-                                min={1}
-                                name="code"
-                                id="code"
-                                onChange={event => onChangeQuantity(event, index)}
-                                onBlur={handleBlur}
-                                value={item.quantity}
-                              />
-                            )}
+                            <CInput
+                              type="number"
+                              min={1}
+                              name="code"
+                              id="code"
+                              onChange={event => onChangeQuantity(event, index)}
+                              onBlur={handleBlur}
+                              value={item.quantity}
+                            />
                           </td>
-
+                          <td style={{ width: 200 }}>
+                            {
+                              <MaskedInput
+                                mask={currencyMask}
+                                onChange={event => onChangePrice(event, index)}
+                                value={
+                                  typeof productList[index].price !== 'number'
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                        productList[index].price
+                                      )
+                                    : productList[index].price
+                                }
+                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
+                              />
+                            }
+                          </td>
+                          <td style={{ width: 100 }}>
+                            <CInput
+                              type="number"
+                              min={1}
+                              onChange={event => onChangeReducePercent(event, index)}
+                              value={item.reducePercent}
+                            />
+                          </td>
+                          <td style={{ width: 100 }}>
+                            {(item.price * item.quantity - (item.price * item.quantity * item.reducePercent) / 100).toLocaleString(
+                              'it-IT',
+                              {
+                                style: 'currency',
+                                currency: 'VND'
+                              }
+                            ) || ''}
+                          </td>
                           <td style={{ width: 100 }}>
                             <CButton
                               color="danger"

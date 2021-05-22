@@ -77,8 +77,8 @@ const CreateProductGroup = (props) => {
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
-    dispatch(getProductBrand());
-    dispatch(getDetailProductGroup(props.match.params.id));
+    dispatch(getProductBrand({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDetailProductGroup({ id: props.match.params.id, dependency: true }));
     return () => {
       dispatch(reset());
     };

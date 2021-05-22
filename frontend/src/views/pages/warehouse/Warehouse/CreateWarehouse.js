@@ -64,7 +64,7 @@ const CreateWarehouse = () => {
   };
   const departments = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getDepartment());
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   const onSubmit = (values, {resetForm}) => {

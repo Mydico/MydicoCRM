@@ -41,7 +41,7 @@ export class ProductGroupController {
   async getAll(@Req() req: Request, @Res() res): Promise<ProductGroup[]> {
     const filter = {};
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         filter[item] = Like(`%${req.query[item]}%`);
       }
     });

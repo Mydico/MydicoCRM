@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   CCardBody,
   CBadge,
@@ -14,19 +14,21 @@ import {
   CModalBody,
   CModalFooter,
   CModalHeader,
-  CModalTitle,
+  CModalTitle
 } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {useDispatch, useSelector} from 'react-redux';
-import {getPromotion, updatePromotion} from './promotion.api.js';
-import {globalizedPromotionSelectors, reset} from './promotion.reducer.js';
-import {useHistory} from 'react-router-dom';
-import moment from 'moment'
-const Promotion = (props) => {
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { useDispatch, useSelector } from 'react-redux';
+import { getPromotion, updatePromotion } from './promotion.api.js';
+import { globalizedPromotionSelectors, reset } from './promotion.reducer.js';
+import { useHistory } from 'react-router-dom';
+import moment from 'moment';
+const Promotion = props => {
   const [details, setDetails] = useState([]);
-  const selectedPro = useRef({id: null, isLock: false});
-  const {initialState} = useSelector((state) => state.promotion);
+  const selectedPro = useRef({ id: null, isLock: false });
+  const { account } = useSelector(state => state.authentication);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const { initialState } = useSelector(state => state.promotion);
   const [activePage, setActivePage] = useState(1);
   const [primary, setPrimary] = useState(false);
   const [size] = useState(20);
@@ -37,22 +39,22 @@ const Promotion = (props) => {
   }, []);
 
   useEffect(() => {
-    if (activePage > 1) dispatch(getPromotion({page: activePage - 1, size: size, sort: 'createdDate,desc'}));
+    if (activePage > 1) dispatch(getPromotion({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
   }, [activePage]);
 
-  const {selectAll} = globalizedPromotionSelectors;
+  const { selectAll } = globalizedPromotionSelectors;
   const Promotions = useSelector(selectAll);
-  const computedItems = (items) => {
-    return items.map((item) => {
+  const computedItems = items => {
+    return items.map(item => {
       return {
         ...item,
         customerType: item.customerType?.name || '',
         description: item.description?.length > 10 ? `${item.description.substring(0, 250)}...` : item.description,
-        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
   };
-  const toggleDetails = (index) => {
+  const toggleDetails = index => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -68,25 +70,25 @@ const Promotion = (props) => {
     {
       key: 'order',
       label: 'STT',
-      _style: {width: '1%'},
-      filter: false,
+      _style: { width: '1%' },
+      filter: false
     },
-    {key: 'name', label: 'Tên chương trình bán hàng', _style: {width: '20%'}},
-    {key: 'type', label: 'Loại chương trình', _style: {width: '15%'}},
-    {key: 'startTime', label: 'Thời gian bắt đầu', _style: {width: '15%'}},
-    {key: 'endTime', label: 'Thời gian kết thúc', _style: {width: '15%'}},
-    {key: 'customerType', label: 'Đối tượng áp dụng', _style: {width: '15%'}},
-    {key: 'isLock', label: 'Trạng thái', _style: {width: '10%'}},
-    {key: 'description', label: 'Mô tả', _style: {width: '20%'}},
+    { key: 'name', label: 'Tên chương trình bán hàng', _style: { width: '20%' } },
+    { key: 'type', label: 'Loại chương trình', _style: { width: '15%' } },
+    { key: 'startTime', label: 'Thời gian bắt đầu', _style: { width: '15%' } },
+    { key: 'endTime', label: 'Thời gian kết thúc', _style: { width: '15%' } },
+    { key: 'customerType', label: 'Đối tượng áp dụng', _style: { width: '15%' } },
+    { key: 'isLock', label: 'Trạng thái', _style: { width: '10%' } },
+    { key: 'description', label: 'Mô tả', _style: { width: '20%' } },
     {
       key: 'show_details',
       label: '',
-      _style: {width: '10%'},
-      filter: false,
-    },
+      _style: { width: '10%' },
+      filter: false
+    }
   ];
 
-  const getBadge = (status) => {
+  const getBadge = status => {
     switch (status) {
       case false:
         return 'success';
@@ -97,7 +99,7 @@ const Promotion = (props) => {
     }
   };
 
-  const getBadgeType = (status) => {
+  const getBadgeType = status => {
     switch (status) {
       case 'SHORTTERM':
         return 'info';
@@ -107,8 +109,8 @@ const Promotion = (props) => {
   };
   const [,] = useState([]);
   const csvContent = computedItems(Promotions)
-      .map((item) => Object.values(item).join(','))
-      .join('\n');
+    .map(item => Object.values(item).join(','))
+    .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreatePromotion = () => {
     history.push(`${props.match.url}/new`);
@@ -116,16 +118,16 @@ const Promotion = (props) => {
   const toCreateLongTermPromotion = () => {
     history.push(`${props.match.url}/new/longterm`);
   };
-  const toEditPromotion = (userId) => {
+  const toEditPromotion = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
-  const toEditLongTermPromotion = (userId) => {
+  const toEditLongTermPromotion = userId => {
     history.push(`${props.match.url}/${userId}/longterm`);
   };
 
-  const onFilterColumn = (value) => {
+  const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getPromotion({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+      dispatch(getPromotion({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
     }
   };
 
@@ -138,19 +140,23 @@ const Promotion = (props) => {
   }, [initialState.updatingSuccess]);
 
   const lockPromotion = () => {
-    dispatch(updatePromotion({id: selectedPro.current.id, isLock: !selectedPro.current.isLock}));
+    dispatch(updatePromotion({ id: selectedPro.current.id, isLock: !selectedPro.current.isLock }));
   };
 
   return (
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách chương trình bán hàng
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreatePromotion}>
-          <CIcon name="cil-plus" /> Thêm mới chương trình ngắn hạn
-        </CButton>
-        <CButton color="info" variant="outline" className="ml-3" onClick={toCreateLongTermPromotion}>
-          <CIcon name="cil-plus" /> Thêm mới chương trình dài hạn
-        </CButton>
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/promotions').length > 0) && (
+          <CButton color="success" variant="outline" className="ml-3" onClick={toCreatePromotion}>
+            <CIcon name="cil-plus" /> Thêm mới chương trình ngắn hạn
+          </CButton>
+        )}
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/promotions').length > 0) && (
+          <CButton color="info" variant="outline" className="ml-3" onClick={toCreateLongTermPromotion}>
+            <CIcon name="cil-plus" /> Thêm mới chương trình dài hạn
+          </CButton>
+        )}
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
@@ -162,46 +168,48 @@ const Promotion = (props) => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [20, 30, 50]}}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [20, 30, 50] }}
           itemsPerPage={20}
           hover
           sorter
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={(val) => console.log('new page:', val)}
-          onPagesChange={(val) => console.log('new pages:', val)}
-          onPaginationChange={(val) => console.log('new pagination:', val)}
+          onPageChange={val => console.log('new page:', val)}
+          onPagesChange={val => console.log('new pages:', val)}
+          onPaginationChange={val => console.log('new pagination:', val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={(val) => console.log('new table filter:', val)}
+          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
-            isLock: (item) => (
+            isLock: item => (
               <td>
                 <CBadge color={getBadge(item.isLock)}>{item.isLock ? 'Đã khóa' : 'Đang mở'}</CBadge>
               </td>
             ),
-            type: (item) => (
+            type: item => (
               <td>
                 <CBadge color={getBadgeType(item.type)}>{item.type === 'SHORTTERM' ? 'NGẮN HẠN' : 'DÀI HẠN'}</CBadge>
               </td>
             ),
-            show_details: (item) => {
+            show_details: item => {
               return (
                 <td className="d-flex py-2">
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    className="mr-3"
-                    onClick={() => {
-                      item.type === 'SHORTTERM' ? toEditPromotion(item.id) : toEditLongTermPromotion(item.id);
-                    }}
-                  >
-                    <CIcon name="cil-pencil" />
-                  </CButton>
+                  {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/promotions').length > 0) && (
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      className="mr-3"
+                      onClick={() => {
+                        item.type === 'SHORTTERM' ? toEditPromotion(item.id) : toEditLongTermPromotion(item.id);
+                      }}
+                    >
+                      <CIcon name="cil-pencil" />
+                    </CButton>
+                  )}
                   <CButton
                     color="primary"
                     variant="outline"
@@ -220,7 +228,7 @@ const Promotion = (props) => {
                     shape="square"
                     size="sm"
                     onClick={() => {
-                      selectedPro.current = {id: item.id, isLock: item.isLock};
+                      selectedPro.current = { id: item.id, isLock: item.isLock };
                       setPrimary(!primary);
                     }}
                   >
@@ -229,7 +237,7 @@ const Promotion = (props) => {
                 </td>
               );
             },
-            details: (item) => {
+            details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
@@ -271,13 +279,13 @@ const Promotion = (props) => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / 20) + 1}
-          onActivePageChange={(i) => setActivePage(i)}
+          onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
       <CModal show={primary} onClose={() => setPrimary(!primary)} color="primary">

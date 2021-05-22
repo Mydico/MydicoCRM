@@ -11,10 +11,11 @@ export class PermissionGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user as User;
+    const getByDependency = request.query.dependency && request.method === 'GET'
     const perUrl = new UrlPermissionParser().getPattern(request.url);
     await this.role.reloadPolicy();
     const hasPermission = await this.role.checkPermission(user.login, perUrl, request.method);
     const whiteList = new WhiteListConfiguration().verify(perUrl);
-    return hasPermission || (user && user.authorities && user.authorities.includes(RoleType.ADMIN)) || whiteList;
+    return hasPermission || (user && user.authorities && user.authorities.includes(RoleType.ADMIN)) || whiteList || getByDependency;
   }
 }

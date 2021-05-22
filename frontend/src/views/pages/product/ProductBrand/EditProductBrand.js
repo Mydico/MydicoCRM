@@ -51,7 +51,7 @@ const CreateProductBrand = (props) => {
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
-    dispatch(getDetailProductBrand(props.match.params.id));
+    dispatch(getDetailProductBrand({ id: props.match.params.id, dependency: true }));
   }, []);
 
   useEffect(() => {

@@ -65,8 +65,8 @@ const CreateDepartment = () => {
   };
 
   useEffect(() => {
-    dispatch(getPermissionGroups());
-    dispatch(getDepartment());
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
     return () => {
       dispatch(reset());
     };

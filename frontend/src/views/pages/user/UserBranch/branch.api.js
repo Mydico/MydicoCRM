@@ -12,9 +12,9 @@ export const getBranch = createAsyncThunk(
       }
     },
 );
-export const getDetailBranch = createAsyncThunk('api/detail/branches', async (userId, thunkAPI) => {
+export const getDetailBranch = createAsyncThunk('api/detail/branches', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/branches/' + userId);
+    const result = await axios.get('api/branches/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -19,7 +19,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDetailOrder, getOrderDetail, updateOrder } from './order.api';
-
+import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { globalizedOrdersSelectors } from './order.reducer';
 import Select from 'react-select';
@@ -89,9 +89,9 @@ const EditOrder = props => {
   const [showProductPromotion, setShowProductPromotion] = useState(false);
 
   useEffect(() => {
-    dispatch(getPromotion({ isLock: 0 }));
-    dispatch(getDetailOrder(props.match.params.id));
-    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
+    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true ,isLock: 0 }));
+    dispatch(getDetailOrder({ id: props.match.params.id, dependency: true }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
   }, []);
 
   useEffect(() => {
@@ -101,7 +101,7 @@ const EditOrder = props => {
       setSelectedPromotion(order.promotion);
       setSelectedWarehouse(order.store)
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
-      dispatch(getOrderDetail(props.match.params.id));
+      dispatch(getOrderDetail({ id: props.match.params.id, dependency: true }));
     }
   }, [order]);
 
@@ -247,6 +247,17 @@ const EditOrder = props => {
   const onSelectWarehouse = ({ value }) => {
     setSelectedWarehouse(value);
     setIsSelectedWarehouse(true);
+  };
+
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(getProductWarehouse({ store: selectedWarehouse?.id , page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+    }, 1000),
+    []
+  );
+
+  const onSearchProduct = value => {
+    debouncedSearchProduct(value);
   };
 
   const editAlert = (values, { setSubmitting, setErrors }) => {
@@ -433,6 +444,7 @@ const EditOrder = props => {
                           setFieldValue('store', item.value);
                           onSelectWarehouse(item);
                         }}
+                        onInputChange={onSearchProduct}
                         value={{
                           value: values.store,
                           label: values.store?.name

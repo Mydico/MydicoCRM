@@ -82,8 +82,8 @@ const EditProduct = (props) => {
   const [initImages, setInitImages] = useState([]);
   const productGroup = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getDetailProduct(props.match.params.id));
-    dispatch(getProductGroup());
+    dispatch(getDetailProduct({ id: props.match.params.id, dependency: true }));
+    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   useEffect(() => {

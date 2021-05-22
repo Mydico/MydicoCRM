@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -18,7 +18,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-
+import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { currencyMask } from '../../../components/currency-input/currency-input';
 import MaskedInput from 'react-text-mask';
@@ -87,9 +87,9 @@ const CreateOrder = props => {
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
   const [showProductPromotion, setShowProductPromotion] = useState(false);
   useEffect(() => {
-    dispatch(getCustomer());
-    dispatch(getPromotion({ isLock: 0 }));
-    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPromotion({ isLock: 0, page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     const existOrder = localStorage.getItem('order');
     try {
       const data = JSON.parse(existOrder);
@@ -186,6 +186,19 @@ const CreateOrder = props => {
       setIsSelectedWarehouse(false);
     }
   };
+
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(getProductWarehouse({ store: selectedWarehouse?.id , page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+    }, 1000),
+    []
+  );
+
+  const onSearchProduct = value => {
+    debouncedSearchProduct(value);
+  };
+
+
 
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
@@ -518,6 +531,7 @@ const CreateOrder = props => {
                                 value: item.product,
                                 label: `${item.product.productBrand?.name || ''}-${item.product.name || ''}-${item.product.volume || ''}`
                               }}
+                              onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
                               options={productInWarehouses.map(item => ({

@@ -1,21 +1,23 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react/lib';
+import React, { useEffect, useRef, useState } from 'react';
+import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UserRolesData.js';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {useDispatch, useSelector} from 'react-redux';
-import {getUserRole} from './user-roles.api.js';
-import {globalizedUserRoleSelectors} from './user-roles.reducer.js';
-import {useHistory} from 'react-router-dom';
-import moment from 'moment'
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserRole } from './user-roles.api.js';
+import { globalizedUserRoleSelectors } from './user-roles.reducer.js';
+import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
-const UserRole = (props) => {
+const UserRole = props => {
   const isInitialMount = useRef(true);
   const [details, setDetails] = useState([]);
-  const {initialState} = useSelector((state) => state.user);
+  const { account } = useSelector(state => state.authentication);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const { initialState } = useSelector(state => state.user);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
   const dispatch = useDispatch();
@@ -26,24 +28,23 @@ const UserRole = (props) => {
     }
   });
 
-
   useEffect(() => {
     if (!isInitialMount.current) {
-      dispatch(getUserRole({page: activePage - 1, size, sort: 'createdDate,desc'}));
+      dispatch(getUserRole({ page: activePage - 1, size, sort: 'createdDate,desc' }));
     }
   }, [activePage, size]);
 
-  const {selectAll} = globalizedUserRoleSelectors;
+  const { selectAll } = globalizedUserRoleSelectors;
   const users = useSelector(selectAll);
-  const computedItems = (items) => {
-    return items.map((item) => {
+  const computedItems = items => {
+    return items.map(item => {
       return {
         ...item,
-        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
   };
-  const toggleDetails = (index) => {
+  const toggleDetails = index => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -59,22 +60,22 @@ const UserRole = (props) => {
     {
       key: 'order',
       label: 'STT',
-      _style: {width: '1%'},
-      filter: false,
+      _style: { width: '1%' },
+      filter: false
     },
-    {key: 'code', label: 'Mã chức vụ', _style: {width: '10%'}},
-    {key: 'name', label: 'Tên chức vụ', _style: {width: '10%'}},
-    {key: 'createdDate', label: 'Ngày tạo', _style: {width: '15%'}},
-    {key: 'status', label: 'Trạng thái', _style: {width: '15%'}},
+    { key: 'code', label: 'Mã chức vụ', _style: { width: '10%' } },
+    { key: 'name', label: 'Tên chức vụ', _style: { width: '10%' } },
+    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
+    { key: 'status', label: 'Trạng thái', _style: { width: '15%' } },
     {
       key: 'show_details',
       label: '',
-      _style: {width: '1%'},
-      filter: false,
-    },
+      _style: { width: '1%' },
+      filter: false
+    }
   ];
 
-  const getBadge = (status) => {
+  const getBadge = status => {
     switch (status) {
       case 'ACTIVE':
         return 'success';
@@ -90,20 +91,20 @@ const UserRole = (props) => {
   };
   const [,] = useState([]);
   const csvContent = computedItems(users)
-      .map((item) => Object.values(item).join(','))
-      .join('\n');
+    .map(item => Object.values(item).join(','))
+    .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateUserRole = () => {
     history.push(`${props.match.url}/new`);
   };
 
-  const toEditUserRole = (userId) => {
+  const toEditUserRole = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const onFilterColumn = (value) => {
+  const onFilterColumn = value => {
     if (!isInitialMount.current) {
-      dispatch(getUserRole({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+      dispatch(getUserRole({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
     }
   };
 
@@ -111,9 +112,11 @@ const UserRole = (props) => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách chức vụ
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateUserRole}>
-          <CIcon name="cil-plus" /> Thêm mới chức vụ
-        </CButton>
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/user-roles').length > 0) && (
+          <CButton color="success" variant="outline" className="ml-3" onClick={toCreateUserRole}>
+            <CIcon name="cil-plus" /> Thêm mới chức vụ
+          </CButton>
+        )}
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
@@ -125,41 +128,43 @@ const UserRole = (props) => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [10, 20, 30, 50]}}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
           itemsPerPage={size}
           hover
           sorter
           loading={initialState.loading}
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={(val) => console.log('new page:', val)}
-          onPagesChange={(val) => console.log('new pages:', val)}
-          onPaginationChange={(val) => setSize(val)}
+          onPageChange={val => console.log('new page:', val)}
+          onPagesChange={val => console.log('new pages:', val)}
+          onPaginationChange={val => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={(val) => console.log('new table filter:', val)}
+          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
-            status: (item) => (
+            status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
-            show_details: (item) => {
+            show_details: item => {
               return (
                 <td className="d-flex py-2">
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    className="mr-3"
-                    onClick={() => {
-                      toEditUserRole(item.id);
-                    }}
-                  >
-                    <CIcon name="cil-pencil" />
-                  </CButton>
+                  {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/user-roles').length > 0) && (
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      className="mr-3"
+                      onClick={() => {
+                        toEditUserRole(item.id);
+                      }}
+                    >
+                      <CIcon name="cil-pencil" />
+                    </CButton>
+                  )}
                   <CButton
                     color="primary"
                     variant="outline"
@@ -174,7 +179,7 @@ const UserRole = (props) => {
                 </td>
               );
             },
-            details: (item) => {
+            details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
@@ -216,13 +221,13 @@ const UserRole = (props) => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / size) + 1}
-          onActivePageChange={(i) => setActivePage(i)}
+          onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
     </CCard>

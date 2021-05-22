@@ -69,17 +69,10 @@ const CreateCustomer = () => {
   const { selectAll } = globalizedDepartmentSelectors;
   const departments = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getCity());
-    dispatch(getCustomerType());
-    dispatch(getDepartment());
-    dispatch(getCustomerStatus());
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
-
-  useEffect(() => {
-    if (selectedCity) {
-      setDistricts(district.filter(item => item.parent_code === selectedCity))
-    }
-  }, [selectedCity]);
 
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());

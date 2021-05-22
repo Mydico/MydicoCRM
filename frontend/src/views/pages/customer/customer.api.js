@@ -22,9 +22,9 @@ export const getCustomerBirthday = createAsyncThunk(
     },
 );
 
-export const getDetailCustomer = createAsyncThunk('api/detail/customers', async (userId, thunkAPI) => {
+export const getDetailCustomer = createAsyncThunk('api/detail/customers', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/customers/' + userId);
+    const result = await axios.get('api/customers/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

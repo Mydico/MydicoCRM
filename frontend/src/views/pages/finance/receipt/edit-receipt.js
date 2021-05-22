@@ -77,8 +77,8 @@ const EditReceipt = (props) => {
   };
 
   useEffect(() => {
-    dispatch(getCustomer());
-    dispatch(getDetailReceipt(props.match.params.id));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDetailReceipt({ id: props.match.params.id, dependency: true }));
   }, []);
 
   const onSubmit = (values, {   resetForm}) => {

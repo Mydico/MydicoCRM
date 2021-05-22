@@ -62,8 +62,8 @@ const EditPermissionGroups = props => {
   };
 
   useEffect(() => {
-    dispatch(getDetailPermissionGroups(props.match.params.id));
-    dispatch(getPermissionType());
+    dispatch(getDetailPermissionGroups({ id: props.match.params.id, dependency: true }));
+    dispatch(getPermissionType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
     return () => {
       dispatch(reset());
     };

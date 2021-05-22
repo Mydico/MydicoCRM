@@ -44,19 +44,32 @@ export class CustomerController {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = [];
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
+
+    let departmentVisible = [];
     const currentUser = req.user as User;
-    const [results, count] = await this.customerService.findAndCount(
-      {
-        skip: +pageRequest.page * pageRequest.size,
-        take: +pageRequest.size,
-        order: pageRequest.sort.asOrder(),
-        where: filter
-      },
-    );
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    filter.push({ department: In(departmentVisible) });
+    if (filter.length === 0) {
+      filter['department'] = In(departmentVisible);
+      filter['dateOfBirth'] = Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7)));
+    } else {
+      filter[0]['department'] = In(departmentVisible);
+      filter[0]['dateOfBirth'] = Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7)));
+    }
+    const [results, count] = await this.customerService.findAndCount({
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+      where: filter
+    });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return results;
   }
@@ -85,14 +98,12 @@ export class CustomerController {
       departmentVisible.push(currentUser.department.id);
     }
     filter.push({ department: In(departmentVisible) });
-    const [results, count] = await this.customerService.findAndCount(
-      {
-        skip: +pageRequest.page * pageRequest.size,
-        take: +pageRequest.size,
-        order: pageRequest.sort.asOrder(),
-        where: filter
-      },
-    );
+    const [results, count] = await this.customerService.findAndCount({
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+      where: filter
+    });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }

@@ -33,7 +33,7 @@ export class BillService {
     // return await this.billRepository.findAndCount(options);
         let queryString = 'Bill.status <> \'DELETED\'';
         Object.keys(req.query).forEach((item, index) => {
-            if (item !== 'page' && item !== 'size' && item !== 'sort') {
+            if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
                 queryString += `Bill.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'OR '}`;
             }
         });

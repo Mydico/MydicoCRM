@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -18,7 +18,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { creatingWarehouseImport } from './warehouse-import.api';
-
+import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { fetching } from './warehouse-import.reducer';
 import Select from 'react-select';
@@ -79,9 +79,9 @@ const CreateWarehouse = () => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
-    dispatch(getProduct());
-    dispatch(getCustomer());
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   const onSubmit = (values, {}) => () => {
@@ -97,8 +97,15 @@ const CreateWarehouse = () => {
     dispatch(creatingWarehouseImport(values));
   };
 
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+    }, 1000),
+    []
+  );
+
   const onSearchProduct = value => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+    debouncedSearchProduct(value)
   };
 
   const onSearchCustomer = value => {
@@ -339,20 +346,16 @@ const CreateWarehouse = () => {
                           </td>
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
-                          <td>
-                            {item.followIndex >= 0 ? (
-                              item.quantity
-                            ) : (
-                              <CInput
-                                type="number"
-                                min={1}
-                                name="code"
-                                id="code"
-                                onChange={event => onChangeQuantity(event, index)}
-                                onBlur={handleBlur}
-                                value={item.quantity}
-                              />
-                            )}
+                          <td style={{ width: 100 }}>
+                            <CInput
+                              type="number"
+                              min={1}
+                              name="code"
+                              id="code"
+                              onChange={event => onChangeQuantity(event, index)}
+                              onBlur={handleBlur}
+                              value={item.quantity}
+                            />
                           </td>
                           <td style={{ width: 200 }}>
                             {

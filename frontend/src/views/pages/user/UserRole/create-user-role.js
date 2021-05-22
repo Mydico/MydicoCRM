@@ -60,7 +60,7 @@ const CreateRole = () => {
   };
 
   useEffect(() => {
-    dispatch(getPermissionGroups());
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
     return () => {
       dispatch(reset());
     };

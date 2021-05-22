@@ -60,9 +60,9 @@ const EditDepartment = props => {
   }, [department]);
 
   useEffect(() => {
-    dispatch(getDepartment());
-    dispatch(getDetailDepartment(props.match.params.id));
-    dispatch(getPermissionGroups());
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDetailDepartment({ id: props.match.params.id, dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => {

@@ -61,7 +61,7 @@ export class ProductQuantityController {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         try {
           const arr = JSON.parse(req.query[item]);
           if (Array.isArray(arr)) {
@@ -93,7 +93,7 @@ export class ProductQuantityController {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = [];
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });

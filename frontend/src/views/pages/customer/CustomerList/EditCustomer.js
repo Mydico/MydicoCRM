@@ -74,10 +74,10 @@ const EditCustomer = props => {
   const customer = useSelector(state => selectById(state, props.match.params.id));
 
   useEffect(() => {
-    dispatch(getDetailCustomer(props.match.params.id));
-    dispatch(getCustomerType());
-    dispatch(getDepartment());
-    dispatch(getCustomerStatus());
+    dispatch(getDetailCustomer({ id: props.match.params.id, dependency: true }));
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   useEffect(() => {

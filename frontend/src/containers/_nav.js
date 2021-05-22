@@ -63,7 +63,7 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Sinh nhật 7 ngày tới',
-        to: '/customer/birthday',
+        to: '/customers/birthday',
       },
     ],
   },

@@ -59,7 +59,7 @@ export class OrderService {
     }
     let queryString = "Order.status <> 'DELETED'";
     Object.keys(req.query).forEach((item, index) => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         queryString += `Order.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'OR '}`;
       }
     });

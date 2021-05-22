@@ -64,7 +64,7 @@ const CreatePromotion = () => {
   const {selectAll: selectAllProduct} = globalizedProductSelectors;
   const products = useSelector(selectAllProduct);
   useEffect(() => {
-    dispatch(getCustomerType());
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
     dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', status: "ACTIVE" }));
   }, []);
 

@@ -1,17 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react/lib';
+import React, { useEffect, useState } from 'react';
+import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {useDispatch, useSelector} from 'react-redux';
-import {getCustomer} from '../customer.api.js';
-import {globalizedCustomerSelectors, reset} from '../customer.reducer.js';
-import {useHistory} from 'react-router-dom';
-import cities from '../../../../shared/utils/city'
-import district from '../../../../shared/utils/district.json'
-import moment from 'moment'
-const Customer = (props) => {
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCustomer } from '../customer.api.js';
+import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
+import { useHistory } from 'react-router-dom';
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
+import moment from 'moment';
+const Customer = props => {
   const [details, setDetails] = useState([]);
-  const {initialState} = useSelector((state) => state.customer);
+  const { account } = useSelector(state => state.authentication);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const { initialState } = useSelector(state => state.customer);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
   const dispatch = useDispatch();
@@ -21,23 +23,23 @@ const Customer = (props) => {
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomer({page: activePage - 1, size, sort: 'createdDate,desc'}));
+    dispatch(getCustomer({ page: activePage - 1, size, sort: 'createdDate,desc' }));
   }, [activePage, size]);
 
-  const {selectAll} = globalizedCustomerSelectors;
+  const { selectAll } = globalizedCustomerSelectors;
   const customers = useSelector(selectAll);
-  const computedItems = (items) => {
-    return items.map((item) => {
+  const computedItems = items => {
+    return items.map(item => {
       return {
         ...item,
         typeName: item.type?.name,
         department: item.department?.name || '',
-        createdDate: moment(item.createdDate).format("DD-MM-YYYY"),
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
         sale: item.sale?.code || ''
       };
     });
   };
-  const toggleDetails = (index) => {
+  const toggleDetails = index => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -53,25 +55,25 @@ const Customer = (props) => {
     {
       key: 'order',
       label: 'STT',
-      _style: {width: '1%'},
-      filter: false,
+      _style: { width: '1%' },
+      filter: false
     },
-    {key: 'code', label: 'Mã', _style: {width: '10%'}},
-    {key: 'name', label: 'Tên cửa hàng/đại lý', _style: {width: '15%'}},
-    {key: 'address', label: 'Địa chỉ', _style: {width: '15%'}},
-    {key: 'tel', label: 'Điện thoại', _style: {width: '15%'}},
-    {key: 'sale', label: 'Nhân viên quản lý', _style: {width: '15%'}},
-    {key: 'typeName', label: 'Loại khách hàng', _style: {width: '10%'}},
-    {key: 'department', label: 'Chi nhánh', _style: {width: '20%'}},
+    { key: 'code', label: 'Mã', _style: { width: '10%' } },
+    { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
+    { key: 'address', label: 'Địa chỉ', _style: { width: '15%' } },
+    { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
+    { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '15%' } },
+    { key: 'typeName', label: 'Loại khách hàng', _style: { width: '10%' } },
+    { key: 'department', label: 'Chi nhánh', _style: { width: '20%' } },
     {
       key: 'show_details',
       label: '',
-      _style: {width: '1%'},
-      filter: false,
-    },
+      _style: { width: '1%' },
+      filter: false
+    }
   ];
 
-  const getBadge = (status) => {
+  const getBadge = status => {
     switch (status) {
       case 'Active':
         return 'success';
@@ -87,20 +89,20 @@ const Customer = (props) => {
   };
   const [,] = useState([]);
   const csvContent = computedItems(customers)
-      .map((item) => Object.values(item).join(','))
-      .join('\n');
+    .map(item => Object.values(item).join(','))
+    .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {
     history.push(`${props.match.url}/new`);
   };
 
-  const toEditCustomer = (userId) => {
+  const toEditCustomer = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const onFilterColumn = (value) => {
+  const onFilterColumn = value => {
     if (Object.values(value).length > 0) {
-      dispatch(getCustomer({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
     }
   };
 
@@ -108,9 +110,11 @@ const Customer = (props) => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách khách hàng
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateCustomer}>
-          <CIcon name="cil-plus" /> Thêm mới khách hàng
-        </CButton>
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/customers').length > 0) && (
+          <CButton color="success" variant="outline" className="ml-3" onClick={toCreateCustomer}>
+            <CIcon name="cil-plus" /> Thêm mới khách hàng
+          </CButton>
+        )}
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
@@ -122,41 +126,43 @@ const Customer = (props) => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [20, 50, 100, 200, 500]}}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [20, 50, 100, 200, 500] }}
           itemsPerPage={size}
           hover
           sorter
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={(val) => console.log('new page:', val)}
-          onPagesChange={(val) => console.log('new pages:', val)}
-          onPaginationChange={(val) => setSize(val)}
+          onPageChange={val => console.log('new page:', val)}
+          onPagesChange={val => console.log('new pages:', val)}
+          onPaginationChange={val => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={(val) => console.log('new table filter:', val)}
+          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
-            status: (item) => (
+            status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
               </td>
             ),
-            show_details: (item) => {
+            show_details: item => {
               return (
                 <td className="d-flex py-2">
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    className="mr-3"
-                    onClick={() => {
-                      toEditCustomer(item.id);
-                    }}
-                  >
-                    <CIcon name="cil-pencil" />
-                  </CButton>
+                  {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/customers').length > 0) && (
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      className="mr-3"
+                      onClick={() => {
+                        toEditCustomer(item.id);
+                      }}
+                    >
+                      <CIcon name="cil-pencil" />
+                    </CButton>
+                  )}
                   <CButton
                     color="primary"
                     variant="outline"
@@ -171,7 +177,7 @@ const Customer = (props) => {
                 </td>
               );
             },
-            details: (item) => {
+            details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
@@ -206,11 +212,11 @@ const Customer = (props) => {
                       <CCol lg="6">
                         <dl className="row">
                           <dt className="col-sm-3">Tỉnh thành:</dt>
-                          <dd className="col-sm-9">{cities.filter(city => city.value === item?.city)[0]?.label || ""}</dd>
+                          <dd className="col-sm-9">{cities.filter(city => city.value === item?.city)[0]?.label || ''}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Quận huyện:</dt>
-                          <dd className="col-sm-9">{district.filter(dist => dist.value === item?.district)[0]?.label || ""}</dd>
+                          <dd className="col-sm-9">{district.filter(dist => dist.value === item?.district)[0]?.label || ''}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Địa chỉ:</dt>
@@ -229,13 +235,13 @@ const Customer = (props) => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / size) + 1}
-          onActivePageChange={(i) => setActivePage(i)}
+          onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
     </CCard>

@@ -21,9 +21,7 @@ const Debt = (props) => {
   }, []);
 
   useEffect(() => {
-    if (size != 20) {
       dispatch(getCustomerDebts({page: activePage - 1, size, sort: 'createdDate,desc'}));
-    }
   }, [activePage, size]);
 
   const {selectAll} = globalizedDebtsSelectors;

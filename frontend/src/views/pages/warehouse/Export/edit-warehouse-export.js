@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -18,7 +18,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDetailWarehouseImport, updateWarehouseImport } from '../Import/warehouse-import.api';
-
+import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
@@ -75,9 +75,9 @@ const EditWarehouseExport = props => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
-    dispatch(getProduct());
-    dispatch(getDetailWarehouseImport(props.match.params.id));
+    dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   useEffect(() => {
@@ -117,8 +117,15 @@ const EditWarehouseExport = props => {
     setProductList(copyArr);
   };
 
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+    }, 1000),
+    []
+  );
+
   const onSearchProduct = value => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+    debouncedSearchProduct(value)
   };
 
   const onAddProduct = () => {

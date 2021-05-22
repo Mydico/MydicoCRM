@@ -67,7 +67,7 @@ const CreateProduct = () => {
     image: []
   };
   useEffect(() => {
-    dispatch(getProductGroup());
+    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => {

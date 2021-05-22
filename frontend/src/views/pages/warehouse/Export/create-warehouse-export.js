@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { creatingWarehouseImport } from '../Import/warehouse-import.api';
 import { currencyMask } from '../../../components/currency-input/currency-input';
 import MaskedInput from 'react-text-mask';
-
+import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { fetching } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
@@ -77,9 +77,8 @@ const CreateReceipt = () => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']) }));
-    dispatch(getAllWarehouse());
-    // dispatch(getProduct());
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
+    dispatch(getAllWarehouse({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => {
@@ -106,7 +105,7 @@ const CreateReceipt = () => {
       setImportWarehouses(copyArr);
       dispatch(
         getProductWarehouse({
-          storeId: selectedWarehouse.id
+          store: selectedWarehouse.id
         })
       ).then(resp => {
         if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
@@ -161,8 +160,15 @@ const CreateReceipt = () => {
     setProductList([...productList, data]);
   };
 
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+    }, 1000),
+    []
+  );
+
   const onSearchProduct = value => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+    debouncedSearchProduct(value);
   };
 
   const onChangePrice = ({ target }, index) => {

@@ -84,10 +84,10 @@ const CreateUser = () => {
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState([]);
   useEffect(() => {
-    dispatch(getDepartment());
-    dispatch(getPermissionGroups());
-    dispatch(getBranch());
-    dispatch(getUserRole());
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getUserRole({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
     return () => {
       dispatch(reset());
     };

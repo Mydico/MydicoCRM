@@ -13,9 +13,9 @@ export const getStoreHistory = createAsyncThunk(
     },
 );
 
-export const getDetailStoreHistory = createAsyncThunk('api/detail/store-histories', async (userId, thunkAPI) => {
+export const getDetailStoreHistory = createAsyncThunk('api/detail/store-histories', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/store-histories/' + userId);
+    const result = await axios.get('api/store-histories/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

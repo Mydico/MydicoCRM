@@ -136,10 +136,10 @@ export class StoreInputService {
         const transaction = new Transaction();
         transaction.customer = entity.customer;
         transaction.storeInput = entity;
-        transaction.refundMoney = entity.totalMoney;
+        transaction.refundMoney = entity.realMoney;
         transaction.type = TransactionType.RETURN;
         transaction.previousDebt = latestTransaction ? latestTransaction.earlyDebt : 0;
-        transaction.earlyDebt = latestTransaction ? Number(latestTransaction.earlyDebt) -  Number(entity.totalMoney) : 0 -  Number(entity.totalMoney);
+        transaction.earlyDebt = latestTransaction ? Number(latestTransaction.earlyDebt) -  Number(entity.realMoney) : 0 -  Number(entity.realMoney);
         await this.transactionService.save(transaction);
     }
 
@@ -177,6 +177,7 @@ export class StoreInputService {
             const itemFounded = entity.storeInputDetails.filter(origin => origin.product.id === item.product.id);
             return {
                 ...item,
+                department: entity.store.department,
                 quantity: item.quantity + itemFounded[0].quantity,
             };
         });

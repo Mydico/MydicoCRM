@@ -34,9 +34,7 @@ const WarehouseImport = props => {
   }, []);
 
   useEffect(() => {
-    if (size != 20) {
-      dispatch(getWarehouseImport({ page: activePage - 1, size, sort: 'createdDate,desc' }));
-    }
+      dispatch(getWarehouseImport({ page: activePage - 1, size, sort: 'id,desc' }));
   }, [activePage, size]);
 
   const { selectAll } = globalizedWarehouseImportSelectors;

@@ -51,7 +51,7 @@ const CreateCustomerStatus = (props) => {
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
-    dispatch(getDetailCustomerStatus(props.match.params.id));
+    dispatch(getDetailCustomerStatus({ id: props.match.params.id, dependency: true }));
   }, []);
 
   useEffect(() => {

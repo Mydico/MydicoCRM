@@ -71,8 +71,8 @@ const EditUserRole = (props) => {
   }, [userRoles]);
 
   useEffect(() => {
-    dispatch(getDetailUserRole(props.match.params.id));
-    dispatch(getPermissionGroups());
+    dispatch(getDetailUserRole({ id: props.match.params.id, dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
     return () => {
       dispatch(reset());
     };

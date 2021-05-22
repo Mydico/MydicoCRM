@@ -42,7 +42,7 @@ export class StoreHistoryController {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         filter[item] = Like(`%${req.query[item]}%`);
       }
     });

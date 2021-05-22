@@ -13,9 +13,9 @@ export const getUserRole = createAsyncThunk(
     },
 );
 
-export const getDetailUserRole = createAsyncThunk('api/detail/user-roles', async (userId, thunkAPI) => {
+export const getDetailUserRole = createAsyncThunk('api/detail/user-roles', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/user-roles/' + userId);
+    const result = await axios.get('api/user-roles/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

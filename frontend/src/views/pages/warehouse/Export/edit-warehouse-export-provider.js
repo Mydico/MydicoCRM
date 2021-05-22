@@ -79,9 +79,9 @@ const EditWarehouseExportProvider = (props) => {
   };
 
   useEffect(() => {
-    dispatch(getWarehouse({department: JSON.stringify([account.department?.id || ''])}));
-    dispatch(getProduct());
-    dispatch(getDetailWarehouseImport(props.match.params.id));
+    dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
+    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   useEffect(() => {
@@ -114,7 +114,7 @@ const EditWarehouseExportProvider = (props) => {
   };
 
   const onSearchProduct = (value) => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: "ACTIVE" }));
   }
 
   const onSelectedProduct = ({value}, index) => {

@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CDataTable, CPagination, CRow, CCol } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBranch } from './branch.api.js';
 import { globalizedBranchSelectors, reset } from './branch.reducer.js';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import moment from 'moment'
+import moment from 'moment';
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -39,7 +39,8 @@ const Branch = props => {
   }, []);
 
   const { selectAll } = globalizedBranchSelectors;
-
+  const { account } = useSelector(state => state.authentication);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const branchs = useSelector(selectAll);
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.provider);
@@ -54,7 +55,7 @@ const Branch = props => {
       return {
         ...item,
         code: item.code || '',
-        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
   };
@@ -128,9 +129,11 @@ const Branch = props => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách phòng ban
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateBranch}>
-          <CIcon name="cil-plus" /> Thêm mới phòng ban
-        </CButton>
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/branches').length > 0) && (
+          <CButton color="success" variant="outline" className="ml-3" onClick={toCreateBranch}>
+            <CIcon name="cil-plus" /> Thêm mới phòng ban
+          </CButton>
+        )}
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
@@ -165,18 +168,20 @@ const Branch = props => {
             show_details: item => {
               return (
                 <td className="d-flex py-2">
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    className="mr-3"
-                    onClick={() => {
-                      toEditBranch(item.id);
-                    }}
-                  >
-                    <CIcon name="cil-pencil" />
-                  </CButton>
+                  {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/branches').length > 0) && (
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      className="mr-3"
+                      onClick={() => {
+                        toEditBranch(item.id);
+                      }}
+                    >
+                      <CIcon name="cil-pencil" />
+                    </CButton>
+                  )}
                   <CButton
                     color="primary"
                     variant="outline"

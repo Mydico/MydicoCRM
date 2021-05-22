@@ -57,7 +57,7 @@ const CreatePermissionGroups = () => {
   };
 
   useEffect(() => {
-    dispatch(getPermissionType());
+    dispatch(getPermissionType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
     return () => {
       dispatch(reset());
     };

@@ -60,9 +60,9 @@ const EditBranch = props => {
   }, [branch]);
 
   useEffect(() => {
-    dispatch(getBranch());
-    dispatch(getDetailBranch(props.match.params.id));
-    dispatch(getPermissionGroups());
+    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDetailBranch({ id: props.match.params.id, dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => {

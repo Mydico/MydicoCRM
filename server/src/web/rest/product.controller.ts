@@ -20,7 +20,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { Like } from 'typeorm';
+import { Equal, Like } from 'typeorm';
 
 @Controller('api/products')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -40,12 +40,19 @@ export class ProductController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Product[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = [];
+    let filter: any = [];
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort') {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency' && item !== 'status') {
         filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
+    if(filter.length === 0){
+      filter = {
+        status: 'ACTIVE'
+      }
+    }else{
+      filter[0]['status'] = 'ACTIVE'
+    }
     const [results, count] = await this.productService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,

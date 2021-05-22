@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CDataTable, CPagination, CRow, CCol } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDepartment, getTreeDepartment } from './department.api.js';
 import { globalizedDepartmentSelectors, reset } from './department.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { Tree, TreeNode } from 'react-organizational-chart';
 import styled from 'styled-components';
-import moment from 'moment'
+import moment from 'moment';
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -26,8 +26,8 @@ const mappingStatus = {
 };
 const Department = props => {
   const isInitialMount = useRef(true);
-
-  const [,] = useState(20);
+  const { account } = useSelector(state => state.authentication);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -57,7 +57,7 @@ const Department = props => {
       return {
         ...item,
         code: item.code || '',
-        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
   };
@@ -140,11 +140,13 @@ const Department = props => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách chi nhánh
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateDepartment}>
-          <CIcon name="cil-plus" /> Thêm mới chi nhánh
-        </CButton>
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/departments').length > 0) && (
+          <CButton color="success" variant="outline" className="ml-3" onClick={toCreateDepartment}>
+            <CIcon name="cil-plus" /> Thêm mới chi nhánh
+          </CButton>
+        )}
         <CButton color="info" variant="outline" className="ml-3" onClick={toDepartmentStructure}>
-           Cấu trúc chi nhánh
+          Cấu trúc chi nhánh
         </CButton>
       </CCardHeader>
       <CCardBody>
@@ -180,18 +182,20 @@ const Department = props => {
             show_details: item => {
               return (
                 <td className="d-flex py-2">
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    className="mr-3"
-                    onClick={() => {
-                      toEditDepartment(item.id);
-                    }}
-                  >
-                    <CIcon name="cil-pencil" />
-                  </CButton>
+                  {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/departments').length > 0) && (
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      className="mr-3"
+                      onClick={() => {
+                        toEditDepartment(item.id);
+                      }}
+                    >
+                      <CIcon name="cil-pencil" />
+                    </CButton>
+                  )}
                   <CButton
                     color="primary"
                     variant="outline"

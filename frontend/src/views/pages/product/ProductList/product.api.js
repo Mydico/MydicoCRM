@@ -10,9 +10,9 @@ export const getProduct = createAsyncThunk('api/products', async (params = { pag
   }
 });
 
-export const getDetailProduct = createAsyncThunk('api/detail/products', async (userId, thunkAPI) => {
+export const getDetailProduct = createAsyncThunk('api/detail/products', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/products/' + userId);
+    const result = await axios.get('api/products/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

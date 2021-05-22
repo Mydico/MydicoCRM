@@ -57,7 +57,7 @@ const EditCustomerType = (props) => {
   }, [customerType]);
 
   useEffect(() => {
-    dispatch(getDetailCustomerType(props.match.params.id));
+    dispatch(getDetailCustomerType({ id: props.match.params.id, dependency: true }));
   }, []);
 
   const onSubmit = (values, {}) => {

@@ -1,21 +1,23 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react/lib';
+import React, { useEffect, useRef, useState } from 'react';
+import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/PermissionGroupssData.js';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {useDispatch, useSelector} from 'react-redux';
-import {getPermissionGroups} from './permission.api.js';
-import {fetching, globalizedPermissionGroupsSelectors, reset} from './permission.reducer.js';
-import {useHistory} from 'react-router-dom';
-import moment from 'moment'
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { useDispatch, useSelector } from 'react-redux';
+import { getPermissionGroups } from './permission.api.js';
+import { fetching, globalizedPermissionGroupsSelectors, reset } from './permission.reducer.js';
+import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
-const PermissionGroups = (props) => {
+const PermissionGroups = props => {
   const isInitialMount = useRef(true);
   const [details, setDetails] = useState([]);
-  const {initialState} = useSelector((state) => state.permission);
+  const { account } = useSelector(state => state.authentication);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const { initialState } = useSelector(state => state.permission);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
   const dispatch = useDispatch();
@@ -33,21 +35,21 @@ const PermissionGroups = (props) => {
 
   useEffect(() => {
     if (!isInitialMount.current) {
-      dispatch(getPermissionGroups({page: activePage - 1, size, sort: 'createdDate,desc'}));
+      dispatch(getPermissionGroups({ page: activePage - 1, size, sort: 'createdDate,desc' }));
     }
   }, [activePage, size]);
 
-  const {selectAll} = globalizedPermissionGroupsSelectors;
+  const { selectAll } = globalizedPermissionGroupsSelectors;
   const users = useSelector(selectAll);
-  const computedItems = (items) => {
-    return items.map((item) => {
+  const computedItems = items => {
+    return items.map(item => {
       return {
         ...item,
-        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
   };
-  const toggleDetails = (index) => {
+  const toggleDetails = index => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -63,21 +65,21 @@ const PermissionGroups = (props) => {
     {
       key: 'order',
       label: 'STT',
-      _style: {width: '1%'},
-      filter: false,
+      _style: { width: '1%' },
+      filter: false
     },
-    {key: 'name', label: 'Tên nhóm quyền', _style: {width: '10%'}},
-    {key: 'createdDate', label: 'Ngày tạo', _style: {width: '15%'}},
-    {key: 'status', label: 'Trạng thái', _style: {width: '15%'}},
+    { key: 'name', label: 'Tên nhóm quyền', _style: { width: '10%' } },
+    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
+    { key: 'status', label: 'Trạng thái', _style: { width: '15%' } },
     {
       key: 'show_details',
       label: '',
-      _style: {width: '1%'},
-      filter: false,
-    },
+      _style: { width: '1%' },
+      filter: false
+    }
   ];
 
-  const getBadge = (status) => {
+  const getBadge = status => {
     switch (status) {
       case 'ACTIVE':
         return 'success';
@@ -91,22 +93,21 @@ const PermissionGroups = (props) => {
         return 'primary';
     }
   };
-  const [,] = useState([]);
   const csvContent = computedItems(users)
-      .map((item) => Object.values(item).join(','))
-      .join('\n');
+    .map(item => Object.values(item).join(','))
+    .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreatePermissionGroups = () => {
     history.push(`${props.match.url}/new`);
   };
 
-  const toEditPermissionGroups = (userId) => {
+  const toEditPermissionGroups = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const onFilterColumn = (value) => {
+  const onFilterColumn = value => {
     if (!isInitialMount.current) {
-      dispatch(getPermissionGroups({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+      dispatch(getPermissionGroups({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
     }
   };
 
@@ -114,9 +115,11 @@ const PermissionGroups = (props) => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách nhóm quyền
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreatePermissionGroups}>
-          <CIcon name="cil-plus" /> Thêm mới nhóm quyền
-        </CButton>
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/permission-groups').length > 0) && (
+          <CButton color="success" variant="outline" className="ml-3" onClick={toCreatePermissionGroups}>
+            <CIcon name="cil-plus" /> Thêm mới nhóm quyền
+          </CButton>
+        )}
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
@@ -128,41 +131,43 @@ const PermissionGroups = (props) => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [10, 20, 30, 50]}}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
           itemsPerPage={size}
           hover
           sorter
           loading={initialState.loading}
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={(val) => console.log('new page:', val)}
-          onPagesChange={(val) => console.log('new pages:', val)}
-          onPaginationChange={(val) => setSize(val)}
+          onPageChange={val => console.log('new page:', val)}
+          onPagesChange={val => console.log('new pages:', val)}
+          onPaginationChange={val => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={(val) => console.log('new table filter:', val)}
+          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
-            status: (item) => (
+            status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
-            show_details: (item) => {
+            show_details: item => {
               return (
                 <td className="d-flex py-2">
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    className="mr-3"
-                    onClick={() => {
-                      toEditPermissionGroups(item.id);
-                    }}
-                  >
-                    <CIcon name="cil-pencil" />
-                  </CButton>
+                  {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/permission-groups').length > 0) && (
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      className="mr-3"
+                      onClick={() => {
+                        toEditPermissionGroups(item.id);
+                      }}
+                    >
+                      <CIcon name="cil-pencil" />
+                    </CButton>
+                  )}
                   <CButton
                     color="primary"
                     variant="outline"
@@ -177,7 +182,7 @@ const PermissionGroups = (props) => {
                 </td>
               );
             },
-            details: (item) => {
+            details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
@@ -198,27 +203,29 @@ const PermissionGroups = (props) => {
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Nhóm quyền</dt>
-                          <dd className="col-sm-9">{item.permissionGroupAssociates
-                          ? Object.keys(
-                            item.permissionGroupAssociates.reduce((r, a) => {
-                                r[a.typeName] = [[]];
-                                return r;
-                              }, {})
-                            ).join(',')
-                          : ''}</dd>
+                          <dd className="col-sm-9">
+                            {item.permissionGroupAssociates
+                              ? Object.keys(
+                                  item.permissionGroupAssociates.reduce((r, a) => {
+                                    r[a.typeName] = [[]];
+                                    return r;
+                                  }, {})
+                                ).join(',')
+                              : ''}
+                          </dd>
                         </dl>
                       </CCol>
                     </CRow>
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / size) + 1}
-          onActivePageChange={(i) => setActivePage(i)}
+          onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
     </CCard>

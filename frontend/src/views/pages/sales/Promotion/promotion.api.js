@@ -12,9 +12,9 @@ export const getPromotion = createAsyncThunk(
       }
     },
 );
-export const getDetailPromotion = createAsyncThunk('api/detail/promotions', async (userId, thunkAPI) => {
+export const getDetailPromotion = createAsyncThunk('api/detail/promotions', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/promotions/' + userId);
+    const result = await axios.get('api/promotions/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

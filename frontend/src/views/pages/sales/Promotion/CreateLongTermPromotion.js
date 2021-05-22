@@ -66,8 +66,8 @@ const CreatePromotion = () => {
   const {selectAll: selectAllProductGroup} = globalizedproductGroupsSelectors;
   const productGroups = useSelector(selectAllProductGroup);
   useEffect(() => {
-    dispatch(getCustomerType());
-    dispatch(getProductGroup());
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
   }, []);
 
   const [promotionItemList, setPromotionItemList] = useState([]);

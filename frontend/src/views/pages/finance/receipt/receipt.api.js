@@ -1,9 +1,9 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const getDetailReceipt = createAsyncThunk('api/detail/receipts', async (userId, thunkAPI) => {
+export const getDetailReceipt = createAsyncThunk('api/detail/receipts', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/receipts/' + userId);
+    const result = await axios.get('api/receipts/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
