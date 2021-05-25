@@ -53,7 +53,11 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
-
+const { selectById } = globalizedUserSelectors;
+const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
+const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
+const { selectAll: selectAllRole } = globalizedUserRoleSelectors;
+const { selectAll: selectAllBranch } = globalizedBranchSelectors;
 const EditUser = props => {
   const { initialState } = useSelector(state => state.user);
   const {} = useSelector(state => state.customer);
@@ -68,11 +72,7 @@ const EditUser = props => {
     tel: ''
   });
 
-  const { selectById } = globalizedUserSelectors;
-  const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
-  const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
-  const { selectAll: selectAllRole } = globalizedUserRoleSelectors;
-  const { selectAll: selectAllBranch } = globalizedBranchSelectors;
+
 
   const user = useSelector(state => selectById(state, props.match.params.id));
 
@@ -99,10 +99,10 @@ const EditUser = props => {
 
   useEffect(() => {
     dispatch(getDetailUser({ id: props.match.params.id, dependency: true }));
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getUserRole({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getUserRole({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       dispatch(reset());
     };
@@ -123,7 +123,6 @@ const EditUser = props => {
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(updateUser(values));
-    resetForm();
   };
 
   const removeGPermission = index => {

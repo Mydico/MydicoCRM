@@ -6,12 +6,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getWarehouse } from './warehouse.api.js';
 import { globalizedWarehouseSelectors, reset } from './warehouse.reducer.js';
 import { useHistory } from 'react-router-dom';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 import moment from 'moment';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectAll } = globalizedWarehouseSelectors;
+
+
 const Warehouse = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(state => state.authentication);
@@ -29,7 +34,6 @@ const Warehouse = props => {
     dispatch(getWarehouse({ page: activePage - 1, size, sort: 'createdDate,desc' }));
   }, [activePage, size]);
 
-  const { selectAll } = globalizedWarehouseSelectors;
   const warehouses = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {

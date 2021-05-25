@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const getWarehouseImport = createAsyncThunk(
   'api/store-inputs',
-  async (params = { page: 0, size: 20, sort: 'createdDate,desc' }, thunkAPI) => {
+  async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
     try {
       const result = await axios.get('api/store-inputs', { params: params });
       return { data: result.data, total: result.headers['x-total-count'] };
@@ -15,7 +15,7 @@ export const getWarehouseImport = createAsyncThunk(
 
 export const getWarehouseExport = createAsyncThunk(
   'api/store-inputs/export',
-  async (params = { page: 0, size: 20, sort: 'createdDate,desc' }, thunkAPI) => {
+  async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
     try {
       const result = await axios.get('api/store-inputs/export', { params: params });
       return { data: result.data, total: result.headers['x-total-count'] };
@@ -52,9 +52,9 @@ export const updateWarehouseImport = createAsyncThunk('api/update/store-inputs',
   }
 });
 
-export const updateWarehouseStatusImport = createAsyncThunk('api/update/store-inputs', async (body, thunkAPI) => {
+export const updateWarehouseStatusImport = createAsyncThunk('api/update/store-inputs/status', async (body, thunkAPI) => {
   try {
-    const result = await axios.put('api/store-inputs/status', body);
+    const result = await axios.put('api/store-inputs/' + body.action, body);
     return { data: result.data, headers: result.headers, statusCode: result.status };
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

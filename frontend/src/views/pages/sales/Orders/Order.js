@@ -10,6 +10,8 @@ import { OrderStatus } from './order-status';
 import moment from 'moment';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 const getBadge = status => {
   switch (status) {
     case 'ACTIVE':
@@ -30,6 +32,8 @@ const mappingStatus = {
   CREATE_COD: 'ĐÃ TẠO VẬN ĐƠN',
   CANCEL: 'ĐÃ HỦY'
 };
+const { selectAll } = globalizedOrdersSelectors;
+
 const Order = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.order);
@@ -37,17 +41,16 @@ const Order = props => {
   const [size] = useState(20);
   const dispatch = useDispatch();
   const history = useHistory();
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   useEffect(() => {
     dispatch(reset());
     localStorage.setItem('order', JSON.stringify({}));
   }, []);
-  const { selectAll } = globalizedOrdersSelectors;
   const orders = useSelector(selectAll);
 
   useEffect(() => {
-    dispatch(getOrder({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
+    dispatch(getOrder({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
   }, [activePage]);
 
   const computedItems = items => {
@@ -125,7 +128,7 @@ const Order = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 
@@ -143,7 +146,8 @@ const Order = props => {
   const approveOrder = order => () => {
     const newOrder = {
       id: order.id,
-      status: OrderStatus.APPROVED
+      status: OrderStatus.APPROVED,
+      action: approve
     };
     dispatch(updateStatusOrder(newOrder));
   };
@@ -151,7 +155,8 @@ const Order = props => {
   const cancelOrder = order => () => {
     const newOrder = {
       id: order.id,
-      status: OrderStatus.CANCEL
+      status: OrderStatus.CANCEL,
+      action: cancel
     };
     dispatch(updateStatusOrder(newOrder));
   };
@@ -159,7 +164,8 @@ const Order = props => {
   const deleteOrder = order => () => {
     const newOrder = {
       id: order.id,
-      status: OrderStatus.DELETED
+      status: OrderStatus.DELETED,
+      action: 'delete'
     };
     dispatch(updateStatusOrder(newOrder));
   };
@@ -167,7 +173,8 @@ const Order = props => {
   const createCodOrder = order => () => {
     const newOrder = {
       id: order.id,
-      status: OrderStatus.CREATE_COD
+      status: OrderStatus.CREATE_COD,
+      action: 'create-cod'
     };
     dispatch(updateStatusOrder(newOrder));
   };
@@ -349,6 +356,12 @@ const Order = props => {
     }
   };
 
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
+
   return (
     <CCard>
       <CCardHeader>
@@ -364,7 +377,7 @@ const Order = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(orders)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

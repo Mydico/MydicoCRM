@@ -30,14 +30,14 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
-
+const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
+const { selectAll: selectAllBranchs } = globalizedBranchSelectors;
 const CreateBranch = () => {
   const { initialState } = useSelector(state => state.branch);
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
-  const { selectAll: selectAllBranchs } = globalizedBranchSelectors;
+
 
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const branchs = useSelector(selectAllBranchs);
@@ -50,8 +50,8 @@ const CreateBranch = () => {
   };
 
   useEffect(() => {
-    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       dispatch(reset());
     };
@@ -61,7 +61,6 @@ const CreateBranch = () => {
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(creatingBranch(values));
-    resetForm();
   };
 
   useEffect(() => {

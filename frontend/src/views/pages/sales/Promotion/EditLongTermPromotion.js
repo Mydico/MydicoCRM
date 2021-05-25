@@ -44,7 +44,9 @@ const validationSchema = function() {
 };
 
 import {validate} from '../../../../shared/utils/normalize';
-
+const {selectAll} = globalizedcustomerTypeSelectors;
+const {selectAll: selectAllProductGroup} = globalizedproductGroupsSelectors;
+const {selectById} = globalizedPromotionSelectors;
 
 const EditPromotion = (props) => {
   const {initialState} = useSelector((state) => state.promotion);
@@ -60,17 +62,16 @@ const EditPromotion = (props) => {
     isLock: false,
     customerType: null,
   });
-  const {selectAll} = globalizedcustomerTypeSelectors;
+
+
   const customerType = useSelector(selectAll);
-  const {selectAll: selectAllProductGroup} = globalizedproductGroupsSelectors;
   const productGroups = useSelector(selectAllProductGroup);
-  const {selectById} = globalizedPromotionSelectors;
   const promotion = useSelector((state) => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
-    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailPromotion({ id: props.match.params.id, dependency: true }));
   }, []);
 
@@ -112,7 +113,6 @@ const EditPromotion = (props) => {
     if (!values.customerType) values.customerType = initialValues.current.customerType;
     values.promotionItems = promotionItemList;
     dispatch(updatePromotion(values));
-    resetForm();
   };
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   CButton,
   CCard,
@@ -11,40 +11,36 @@ import {
   CLabel,
   CInput,
   CRow,
-
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {creatingProvider} from './provider.api';
-
-
-import {useHistory} from 'react-router-dom';
-import {fetching} from './provider.reducer';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { creatingProvider } from './provider.api';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { useHistory } from 'react-router-dom';
+import { fetching } from './provider.reducer';
 
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5, `Tên phải lớn hơn 5 kí tự`)
-        .required('Tên không để trống'),
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống')
   });
 };
 
-import {validate} from '../../../../shared/utils/normalize';
-
+import { validate } from '../../../../shared/utils/normalize';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
 
-
 const CreateProvider = () => {
-  const {initialState} = useSelector((state) => state.provider);
+  const { initialState } = useSelector(state => state.provider);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -53,23 +49,22 @@ const CreateProvider = () => {
     code: '',
     name: '',
     address: '',
-    phone: '',
+    phone: ''
   };
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, { resetForm }) => () => {
     dispatch(fetching());
     values.code = values.name
-        .trim()
-        .split(' ')
-        .map((string) => string[0])
-        .join('')
-        .replaceAll(' ', '')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/đ/g, 'd')
-        .replace(/Đ/g, 'D');
+      .trim()
+      .split(' ')
+      .map(string => string[0])
+      .join('')
+      .replaceAll(' ', '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D');
     dispatch(creatingProvider(values));
-    resetForm();
   };
 
   useEffect(() => {
@@ -78,26 +73,39 @@ const CreateProvider = () => {
     }
   }, [initialState.updatingSuccess]);
 
+  const editAlert = (values, { setSubmitting, setErrors }) => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn tạo nhà cung cấp này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: onSubmit(values, { setSubmitting, setErrors })
+        },
+        {
+          label: 'Hủy'
+        }
+      ],
+      closeOnEscape: true
+    });
+  };
   return (
     <CCard>
       <CCardHeader>
         <CCardTitle>Thêm mới nhà cung cấp</CCardTitle>
       </CCardHeader>
       <CCardBody>
-        <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
+        <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={editAlert}>
           {({
             values,
             errors,
             touched,
 
-
             handleChange,
             handleBlur,
             handleSubmit,
 
-
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -113,15 +121,15 @@ const CreateProvider = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={`${values.name
-                          ?.trim()
-                          .split(' ')
-                          .map((string) => string[0])
-                          .join('')
-                          .replaceAll(' ', '')
-                          .normalize('NFD')
-                          .replace(/[\u0300-\u036f]/g, '')
-                          .replace(/đ/g, 'd')
-                          .replace(/Đ/g, 'D')}`}
+                        ?.trim()
+                        .split(' ')
+                        .map(string => string[0])
+                        .join('')
+                        .replaceAll(' ', '')
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/đ/g, 'd')
+                        .replace(/Đ/g, 'D')}`}
                     />
                   </CFormGroup>
                   <CFormGroup>

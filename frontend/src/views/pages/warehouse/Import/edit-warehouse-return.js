@@ -35,6 +35,8 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 const validationSchema = function() {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -49,14 +51,14 @@ export const mappingStatus = {
   DELETED: 'ĐÃ XÓA'
 };
 
+const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
+const { selectAll: selectAllProduct } = globalizedProductSelectors;
+const { selectById } = globalizedWarehouseImportSelectors;
+const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
+
 const EditWarehouseReturn = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
-  const { account } = useSelector(state => state.authentication);
-
-  const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
-  const { selectAll: selectAllProduct } = globalizedProductSelectors;
-  const { selectById } = globalizedWarehouseImportSelectors;
-  const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
+  const { account } = useSelector(userSafeSelector);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -84,8 +86,8 @@ const EditWarehouseReturn = props => {
   useEffect(() => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   useEffect(() => {
@@ -146,7 +148,7 @@ const EditWarehouseReturn = props => {
 
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
     }, 1000),
     []
   );
@@ -156,7 +158,7 @@ const EditWarehouseReturn = props => {
   };
 
   const onSearchCustomer = value => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, address: value, contactName: value }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value }));
   };
 
   const onChangeReducePercent = ({ target }, index) => {

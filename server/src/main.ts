@@ -10,13 +10,12 @@ import * as path from 'path';
 import * as fs from 'fs';
 import helmet from 'helmet';
 import { mkdirSync } from 'fs';
-import { actionDesc, blackList, contentException, resourceDesc } from './utils/constants/permission-desc';
+import { actionDesc, blackList, contentException, removeExceptional, resourceDesc } from './utils/constants/permission-desc';
 import { permissionDescriptionNormalize } from './utils/helper/permission-normalization';
 import { PermissionGroupStatus } from './domain/enumeration/permission-group-status';
 import Permission from './domain/permission.entity';
 import { PermissionService } from './service/permission.service';
 import { PermissionTypeService } from './service/permission-type.service';
-import listEndpoints from 'express-list-endpoints';
 import PermissionType from './domain/permission-type.entity';
 import { PermissionStatus } from './domain/enumeration/permission-status';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -101,7 +100,7 @@ async function bootstrap(): Promise<void> {
       type = splitedEndpoint[0];
     }
     if (type) {
-      let desc = permissionDescriptionNormalize(splitedEndpoint, element);
+      let desc = permissionDescriptionNormalize(splitedEndpoint);
       const perType: PermissionType = {
         name: type,
         description: `Quản lý ${desc}`,
@@ -111,10 +110,7 @@ async function bootstrap(): Promise<void> {
             : PermissionGroupStatus.ACTIVE
       };
       element.methods.forEach(method => {
-        if (method == 'DELETE') {
-          desc = desc.replace('chi tiết', '');
-        }
-        const foundedException = contentException.filter(item => item.method === method && item.type === type);
+        const foundedException = splitedEndpoint.filter(item => removeExceptional.includes(item));
         const per: Permission = {
           action: method,
           resource: element.path,
@@ -122,7 +118,7 @@ async function bootstrap(): Promise<void> {
           typeName: `Quản lý ${resourceDesc[type] || ''}`,
           status:
             blackList.filter(value => element.path.includes(value)).length > 0 ? PermissionStatus.NONEPUBLIC : PermissionStatus.PUBLIC,
-          description: `${foundedException.length > 0 ? foundedException[0].replaceContent : actionDesc[method]} ${desc}`
+          description: `${foundedException.length > 0 ? "" : actionDesc[method]} ${desc}`
         };
 
         permissionList.push(per);

@@ -3,6 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne
 import { BaseEntity } from './base/base.entity';
 
 import Customer from './customer.entity';
+import Department from './department.entity';
 
 import { User } from './user.entity';
 
@@ -20,6 +21,9 @@ export default class CustomerDebit extends BaseEntity {
 
     @ManyToOne(type => User)
     sale: User;
+
+    @ManyToOne(type => Department)
+    department? : Department;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

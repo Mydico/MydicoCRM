@@ -57,17 +57,17 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
-
+const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
+const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
+const { selectAll: selectAllRole } = globalizedUserRoleSelectors;
+const { selectAll: selectAllBranch } = globalizedBranchSelectors;
 const CreateUser = () => {
   const { initialState } = useSelector(state => state.user);
   const {} = useSelector(state => state.department);
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
-  const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
-  const { selectAll: selectAllRole } = globalizedUserRoleSelectors;
-  const { selectAll: selectAllBranch } = globalizedBranchSelectors;
+
 
   const departments = useSelector(selectAllDepartment);
   const roles = useSelector(selectAllRole);
@@ -84,10 +84,10 @@ const CreateUser = () => {
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState([]);
   useEffect(() => {
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getUserRole({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getUserRole({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       dispatch(reset());
     };

@@ -48,6 +48,7 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectAll } = globalizedproductGroupsSelectors;
 
 const CreateProduct = () => {
   const { initialState } = useSelector(state => state.product);
@@ -55,7 +56,6 @@ const CreateProduct = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const images = useRef([]);
-  const { selectAll } = globalizedproductGroupsSelectors;
   const productGroup = useSelector(selectAll);
   const initialValues = {
     code: '',
@@ -67,7 +67,7 @@ const CreateProduct = () => {
     image: []
   };
   useEffect(() => {
-    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => {
@@ -83,7 +83,6 @@ const CreateProduct = () => {
     values.price = Number(values.price.replace(/\D/g, ''));
     values.agentPrice = Number(values.agentPrice.replace(/\D/g, ''));
     dispatch(creatingProduct(values));
-    resetForm();
   };
 
   const getUploadParams = () => {

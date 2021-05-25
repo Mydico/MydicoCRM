@@ -26,9 +26,9 @@ import { getDepartment } from '../../user/UserDepartment/department.api';
 import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
 import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city'
-import district from '../../../../shared/utils/district.json'
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+const { selectAll } = globalizedDepartmentSelectors;
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -66,18 +66,16 @@ const CreateCustomer = () => {
   const history = useHistory();
   const [selectedCity, setSelectedCity] = useState(null);
   const [districts, setDistricts] = useState([])
-  const { selectAll } = globalizedDepartmentSelectors;
   const departments = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
     dispatch(creatingCustomer(values));
-    resetForm();
   };
 
   useEffect(() => {

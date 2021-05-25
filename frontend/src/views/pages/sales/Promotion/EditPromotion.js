@@ -42,7 +42,9 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
-
+const { selectAll: selectAllProduct } = globalizedProductSelectors;
+const { selectById } = globalizedPromotionSelectors;
+const { selectAll } = globalizedcustomerTypeSelectors;
 const EditPromotion = props => {
   const { initialState, entities } = useSelector(state => state.promotion);
 
@@ -57,17 +59,14 @@ const EditPromotion = props => {
     isLock: false,
     customerType: null
   });
-  const { selectAll } = globalizedcustomerTypeSelectors;
   const customerType = useSelector(selectAll);
-  const { selectAll: selectAllProduct } = globalizedProductSelectors;
   const products = useSelector(selectAllProduct);
-  const { selectById } = globalizedPromotionSelectors;
   const promotion = useSelector(state => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
-    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', status: 'ACTIVE', dependency: true }));
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', status: 'ACTIVE', dependency: true }));
     dispatch(getDetailPromotion({ id: props.match.params.id, dependency: true }));
   }, []);
 
@@ -97,6 +96,17 @@ const EditPromotion = props => {
     setProductList(copyArr);
   };
 
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
+    }, 1000),
+    []
+  );
+
+  const onSearchProduct = value => {
+    debouncedSearchProduct(value);
+  };
+
   const onChangeProductPromotion = (value, index, type) => {
     const copyArr = [...productList];
     copyArr[index][type] = value;
@@ -109,7 +119,6 @@ const EditPromotion = props => {
     if (!values.customerType) values.customerType = initialValues.current.customerType;
     values.promotionProduct = productList;
     dispatch(updatePromotion(values));
-    resetForm();
   };
 
   useEffect(() => {
@@ -274,6 +283,7 @@ const EditPromotion = props => {
                                   value: item?.product,
                                   label: `${item?.product?.code || ''}-${item?.product?.name || ''}`
                                 }}
+                                onInputChange={onSearchProduct}
                                 onChange={event => onSelectedProduct(event, index)}
                                 options={products.map(item => ({
                                   value: item,

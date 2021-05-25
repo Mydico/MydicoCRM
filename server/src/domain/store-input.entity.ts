@@ -10,6 +10,7 @@ import { User } from './user.entity';
 import StoreInputDetails from './store-input-details.entity';
 import { StoreImportType } from './enumeration/store-import-type';
 import Provider from './provider.entity';
+import Department from './department.entity';
 
 /**
  * A StoreInput.
@@ -39,6 +40,9 @@ export default class StoreInput extends BaseEntity {
     @Column({ type: 'bigint', name: 'reduce_money', nullable: true })
     @Index()
     reduceMoney?: number;
+
+    @ManyToOne(type => Department)
+    department? : Department;
 
     @ManyToOne(type => User, user => user.storeInput)
     approver?: User;

@@ -46,7 +46,8 @@ const validationSchema = function() {
 };
 
 import {validate} from '../../../../shared/utils/normalize';
-
+const {selectAll} = globalizedcustomerTypeSelectors;
+const {selectAll: selectAllProductGroup} = globalizedproductGroupsSelectors;
 
 const CreatePromotion = () => {
   const {initialState} = useSelector((state) => state.promotion);
@@ -61,13 +62,13 @@ const CreatePromotion = () => {
     isLock: false,
     status: PromotionStatus[0].value,
   });
-  const {selectAll} = globalizedcustomerTypeSelectors;
+
+
   const customerType = useSelector(selectAll);
-  const {selectAll: selectAllProductGroup} = globalizedproductGroupsSelectors;
   const productGroups = useSelector(selectAllProductGroup);
   useEffect(() => {
-    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const [promotionItemList, setPromotionItemList] = useState([]);
@@ -102,7 +103,6 @@ const CreatePromotion = () => {
     values.promotionItems = promotionItemList;
     values.type = 'LONGTERM';
     dispatch(creatingPromotion(values));
-    resetForm();
   };
 
   useEffect(() => {

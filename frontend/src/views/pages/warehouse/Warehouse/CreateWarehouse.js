@@ -64,13 +64,12 @@ const CreateWarehouse = () => {
   };
   const departments = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
     dispatch(creatingWarehouse(values));
-    resetForm();
   };
 
   useEffect(() => {

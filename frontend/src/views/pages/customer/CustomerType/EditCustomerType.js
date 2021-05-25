@@ -34,6 +34,7 @@ const validationSchema = function() {
         .required('Mã không để trống'),
   });
 };
+const {selectById} = globalizedcustomerTypeSelectors;
 
 const EditCustomerType = (props) => {
   const {initialState} = useSelector((state) => state.customerType);
@@ -47,7 +48,6 @@ const EditCustomerType = (props) => {
 
   const [initValues, setInitValues] = useState(null);
 
-  const {selectById} = globalizedcustomerTypeSelectors;
   const customerType = useSelector((state) => selectById(state, props.match.params.id));
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const getPermissionGroups = createAsyncThunk(
     'api/permission-groups',
-    async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
+    async (params = {page: 0, size: 20, sort: 'createdDate,DESC'}, thunkAPI) => {
       try {
         const result = await axios.get('api/permission-groups', {params: params});
         return {data: result.data, total: result.headers['x-total-count']};
@@ -42,7 +42,7 @@ export const updatePermissionGroups = createAsyncThunk('api/update/permission-gr
 
 export const getPermissionType = createAsyncThunk(
     'api/get/permission-type',
-    async (params = {page: 0, size: 200, sort: 'createdDate,desc', status: 'ACTIVE'}, thunkAPI) => {
+    async (params = {page: 0, size: 200, sort: 'createdDate,DESC', status: 'ACTIVE'}, thunkAPI) => {
       try {
         const result = await axios.get('api/permission-types', {params: params});
         return result.data;
@@ -54,7 +54,7 @@ export const getPermissionType = createAsyncThunk(
 
 export const getPermissions = createAsyncThunk(
     'api/get/permission',
-    async (params = {page: 0, size: 200, sort: 'createdDate,desc', status: 'PUBLIC'}, thunkAPI) => {
+    async (params = {page: 0, size: 200, sort: 'createdDate,DESC', status: 'PUBLIC'}, thunkAPI) => {
       try {
         const result = await axios.get('api/permissions', {params: params});
         return result.data;

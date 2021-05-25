@@ -21,6 +21,7 @@ import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../s
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { Like } from 'typeorm/find-options/operator/Like';
+import { PermissionGroupStatus } from '../../domain/enumeration/permission-group-status';
 
 @Controller('api/permission-types')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -51,7 +52,8 @@ export class PermissionTypeController {
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
       where: {
-        ...filter
+        ...filter,
+        status: PermissionGroupStatus.ACTIVE
       }
     });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));

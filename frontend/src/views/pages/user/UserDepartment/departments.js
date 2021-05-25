@@ -8,6 +8,8 @@ import { useHistory } from 'react-router-dom';
 import { Tree, TreeNode } from 'react-organizational-chart';
 import styled from 'styled-components';
 import moment from 'moment';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -24,9 +26,11 @@ const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectAll } = globalizedDepartmentSelectors;
+
 const Department = props => {
   const isInitialMount = useRef(true);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const dispatch = useDispatch();
   const history = useHistory();
@@ -40,7 +44,6 @@ const Department = props => {
     dispatch(getTreeDepartment());
   }, []);
 
-  const { selectAll } = globalizedDepartmentSelectors;
   const departments = useSelector(selectAll);
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.provider);
@@ -48,7 +51,7 @@ const Department = props => {
   const [size, setSize] = useState(20);
 
   useEffect(() => {
-    dispatch(getDepartment({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getDepartment({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
   const providers = useSelector(selectAll);
@@ -123,7 +126,7 @@ const Department = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
   const renderChild = children => {
@@ -135,6 +138,12 @@ const Department = props => {
       ));
     }
   };
+
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(departments), [departments]);
 
   return (
     <CCard>
@@ -154,7 +163,7 @@ const Department = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(departments)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

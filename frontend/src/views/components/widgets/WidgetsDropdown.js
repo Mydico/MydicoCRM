@@ -3,13 +3,14 @@ import { CWidgetDropdown, CRow, CCol } from '@coreui/react/lib';
 import ChartLineSimple from '../charts/ChartLineSimple';
 import { getDebtDashboard, getIncomeDashboard } from '../../pages/dashboard/dashboard.api';
 import { useDispatch, useSelector } from 'react-redux';
+import { userSafeSelector } from '../../../views/pages/login/authenticate.reducer';
 
 const WidgetsDropdown = () => {
   const dispatch = useDispatch();
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [debt, setDebt] = useState(0);
   const [total, setTotal] = useState(0);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
 
   useEffect(() => {
     dispatch(getIncomeDashboard({ userId: account.id })).then(data => {

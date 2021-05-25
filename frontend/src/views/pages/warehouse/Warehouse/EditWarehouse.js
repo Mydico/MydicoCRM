@@ -43,11 +43,11 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectAll } = globalizedDepartmentSelectors;
+const { selectById } = globalizedWarehouseSelectors;
 
 const EditWarehouse = props => {
   const { initialState } = useSelector(state => state.warehouse);
-  const {} = useSelector(state => state.customer);
-  const { selectAll } = globalizedDepartmentSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -59,9 +59,7 @@ const EditWarehouse = props => {
     address: '',
     tel: ''
   });
-  const [selectedCity] = useState(null);
-  const [selectedDistrict] = useState(null);
-  const { selectById } = globalizedWarehouseSelectors;
+
   const warehouse = useSelector(state => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
@@ -71,13 +69,12 @@ const EditWarehouse = props => {
 
   useEffect(() => {
     dispatch(getDetailWarehouse({id: props.match.params.id, dependency: true }));
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
     dispatch(creatingWarehouse(values));
-    resetForm();
   };
 
   useEffect(() => {

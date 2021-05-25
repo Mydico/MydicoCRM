@@ -4,6 +4,7 @@ import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import Product from '../domain/product.entity';
 import { ProductRepository } from '../repository/product.repository';
 import { increment_alphanumeric_str } from './utils/normalizeString';
+import { ProductQuantityService } from './product-quantity.service';
 
 const relationshipNames = [];
 relationshipNames.push('productGroup');
@@ -13,7 +14,10 @@ relationshipNames.push('productBrand');
 export class ProductService {
   logger = new Logger('ProductService');
 
-  constructor(@InjectRepository(ProductRepository) private productRepository: ProductRepository) {}
+  constructor(
+    @InjectRepository(ProductRepository) private productRepository: ProductRepository,
+    private productQuantity: ProductQuantityService
+  ) {}
 
   async findById(id: string): Promise<Product | undefined> {
     const relation = [...relationshipNames];
@@ -44,6 +48,13 @@ export class ProductService {
   }
 
   async update(product: Product): Promise<Product | undefined> {
+    const arrProductInStore = await this.productQuantity.findByfields({
+      where: {
+        product: product
+      }
+    });
+    const updatedStatus = arrProductInStore.map(item => ({ ...item, status: product.status }));
+    await this.productQuantity.saveMany(updatedStatus)
     return await this.save(product);
   }
 

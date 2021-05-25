@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const getPromotion = createAsyncThunk(
     'api/promotions',
-    async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
+    async (params = {page: 0, size: 20, sort: 'createdDate,DESC'}, thunkAPI) => {
       try {
         const result = await axios.get('api/promotions', {params: params});
         return {data: result.data, total: result.headers['x-total-count']};

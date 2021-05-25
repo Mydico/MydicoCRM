@@ -3,9 +3,10 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
 import { whiteList } from '../utils/constant';
+import { userSafeSelector } from '../../views/pages/login/authenticate.reducer';
 
 export const PrivateRouteComponent = ({ component: Component, ...rest }) => {
-  const { isAuthenticated, sessionHasBeenFetched, account } = useSelector(state => state.authentication);
+  const { isAuthenticated, sessionHasBeenFetched, account } = useSelector(userSafeSelector);
   const checkAuthorities = props => {
     const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
     const isWhiteList = whiteList.includes(props.location.pathname);

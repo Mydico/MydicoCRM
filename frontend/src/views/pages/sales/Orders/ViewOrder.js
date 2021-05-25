@@ -7,11 +7,11 @@ import { getDetailOrder } from './order.api';
 import { globalizedOrdersSelectors } from './order.reducer';
 
 import { Table } from 'reactstrap';
+const { selectById } = globalizedOrdersSelectors;
 
 const ViewOrder = props => {
   const dispatch = useDispatch();
 
-  const { selectById } = globalizedOrdersSelectors;
 
   const order = useSelector(state => selectById(state, props.match.params.orderId));
 

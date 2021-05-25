@@ -21,6 +21,9 @@ import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../s
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { Like } from 'typeorm/find-options/operator/Like';
+import { User } from '../../domain/user.entity';
+import { DepartmentService } from '../../service/department.service';
+import { In } from 'typeorm';
 
 @Controller('api/customer-debits')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -29,7 +32,7 @@ import { Like } from 'typeorm/find-options/operator/Like';
 export class CustomerDebitController {
   logger = new Logger('CustomerDebitController');
 
-  constructor(private readonly customerDebitService: CustomerDebitService) {}
+  constructor(private readonly customerDebitService: CustomerDebitService, private readonly departmentService: DepartmentService) {}
 
   @Get('/')
   @Roles(RoleType.USER)
@@ -40,19 +43,25 @@ export class CustomerDebitController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<CustomerDebit[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = {};
+    const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter[item] = Like(`%${req.query[item]}%`);
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
+    let departmentVisible = [];
+    const currentUser = req.user as User;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    filter.push({ department: In(departmentVisible) });
     const [results, count] = await this.customerDebitService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
-      where: {
-        ...filter
-      }
+      where: filter
     });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);

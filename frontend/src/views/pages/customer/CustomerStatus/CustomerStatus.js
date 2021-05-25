@@ -6,24 +6,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { getCustomerStatus } from './customer-status.api.js';
 import { globalizedcustomerStatuselectors, reset } from './customer-status.reducer.js';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+const { selectAll } = globalizedcustomerStatuselectors;
 
 const CustomerStatus = props => {
   const [details, setDetails] = useState([]);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.customerStatus);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectAll } = globalizedcustomerStatuselectors;
   const customerStatuses = useSelector(selectAll);
   useEffect(() => {
     dispatch(reset());
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomerStatus({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
+    dispatch(getCustomerStatus({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
   const toggleDetails = index => {
@@ -78,7 +79,7 @@ const CustomerStatus = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getCustomerStatus({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getCustomerStatus({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 

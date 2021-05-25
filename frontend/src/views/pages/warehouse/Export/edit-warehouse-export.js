@@ -30,6 +30,8 @@ import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 import { getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 const validationSchema = function() {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -37,20 +39,21 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
-
+const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
+const { selectAll: selectAllProduct } = globalizedProductSelectors;
+const { selectById } = globalizedWarehouseImportSelectors;
 const EditWarehouseExport = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
 
-  const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
-  const { selectAll: selectAllProduct } = globalizedProductSelectors;
-  const { selectById } = globalizedWarehouseImportSelectors;
+
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -77,7 +80,7 @@ const EditWarehouseExport = props => {
   useEffect(() => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   useEffect(() => {
@@ -88,13 +91,12 @@ const EditWarehouseExport = props => {
     }
   }, [warehouseImport]);
 
-  const onSubmit = (values, { resetForm }) => {
+  const onSubmit = (values, { resetForm }) => () => {
     values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
-    dispatch(fetching());
+    values.totalMoney = Number(values.totalMoney.replace(/\D/g, ''))
     dispatch(updateWarehouseImport(values));
-    resetForm();
   };
 
   const onChangeQuantity = ({ target }, index) => {
@@ -119,13 +121,13 @@ const EditWarehouseExport = props => {
 
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
     }, 1000),
     []
   );
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value)
+    debouncedSearchProduct(value);
   };
 
   const onAddProduct = () => {
@@ -141,23 +143,41 @@ const EditWarehouseExport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      history.goBack();
+      setTimeout(() => {
+        history.goBack();
+      }, 500);
     }
   }, [initialState.updatingSuccess]);
 
+  const editAlert = (values, { setSubmitting, setErrors }) => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn lưu phiếu này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: onSubmit(values, { setSubmitting, setErrors })
+        },
+        {
+          label: 'Hủy'
+        }
+      ],
+      closeOnEscape: true
+    });
+  };
+
   return (
     <CCard>
-      <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
+      <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={editAlert}>
         {({
           values,
-
           handleChange,
           handleBlur,
           handleSubmit,
           setFieldValue,
-
           handleReset
-        }) => (
+        }) => {
+          return (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
               <CCardHeader>
@@ -272,6 +292,7 @@ const EditWarehouseExport = props => {
                       <th>Sản phẩm</th>
                       <th>Đơn vị</th>
                       <th>Dung tích</th>
+                      <th>Giá</th>
                       <th>Số lượng</th>
                     </tr>
                   </thead>
@@ -301,13 +322,7 @@ const EditWarehouseExport = props => {
                               <MaskedInput
                                 mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
-                                value={
-                                  typeof productList[index].price !== 'number'
-                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                                        productList[index].price
-                                      )
-                                    : productList[index].price
-                                }
+                                value={Number(item?.price || 0)}
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
@@ -383,17 +398,13 @@ const EditWarehouseExport = props => {
                           </td>
                           <td className="right">
                             {
-                              <CInput
-                                type="number"
-                                min={1}
-                                name="code"
-                                id="code"
+                              <MaskedInput
+                                mask={currencyMask}
                                 onChange={event => {
                                   setFieldValue('totalMoney', event.target.value);
                                 }}
-                                defaultValue={productList.reduce((sum, current) => sum + current.price * current.quantity, 0)}
-                                onBlur={handleBlur}
-                                value={values.totalMoney}
+                                value={Number(values?.totalMoney?.replace(/\D/g, '') || 0)}
+                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
                           </td>
@@ -413,7 +424,7 @@ const EditWarehouseExport = props => {
               </CButton>
             </CFormGroup>
           </CForm>
-        )}
+        )}}
       </Formik>
     </CCard>
   );

@@ -1,51 +1,45 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
-// import usersData from '../../../users/PermissionGroupssData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPermissionGroups } from './permission.api.js';
 import { fetching, globalizedPermissionGroupsSelectors, reset } from './permission.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectAll } = globalizedPermissionGroupsSelectors;
+
 const PermissionGroups = props => {
   const isInitialMount = useRef(true);
   const [details, setDetails] = useState([]);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.permission);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
   const dispatch = useDispatch();
   const history = useHistory();
+
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    }
-  });
-  useEffect(() => {
-    dispatch(fetching());
-    dispatch(getPermissionGroups());
     dispatch(reset());
   }, []);
 
   useEffect(() => {
-    if (!isInitialMount.current) {
-      dispatch(getPermissionGroups({ page: activePage - 1, size, sort: 'createdDate,desc' }));
-    }
+      dispatch(getPermissionGroups({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
-  const { selectAll } = globalizedPermissionGroupsSelectors;
-  const users = useSelector(selectAll);
+  const groupPermisions = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
       return {
         ...item,
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+        createdDate: moment(item.createdDate,'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY')
       };
     });
   };
@@ -93,7 +87,7 @@ const PermissionGroups = props => {
         return 'primary';
     }
   };
-  const csvContent = computedItems(users)
+  const csvContent = computedItems(groupPermisions)
     .map(item => Object.values(item).join(','))
     .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
@@ -106,10 +100,16 @@ const PermissionGroups = props => {
   };
 
   const onFilterColumn = value => {
-    if (!isInitialMount.current) {
-      dispatch(getPermissionGroups({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getPermissionGroups({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
+
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(groupPermisions), [groupPermisions]);
 
   return (
     <CCard>
@@ -126,7 +126,7 @@ const PermissionGroups = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(users)}
+          items={computedItems(memoListed)}
           fields={fields}
           columnFilter
           tableFilter

@@ -7,6 +7,8 @@ import { getCustomerBirthday } from '../customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment'
+const { selectAll } = globalizedCustomerSelectors;
+
 const Customer = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.customer);
@@ -19,10 +21,9 @@ const Customer = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomerBirthday({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getCustomerBirthday({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
-  const { selectAll } = globalizedCustomerSelectors;
   const customers = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
@@ -79,17 +80,10 @@ const Customer = props => {
     .map(item => Object.values(item).join(','))
     .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
-  const toCreateCustomer = () => {
-    history.push(`${props.match.url}/new`);
-  };
-
-  const toEditCustomer = userId => {
-    history.push(`${props.match.url}/${userId}/edit`);
-  };
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getCustomerBirthday({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getCustomerBirthday({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 

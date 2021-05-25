@@ -35,6 +35,8 @@ import { getProductInstore, getProductWarehouse } from '../../warehouse/Product/
 import { FormFeedback, Table } from 'reactstrap';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object()
@@ -47,16 +49,20 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { ProductStatus } from '../../product/ProductList/contants';
 
 const mappingType = {
   SHORTTERM: 'Ngắn hạn',
   LONGTERM: 'Dài hạn'
 };
-
+const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
+const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
+const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
+const { selectAll: selectAllProductInWarehouse } = globalizedProductWarehouseSelectors;
 const CreateOrder = props => {
   const {} = useSelector(state => state.order);
   const { initialState: promotionState } = useSelector(state => state.promotion);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
 
   const initialValues = {
     customer: null,
@@ -69,10 +75,6 @@ const CreateOrder = props => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
-  const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
-  const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
-  const { selectAll: selectAllProductInWarehouse } = globalizedProductWarehouseSelectors;
 
   const customers = useSelector(selectAllCustomer);
   const promotions = useSelector(selectAllPromotion);
@@ -87,8 +89,8 @@ const CreateOrder = props => {
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
   const [showProductPromotion, setShowProductPromotion] = useState(false);
   useEffect(() => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getPromotion({ isLock: 0, page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getPromotion({ isLock: 0, page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     const existOrder = localStorage.getItem('order');
     try {
@@ -113,11 +115,11 @@ const CreateOrder = props => {
   };
 
   const onSearchCustomer = value => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, address: value, contactName: value }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value }));
   };
 
   const onSearchPromition = value => {
-    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,desc', name: value }));
+    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,DESC', name: value }));
   };
 
   const onSubmit = (values, {}) => {
@@ -174,7 +176,7 @@ const CreateOrder = props => {
 
   useEffect(() => {
     if (selectedWarehouse?.id) {
-      dispatch(getProductWarehouse({ store: selectedWarehouse?.id }));
+      dispatch(getProductWarehouse({ store: selectedWarehouse?.id, status: 'ACTIVE' }));
     }
   }, [selectedWarehouse]);
 
@@ -189,7 +191,17 @@ const CreateOrder = props => {
 
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
-      dispatch(getProductWarehouse({ store: selectedWarehouse?.id , page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+      dispatch(
+        getProductWarehouse({
+          store: selectedWarehouse?.id,
+          page: 0,
+          size: 20,
+          sort: 'createdDate,DESC',
+          code: value,
+          name: value,
+          status: 'ACTIVE'
+        })
+      );
     }, 1000),
     []
   );
@@ -197,8 +209,6 @@ const CreateOrder = props => {
   const onSearchProduct = value => {
     debouncedSearchProduct(value);
   };
-
-
 
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];

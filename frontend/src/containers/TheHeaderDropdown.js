@@ -2,11 +2,11 @@ import React from 'react';
 import { CBadge, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CImg } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';;
 import { useDispatch,useSelector } from 'react-redux';
-import { logout } from '../views/pages/login/authenticate.reducer';
+import { logout, userSafeSelector } from '../views/pages/login/authenticate.reducer';
 
 const TheHeaderDropdown = () => {
   const dispatch = useDispatch();
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
 
   const onLogout = () => {
     dispatch(logout());

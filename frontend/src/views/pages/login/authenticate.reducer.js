@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createDraftSafeSelector, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Storage } from 'react-jhipster';
 const AUTH_TOKEN_KEY = 'authenticationToken';
@@ -37,7 +37,7 @@ export const login = createAsyncThunk('api/authenticate', async ({ username, pas
   }
 });
 
-export const getSession = createAsyncThunk('api/account', async  (args, thunkAPI) => {
+export const getSession = createAsyncThunk('api/account', async (args, thunkAPI) => {
   try {
     const accountResponse = await axios.get('api/account');
     return accountResponse.data;
@@ -99,22 +99,7 @@ export default slice.reducer;
 
 export const { logout } = slice.actions;
 
-// export const login = (username, password, rememberMe = false) => async (
-//   dispatch,
-//   getState
-// ) => {
-//   const result = await dispatch({
-//     type: ACTION_TYPES.LOGIN,
-//     payload: axios.post("api/authenticate", { username, password, rememberMe }),
-//   });
-//   const bearerToken = result.value.headers.authorization;
-//   if (bearerToken && bearerToken.slice(0, 7) === "Bearer ") {
-//     const jwt = bearerToken.slice(7, bearerToken.length);
-//     if (rememberMe) {
-//       Storage.local.set(AUTH_TOKEN_KEY, jwt);
-//     } else {
-//       Storage.session.set(AUTH_TOKEN_KEY, jwt);
-//     }
-//   }
-//   await dispatch(getSession());
-// };
+export const userSafeSelector = createDraftSafeSelector(
+  state => state.authentication,
+  user => user
+);

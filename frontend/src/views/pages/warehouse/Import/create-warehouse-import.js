@@ -29,8 +29,7 @@ import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 import { getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
-import useDebounce from '../../../../shared/utils/debound';
-
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
@@ -47,14 +46,13 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
-
+const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
+const { selectAll: selectAllProduct } = globalizedProductSelectors;
 const CreateWarehouse = () => {
   const { initialState } = useSelector(state => state.warehouseImport);
-  const {} = useSelector(state => state.customer);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
 
-  const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
-  const { selectAll: selectAllProduct } = globalizedProductSelectors;
+
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -77,12 +75,13 @@ const CreateWarehouse = () => {
 
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const onSubmit = (values, {}) => () => {
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.NEW;
+    values.department = { id: account.department?.id || null};
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
   };
@@ -113,9 +112,9 @@ const CreateWarehouse = () => {
 
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
     }, 1000),
-    [] // will be created only once initially
+    []
   );
 
   const onSearchProduct = value => {

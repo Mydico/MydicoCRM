@@ -20,6 +20,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, Roles, RolesGuard, RoleType, PermissionGuard } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import { User } from '../../domain/user.entity';
 
 @Controller('api/bills')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -39,7 +40,8 @@ export class BillController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Bill[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const [results, count] = await this.billService.findAndCount(pageRequest, req);
+    const currentUser = req.user as User;
+    const [results, count] = await this.billService.findAndCount(pageRequest, req, currentUser);
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }
@@ -67,6 +69,66 @@ export class BillController {
     const created = await this.billService.save(bill);
     HeaderUtil.addEntityCreatedHeaders(res, 'Bill', created.id);
     return res.send(created);
+  }
+
+  @Put('/approve')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Bill
+  })
+  async approve(@Res() res: Response, @Body() bill: Bill): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'Bill', bill.id);
+    return res.send(await this.billService.update(bill));
+  }
+
+  @Put('/cancel')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Bill
+  })
+  async cancel(@Res() res: Response, @Body() bill: Bill): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'Bill', bill.id);
+    return res.send(await this.billService.update(bill));
+  }
+
+  @Put('/shipping')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Bill
+  })
+  async shipping(@Res() res: Response, @Body() bill: Bill): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'Bill', bill.id);
+    return res.send(await this.billService.update(bill));
+  }
+
+  @Put('/complete')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Bill
+  })
+  async complete(@Res() res: Response, @Body() bill: Bill): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'Bill', bill.id);
+    return res.send(await this.billService.update(bill));
+  }
+
+  @Put('/transporter')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Bill
+  })
+  async transporter(@Res() res: Response, @Body() bill: Bill): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'Bill', bill.id);
+    return res.send(await this.billService.update(bill));
   }
 
   @Put('/')

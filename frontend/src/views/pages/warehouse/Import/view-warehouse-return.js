@@ -27,12 +27,11 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectById } = globalizedWarehouseImportSelectors;
 
 const DetailWarehouseReturn = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
-  const { account } = useSelector(state => state.authentication);
 
-  const { selectById } = globalizedWarehouseImportSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -68,7 +67,6 @@ const DetailWarehouseReturn = props => {
     values.type = WarehouseImportType.RETURN;
     dispatch(fetching());
     dispatch(updateWarehouseImport(values));
-    resetForm();
   };
 
   useEffect(() => {

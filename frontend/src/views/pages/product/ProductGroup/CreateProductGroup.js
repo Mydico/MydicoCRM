@@ -39,6 +39,7 @@ const validationSchema = function() {
 };
 
 import {validate} from '../../../../shared/utils/normalize';
+const {selectAll} = globalizedproductBrandsSelectors;
 
 
 const CreateProductGroup = () => {
@@ -53,11 +54,10 @@ const CreateProductGroup = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const {selectAll} = globalizedproductBrandsSelectors;
   const productBrand = useSelector(selectAll);
 
   useEffect(() => {
-    dispatch(getProductBrand({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProductBrand({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       dispatch(reset());
     };

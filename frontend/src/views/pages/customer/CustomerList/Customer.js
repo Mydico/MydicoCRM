@@ -9,9 +9,13 @@ import { useHistory } from 'react-router-dom';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import moment from 'moment';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
+const { selectAll } = globalizedCustomerSelectors;
+
 const Customer = props => {
   const [details, setDetails] = useState([]);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.customer);
   const [activePage, setActivePage] = useState(1);
@@ -23,10 +27,9 @@ const Customer = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomer({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getCustomer({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
-  const { selectAll } = globalizedCustomerSelectors;
   const customers = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
@@ -102,9 +105,15 @@ const Customer = props => {
 
   const onFilterColumn = value => {
     if (Object.values(value).length > 0) {
-      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
+
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(customers), [customers]);
 
   return (
     <CCard>
@@ -121,7 +130,7 @@ const Customer = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(customers)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

@@ -35,6 +35,7 @@ const validationSchema = function() {
         .required('Tên không để trống'),
   });
 };
+const {selectById} = globalizedcustomerStatuselectors;
 
 const CreateCustomerStatus = (props) => {
   const {initialState} = useSelector((state) => state.customerStatus);
@@ -45,7 +46,6 @@ const CreateCustomerStatus = (props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const {selectById} = globalizedcustomerStatuselectors;
   const customerStatus = useSelector((state) => selectById(state, props.match.params.id));
 
   const [initValues, setInitValues] = useState(null);

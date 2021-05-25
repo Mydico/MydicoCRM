@@ -44,6 +44,7 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA',
 };
+const {selectAll: selectAllPermissionGroups} = globalizedPermissionGroupsSelectors;
 
 
 const CreateRole = () => {
@@ -51,7 +52,6 @@ const CreateRole = () => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const {selectAll: selectAllPermissionGroups} = globalizedPermissionGroupsSelectors;
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
 
@@ -60,7 +60,7 @@ const CreateRole = () => {
   };
 
   useEffect(() => {
-    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       dispatch(reset());
     };
@@ -70,7 +70,6 @@ const CreateRole = () => {
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(creatingUserRole(values));
-    resetForm();
   };
 
   useEffect(() => {

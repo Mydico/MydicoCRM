@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -11,56 +11,54 @@ import {
   CLabel,
   CInput,
   CRow,
-
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {creatingWarehouseImport} from '../Import/warehouse-import.api';
-import {currencyMask} from '../../../components/currency-input/currency-input';
+import { useDispatch, useSelector } from 'react-redux';
+import { creatingWarehouseImport } from '../Import/warehouse-import.api';
+import { currencyMask } from '../../../components/currency-input/currency-input';
 import MaskedInput from 'react-text-mask';
 
-
-import {useHistory} from 'react-router-dom';
-import {fetching} from '../Import/warehouse-import.reducer';
+import { useHistory } from 'react-router-dom';
+import { fetching } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { FormFeedback, Table } from 'reactstrap';
+import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
+import { getWarehouse } from '../Warehouse/warehouse.api';
+import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import { getProduct } from '../../product/ProductList/product.api';
+import { WarehouseImportType } from './contants';
+import { globalizedProviderSelectors } from '../Provider/provider.reducer';
+import { getProvider } from '../Provider/provider.api';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
 
-
-import {FormFeedback, Table} from 'reactstrap';
-import {globalizedWarehouseSelectors} from '../Warehouse/warehouse.reducer';
-import {getWarehouse} from '../Warehouse/warehouse.api';
-import {globalizedProductSelectors} from '../../product/ProductList/product.reducer';
-import {getProduct} from '../../product/ProductList/product.api';
-import {WarehouseImportType} from './contants';
-import {globalizedProviderSelectors} from '../Provider/provider.reducer';
-import {getProvider} from '../Provider/provider.api';
 const validationSchema = function() {
   return Yup.object().shape({
-    store: Yup.object().required('Kho không để trống'),
+    store: Yup.object().required('Kho không để trống')
   });
 };
 
-import {validate} from '../../../../shared/utils/normalize';
-
+import { validate } from '../../../../shared/utils/normalize';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
-
-
+const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
+const { selectAll: selectAllProduct } = globalizedProductSelectors;
+const { selectAll: selectAllProvider } = globalizedProviderSelectors;
 const CreateWarehouseExportProvider = () => {
   const formikRef = useRef();
-  const {initialState} = useSelector((state) => state.warehouseImport);
-  const {} = useSelector((state) => state.customer);
-  const {account} = useSelector((state) => state.authentication);
+  const { initialState } = useSelector(state => state.warehouseImport);
+  const {} = useSelector(state => state.customer);
+  const { account } = useSelector(userSafeSelector);
 
-  const {selectAll: selectAllWarehouse} = globalizedWarehouseSelectors;
-  const {selectAll: selectAllProduct} = globalizedProductSelectors;
-  const {selectAll: selectAllProvider} = globalizedProviderSelectors;
+
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -76,28 +74,29 @@ const CreateWarehouseExportProvider = () => {
 
   const initialValues = {
     store: '',
-    note: '',
+    note: ''
   };
-  const onSelectWarehouse = (value) => {
+  const onSelectWarehouse = value => {
     setSelectedWarehouse(value);
     setIsSelectedWarehouse(true);
   };
 
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getProvider({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getProvider({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, { resetForm }) => () => {
     values.storeInputDetails = productList;
-    values.type = WarehouseImportType.EXPORT;
+    values.type = WarehouseImportType.EXPORT_TO_PROVIDER;
+    values.department = { id: account.department?.id || null};
+
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
-    resetForm();
   };
 
-  const onChangeQuantity = ({target}, index) => {
+  const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = target.value;
     setProductList(copyArr);
@@ -105,19 +104,19 @@ const CreateWarehouseExportProvider = () => {
   useEffect(() => {
     if (formikRef.current) {
       formikRef.current.setFieldValue(
-          'totalMoney',
-          productList.reduce((sum, current) => sum + current.price * current.quantity, 0),
+        'totalMoney',
+        productList.reduce((sum, current) => sum + current.price * current.quantity, 0)
       );
     }
   }, [productList]);
-  const onRemoveProduct = (index) => {
+  const onRemoveProduct = index => {
     const copyArr = [...productList];
     copyArr.splice(index, 1);
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({value}, index) => {
-    const arr = productList.filter((item) => item.product.id === value.id);
+  const onSelectedProduct = ({ value }, index) => {
+    const arr = productList.filter(item => item.product.id === value.id);
     if (arr.length === 0) {
       const copyArr = [...productList];
       copyArr[index].product = value;
@@ -128,19 +127,19 @@ const CreateWarehouseExportProvider = () => {
   };
 
   const onAddProduct = () => {
-    const data = {product: {}, quantity: 1};
+    const data = { product: {}, quantity: 1 };
     setProductList([...productList, data]);
   };
 
-  const onChangePrice = ({target}, index) => {
+  const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].price = Number(target.value.replace(/\D/g, ''));
     setProductList(copyArr);
   };
 
-  const onSearchProduct = (value) => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: "ACTIVE" }));
-  }
+  const onSearchProduct = value => {
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
+  };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
@@ -148,17 +147,26 @@ const CreateWarehouseExportProvider = () => {
     }
   }, [initialState.updatingSuccess]);
 
+  const editAlert = (values, { setSubmitting, setErrors }) => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn tạo phiếu này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: onSubmit(values, { setSubmitting, setErrors })
+        },
+        {
+          label: 'Hủy'
+        }
+      ]
+    });
+  };
+
   return (
     <CCard>
-      <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit} innerRef={formikRef}>
-        {({
-          values,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          setFieldValue,
-          handleReset
-        }) => (
+      <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={editAlert} innerRef={formikRef}>
+        {({ values, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
               <CCardHeader>
@@ -169,14 +177,14 @@ const CreateWarehouseExportProvider = () => {
                   <CCol sm={4}>
                     <CLabel htmlFor="lastName">Chọn Kho</CLabel>
                     <Select
-                      onChange={(item) => {
+                      onChange={item => {
                         setFieldValue('store', item.value);
                         onSelectWarehouse(item.value);
                       }}
                       placeholder=""
-                      options={warehouses.map((item) => ({
+                      options={warehouses.map(item => ({
                         value: item,
-                        label: `${item.name}`,
+                        label: `${item.name}`
                       }))}
                     />
                     {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
@@ -216,14 +224,14 @@ const CreateWarehouseExportProvider = () => {
                   <CCol sm={4}>
                     <CLabel htmlFor="lastName">Chọn nhà cung cấp</CLabel>
                     <Select
-                      onChange={(item) => {
+                      onChange={item => {
                         setFieldValue('provider', item.value);
                         setSelectedImportWarehouse(item.value);
                       }}
                       placeholder=""
-                      options={providers.map((item) => ({
+                      options={providers.map(item => ({
                         value: item,
-                        label: `${item.name}`,
+                        label: `${item.name}`
                       }))}
                     />
                   </CCol>
@@ -273,24 +281,24 @@ const CreateWarehouseExportProvider = () => {
                     {productList.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{width: 500}}>
+                          <td style={{ width: 500 }}>
                             <Select
                               value={{
                                 value: item,
-                                label: item?.product?.name,
+                                label: item?.product?.name
                               }}
                               onInputChange={onSearchProduct}
-                              onChange={(event) => onSelectedProduct(event, index)}
+                              onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
-                              options={products.map((item) => ({
+                              options={products.map(item => ({
                                 value: item,
-                                label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`,
+                                label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`
                               }))}
                             />
                           </td>
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
-                          <td style={{width: 100}}>
+                          <td style={{ width: 100 }}>
                             {item.followIndex >= 0 ? (
                               item.quantity
                             ) : (
@@ -299,7 +307,7 @@ const CreateWarehouseExportProvider = () => {
                                 min={1}
                                 name="code"
                                 id="code"
-                                onChange={(event) => onChangeQuantity(event, index)}
+                                onChange={event => onChangeQuantity(event, index)}
                                 onBlur={handleBlur}
                                 value={item.quantity}
                               />
@@ -309,20 +317,20 @@ const CreateWarehouseExportProvider = () => {
                             {
                               <MaskedInput
                                 mask={currencyMask}
-                                onChange={(event) => onChangePrice(event, index)}
+                                onChange={event => onChangePrice(event, index)}
                                 value={
-                                  typeof productList[index].price !== 'number' ?
-                                    new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(
-                                        productList[index].price,
-                                    ) :
-                                    productList[index].price
+                                  typeof productList[index].price !== 'number'
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                        productList[index].price
+                                      )
+                                    : productList[index].price
                                 }
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
                           </td>
 
-                          <td style={{width: 100}}>
+                          <td style={{ width: 100 }}>
                             <CButton
                               color="danger"
                               variant="outline"
@@ -377,11 +385,11 @@ const CreateWarehouseExportProvider = () => {
                           </td>
                           <td className="right">
                             {productList
-                                .reduce((sum, current) => sum + current.price * current.quantity, 0)
-                                .toLocaleString('it-IT', {
-                                  style: 'currency',
-                                  currency: 'VND',
-                                })}
+                              .reduce((sum, current) => sum + current.price * current.quantity, 0)
+                              .toLocaleString('it-IT', {
+                                style: 'currency',
+                                currency: 'VND'
+                              })}
                           </td>
                         </tr>
                       </tbody>

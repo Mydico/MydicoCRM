@@ -22,7 +22,8 @@ import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { ReceiptStatus } from '../../domain/enumeration/receipt-status';
 import { User } from '../../domain/user.entity';
-import { Like } from 'typeorm';
+import { In, Like } from 'typeorm';
+import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/receipts')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -31,7 +32,7 @@ import { Like } from 'typeorm';
 export class ReceiptController {
   logger = new Logger('ReceiptController');
 
-  constructor(private readonly receiptService: ReceiptService) {}
+  constructor(private readonly receiptService: ReceiptService, private readonly departmentService: DepartmentService) {}
 
   @Get('/')
   @Roles(RoleType.USER)
@@ -42,19 +43,25 @@ export class ReceiptController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Receipt[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = {};
+    const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter[item] = Like(`%${req.query[item]}%`);
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
+    let departmentVisible = [];
+    const currentUser = req.user as User;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    filter.push({ department: In(departmentVisible) });
     const [results, count] = await this.receiptService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
-      where: {
-        ...filter
-      }
+      where: filter
     });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);

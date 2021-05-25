@@ -6,6 +6,7 @@ import MainChart from '../../components/charts/MainChartExample.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDebtDashboard, getIncomeDashboard } from './dashboard.api.js';
 import { getStyle, hexToRgba } from '@coreui/utils';
+import { userSafeSelector } from '../login/authenticate.reducer.js';
 
 const WidgetsDropdown = lazy(() => import('../../components/widgets/WidgetsDropdown.js'));
 const brandSuccess = getStyle('success') || '#4dbd74';
@@ -16,7 +17,7 @@ const Dashboard = () => {
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [debt, setDebt] = useState(0);
   const [total, setTotal] = useState(0);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const [mode, setMode] = useState('week');
   const transformData = data => {
     return data
@@ -27,10 +28,14 @@ const Dashboard = () => {
       }));
   };
 
+  const memotransformData = React.useCallback(
+    (items) => transformData(items),
+    []
+  );
   const getData = (startDate, endDate) => {
     dispatch(getIncomeDashboard({ userId: account.id, startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        const sum = transformData(data.payload).reduce(
+        const sum = memotransformData(data.payload).reduce(
           (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),
           {}
         );
@@ -39,7 +44,7 @@ const Dashboard = () => {
     });
     dispatch(getIncomeDashboard({ userId: account.id, type: 'ORDER', startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        const sum = transformData(data.payload).reduce(
+        const sum = memotransformData(data.payload).reduce(
           (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),
           {}
         );
@@ -48,7 +53,7 @@ const Dashboard = () => {
     });
     dispatch(getDebtDashboard({ userId: account.id, startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        const sum = transformData(data.payload).reduce(
+        const sum = memotransformData(data.payload).reduce(
           (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),
           {}
         );
@@ -81,6 +86,11 @@ const Dashboard = () => {
         break;
     }
   }, [mode]);
+
+  const memoIncomeTotal = React.useMemo(() => incomeTotal, [incomeTotal]);
+  const memoTotal = React.useMemo(() => total, [total]);
+  const memoDebt = React.useMemo(() => debt, [debt]);
+
   return (
     <>
       <WidgetsDropdown />
@@ -116,9 +126,9 @@ const Dashboard = () => {
               </CButtonGroup>
             </CCol>
           </CRow>
-          <MainChart data={incomeTotal} name="Doanh thu thuần" color={brandSuccess} style={{ height: '300px', marginTop: '40px' }} />
-          <MainChart data={total} name="Doanh thu" color={brandInfo} style={{ height: '300px', marginTop: '40px' }} />
-          <MainChart data={debt} name="Công nợ" color={brandDanger} style={{ height: '300px', marginTop: '40px' }} />
+          <MainChart data={memoIncomeTotal} name="Doanh thu thuần" color={brandSuccess} style={{ height: '300px', marginTop: '40px' }} />
+          <MainChart data={memoTotal} name="Doanh thu" color={brandInfo} style={{ height: '300px', marginTop: '40px' }} />
+          <MainChart data={memoDebt} name="Công nợ" color={brandDanger} style={{ height: '300px', marginTop: '40px' }} />
         </CCardBody>
       </CCard>
 

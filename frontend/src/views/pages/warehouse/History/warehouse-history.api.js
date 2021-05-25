@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const getStoreHistory = createAsyncThunk(
     'api/store-histories',
-    async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
+    async (params = {page: 0, size: 20, sort: 'createdDate,DESC'}, thunkAPI) => {
       try {
         const result = await axios.get('api/store-histories', {params: params});
         return {data: result.data, total: result.headers['x-total-count']};

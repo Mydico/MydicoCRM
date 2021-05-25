@@ -22,11 +22,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getPromotion, updatePromotion } from './promotion.api.js';
 import { globalizedPromotionSelectors, reset } from './promotion.reducer.js';
 import { useHistory } from 'react-router-dom';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
+const { selectAll } = globalizedPromotionSelectors;
+
 import moment from 'moment';
 const Promotion = props => {
   const [details, setDetails] = useState([]);
   const selectedPro = useRef({ id: null, isLock: false });
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.promotion);
   const [activePage, setActivePage] = useState(1);
@@ -39,10 +43,9 @@ const Promotion = props => {
   }, []);
 
   useEffect(() => {
-    if (activePage > 1) dispatch(getPromotion({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
+    if (activePage > 1) dispatch(getPromotion({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
   }, [activePage]);
 
-  const { selectAll } = globalizedPromotionSelectors;
   const Promotions = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
@@ -127,7 +130,7 @@ const Promotion = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getPromotion({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getPromotion({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 
@@ -142,6 +145,12 @@ const Promotion = props => {
   const lockPromotion = () => {
     dispatch(updatePromotion({ id: selectedPro.current.id, isLock: !selectedPro.current.isLock }));
   };
+
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(Promotions), [Promotions]);
 
   return (
     <CCard>
@@ -163,7 +172,7 @@ const Promotion = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(Promotions)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

@@ -78,6 +78,68 @@ export class OrderController {
     return res.send(created);
   }
 
+  @Put('/approve')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Order
+  })
+  async approve(@Req() req: Request, @Res() res: Response, @Body() order: Order): Promise<Response> {
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'Order', order.id);
+    const currentUser = req.user as User;
+    order.lastModifiedBy = currentUser.login;
+    return res.send(await this.orderService.update(order));
+  }
+
+  @Put('/cancel')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Order
+  })
+  async cancel(@Req() req: Request, @Res() res: Response, @Body() order: Order): Promise<Response> {
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'Order', order.id);
+    const currentUser = req.user as User;
+    order.lastModifiedBy = currentUser.login;
+    return res.send(await this.orderService.update(order));
+  }
+
+  @Put('/delete')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Order
+  })
+  async delete(@Req() req: Request, @Res() res: Response, @Body() order: Order): Promise<Response> {
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'Order', order.id);
+    const currentUser = req.user as User;
+    order.lastModifiedBy = currentUser.login;
+    return res.send(await this.orderService.update(order));
+  }
+
+  @Put('/create-cod')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Order
+  })
+  async createCOD(@Req() req: Request, @Res() res: Response, @Body() order: Order): Promise<Response> {
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'Order', order.id);
+    const currentUser = req.user as User;
+    order.lastModifiedBy = currentUser.login;
+    if (order.status === OrderStatus.CREATE_COD) {
+      const canExport = await this.orderService.canExportStore(order);
+      if (!canExport) {
+        throw new HttpException('Sản phẩm trong kho không đủ để tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+    }
+    return res.send(await this.orderService.update(order));
+  }
+
   @Put('/status')
   @Roles(RoleType.USER)
   @ApiResponse({

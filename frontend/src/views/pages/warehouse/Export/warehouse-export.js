@@ -10,6 +10,8 @@ import { WarehouseImportStatus, WarehouseImportType } from './contants.js';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import moment from 'moment';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -18,7 +20,7 @@ const mappingStatus = {
 const WarehouseImport = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.warehouseImport);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
@@ -29,7 +31,7 @@ const WarehouseImport = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getWarehouseExport({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getWarehouseExport({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
   const { selectAll } = globalizedWarehouseImportSelectors;
@@ -125,8 +127,8 @@ const WarehouseImport = props => {
   };
 
   const onFilterColumn = value => {
-    if (value) {
-      dispatch(getWarehouseExport({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getWarehouseExport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 
@@ -147,13 +149,13 @@ const WarehouseImport = props => {
   };
 
   const rejectTicket = bill => () => {
-    const data = { id: bill.id, status: WarehouseImportStatus.REJECTED };
-    dispatch(updateWarehouseImport(data));
+    const data = { id: bill.id, status: WarehouseImportStatus.REJECTED, action: cancel };
+    dispatch(updateWarehouseStatusImport(data));
   };
 
   const approveTicket = bill => () => {
-    const data = { id: bill.id, status: WarehouseImportStatus.APPROVED };
-    dispatch(updateWarehouseImport(data));
+    const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, action: approve };
+    dispatch(updateWarehouseStatusImport(data));
   };
 
   const renderButtonStatus = item => {
@@ -212,12 +214,11 @@ const WarehouseImport = props => {
     }
   };
 
-  useEffect(() => {
-    if (initialState.updatingSuccess) {
-      dispatch(getWarehouseExport());
-      dispatch(reset());
-    }
-  }, [initialState.updatingSuccess]);
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(warehouses), [warehouses]);
 
   return (
     <CCard>
@@ -239,7 +240,7 @@ const WarehouseImport = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(warehouses)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

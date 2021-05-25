@@ -3,13 +3,14 @@ import { CCardBody, CBadge, CButton, CDataTable, CCard, CCardHeader, CRow, CPagi
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getReceipt, updateReceipt } from './receipt.api.js';
+import { getReceipt, updateReceiptStatus } from './receipt.api.js';
 import { useHistory } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { globalizedReceiptsSelectors, reset } from './receipt.reducer.js';
 import { ReceiptStatus } from './constant.js';
 import moment from 'moment';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
 const getBadge = status => {
   switch (status) {
     case 'APPROVED':
@@ -27,9 +28,11 @@ const mappingStatus = {
   APPROVED: 'ĐÃ DUYỆT',
   REJECTED: 'ĐÃ HỦY'
 };
+const { selectAll } = globalizedReceiptsSelectors;
+
 const Receipt = props => {
   const [details, setDetails] = useState([]);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.receipt);
   const [activePage, setActivePage] = useState(1);
@@ -41,10 +44,9 @@ const Receipt = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getReceipt({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getReceipt({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
-  const { selectAll } = globalizedReceiptsSelectors;
   const warehouses = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
@@ -96,8 +98,8 @@ const Receipt = props => {
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
   const onFilterColumn = value => {
-    if (value) {
-      dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 
@@ -121,13 +123,13 @@ const Receipt = props => {
   };
 
   const rejectTicket = receipt => () => {
-    const data = { id: receipt.id, status: ReceiptStatus.REJECTED };
-    dispatch(updateReceipt(data));
+    const data = { id: receipt.id, status: ReceiptStatus.REJECTED, action: cancel };
+    dispatch(updateReceiptStatus(data));
   };
 
   const approveTicket = receipt => () => {
-    const data = { id: receipt.id, status: ReceiptStatus.APPROVED };
-    dispatch(updateReceipt(data));
+    const data = { id: receipt.id, status: ReceiptStatus.APPROVED, action: approve };
+    dispatch(updateReceiptStatus(data));
   };
 
   const alertFunc = (item, message, operation) => {
@@ -199,6 +201,9 @@ const Receipt = props => {
     }
   };
 
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
+  const memoListed = React.useMemo(() => memoComputedItems(warehouses), [warehouses]);
+
   return (
     <CCard>
       <CCardHeader>
@@ -214,7 +219,7 @@ const Receipt = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(warehouses)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

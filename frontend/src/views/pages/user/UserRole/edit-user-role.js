@@ -44,7 +44,8 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA',
 };
-
+const {selectById} = globalizedUserRoleSelectors;
+const {selectAll: selectAllPermissionGroups} = globalizedPermissionGroupsSelectors;
 
 const EditUserRole = (props) => {
   const {initialState} = useSelector((state) => state.userRole);
@@ -56,9 +57,9 @@ const EditUserRole = (props) => {
     name: '',
   });
 
-  const {selectById} = globalizedUserRoleSelectors;
+
+
   const userRoles = useSelector((state) => selectById(state, props.match.params.id));
-  const {selectAll: selectAllPermissionGroups} = globalizedPermissionGroupsSelectors;
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
   const [initValues, setInitValues] = useState(null);
@@ -72,7 +73,7 @@ const EditUserRole = (props) => {
 
   useEffect(() => {
     dispatch(getDetailUserRole({ id: props.match.params.id, dependency: true }));
-    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       dispatch(reset());
     };
@@ -83,7 +84,6 @@ const EditUserRole = (props) => {
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(updateUserRole(values));
-    resetForm();
   };
 
   useEffect(() => {

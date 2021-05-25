@@ -7,15 +7,19 @@ import { getUser } from './user.api.js';
 import { globalizedUserSelectors, reset } from './user.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectAll } = globalizedUserSelectors;
+
 const User = props => {
   const isInitialMount = useRef(true);
   const [details, setDetails] = useState([]);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.user);
   const [activePage, setActivePage] = useState(1);
@@ -35,11 +39,10 @@ const User = props => {
 
   useEffect(() => {
     if (!isInitialMount.current) {
-      dispatch(getUser({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+      dispatch(getUser({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
     }
   }, [activePage, size]);
 
-  const { selectAll } = globalizedUserSelectors;
   const users = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
@@ -116,9 +119,12 @@ const User = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getUser({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
+
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
+  const memoListed = React.useMemo(() => memoComputedItems(users), [users]);
 
   return (
     <CCard>
@@ -135,7 +141,7 @@ const User = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(users)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

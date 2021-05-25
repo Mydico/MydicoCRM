@@ -76,7 +76,7 @@ const Transaction = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 
@@ -111,6 +111,12 @@ const Transaction = props => {
     }
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(debt);
   };
+
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(initialState.transactions), [initialState.transactions]);
 
   return (
     <div>
@@ -148,7 +154,7 @@ const Transaction = props => {
         </CCardHeader>
         <CCardBody>
           <CDataTable
-            items={computedItems(initialState.transactions)}
+            items={memoListed}
             fields={fields}
             columnFilter
             tableFilter

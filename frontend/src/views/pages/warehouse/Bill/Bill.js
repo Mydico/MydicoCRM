@@ -39,6 +39,8 @@ const mappingStatus = {
   SHIPPING: 'ĐANG VẬN CHUYỂN',
   SUCCESS: 'GIAO THÀNH CÔNG'
 };
+const { selectAll } = globalizedBillsSelectors;
+const { selectAll: selectUserAll } = globalizedUserSelectors;
 const Bill = props => {
   const selectedBill = useRef(null);
   const selectedTransporter = useRef(null);
@@ -53,12 +55,11 @@ const Bill = props => {
     dispatch(reset());
     dispatch(getUser());
   }, []);
-  const { selectAll } = globalizedBillsSelectors;
-  const { selectAll: selectUserAll } = globalizedUserSelectors;
+
   const bills = useSelector(selectAll);
   const users = useSelector(selectUserAll);
   useEffect(() => {
-    dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
+    dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
   }, [activePage]);
 
   const computedItems = items => {
@@ -144,7 +145,7 @@ const Bill = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getBill({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getBill({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 
@@ -161,12 +162,12 @@ const Bill = props => {
   }, [initialState.updatingSuccess]);
 
   const approveBill = bill => () => {
-    const data = { id: bill.id, status: BillStatus.APPROVED };
+    const data = { id: bill.id, status: BillStatus.APPROVED, action: approve };
     dispatch(updateBill(data));
   };
 
   const rejectBill = bill => () => {
-    const data = { id: bill.id, status: BillStatus.REJECTED };
+    const data = { id: bill.id, status: BillStatus.REJECTED, action: cancel };
     dispatch(updateBill(data));
   };
 
@@ -174,7 +175,8 @@ const Bill = props => {
     dispatch(
       updateBill({
         id: bill.id,
-        status: BillStatus.SHIPPING
+        status: BillStatus.SHIPPING,
+        action: shipping
       })
     );
   };
@@ -183,7 +185,8 @@ const Bill = props => {
     dispatch(
       updateBill({
         id: bill.id,
-        status: BillStatus.SUCCESS
+        status: BillStatus.SUCCESS,
+        action: complete
       })
     );
   };
@@ -194,8 +197,8 @@ const Bill = props => {
   };
 
   const deleteBill = bill => () => {
-    bill.status = BillStatus.DELETED;
-    dispatch(updateBill(bill));
+    const data = { id: bill.id, status: BillStatus.DELETED, action: 'delete' };
+    dispatch(updateBill(data));
   };
 
   const alertAction = (item, operation, message) => {
@@ -369,6 +372,9 @@ const Bill = props => {
     }
   };
 
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
+  const memoListed = React.useMemo(() => memoComputedItems(bills), [bills]);
+
   return (
     <CCard>
       <CCardHeader>
@@ -376,16 +382,16 @@ const Bill = props => {
         {/* <CButton color="primary" className="mb-2">
          Thêm mới khách hàng
         </CButton> */}
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateBill}>
+        {/* <CButton color="success" variant="outline" className="ml-3" onClick={toCreateBill}>
           <CIcon name="cil-plus" /> Thêm mới
-        </CButton>
+        </CButton> */}
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="customertypes.csv" target="_blank">
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(bills)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

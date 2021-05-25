@@ -36,6 +36,8 @@ const validationSchema = function() {
         .required('Tên không để trống'),
   });
 };
+const {selectById} = globalizedproductBrandsSelectors;
+
 const CreateProductBrand = (props) => {
   const {initialState} = useSelector((state) => state.productBrand);
   const initialValues = {
@@ -45,7 +47,6 @@ const CreateProductBrand = (props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const {selectById} = globalizedproductBrandsSelectors;
   const productBrands = useSelector((state) => selectById(state, props.match.params.id));
 
   const [initValues, setInitValues] = useState(null);

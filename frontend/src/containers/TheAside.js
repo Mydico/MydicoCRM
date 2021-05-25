@@ -17,11 +17,13 @@ import {
 } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { setAsideShow } from '../App.reducer';
+import { userSafeSelector } from '../views/pages/login/authenticate.reducer';
+
 const TheAside = () => {
   const show = useSelector(state => state.app.asideShow);
   const dispatch = useDispatch();
   const setState = state => dispatch(setAsideShow(state));
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
 
   return (
     <CSidebar aside colorScheme="light" size="lg" overlaid show={show} onShowChange={state => setState(state)}>

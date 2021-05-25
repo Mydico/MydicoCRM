@@ -37,6 +37,8 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 const validationSchema = function(values) {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống'),
@@ -44,6 +46,9 @@ const validationSchema = function(values) {
   });
 };
 
+const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
+const { selectAll: selectAllProduct } = globalizedProductSelectors;
+const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -52,12 +57,8 @@ export const mappingStatus = {
 
 const CreateWarehouse = () => {
   const { initialState } = useSelector(state => state.warehouseImport);
-  const {} = useSelector(state => state.customer);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
 
-  const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
-  const { selectAll: selectAllProduct } = globalizedProductSelectors;
-  const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -80,8 +81,8 @@ const CreateWarehouse = () => {
 
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const onSubmit = (values, {}) => () => {
@@ -93,13 +94,14 @@ const CreateWarehouse = () => {
     );
     values.reduceMoney = productList.reduce((sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100, 0);
     values.type = WarehouseImportType.RETURN;
+    values.department = { id: account.department?.id || null};
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
   };
 
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
     }, 1000),
     []
   );
@@ -109,7 +111,7 @@ const CreateWarehouse = () => {
   };
 
   const onSearchCustomer = value => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, address: value, contactName: value }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value }));
   };
 
   const onSelectCustomer = ({ value }) => {

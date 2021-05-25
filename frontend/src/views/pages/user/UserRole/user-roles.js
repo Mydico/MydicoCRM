@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserRole } from './user-roles.api.js';
 import { globalizedUserRoleSelectors } from './user-roles.reducer.js';
 import { useHistory } from 'react-router-dom';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import moment from 'moment';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -15,7 +16,7 @@ const mappingStatus = {
 const UserRole = props => {
   const isInitialMount = useRef(true);
   const [details, setDetails] = useState([]);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.user);
   const [activePage, setActivePage] = useState(1);
@@ -30,7 +31,7 @@ const UserRole = props => {
 
   useEffect(() => {
     if (!isInitialMount.current) {
-      dispatch(getUserRole({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+      dispatch(getUserRole({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
     }
   }, [activePage, size]);
 
@@ -104,7 +105,7 @@ const UserRole = props => {
 
   const onFilterColumn = value => {
     if (!isInitialMount.current) {
-      dispatch(getUserRole({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getUserRole({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 

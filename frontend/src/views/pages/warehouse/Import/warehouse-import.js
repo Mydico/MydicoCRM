@@ -22,11 +22,13 @@ const mappingType = {
   RETURN: 'Nhập trả',
   IMPORT_FROM_STORE: 'Nhập từ kho khác'
 };
+const { selectAll } = globalizedWarehouseImportSelectors;
+
 const WarehouseImport = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.warehouseImport);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(10);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -34,10 +36,9 @@ const WarehouseImport = props => {
   }, []);
 
   useEffect(() => {
-      dispatch(getWarehouseImport({ page: activePage - 1, size, sort: 'id,desc' }));
+      dispatch(getWarehouseImport({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
-  const { selectAll } = globalizedWarehouseImportSelectors;
   const warehouses = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
@@ -91,19 +92,6 @@ const WarehouseImport = props => {
     }
   ];
 
-  const fieldsDetail = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'productName', label: 'Tên sản phẩm', _style: { width: '10%' } },
-    { key: 'unit', label: 'Đơn vị', _style: { width: '10%' } },
-    { key: 'volume', label: 'Dung tích', _style: { width: '10%' } },
-    { key: 'quantity', label: 'Số lượng', _style: { width: '10%' } }
-  ];
-
   const getBadge = status => {
     switch (status) {
       case WarehouseImportStatus.APPROVED:
@@ -135,8 +123,8 @@ const WarehouseImport = props => {
   };
 
   const onFilterColumn = value => {
-    if (value) {
-      dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+    if (Object.keys(value).length > 0) {
+      dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 
@@ -157,12 +145,12 @@ const WarehouseImport = props => {
   };
 
   const rejectTicket = bill => () => {
-    const data = { id: bill.id, status: WarehouseImportStatus.REJECTED };
+    const data = { id: bill.id, status: WarehouseImportStatus.REJECTED, action: cancel };
     dispatch(updateWarehouseStatusImport(data));
   };
 
   const approveTicket = bill => () => {
-    const data = { id: bill.id, status: WarehouseImportStatus.APPROVED };
+    const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, action: approve };
     dispatch(updateWarehouseStatusImport(data));
   };
 
@@ -225,6 +213,13 @@ const WarehouseImport = props => {
     }
   }, [initialState.updatingSuccess]);
 
+
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(warehouses), [warehouses]);
+
   return (
     <CCard>
       <CCardHeader>
@@ -241,7 +236,7 @@ const WarehouseImport = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(warehouses)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

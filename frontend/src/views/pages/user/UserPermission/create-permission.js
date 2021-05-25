@@ -57,7 +57,7 @@ const CreatePermissionGroups = () => {
   };
 
   useEffect(() => {
-    dispatch(getPermissionType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPermissionType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       dispatch(reset());
     };
@@ -85,7 +85,6 @@ const CreatePermissionGroups = () => {
     }
     dispatch(fetching());
     dispatch(creatingPermissionGroups(values));
-    resetForm();
   };
 
   const onCheck = (setCheckboxFunc, checkboxValue) => {

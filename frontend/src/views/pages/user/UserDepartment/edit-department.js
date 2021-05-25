@@ -31,7 +31,8 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
-
+const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
+const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
 const EditDepartment = props => {
   const { initialState } = useSelector(state => state.department);
 
@@ -42,10 +43,8 @@ const EditDepartment = props => {
     name: ''
   });
 
-  const { selectById } = globalizedDepartmentSelectors;
+
   const department = initialState.detail;
-  const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
-  const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
 
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const departments = useSelector(selectAllDepartment);
@@ -60,9 +59,9 @@ const EditDepartment = props => {
   }, [department]);
 
   useEffect(() => {
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailDepartment({ id: props.match.params.id, dependency: true }));
-    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => {
@@ -70,7 +69,6 @@ const EditDepartment = props => {
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(updateDepartment(values));
-    resetForm();
   };
 
   useEffect(() => {

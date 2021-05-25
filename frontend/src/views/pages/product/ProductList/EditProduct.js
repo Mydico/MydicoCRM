@@ -40,7 +40,8 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
-
+const {selectById} = globalizedProductSelectors;
+const {selectAll} = globalizedproductGroupsSelectors;
 
 const EditProduct = (props) => {
   const {initialState} = useSelector((state) => state.product);
@@ -76,14 +77,13 @@ const EditProduct = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [initValues, setInitValues] = useState(null);
-  const {selectById} = globalizedProductSelectors;
-  const {selectAll} = globalizedproductGroupsSelectors;
+
   const product = useSelector((state) => selectById(state, props.match.params.id));
   const [initImages, setInitImages] = useState([]);
   const productGroup = useSelector(selectAll);
   useEffect(() => {
     dispatch(getDetailProduct({ id: props.match.params.id, dependency: true }));
-    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   useEffect(() => {
@@ -110,7 +110,6 @@ const EditProduct = (props) => {
     dispatch(fetching());
     values.image = JSON.stringify(images.current);
     dispatch(updateProduct(values));
-    resetForm();
   };
 
   const getUploadParams = () => {

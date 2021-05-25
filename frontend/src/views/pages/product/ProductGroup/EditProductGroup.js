@@ -51,7 +51,8 @@ const validate = (getValidationSchema) => {
     }
   };
 };
-
+const {selectAll} = globalizedproductBrandsSelectors;
+const {selectById} = globalizedproductGroupsSelectors;
 
 const CreateProductGroup = (props) => {
   const {initialState} = useSelector((state) => state.productGroup);
@@ -61,7 +62,8 @@ const CreateProductGroup = (props) => {
     productBrand: null,
     description: '',
   });
-  const {selectAll} = globalizedproductBrandsSelectors;
+
+
   const productBrand = useSelector(selectAll);
 
   useEffect(() => {
@@ -72,12 +74,11 @@ const CreateProductGroup = (props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const {selectById} = globalizedproductGroupsSelectors;
   const productGroups = useSelector((state) => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
-    dispatch(getProductBrand({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProductBrand({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailProductGroup({ id: props.match.params.id, dependency: true }));
     return () => {
       dispatch(reset());

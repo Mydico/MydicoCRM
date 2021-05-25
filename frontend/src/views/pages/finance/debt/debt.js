@@ -9,6 +9,8 @@ import {useHistory} from 'react-router-dom';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import {globalizedDebtsSelectors, reset} from './debt.reducer.js';
 import moment from 'moment'
+const {selectAll} = globalizedDebtsSelectors;
+
 const Debt = (props) => {
   const [,] = useState([]);
   const {initialState} = useSelector((state) => state.debt);
@@ -21,10 +23,9 @@ const Debt = (props) => {
   }, []);
 
   useEffect(() => {
-      dispatch(getCustomerDebts({page: activePage - 1, size, sort: 'createdDate,desc'}));
+      dispatch(getCustomerDebts({page: activePage - 1, size, sort: 'createdDate,DESC'}));
   }, [activePage, size]);
 
-  const {selectAll} = globalizedDebtsSelectors;
   const debts = useSelector(selectAll);
   const computedItems = (items) => {
     return items.map((item) => {
@@ -67,13 +68,19 @@ const Debt = (props) => {
 
   const onFilterColumn = (value) => {
     if (value) {
-      dispatch(getCustomerDebts({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+      dispatch(getCustomerDebts({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
     }
   };
 
   const toDetail = (item) => {
     history.push({pathname: `${props.match.url}/${item.customer.id}/detail`, state: {customer: item}});
   };
+
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(debts), [debts]);
 
   return (
     <CCard>
@@ -85,7 +92,7 @@ const Debt = (props) => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(debts)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

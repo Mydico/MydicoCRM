@@ -21,6 +21,8 @@ const getBadge = (status) => {
       return 'primary';
   }
 };
+const storeHistorys = useSelector(selectAll);
+
 const StoreHistory = () => {
   const [] = useState([]);
   const {initialState} = useSelector((state) => state.storeHistory);
@@ -33,11 +35,10 @@ const StoreHistory = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(getStoreHistory({page: activePage - 1, size, sort: 'createdDate,desc'}));
+    dispatch(getStoreHistory({page: activePage - 1, size, sort: 'createdDate,DESC'}));
   }, [activePage, size]);
 
   const {selectAll} = globalizedStoreHistorySelectors;
-  const storeHistorys = useSelector(selectAll);
   const computedItems = (items) => {
     return items.map((item) => {
       return {
@@ -66,7 +67,7 @@ const StoreHistory = () => {
 
   const onFilterColumn = (value) => {
     if (value) {
-      dispatch(getStoreHistory({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+      dispatch(getStoreHistory({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
     }
   };
 

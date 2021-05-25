@@ -18,8 +18,8 @@ import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {useDispatch, useSelector} from 'react-redux';
-
-
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import {useHistory} from 'react-router-dom';
 import Select from 'react-select';
 import {globalizedCustomerSelectors} from '../../customer/customer.reducer';
@@ -40,13 +40,13 @@ const validationSchema = function() {
 };
 
 
-
+const {selectAll: selectAllCustomer} = globalizedCustomerSelectors;
+const {selectById} = globalizedReceiptsSelectors;
 
 const EditReceipt = (props) => {
   const formikRef = useRef();
   const {initialState} = useSelector((state) => state.receipt);
-  const {selectAll: selectAllCustomer} = globalizedCustomerSelectors;
-  const {selectById} = globalizedReceiptsSelectors;
+
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -73,19 +73,18 @@ const EditReceipt = (props) => {
   }, [receipt]);
 
   const onSearchCustomer = value => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, address: value, contactName: value }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value }));
   };
 
   useEffect(() => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailReceipt({ id: props.match.params.id, dependency: true }));
   }, []);
 
-  const onSubmit = (values, {   resetForm}) => {
+  const onSubmit = (values, {resetForm}) => () => {
     dispatch(fetching());
     values.money = Number(values.money.replace(/\D/g, ''));
     dispatch(updateReceipt(values));
-    resetForm();
   };
 
   useEffect(() => {
@@ -93,6 +92,22 @@ const EditReceipt = (props) => {
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
+
+  const editAlert = (values, { setSubmitting, setErrors }) => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn chỉnh sửa phiếu thu này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: onSubmit(values, { setSubmitting, setErrors })
+        },
+        {
+          label: 'Hủy'
+        }
+      ]
+    });
+  };
 
   return (
     <CCard>
@@ -104,7 +119,7 @@ const EditReceipt = (props) => {
           initialValues={initValuesState || initialValues}
           enableReinitialize
           validate={validate(validationSchema)}
-          onSubmit={onSubmit}
+          onSubmit={editAlert}
           innerRef={formikRef}
         >
           {({

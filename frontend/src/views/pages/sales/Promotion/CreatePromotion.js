@@ -44,7 +44,8 @@ const validationSchema = function() {
 };
 
 import {validate} from '../../../../shared/utils/normalize';
-
+const {selectAll} = globalizedcustomerTypeSelectors;
+const {selectAll: selectAllProduct} = globalizedProductSelectors;
 
 const CreatePromotion = () => {
   const {initialState} = useSelector((state) => state.promotion);
@@ -59,18 +60,26 @@ const CreatePromotion = () => {
     isLock: false,
     status: PromotionStatus[0].value,
   });
-  const {selectAll} = globalizedcustomerTypeSelectors;
+
+
   const customerType = useSelector(selectAll);
-  const {selectAll: selectAllProduct} = globalizedProductSelectors;
   const products = useSelector(selectAllProduct);
   useEffect(() => {
-    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', status: "ACTIVE" }));
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', status: "ACTIVE" }));
   }, []);
 
   const [productList, setProductList] = useState([]);
-  const [,] = useState(false);
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
+    }, 1000),
+    []
+  );
 
+  const onSearchProduct = value => {
+    debouncedSearchProduct(value);
+  };
   useEffect(() => {
     if (customerType.length > 0) {
       initialValues.current.customerType = customerType[0].id;
@@ -105,7 +114,6 @@ const CreatePromotion = () => {
     values.promotionProduct = productList;
     values.type = 'SHORTTERM';
     dispatch(creatingPromotion(values));
-    resetForm();
   };
 
   useEffect(() => {
@@ -257,6 +265,7 @@ const CreatePromotion = () => {
                           <Select
                             defaultValue={productList[index]?.id}
                             onChange={(event) => onSelectedProduct(event, index)}
+                            onInputChange={onSearchProduct}
                             options={products.map((item) => ({
                               value: item.id,
                               label: `${item.code}-${item.name}`,

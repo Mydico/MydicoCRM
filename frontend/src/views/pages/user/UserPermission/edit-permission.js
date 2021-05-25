@@ -42,6 +42,7 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectById } = globalizedPermissionGroupsSelectors;
 
 const EditPermissionGroups = props => {
   const { initialState } = useSelector(state => state.permission);
@@ -51,7 +52,6 @@ const EditPermissionGroups = props => {
   const history = useHistory();
   const [checkbox, setCheckbox] = useState({});
   const [selectedPermission, setSelectedPermission] = useState([]);
-  const { selectById } = globalizedPermissionGroupsSelectors;
   const perGroup = useSelector(state => selectById(state, props.match.params.id));
 
   const [initValues, setInitValues] = useState(null);
@@ -63,7 +63,7 @@ const EditPermissionGroups = props => {
 
   useEffect(() => {
     dispatch(getDetailPermissionGroups({ id: props.match.params.id, dependency: true }));
-    dispatch(getPermissionType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPermissionType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       dispatch(reset());
     };
@@ -106,7 +106,6 @@ const EditPermissionGroups = props => {
 
     dispatch(fetching());
     dispatch(updatePermissionGroups(values));
-    resetForm();
   };
 
   const onCheck = (setCheckboxFunc, checkboxValue) => {

@@ -169,7 +169,8 @@ export class OrderService {
         bill.code = `VD-${foundedOrder.code}`;
         bill.customer = foundedOrder.customer;
         bill.order = foundedOrder;
-        bill.store = order.store;
+        bill.store = foundedOrder.store;
+        bill.department = foundedOrder.department;
         bill.createdBy = foundedOrder.lastModifiedBy;
         const createdBill = await this.billService.save(bill);
         const latestTransaction = await this.transactionService.findByfields({

@@ -45,14 +45,14 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA',
 };
-
+const {selectAll: selectAllPermissionGroups} = globalizedPermissionGroupsSelectors;
+const {selectAll: selectAllDepartments} = globalizedDepartmentSelectors;
 const CreateDepartment = () => {
   const {initialState} = useSelector((state) => state.department);
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const {selectAll: selectAllPermissionGroups} = globalizedPermissionGroupsSelectors;
-  const {selectAll: selectAllDepartments} = globalizedDepartmentSelectors;
+
 
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const departments = useSelector(selectAllDepartments);
@@ -65,8 +65,8 @@ const CreateDepartment = () => {
   };
 
   useEffect(() => {
-    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       dispatch(reset());
     };
@@ -76,7 +76,6 @@ const CreateDepartment = () => {
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(creatingDepartment(values));
-    resetForm();
   };
 
   useEffect(() => {

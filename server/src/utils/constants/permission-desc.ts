@@ -11,7 +11,13 @@ export const resourceDesc = {
   register: 'Đăng ký',
   'current-user': 'người dùng đang đăng nhập',
   activate: 'kích hoạt',
-  'order-detail': 'chi tiết đơn hàng',
+  approve: 'duyệt',
+  cancel: 'hủy',
+  delete: 'xóa',
+  transporter: 'gán người vận chuyển',
+  complete: 'hoàn thành',
+  shipping: 'xuất kho',
+  'create-cod': 'tạo vận đơn',
   orders: 'đơn hàng',
   account: 'Tài khoản',
   birthday: '',
@@ -38,8 +44,6 @@ export const resourceDesc = {
   facility: 'Cơ sở',
 
   'news-types': 'loại tin tức',
-
-  approve: 'duyệt',
 
   licenses: 'giấy phép',
 
@@ -110,7 +114,7 @@ export const resourceDesc = {
   providers: 'nhà cung cấp',
   'customer-debits': 'công nợ',
   'customer-statuses': 'trạng thái',
-  receipts: 'phiếu thu',
+  receipts: 'phiếu thu'
 };
 
 export const actionDesc = {
@@ -123,7 +127,7 @@ export const actionDesc = {
 export const contentException = [
   {
     method: 'PUT',
-    type: 'contribute-reports',
+    contne: 'contribute-reports',
     replaceContent: 'Tiếp nhận, xử lý'
   },
   {
@@ -132,6 +136,8 @@ export const contentException = [
     replaceContent: 'Phản hồi'
   }
 ];
+
+export const removeExceptional = ['approve', 'delete', 'create-cod', 'cancel','shipping','complete','transporter'];
 
 export const blackList = [
   'histories',

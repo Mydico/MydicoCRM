@@ -39,7 +39,7 @@ export const getTransactionDetail = createAsyncThunk('api/get/transaction-detail
 
 export const getTransaction = createAsyncThunk(
     'api/transactions',
-    async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
+    async (params = {page: 0, size: 20, sort: 'createdDate,DESC'}, thunkAPI) => {
       try {
         const result = await axios.get('api/transactions', {params: params});
         return {data: result.data, total: result.headers['x-total-count']};
@@ -50,7 +50,7 @@ export const getTransaction = createAsyncThunk(
 );
 export const getCustomerDebts = createAsyncThunk(
     'api/customer-debits',
-    async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
+    async (params = {page: 0, size: 20, sort: 'createdDate,DESC'}, thunkAPI) => {
       try {
         const result = await axios.get('api/customer-debits', {params: params});
         return {data: result.data, total: result.headers['x-total-count']};

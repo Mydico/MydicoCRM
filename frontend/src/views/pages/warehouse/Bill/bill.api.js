@@ -21,7 +21,7 @@ export const creatingBill = createAsyncThunk('api/create/bills', async (body, th
 
 export const updateBill = createAsyncThunk('api/update/bills', async (body, thunkAPI) => {
   try {
-    const result = await axios.put('api/bills', body);
+    const result = await axios.put('api/bills/' + body.action, body);
     return { data: result.data, headers: result.headers, statusCode: result.status };
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -37,7 +37,7 @@ export const getBillDetail = createAsyncThunk('api/get/bill-detail', async (bill
   }
 });
 
-export const getBill = createAsyncThunk('api/bills', async (params = { page: 0, size: 20, sort: 'createdDate,desc' }, thunkAPI) => {
+export const getBill = createAsyncThunk('api/bills', async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
   try {
     const result = await axios.get('api/bills', { params: params });
     return { data: result.data, total: result.headers['x-total-count'] };

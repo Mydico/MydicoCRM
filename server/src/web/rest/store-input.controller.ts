@@ -24,7 +24,9 @@ import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { User } from '../../domain/user.entity';
 import { StoreImportStatus } from '../../domain/enumeration/store-import-status';
-import { Like } from 'typeorm';
+import { In, Like } from 'typeorm';
+import { DepartmentService } from '../../service/department.service';
+import { StoreImportType } from '../../domain/enumeration/store-import-type';
 
 @Controller('api/store-inputs')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -33,7 +35,7 @@ import { Like } from 'typeorm';
 export class StoreInputController {
   logger = new Logger('StoreInputController');
 
-  constructor(private readonly storeInputService: StoreInputService) {}
+  constructor(private readonly storeInputService: StoreInputService, private readonly departmentService: DepartmentService) {}
 
   @Get('/export')
   @Roles(RoleType.USER)
@@ -44,19 +46,26 @@ export class StoreInputController {
   })
   async getAllExport(@Req() req: Request, @Res() res): Promise<StoreInput[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = {};
+    const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter[item] = Like(`%${req.query[item]}%`);
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
+    let departmentVisible = [];
+    const currentUser = req.user as User;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    filter.push({ department: In(departmentVisible) });
+    filter.push({ type: In([StoreImportType.EXPORT, StoreImportType.EXPORT_TO_PROVIDER]) });
     const [results, count] = await this.storeInputService.findAndCountExport({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
-      where: {
-        ...filter
-      }
+      where: filter
     });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
@@ -71,19 +80,26 @@ export class StoreInputController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<StoreInput[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = {};
+    const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter[item] = Like(`%${req.query[item]}%`);
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
+    let departmentVisible = [];
+    const currentUser = req.user as User;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    filter.push({ department: In(departmentVisible) });
+    console.log(pageRequest.sort.asOrder())
     const [results, count] = await this.storeInputService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
-      where: {
-        ...filter
-      }
+      where: filter
     });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
@@ -114,6 +130,38 @@ export class StoreInputController {
     const created = await this.storeInputService.save(storeInput);
     HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
     return res.send(created);
+  }
+
+  @Put('/approve')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: StoreInput
+  })
+  async approve(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
+    if (storeInput.status === StoreImportStatus.APPROVED) {
+      const currentUser = req.user as User;
+      storeInput.approver = currentUser;
+    }
+    return res.send(await this.storeInputService.update(storeInput));
+  }
+
+  @Put('/cancel')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: StoreInput
+  })
+  async cancel(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
+    if (storeInput.status === StoreImportStatus.APPROVED) {
+      const currentUser = req.user as User;
+      storeInput.approver = currentUser;
+    }
+    return res.send(await this.storeInputService.update(storeInput));
   }
 
   @Put('/status')

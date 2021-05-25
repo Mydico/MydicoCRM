@@ -5,10 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getProductBrand } from './product-brand.api';
 import { globalizedproductBrandsSelectors, reset } from './product-brand.reducer';
 import { useHistory } from 'react-router-dom';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
+const { selectAll } = globalizedproductBrandsSelectors;
 
 const ProductBrand = props => {
   const [details, setDetails] = useState([]);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.productBrand);
   const [activePage, setActivePage] = useState(1);
@@ -18,10 +21,9 @@ const ProductBrand = props => {
   useEffect(() => {
     dispatch(reset());
   }, []);
-  const { selectAll } = globalizedproductBrandsSelectors;
   const productBrandss = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getProductBrand({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
+    dispatch(getProductBrand({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
   const toggleDetails = index => {
@@ -76,7 +78,7 @@ const ProductBrand = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getProductBrand({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getProductBrand({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 

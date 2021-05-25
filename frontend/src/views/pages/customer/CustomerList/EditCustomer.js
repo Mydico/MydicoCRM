@@ -45,6 +45,9 @@ const validationSchema = function() {
   });
 };
 
+const { selectAll } = globalizedDepartmentSelectors;
+const { selectById } = globalizedCustomerSelectors;
+
 const EditCustomer = props => {
   const ref = useRef(null);
   const { initialState } = useSelector(state => state.customer);
@@ -67,17 +70,16 @@ const EditCustomer = props => {
   const [initValues, setInitValues] = useState(null);
   const [districts, setDistricts] = useState([])
 
-  const { selectAll } = globalizedDepartmentSelectors;
-  const { selectById } = globalizedCustomerSelectors;
+
 
   const departments = useSelector(selectAll);
   const customer = useSelector(state => selectById(state, props.match.params.id));
 
   useEffect(() => {
     dispatch(getDetailCustomer({ id: props.match.params.id, dependency: true }));
-    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
-    dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   useEffect(() => {
@@ -100,7 +102,6 @@ const EditCustomer = props => {
     }
     dispatch(fetching());
     dispatch(updateCustomer(values));
-    resetForm();
   };
 
   useEffect(() => {

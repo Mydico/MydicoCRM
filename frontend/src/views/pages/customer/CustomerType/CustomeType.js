@@ -5,10 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerType } from './customer-type.api';
 import { globalizedcustomerTypeSelectors, reset } from './customer-type.reducer';
 import { useHistory } from 'react-router-dom';
+import { userSafeSelector } from '../../login/authenticate.reducer';
+const { selectAll } = globalizedcustomerTypeSelectors;
 
 const CustomerType = props => {
   const [details, setDetails] = useState([]);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.customerType);
   const [activePage, setActivePage] = useState(1);
@@ -18,10 +20,9 @@ const CustomerType = props => {
   useEffect(() => {
     dispatch(reset());
   }, []);
-  const { selectAll } = globalizedcustomerTypeSelectors;
   const customerTypes = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getCustomerType({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
+    dispatch(getCustomerType({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
   const toggleDetails = index => {
@@ -76,13 +77,15 @@ const CustomerType = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getCustomerType({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getCustomerType({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 
   const toEditCustomerType = typeId => {
     history.push(`${props.match.url}/${typeId}/edit`);
   };
+
+  const memoListed = React.useMemo(() => customerTypes, [customerTypes]);
 
   return (
     <CCard>
@@ -99,7 +102,7 @@ const CustomerType = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={customerTypes}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

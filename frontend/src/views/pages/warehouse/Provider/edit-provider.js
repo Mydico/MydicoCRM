@@ -42,6 +42,7 @@ export const mappingStatus = {
   DELETED: 'ĐÃ XÓA',
 };
 
+const provider = useSelector((state) => selectById(state, props.match.params.id));
 
 const EditProvider = (props) => {
   const {initialState} = useSelector((state) => state.provider);
@@ -56,10 +57,8 @@ const EditProvider = (props) => {
     address: '',
     phone: '',
   });
-  const [,] = useState(null);
-  const [,] = useState(null);
+
   const {selectById} = globalizedProviderSelectors;
-  const provider = useSelector((state) => selectById(state, props.match.params.id));
   const [initValues, setInitValues] = useState(null);
 
   useEffect(() => {
@@ -83,7 +82,6 @@ const EditProvider = (props) => {
         .replace(/đ/g, 'd')
         .replace(/Đ/g, 'D');
     dispatch(creatingProvider(values));
-    resetForm();
   };
 
   useEffect(() => {

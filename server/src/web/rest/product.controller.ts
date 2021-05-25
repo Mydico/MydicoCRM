@@ -46,12 +46,12 @@ export class ProductController {
         filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
-    if(filter.length === 0){
+    if (filter.length === 0) {
       filter = {
         status: 'ACTIVE'
-      }
-    }else{
-      filter[0]['status'] = 'ACTIVE'
+      };
+    } else {
+      filter[0]['status'] = 'ACTIVE';
     }
     const [results, count] = await this.productService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,

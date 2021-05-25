@@ -27,10 +27,12 @@ import Select from 'react-select';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getAllWarehouse, getWarehouse } from '../Warehouse/warehouse.api';
-import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import { getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { getProductInstore, getProductWarehouse } from '../Product/product-warehouse.api';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 const validationSchema = function() {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -44,6 +46,7 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
 
 const CreateReceipt = () => {
   const formikRef = useRef();
@@ -51,10 +54,8 @@ const CreateReceipt = () => {
   const { initialState: initialStateWarehouse } = useSelector(state => state.warehouse);
 
   const {} = useSelector(state => state.customer);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
 
-  const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
-  const { selectAll: selectAllProduct } = globalizedProductSelectors;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -78,10 +79,10 @@ const CreateReceipt = () => {
 
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getAllWarehouse({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getAllWarehouse({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
-  const onSubmit = (values, { resetForm }) => {
+  const onSubmit = (values, { resetForm }) => () => {
     let isValidProduct = true;
     productList.forEach(element => {
       if (element.quantity > element.quantityInStore) {
@@ -92,9 +93,9 @@ const CreateReceipt = () => {
     if (!isValidProduct) return;
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
+    values.department = { id: account.department?.id || null};
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
-    resetForm();
   };
 
   useEffect(() => {
@@ -162,7 +163,7 @@ const CreateReceipt = () => {
 
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
     }, 1000),
     []
   );
@@ -183,9 +184,25 @@ const CreateReceipt = () => {
     }
   }, [initialState.updatingSuccess]);
 
+  const editAlert = (values, { setSubmitting, setErrors }) => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn tạo phiếu này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: onSubmit(values, { setSubmitting, setErrors })
+        },
+        {
+          label: 'Hủy'
+        }
+      ]
+    });
+  };
+
   return (
     <CCard>
-      <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit} innerRef={formikRef}>
+      <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={editAlert} innerRef={formikRef}>
         {({
           values,
 

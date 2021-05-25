@@ -7,6 +7,8 @@ import { globalizedBranchSelectors, reset } from './branch.reducer.js';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import moment from 'moment';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -39,7 +41,7 @@ const Branch = props => {
   }, []);
 
   const { selectAll } = globalizedBranchSelectors;
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const branchs = useSelector(selectAll);
   const [details, setDetails] = useState([]);
@@ -47,7 +49,7 @@ const Branch = props => {
   const [activePage, setActivePage] = useState(1);
 
   useEffect(() => {
-    dispatch(getBranch({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getBranch({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
   const computedItems = items => {
@@ -121,9 +123,15 @@ const Branch = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
+
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(branchs), [branchs]);
 
   return (
     <CCard>
@@ -140,7 +148,7 @@ const Branch = props => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(branchs)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

@@ -32,6 +32,7 @@ import { WarehouseImportType } from './contants';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { validate } from '../../../../shared/utils/normalize';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -47,7 +48,7 @@ export const mappingStatus = {
 
 const EditWarehouseImport = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
 
   const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
   const { selectAll: selectAllProduct } = globalizedProductSelectors;
@@ -76,7 +77,7 @@ const EditWarehouseImport = props => {
 
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
   }, []);
 
@@ -117,7 +118,7 @@ const EditWarehouseImport = props => {
 
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value, status: 'ACTIVE' }));
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
     }, 1000),
     []
   );

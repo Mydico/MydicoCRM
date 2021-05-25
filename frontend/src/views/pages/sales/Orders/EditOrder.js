@@ -35,6 +35,8 @@ import { FormFeedback, Table } from 'reactstrap';
 import { OrderStatus } from './order-status';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object()
@@ -52,11 +54,14 @@ const mappingType = {
   SHORTTERM: 'Ngắn hạn',
   LONGTERM: 'Dài hạn'
 };
-
+const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
+const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
+const { selectAll: selectAllProductInWarehouse } = globalizedProductWarehouseSelectors;
+const { selectById } = globalizedOrdersSelectors;
 const EditOrder = props => {
   const { initialState } = useSelector(state => state.order);
   const { initialState: promotionState } = useSelector(state => state.promotion);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
 
   const initialValues = {
     customer: null,
@@ -70,10 +75,7 @@ const EditOrder = props => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
-  const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
-  const { selectAll: selectAllProductInWarehouse } = globalizedProductWarehouseSelectors;
-  const { selectById } = globalizedOrdersSelectors;
+
 
   const promotions = useSelector(selectAllPromotion);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
@@ -89,7 +91,7 @@ const EditOrder = props => {
   const [showProductPromotion, setShowProductPromotion] = useState(false);
 
   useEffect(() => {
-    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true ,isLock: 0 }));
+    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true ,isLock: 0 }));
     dispatch(getDetailOrder({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
   }, []);
@@ -251,7 +253,7 @@ const EditOrder = props => {
 
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
-      dispatch(getProductWarehouse({ store: selectedWarehouse?.id , page: 0, size: 20, sort: 'createdDate,desc', code: value, name: value }));
+      dispatch(getProductWarehouse({ store: selectedWarehouse?.id , page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value }));
     }, 1000),
     []
   );

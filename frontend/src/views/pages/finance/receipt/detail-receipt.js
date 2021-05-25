@@ -42,19 +42,17 @@ const mappingStatus = {
   APPROVED: 'ĐÃ DUYỆT',
   REJECTED: 'ĐÃ HỦY'
 };
+const { selectById } = globalizedReceiptsSelectors;
 const DetailReceipt = props => {
   const formikRef = useRef();
   const {} = useSelector(state => state.receipt);
-  const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
-  const { selectById } = globalizedReceiptsSelectors;
+
 
   const dispatch = useDispatch();
-  const history = useHistory();
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [initValuesState, setInitValuesState] = useState(null);
 
-  const customers = useSelector(selectAllCustomer);
   const receipt = useSelector(state => selectById(state, props.match.params.receiptId));
 
   const initialValues = {

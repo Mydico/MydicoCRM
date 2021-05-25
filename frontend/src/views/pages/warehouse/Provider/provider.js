@@ -5,6 +5,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProvider } from './provider.api.js';
 import { fetching, globalizedProviderSelectors, reset } from './provider.reducer.js';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 const mappingStatus = {
@@ -12,10 +13,12 @@ const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectAll } = globalizedProviderSelectors;
+
 const Provider = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.provider);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(20);
@@ -26,10 +29,9 @@ const Provider = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getProvider({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getProvider({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
-  const { selectAll } = globalizedProviderSelectors;
   const providers = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
@@ -100,7 +102,7 @@ const Provider = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 

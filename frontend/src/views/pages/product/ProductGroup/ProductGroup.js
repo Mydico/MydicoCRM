@@ -6,9 +6,13 @@ import { getProductGroup } from './product-group.api';
 import { globalizedproductGroupsSelectors, reset } from './product-group.reducer';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+
+const { selectAll } = globalizedproductGroupsSelectors;
+
 const ProductGroup = props => {
   const [details, setDetails] = useState([]);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.productGroup);
   const [activePage, setActivePage] = useState(1);
@@ -18,10 +22,9 @@ const ProductGroup = props => {
   useEffect(() => {
     dispatch(reset());
   }, []);
-  const { selectAll } = globalizedproductGroupsSelectors;
   const productGroups = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getProductGroup({ page: activePage - 1, size: size, sort: 'createdDate,desc' }));
+    dispatch(getProductGroup({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
   const toggleDetails = index => {
@@ -88,7 +91,7 @@ const ProductGroup = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getProductGroup({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getProductGroup({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
 

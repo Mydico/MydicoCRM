@@ -3,6 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne
 import { BaseEntity } from './base/base.entity';
 
 import Customer from './customer.entity';
+import Department from './department.entity';
 import { ReceiptStatus } from './enumeration/receipt-status';
 import { User } from './user.entity';
 
@@ -33,9 +34,8 @@ export default class Receipt extends BaseEntity {
     @Index()
     money: number;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
+    @ManyToOne(type => Department)
+    department? : Department;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

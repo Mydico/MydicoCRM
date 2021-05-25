@@ -6,15 +6,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getProduct } from './product.api.js';
 import { globalizedProductSelectors, reset } from './product.reducer.js';
 import { useHistory } from 'react-router-dom';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import moment from 'moment';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const { selectAll } = globalizedProductSelectors;
+
 const Product = props => {
   const [details, setDetails] = useState([]);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.product);
   const [activePage, setActivePage] = useState(1);
@@ -26,10 +29,9 @@ const Product = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getProduct({ page: activePage - 1, size, sort: 'createdDate,desc' }));
+    dispatch(getProduct({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
-  const { selectAll } = globalizedProductSelectors;
   const products = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
@@ -102,9 +104,15 @@ const Product = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,desc', ...value }));
+      dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
+
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(products), [products]);
 
   return (
     <CCard>
@@ -122,7 +130,7 @@ const Product = props => {
         </CButton>
         <CDataTable
           responsive={true}
-          items={computedItems(products)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

@@ -15,6 +15,8 @@ import CurrencyInput from '../../../components/currency-input/currency-input';
 import { creatingReceipt } from './receipt.api';
 import { fetching } from './receipt.reducer';
 import { getCustomerDebts } from '../debt/debt.api';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 const validationSchema = function() {
@@ -25,11 +27,13 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { userSafeSelector } from '../../login/authenticate.reducer';
+const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 
 const CreateReceipt = () => {
   const formikRef = useRef();
   const { initialState } = useSelector(state => state.receipt);
-  const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
+  const { account } = useSelector(userSafeSelector);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -44,14 +48,14 @@ const CreateReceipt = () => {
   };
 
   useEffect(() => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
-  const onSubmit = (values, { resetForm }) => {
+  const onSubmit = (values, { resetForm }) => () => {
     dispatch(fetching());
     values.money = Number(values.money.replace(/\D/g, ''));
+    values.department = { id: account.department?.id || null};
     dispatch(creatingReceipt(values));
-    resetForm();
   };
 
   useEffect(() => {
@@ -71,13 +75,29 @@ const CreateReceipt = () => {
     }
   }, [initialState.updatingSuccess]);
 
+  const editAlert = (values, { setSubmitting, setErrors }) => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn tạo phiếu thu này?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: onSubmit(values, { setSubmitting, setErrors })
+        },
+        {
+          label: 'Hủy'
+        }
+      ]
+    });
+  };
+
   return (
     <CCard>
       <CCardHeader>
         <CCardTitle>Thêm mới phiếu thu</CCardTitle>
       </CCardHeader>
       <CCardBody>
-        <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit} innerRef={formikRef}>
+        <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={editAlert} innerRef={formikRef}>
           {({
             values,
             errors,

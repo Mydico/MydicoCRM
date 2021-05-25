@@ -21,16 +21,16 @@ export const creatingOrder = createAsyncThunk('api/create/orders', async (body, 
 
 export const updateOrder = createAsyncThunk('api/update/orders', async (body, thunkAPI) => {
   try {
-    const result = await axios.put('api/orders', body);
+    const result = await axios.put('api/orders/', body);
     return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
 
-export const updateStatusOrder = createAsyncThunk('api/update/orders', async (body, thunkAPI) => {
+export const updateStatusOrder = createAsyncThunk('api/update/orders/status', async (body, thunkAPI) => {
   try {
-    const result = await axios.put('api/orders/status', body);
+    const result = await axios.put('api/orders/'+ body.action, body);
     return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -46,7 +46,7 @@ export const getOrderDetail = createAsyncThunk('api/get/order-detail', async (or
   }
 });
 
-export const getOrder = createAsyncThunk('api/orders', async (params = {page: 0, size: 20, sort: 'createdDate,desc'}, thunkAPI) => {
+export const getOrder = createAsyncThunk('api/orders', async (params = {page: 0, size: 20, sort: 'createdDate,DESC'}, thunkAPI) => {
   try {
     const result = await axios.get('api/orders', {params: params});
     return {data: result.data, total: result.headers['x-total-count']};

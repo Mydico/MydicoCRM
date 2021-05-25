@@ -30,7 +30,7 @@ const ProductWarehouse = (props) => {
   }, []);
 
   useEffect(() => {
-    if (!isFirstRender.current) dispatch(getProductWarehouse({page: activePage - 1, size, sort: 'createdDate,desc'}));
+    if (!isFirstRender.current) dispatch(getProductWarehouse({page: activePage - 1, size, sort: 'createdDate,DESC'}));
   }, [activePage, size]);
 
   const {selectAll} = globalizedProductWarehouseSelectors;
@@ -104,9 +104,16 @@ const ProductWarehouse = (props) => {
 
   const onFilterColumn = (value) => {
     if(Object.keys(value).length > 0){
-      if (!isFirstRender.current) dispatch(getProductWarehouse({page: 0, size: size, sort: 'createdDate,desc', ...value}));
+      if (!isFirstRender.current) dispatch(getProductWarehouse({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
     }
   };
+
+
+  const memoComputedItems = React.useCallback(
+    (items) => computedItems(items),
+    []
+  );
+  const memoListed = React.useMemo(() => memoComputedItems(productProductWarehouses), [productProductWarehouses]);
 
   return (
     <CCard>
@@ -118,7 +125,7 @@ const ProductWarehouse = (props) => {
           Tải excel (.csv)
         </CButton>
         <CDataTable
-          items={computedItems(productProductWarehouses)}
+          items={memoListed}
           fields={fields}
           columnFilter
           tableFilter

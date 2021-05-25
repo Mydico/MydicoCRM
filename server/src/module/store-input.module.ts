@@ -8,11 +8,21 @@ import { StoreHistoryModule } from './store-history.module';
 import { StoreInputDetailsModule } from './store-input-details.module';
 import { TransactionModule } from './transaction.module';
 import { OrderModule } from './order.module';
+import { DepartmentModule } from './department.module';
 
 @Module({
-    imports: [CacheModule.register(),TypeOrmModule.forFeature([StoreInputRepository]), ProductQuantityModule, StoreHistoryModule, StoreInputDetailsModule, TransactionModule, OrderModule],
-    controllers: [StoreInputController],
-    providers: [StoreInputService],
-    exports: [StoreInputService],
+  imports: [
+    CacheModule.register(),
+    TypeOrmModule.forFeature([StoreInputRepository]),
+    ProductQuantityModule,
+    StoreHistoryModule,
+    StoreInputDetailsModule,
+    TransactionModule,
+    OrderModule,
+    DepartmentModule
+  ],
+  controllers: [StoreInputController],
+  providers: [StoreInputService],
+  exports: [StoreInputService]
 })
 export class StoreInputModule {}

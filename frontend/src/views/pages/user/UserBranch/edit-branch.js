@@ -31,7 +31,7 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
-
+const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
 const EditBranch = props => {
   const { initialState } = useSelector(state => state.branch);
 
@@ -42,13 +42,10 @@ const EditBranch = props => {
     name: ''
   });
 
-  const { selectById } = globalizedBranchSelectors;
+
   const branch = initialState.detail;
-  const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
-  const { selectAll: selectAllBranch } = globalizedBranchSelectors;
 
   const groupPermissions = useSelector(selectAllPermissionGroups);
-  const branchs = useSelector(selectAllBranch);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
   const [initValues, setInitValues] = useState(null);
 
@@ -60,9 +57,9 @@ const EditBranch = props => {
   }, [branch]);
 
   useEffect(() => {
-    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailBranch({ id: props.match.params.id, dependency: true }));
-    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,desc', dependency: true }));
+    dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => {
@@ -70,7 +67,6 @@ const EditBranch = props => {
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(updateBranch(values));
-    resetForm();
   };
 
   useEffect(() => {

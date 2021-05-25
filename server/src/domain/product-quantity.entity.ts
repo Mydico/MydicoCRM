@@ -5,6 +5,7 @@ import { BaseEntity } from './base/base.entity';
 import Store from './store.entity';
 import Product from './product.entity';
 import Department from './department.entity';
+import { ProductStatus } from './enumeration/product-status';
 
 /**
  * A ProductQuantity.
@@ -23,6 +24,10 @@ export default class ProductQuantity extends BaseEntity {
 
     @ManyToOne(type => Product)
     product: Product;
+
+    @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
+    @Index()
+    status?: ProductStatus;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

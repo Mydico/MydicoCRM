@@ -23,6 +23,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 import { In, Like } from 'typeorm';
 import { User } from '../../domain/user.entity';
 import { DepartmentService } from '../../service/department.service';
+import { ProductStatus } from '../../domain/enumeration/product-status';
 
 @Controller('api/product-quantities')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -44,7 +45,8 @@ export class ProductQuantityController {
     const results = await this.productQuantityService.findByfields({
       where: {
         product: req.query.productId,
-        store: req.query.storeId
+        store: req.query.storeId,
+        status: ProductStatus.ACTIVE
       }
     });
     return res.send(results);
