@@ -107,7 +107,7 @@ export class ProductQuantityController {
       departmentVisible.push(currentUser.department.id);
     }
     const object = {
-      department: In(departmentVisible),
+    department: In(departmentVisible),
       status: Like(`%${req.query['status'] || ''}%`)
     };
     if (req.query['store']) object['store'] = req.query['store'];

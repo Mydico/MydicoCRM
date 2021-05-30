@@ -27,7 +27,6 @@ export class AuthService {
         if (!userFind) {
             throw new HttpException('Tên tài khoản hoặc mật khẩu không đúng', HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        console.log(userFind)
         if (!userFind.activated) {
             throw new HttpException('Tài khoản này chưa kích hoạt', HttpStatus.UNPROCESSABLE_ENTITY);
         }

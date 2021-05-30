@@ -30,11 +30,11 @@ import moment from 'moment';
 const Promotion = props => {
   const [details, setDetails] = useState([]);
   const selectedPro = useRef({ id: null, isLock: false });
+  const [primary, setPrimary] = useState(false);
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.promotion);
   const [activePage, setActivePage] = useState(1);
-  const [primary, setPrimary] = useState(false);
   const [size] = useState(20);
   const dispatch = useDispatch();
   const history = useHistory();
