@@ -51,12 +51,21 @@ export class CustomerDebitController {
     });
     let departmentVisible = [];
     const currentUser = req.user as User;
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
     if (currentUser.department) {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    filter.push({ department: In(departmentVisible) });
+    if (filter.length === 0) {
+      filter['department'] = In(departmentVisible);
+      if(filter['customer']) filter['customer'] = req.query['customer']
+      if (isEmployee) filter[0]['sale'] = currentUser.id;
+    } else {
+      filter[0]['department'] = In(departmentVisible);
+      if(filter[0]['customer']) filter['customer'] = req.query['customer']
+      if (isEmployee) filter[0]['sale'] = currentUser.id;
+    }
     const [results, count] = await this.customerDebitService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,

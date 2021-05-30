@@ -58,8 +58,6 @@ const CreateWarehouseExportProvider = () => {
   const {} = useSelector(state => state.customer);
   const { account } = useSelector(userSafeSelector);
 
-
-
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -83,14 +81,14 @@ const CreateWarehouseExportProvider = () => {
 
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, status: 'ACTIVE' }));
     dispatch(getProvider({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => () => {
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT_TO_PROVIDER;
-    values.department = { id: account.department?.id || null};
+    values.department = { id: account.department?.id || null };
 
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
@@ -138,7 +136,7 @@ const CreateWarehouseExportProvider = () => {
   };
 
   const onSearchProduct = value => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
   };
 
   useEffect(() => {

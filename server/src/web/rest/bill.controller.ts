@@ -119,6 +119,18 @@ export class BillController {
     return res.send(await this.billService.update(bill));
   }
 
+  @Put('/delete')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Bill
+  })
+  async delete(@Res() res: Response, @Body() bill: Bill): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'Bill', bill.id);
+    return res.send(await this.billService.update(bill));
+  }
+
   @Put('/transporter')
   @Roles(RoleType.USER)
   @ApiResponse({

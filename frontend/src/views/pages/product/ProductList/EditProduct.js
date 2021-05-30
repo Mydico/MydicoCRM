@@ -108,6 +108,8 @@ const EditProduct = (props) => {
 
   const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
+    values.price = Number(values.price.replace(/\D/g, ''));
+    values.agentPrice = Number(values.agentPrice.replace(/\D/g, ''));
     values.image = JSON.stringify(images.current);
     dispatch(updateProduct(values));
   };

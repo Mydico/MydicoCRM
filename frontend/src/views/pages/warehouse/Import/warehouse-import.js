@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
@@ -12,6 +12,8 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import moment from 'moment';
 import { Table } from 'reactstrap';
 import { CCol } from '@coreui/react';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import _ from 'lodash'
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -25,6 +27,8 @@ const mappingType = {
 const { selectAll } = globalizedWarehouseImportSelectors;
 
 const WarehouseImport = props => {
+  const { account } = useSelector(userSafeSelector);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.warehouseImport);
   const [activePage, setActivePage] = useState(1);
@@ -36,7 +40,7 @@ const WarehouseImport = props => {
   }, []);
 
   useEffect(() => {
-      dispatch(getWarehouseImport({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
+    dispatch(getWarehouseImport({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
   const warehouses = useSelector(selectAll);
@@ -122,10 +126,20 @@ const WarehouseImport = props => {
     history.push(`${props.match.url}/return/${userId}/edit`);
   };
 
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
+
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value)
   };
 
   const alertFunc = (item, message, operation) => {
@@ -145,12 +159,12 @@ const WarehouseImport = props => {
   };
 
   const rejectTicket = bill => () => {
-    const data = { id: bill.id, status: WarehouseImportStatus.REJECTED, action: cancel };
+    const data = { id: bill.id, status: WarehouseImportStatus.REJECTED, action: 'cancel' };
     dispatch(updateWarehouseStatusImport(data));
   };
 
   const approveTicket = bill => () => {
-    const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, action: approve };
+    const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, action: 'approve' };
     dispatch(updateWarehouseStatusImport(data));
   };
 
@@ -162,43 +176,49 @@ const WarehouseImport = props => {
       case WarehouseImportStatus.WAITING:
         return (
           <CRow>
-            <CButton
-              onClick={() => {
-                item.type === WarehouseImportType.NEW ? toEditWarehouseImport(item.id) : toEditWarehouseReturn(item.id);
-              }}
-              color="warning"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              <CIcon name="cil-pencil" />
-              CHỈNH SỬA
-            </CButton>
-            <CButton
-              onClick={() => {
-                alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu nhập kho này không', approveTicket);
-              }}
-              color="success"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              DUYỆT
-            </CButton>
-            <CButton
-              onClick={() => {
-                alertFunc(item, 'Bạn có chắc chắn muốn từ chối phiếu nhập kho này không', rejectTicket);
-              }}
-              color="danger"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              KHÔNG DUYỆT
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs').length > 0) && (
+              <CButton
+                onClick={() => {
+                  item.type === WarehouseImportType.NEW ? toEditWarehouseImport(item.id) : toEditWarehouseReturn(item.id);
+                }}
+                color="warning"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                <CIcon name="cil-pencil" />
+                CHỈNH SỬA
+              </CButton>
+            )}
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/approve').length > 0) && (
+              <CButton
+                onClick={() => {
+                  alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu nhập kho này không', approveTicket);
+                }}
+                color="success"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                DUYỆT
+              </CButton>
+            )}
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/cancel').length > 0) && (
+              <CButton
+                onClick={() => {
+                  alertFunc(item, 'Bạn có chắc chắn muốn từ chối phiếu nhập kho này không', rejectTicket);
+                }}
+                color="danger"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                KHÔNG DUYỆT
+              </CButton>
+            )}
           </CRow>
         );
       default:
@@ -213,23 +233,23 @@ const WarehouseImport = props => {
     }
   }, [initialState.updatingSuccess]);
 
-
-  const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
-    []
-  );
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(warehouses), [warehouses]);
 
   return (
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách phiếu nhập kho
-        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateWarehouseImport}>
-          <CIcon name="cil-plus" /> Thêm mới phiếu nhập kho
-        </CButton>
-        <CButton color="primary" variant="outline" className="ml-3" onClick={toCreateWarehouseReturn}>
-          <CIcon name="cil-plus" /> Thêm mới phiếu trả hàng
-        </CButton>
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/store-inputs').length > 0) && (
+          <CButton color="success" variant="outline" className="ml-3" onClick={toCreateWarehouseImport}>
+            <CIcon name="cil-plus" /> Thêm mới phiếu nhập kho
+          </CButton>
+        )}
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/store-inputs').length > 0) && (
+          <CButton color="primary" variant="outline" className="ml-3" onClick={toCreateWarehouseReturn}>
+            <CIcon name="cil-plus" /> Thêm mới phiếu trả hàng
+          </CButton>
+        )}
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
@@ -241,7 +261,7 @@ const WarehouseImport = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter

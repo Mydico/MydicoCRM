@@ -4,7 +4,7 @@ import ChartLineSimple from '../charts/ChartLineSimple';
 import { getDebtDashboard, getIncomeDashboard } from '../../pages/dashboard/dashboard.api';
 import { useDispatch, useSelector } from 'react-redux';
 import { userSafeSelector } from '../../../views/pages/login/authenticate.reducer';
-
+import { DashboardType } from '../../pages/dashboard/Dashboard';
 const WidgetsDropdown = () => {
   const dispatch = useDispatch();
   const [incomeTotal, setIncomeTotal] = useState(0);
@@ -16,10 +16,12 @@ const WidgetsDropdown = () => {
     dispatch(getIncomeDashboard({ userId: account.id })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         const sum = data.payload.reduce((curr, prev) => {
-          if (prev.type === 'ORDER') {
+          if (prev.type === DashboardType.ORDER) {
             return curr + Number(prev.amount);
-          } else {
+          } else if (prev.type === DashboardType.RETURN) {
             return curr - Number(prev.amount);
+          } else {
+            return Number(curr);
           }
         }, 0);
         setIncomeTotal(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sum));
@@ -36,7 +38,11 @@ const WidgetsDropdown = () => {
     dispatch(getDebtDashboard({ userId: account.id })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         const sum = data.payload.reduce((curr, prev) => {
-          return curr + Number(prev.amount);
+          if (prev.type === DashboardType.DEBT) {
+            return curr + Number(prev.amount);
+          } else {
+            return curr - Number(prev.amount);
+          }
         }, 0);
         setDebt(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sum));
       }

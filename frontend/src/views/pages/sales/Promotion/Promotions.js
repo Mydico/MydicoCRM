@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   CCardBody,
   CBadge,
@@ -23,7 +23,7 @@ import { getPromotion, updatePromotion } from './promotion.api.js';
 import { globalizedPromotionSelectors, reset } from './promotion.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-
+import _ from 'lodash'
 const { selectAll } = globalizedPromotionSelectors;
 
 import moment from 'moment';
@@ -43,7 +43,7 @@ const Promotion = props => {
   }, []);
 
   useEffect(() => {
-    if (activePage > 1) dispatch(getPromotion({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
+    dispatch(getPromotion({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
   }, [activePage]);
 
   const Promotions = useSelector(selectAll);
@@ -110,7 +110,7 @@ const Promotion = props => {
         return 'primary';
     }
   };
-  const [,] = useState([]);
+
   const csvContent = computedItems(Promotions)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -128,10 +128,20 @@ const Promotion = props => {
     history.push(`${props.match.url}/${userId}/longterm`);
   };
 
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
+
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getPromotion({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value)
   };
 
   useEffect(() => {

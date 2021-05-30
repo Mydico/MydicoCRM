@@ -47,11 +47,13 @@ export class ProductController {
       }
     });
     if (filter.length === 0) {
-      filter = {
-        status: 'ACTIVE'
-      };
+      if (req.query['status']) {
+        filter['status'] = req.query['status'];
+      }
     } else {
-      filter[0]['status'] = 'ACTIVE';
+      if (req.query['status']) {
+        filter[filter.length - 1]['status'] = req.query['status'];
+      }
     }
     const [results, count] = await this.productService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
@@ -96,7 +98,7 @@ export class ProductController {
     type: Product
   })
   async put(@Res() res: Response, @Body() product: Product): Promise<Response> {
-    HeaderUtil.addEntityCreatedHeaders(res, 'Product', product.id);
+    HeaderUtil.addEntityUpdatedHeaders(res, 'Product', product.id);
     return res.send(await this.productService.update(product));
   }
 

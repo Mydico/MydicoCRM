@@ -20,6 +20,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import { Like } from 'typeorm';
 
 @Controller('api/user-roles')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -30,6 +31,18 @@ export class UserRoleController {
 
   constructor(private readonly userRoleService: UserRoleService) {}
 
+  @Get('/authorities')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: UserRole
+  })
+  async getAuthorities(@Req() req: Request, @Res() res): Promise<UserRole[]> {
+    const [results, count] = await this.userRoleService.findAuthorities();
+    return res.send(results);
+  }
+
   @Get('/')
   @Roles(RoleType.USER)
   @ApiResponse({
@@ -39,6 +52,12 @@ export class UserRoleController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<UserRole[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter = [];
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+      }
+    });
     const [results, count] = await this.userRoleService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
@@ -47,6 +66,7 @@ export class UserRoleController {
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }
+
 
   @Get('/:id')
   @Roles(RoleType.USER)

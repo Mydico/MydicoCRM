@@ -93,9 +93,9 @@ export class ProductQuantityController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Response> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = [];
+    let filter: any = [];
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency' && item !== 'status') {
         filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
@@ -106,7 +106,12 @@ export class ProductQuantityController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    filter.push({ department: In(departmentVisible) });
+    const object = {
+      department: In(departmentVisible),
+      status: Like(`%${req.query['status'] || ''}%`)
+    };
+    if (req.query['store']) object['store'] = req.query['store'];
+    filter.push(object);
     const [results, count] = await this.productQuantityService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,

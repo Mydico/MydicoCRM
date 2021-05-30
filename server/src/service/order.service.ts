@@ -20,6 +20,7 @@ import { DepartmentService } from './department.service';
 import { IncomeDashboardService } from './income-dashboard.service';
 import IncomeDashboard from '../domain/income-dashboard.entity';
 import { DashboardType } from '../domain/enumeration/dashboard-type';
+import { RoleType } from '../security';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -28,6 +29,7 @@ relationshipNames.push('orderDetails');
 relationshipNames.push('orderDetails.product');
 relationshipNames.push('promotion');
 relationshipNames.push('store');
+relationshipNames.push('department');
 
 @Injectable()
 export class OrderService {
@@ -57,6 +59,8 @@ export class OrderService {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
       departmentVisible.push(currentUser.department);
     }
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+
     let queryString = "Order.status <> 'DELETED'";
     Object.keys(req.query).forEach((item, index) => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
@@ -68,6 +72,7 @@ export class OrderService {
         .replace('[', '(')
         .replace(']', ')')}`;
     }
+    if(isEmployee) queryString += ` AND Order.createdBy = ${currentUser.login}`
     return await this.orderRepository
       .createQueryBuilder('Order')
       .leftJoinAndSelect('Order.customer', 'customer')

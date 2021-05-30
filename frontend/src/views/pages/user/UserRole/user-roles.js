@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UserRolesData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
@@ -8,10 +8,15 @@ import { globalizedUserRoleSelectors } from './user-roles.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import moment from 'moment';
+import _ from 'lodash';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
+};
+const mapping = {
+  MANAGER: 'Quản lý',
+  EMPLOYEE: 'Nhân viên'
 };
 const UserRole = props => {
   const isInitialMount = useRef(true);
@@ -20,7 +25,7 @@ const UserRole = props => {
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.user);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -67,7 +72,7 @@ const UserRole = props => {
     { key: 'code', label: 'Mã chức vụ', _style: { width: '10%' } },
     { key: 'name', label: 'Tên chức vụ', _style: { width: '10%' } },
     { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '15%' } },
+    { key: 'authority', label: 'Vai trò', _style: { width: '15%' } },
     {
       key: 'show_details',
       label: '',
@@ -90,7 +95,7 @@ const UserRole = props => {
         return 'primary';
     }
   };
-  const [,] = useState([]);
+
   const csvContent = computedItems(users)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -103,10 +108,22 @@ const UserRole = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if (
+          Object.keys(value).forEach(key => {
+            if (!value[key]) delete value[key];
+          })
+        )
+          dispatch(getUserRole({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
+
   const onFilterColumn = value => {
-    if (!isInitialMount.current) {
-      dispatch(getUserRole({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value);
   };
 
   return (
@@ -129,7 +146,7 @@ const UserRole = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter
@@ -144,11 +161,7 @@ const UserRole = props => {
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
-            status: item => (
-              <td>
-                <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
-              </td>
-            ),
+            authority: item => <td>{mapping[item.authority || '']}</td>,
             show_details: item => {
               return (
                 <td className="d-flex py-2">

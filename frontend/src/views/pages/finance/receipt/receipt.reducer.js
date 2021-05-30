@@ -1,5 +1,5 @@
 import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
-import {creatingReceipt} from './receipt.api';
+import {creatingReceipt, updateReceiptStatus} from './receipt.api';
 import {getReceipt, getDetailReceipt, updateReceipt} from './receipt.api';
 
 const initialState = {
@@ -49,13 +49,21 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
+    [updateReceiptStatus.fulfilled]: (state ) => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
+    [updateReceiptStatus.rejected]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = false;
+    },
     [updateReceipt.fulfilled]: (state ) => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
     },
     [updateReceipt.rejected]: state => {
       state.initialState.loading = false;
-      state.initialState.updatingSuccess = true;
+      state.initialState.updatingSuccess = false;
     },
   },
 });

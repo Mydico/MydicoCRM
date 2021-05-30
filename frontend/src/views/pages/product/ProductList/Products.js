@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
@@ -8,6 +8,7 @@ import { globalizedProductSelectors, reset } from './product.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import moment from 'moment';
+import _ from 'lodash'
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -21,7 +22,7 @@ const Product = props => {
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.product);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -89,7 +90,7 @@ const Product = props => {
         return 'primary';
     }
   };
-  const [,] = useState([]);
+
   const csvContent = computedItems(products)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -102,16 +103,23 @@ const Product = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
-  };
-
-  const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
     []
   );
+
+  const onFilterColumn = value => {
+    debouncedSearchColumn(value)
+  };
+
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(products), [products]);
 
   return (
@@ -135,7 +143,7 @@ const Product = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter

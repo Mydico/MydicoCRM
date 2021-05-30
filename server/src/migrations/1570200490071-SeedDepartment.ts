@@ -1,6 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import { User } from '../domain/user.entity';
-import { Authority } from '../domain/authority.entity';
 import Department from '../domain/department.entity';
 import Store from '../domain/store.entity';
 import Branch from '../domain/branch.entity';
@@ -53,7 +52,6 @@ const position = [
   { code: 'KT', name: 'Kế toán' },
 ];
 export class SeedDepartment1570200490071 implements MigrationInterface {
-  role1: Authority = { name: 'ROLE_ADMIN' };
   constructor(private roleService: RoleService) {
   }
   public async up(queryRunner: QueryRunner): Promise<any> {
@@ -108,7 +106,7 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
       activated: true,
       branch: resultBranch.identifiers[branches.findIndex(branch => branch.code === item['Phòng Ban'])],
       department: resultDepartment.identifiers[departments.findIndex(branch => branch.code === item["Chi nhánh"])],
-      roles: [{id: resultPosition.identifiers[position.findIndex(position => position.code === item["Mã Chức Vụ"])]?.toString() || ''}]
+      roles: [{ id: resultPosition.identifiers[position.findIndex(position => position.code === item["Mã Chức Vụ"])]?.toString() || '' }]
     }));
     for (let index = 0; index < users.length - 1; index++) {
       for (let innerIndex = index + 1; innerIndex < users.length; innerIndex++) {
@@ -145,8 +143,8 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
       type: resultCustomerType.identifiers[customerType.findIndex(type => type.code === item["Loại khách hàng"])],
       sale: resultUsers.identifiers[users.findIndex(user => user.code === item["Nhân viên quản lý"])],
       contactName: item["Người Liên hệ"],
-      city: city.filter(element => element.label.toLowerCase() ===  item["Tỉnh (Thành Phố)"].toLowerCase())[0]?.value || "",
-      district: districts.filter(element => element.label.toLowerCase() ===  item["Quận (Huyện)"].toLowerCase())[0]?.value || "" 
+      city: city.filter(element => element.label.toLowerCase() === item["Tỉnh (Thành Phố)"].toLowerCase())[0]?.value || "",
+      district: districts.filter(element => element.label.toLowerCase() === item["Quận (Huyện)"].toLowerCase())[0]?.value || ""
     }));
     for (let index = 0; index < customerList.length - 1; index++) {
       for (let innerIndex = index + 1; innerIndex < customerList.length; innerIndex++) {

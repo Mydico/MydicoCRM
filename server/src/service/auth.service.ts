@@ -25,9 +25,12 @@ export class AuthService {
 
         const userFind = await this.userService.findByfields({ where: { login: loginUserName, password: loginPassword } });
         if (!userFind) {
-            throw new HttpException('Tên tài khoản hoặc mật khẩu không đúng', HttpStatus.BAD_REQUEST);
+            throw new HttpException('Tên tài khoản hoặc mật khẩu không đúng', HttpStatus.UNPROCESSABLE_ENTITY);
         }
-
+        console.log(userFind)
+        if (!userFind.activated) {
+            throw new HttpException('Tài khoản này chưa kích hoạt', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         const user = await this.findUserWithAuthById(userFind.login);
 
         const payload: Payload = { id: user.id, login: user.login, authorities: user.authorities };

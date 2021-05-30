@@ -1,5 +1,8 @@
 import loadable from '@loadable/component'
 
+const ChangePassword = loadable(() => import('./views/pages/user/UserList/change-password'));
+const EditUserProfile = loadable(() => import('./views/pages/user/UserList/edit-user-profile'));
+
 const Invoice = loadable(() => import('./views/pages/Invoicing/Invoice'));
 
 const Dashboard = loadable(() => import('./views/pages/dashboard/Dashboard'));
@@ -97,6 +100,8 @@ const Bill = loadable(() => import('./views/pages/warehouse/Bill/Bill'));
 // https:/github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   {path: '/', exact: true, name: 'Trang chủ', component: Dashboard},
+  {path: '/change-password', exact: true, name: 'Đổi mật khẩu', component: ChangePassword},
+  {path: '/edit-profile', exact: true, name: 'Đổi thông tin cá nhân', component: EditUserProfile},
   {path: '/dashboard', name: 'Thống kê', component: Dashboard},
   {path: '/invoice/', name: 'Thống kê', component: Invoice},
   {path: '/customer-debits', name: 'Công nợ', component: Debts, exact: true},
@@ -144,22 +149,22 @@ const routes = [
   {path: '/stores/histories/', name: 'Lịch sử xuất nhập kho', component: StoreHistory, exact: true},
   {path: '/stores/:id/edit/', name: 'Chỉnh sửa kho hàng', component: EditWarehouse},
   {path: '/stores/new/', name: 'Thêm mới kho hàng', component: CreateWarehouse},
-  {path: '/stores/export', name: 'Phiếu xuất kho', component: WarehouseExport, exact: true},
-  {path: '/stores/export/:id/edit/', name: 'Chỉnh sửa phiếu xuất kho', component: EditWarehouseExport},
-  {path: '/stores/export/new/', name: 'Thêm mới phiếu xuất kho', component: CreateWarehouseExport},
+  {path: '/store-inputs/export', name: 'Phiếu xuất kho', component: WarehouseExport, exact: true},
+  {path: '/store-inputs/export/:id/edit/', name: 'Chỉnh sửa phiếu xuất kho', component: EditWarehouseExport},
+  {path: '/store-inputs/export/new/', name: 'Thêm mới phiếu xuất kho', component: CreateWarehouseExport},
   {
-    path: '/stores/export/provider/:id/edit',
+    path: '/store-inputs/export/provider/:id/edit',
     name: 'Chỉnh sửa phiếu xuất kho cho nhà cung cấp',
     component: EditWarehouseExportProvider,
   },
-  {path: '/stores/export/provider/new', name: 'Thêm mới phiếu xuất kho cho nhà cung cấp', component: CreateWarehouseExportProvider},
-  {path: '/stores/import', name: 'Phiếu nhập kho', component: WarehouseImport, exact: true},
-  {path: '/stores/import/:id/edit/', name: 'Chỉnh sửa phiếu nhập kho', component: EditWarehouseImport},
-  {path: '/stores/import/new/', name: 'Thêm mới phiếu nhập kho', component: CreateWarehouseImport},
-  {path: '/stores/import/return/:id/edit/', name: 'Chỉnh sửa phiếu trả hàng', component: EditWarehouseReturn},
-  {path: '/stores/import/return/:storeId/detail', name: 'Xem phiếu trả hàng', component: ViewWarehouseReturn},
-  {path: '/stores/import/return/new/', name: 'Thêm mới phiếu trả hàng', component: CreateWarehouseReturn},
-  {path: '/stores/product/', name: 'Sản phẩm trong kho', component: ProductWarehouse, exact: true},
+  {path: '/store-inputs/export/provider/new', name: 'Thêm mới phiếu xuất kho cho nhà cung cấp', component: CreateWarehouseExportProvider},
+  {path: '/store-inputs', name: 'Phiếu nhập kho', component: WarehouseImport, exact: true},
+  {path: '/store-inputs/:id/edit/', name: 'Chỉnh sửa phiếu nhập kho', component: EditWarehouseImport},
+  {path: '/store-inputs/new/', name: 'Thêm mới phiếu nhập kho', component: CreateWarehouseImport},
+  {path: '/store-inputs/return/:id/edit/', name: 'Chỉnh sửa phiếu trả hàng', component: EditWarehouseReturn},
+  {path: '/store-inputs/return/:storeId/detail', name: 'Xem phiếu trả hàng', component: ViewWarehouseReturn},
+  {path: '/store-inputs/return/new/', name: 'Thêm mới phiếu trả hàng', component: CreateWarehouseReturn},
+  {path: '/product-quantities/', name: 'Sản phẩm trong kho', component: ProductWarehouse, exact: true},
   {path: '/users/', name: 'Người dùng', component: User, exact: true},
   {path: '/users/:id/edit', name: 'Chỉnh sửa', component: EditUser},
   {path: '/users/new', name: 'Tạo mới', component: CreateUser},

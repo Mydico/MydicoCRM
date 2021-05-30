@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put, UseGuards, Req, UseInterceptors, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, UseGuards, Req, UseInterceptors, Res, HttpException, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -7,7 +7,9 @@ import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UserService } from '../../service/user.service';
-import { Like } from 'typeorm';
+import { In, Like } from 'typeorm';
+import { BranchService } from '../../service/branch.service';
+import { ChangePasswordDTO } from '../../service/dto/user.dto';
 
 @Controller('api/users')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -16,10 +18,49 @@ import { Like } from 'typeorm';
 export class UserController {
   logger = new Logger('UserController');
 
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService, private readonly branchServices: BranchService) {}
+
+  @Get('/transporter')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: User
+  })
+  async getTransporter(@Req() req: Request, @Res() res): Promise<User[]> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter = [];
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+      }
+    });
+    const arrBranch = await this.branchServices.findAndCount({
+      where: {
+        code: In(['GN', 'KD'])
+      }
+    });
+    const currentUser = req.user as User;
+    if (filter.length === 0) {
+      filter.push({ branch: In(arrBranch[0].map(item => item.id)), department: currentUser.department });
+    } else {
+      filter[0]['branch'] = In(arrBranch[0].map(item => item.id));
+      filter[0]['department'] = currentUser.department;
+    }
+    const [results, count] = await this.userService.findAndCount({
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+      where: [
+        {
+          branch: In(arrBranch[0].map(item => item.id))
+        }
+      ]
+    });
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
+  }
 
   @Get('/')
-  @Roles(RoleType.ADMIN)
   @ApiResponse({
     status: 200,
     description: 'List all records',
@@ -44,7 +85,6 @@ export class UserController {
   }
 
   @Post('/')
-  @Roles(RoleType.ADMIN)
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
@@ -57,8 +97,24 @@ export class UserController {
     return res.send(created);
   }
 
+  @Put('/change-password')
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: User
+  })
+  async changePassword(@Req() req: Request, @Res() res: Response, @Body() user: ChangePasswordDTO): Promise<Response> {
+    const currentUser = req.user as User;
+    const isAdmin = currentUser.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+
+    if(!isAdmin && currentUser.login !== user.login){
+      throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.login);
+    return res.send(await this.userService.changePassword(user));
+  }
+
   @Put('/')
-  @Roles(RoleType.ADMIN)
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
@@ -84,7 +140,6 @@ export class UserController {
     status: 204,
     description: 'The record has been successfully deleted.'
   })
-  @Roles(RoleType.ADMIN)
   async deleteUser(@Res() res: Response, @Param('login') loginValue: string): Promise<User> {
     HeaderUtil.addEntityDeletedHeaders(res, 'User', loginValue);
     const userToDelete = await this.userService.find({ where: { login: loginValue } });

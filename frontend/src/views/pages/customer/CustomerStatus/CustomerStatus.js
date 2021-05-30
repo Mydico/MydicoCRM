@@ -15,7 +15,7 @@ const CustomerStatus = props => {
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.customerStatus);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   const customerStatuses = useSelector(selectAll);
@@ -70,7 +70,7 @@ const CustomerStatus = props => {
         return 'primary';
     }
   };
-  const [,] = useState([]);
+
   const csvContent = customerStatuses.map(item => Object.values(item).join(',')).join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {

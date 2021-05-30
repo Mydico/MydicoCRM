@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +6,7 @@ import { getProductBrand } from './product-brand.api';
 import { globalizedproductBrandsSelectors, reset } from './product-brand.reducer';
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-
+import _ from 'lodash'
 const { selectAll } = globalizedproductBrandsSelectors;
 
 const ProductBrand = props => {
@@ -15,7 +15,7 @@ const ProductBrand = props => {
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.productBrand);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -76,10 +76,20 @@ const ProductBrand = props => {
     history.push(`${props.match.url}/new`);
   };
 
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getProductBrand({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
+
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getProductBrand({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value)
   };
 
   const toEditProductBrand = typeId => {

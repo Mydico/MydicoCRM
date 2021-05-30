@@ -1,5 +1,5 @@
 import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
-import {creatingBill, getBillDetail} from './bill.api';
+import {creatingBill, getBillDetail, updateTransporterBill} from './bill.api';
 import {getBill, getDetailBill, updateBill} from './bill.api';
 
 const initialState = {
@@ -60,6 +60,18 @@ const slice = createSlice({
     [updateBill.fulfilled]: (state ) => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
+    },
+    [updateBill.rejected]: (state ) => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = false;
+    },
+    [updateTransporterBill.fulfilled]: (state ) => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
+    [updateTransporterBill.rejected]: (state ) => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = false;
     },
   },
 });

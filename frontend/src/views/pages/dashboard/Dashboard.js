@@ -1,6 +1,18 @@
 import React, { lazy, useEffect, useState } from 'react';
-import { CBadge, CButton, CButtonGroup, CCard, CCardBody, CCardFooter, CCardHeader, CCol, CProgress, CRow, CCallout } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import {
+  CBadge,
+  CButton,
+  CButtonGroup,
+  CCard,
+  CCardBody,
+  CCardFooter,
+  CCardHeader,
+  CCol,
+  CProgress,
+  CRow,
+  CCallout
+} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import moment from 'moment';
 import MainChart from '../../components/charts/MainChartExample.js';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +24,14 @@ const WidgetsDropdown = lazy(() => import('../../components/widgets/WidgetsDropd
 const brandSuccess = getStyle('success') || '#4dbd74';
 const brandInfo = getStyle('info') || '#20a8d8';
 const brandDanger = getStyle('danger') || '#f86c6b';
+
+export const DashboardType = {
+  ORDER: 'ORDER',
+  RETURN: 'RETURN',
+  DEBT: 'DEBT',
+  DEBT_RETURN: 'DEBT_RETURN',
+  DEBT_RECEIPT: 'DEBT_RECEIPT'
+};
 const Dashboard = () => {
   const dispatch = useDispatch();
   const [incomeTotal, setIncomeTotal] = useState(0);
@@ -28,15 +48,14 @@ const Dashboard = () => {
       }));
   };
 
-  const memotransformData = React.useCallback(
-    (items) => transformData(items),
-    []
-  );
+  const memotransformData = React.useCallback(items => transformData(items), []);
   const getData = (startDate, endDate) => {
     dispatch(getIncomeDashboard({ userId: account.id, startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         const sum = memotransformData(data.payload).reduce(
-          (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),
+          (curr, prev) => (
+            (curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + prev.type === Number(prev.amount)), curr
+          ),
           {}
         );
         setIncomeTotal(sum);

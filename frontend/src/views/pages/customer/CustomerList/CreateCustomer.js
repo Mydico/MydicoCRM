@@ -26,6 +26,7 @@ import { getDepartment } from '../../user/UserDepartment/department.api';
 import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
 import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city'
+import district from '../../../../shared/utils/district'
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 const { selectAll } = globalizedDepartmentSelectors;
@@ -77,6 +78,12 @@ const CreateCustomer = () => {
     dispatch(fetching());
     dispatch(creatingCustomer(values));
   };
+
+  useEffect(() => {
+    if (selectedCity) {
+      setDistricts(district.filter(item => item.parent_code === selectedCity))
+    }
+  }, [selectedCity]);
 
   useEffect(() => {
     if (initialState.updatingSuccess) {

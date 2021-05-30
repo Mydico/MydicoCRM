@@ -43,7 +43,7 @@ export class ReceiptController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Receipt[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = [];
+    let filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         filter.push({ [item]: Like(`%${req.query[item]}%`) });
@@ -51,12 +51,21 @@ export class ReceiptController {
     });
     let departmentVisible = [];
     const currentUser = req.user as User;
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+
     if (currentUser.department) {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    filter.push({ department: In(departmentVisible) });
+    if (filter.length === 0) {
+      filter['department'] = In(departmentVisible);
+      if (isEmployee) filter[0]['sale'] = currentUser.login;
+    } else {
+      filter[filter.length - 1]['department'] = In(departmentVisible);
+      if (isEmployee) filter[filter.length - 1]['sale'] = currentUser.login;
+
+    }
     const [results, count] = await this.receiptService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
@@ -89,9 +98,36 @@ export class ReceiptController {
   async post(@Req() req: Request, @Res() res: Response, @Body() receipt: Receipt): Promise<Response> {
     let currentUser = req.user as User;
     receipt.createdBy = currentUser.login;
+    receipt.sale = receipt.customer.sale.login;
     const created = await this.receiptService.save(receipt);
     HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', created.id);
     return res.send(created);
+  }
+
+  @Put('/approve')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Receipt
+  })
+  async approve(@Req() req: Request, @Res() res: Response, @Body() receipt: Receipt): Promise<Response> {
+    let currentUser = req.user as User;
+    receipt.approver = currentUser;
+    HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', receipt.id);
+    return res.send(await this.receiptService.update(receipt));
+  }
+
+  @Put('/cancel')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Receipt
+  })
+  async cancel(@Req() req: Request, @Res() res: Response, @Body() receipt: Receipt): Promise<Response> {
+    HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', receipt.id);
+    return res.send(await this.receiptService.update(receipt));
   }
 
   @Put('/')

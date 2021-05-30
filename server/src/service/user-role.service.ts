@@ -1,10 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AuthorityRepository } from '../repository/authority.repository';
 import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import UserRole from '../domain/user-role.entity';
 import { UserRoleRepository } from '../repository/user-role.repository';
 import { RoleService } from './role.service';
 import { checkCodeContext } from './utils/normalizeString';
+import { Authority } from '../domain/authority.entity';
 
 const relationshipNames = [];
 relationshipNames.push('permissionGroups');
@@ -15,8 +17,13 @@ export class UserRoleService {
 
   constructor(
     @InjectRepository(UserRoleRepository) private userRoleRepository: UserRoleRepository,
+    @InjectRepository(AuthorityRepository) private authorityRepository: AuthorityRepository,
     private readonly roleService: RoleService
   ) {}
+
+  async findAuthorities(): Promise<[Authority[], number]> {
+    return await this.authorityRepository.findAndCount();
+  }
 
   async findById(id: string): Promise<UserRole | undefined> {
     const options = { relations: relationshipNames };

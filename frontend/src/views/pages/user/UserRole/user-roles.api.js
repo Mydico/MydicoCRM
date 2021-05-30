@@ -22,6 +22,15 @@ export const getDetailUserRole = createAsyncThunk('api/detail/user-roles', async
   }
 });
 
+export const getAuthorities = createAsyncThunk('api/detail/user-roles/getAuthorities', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/user-roles/authorities');
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const creatingUserRole = createAsyncThunk('api/create/user-roles', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/user-roles', body);

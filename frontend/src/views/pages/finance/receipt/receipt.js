@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { CCardBody, CBadge, CButton, CDataTable, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
@@ -11,6 +11,7 @@ import { globalizedReceiptsSelectors, reset } from './receipt.reducer.js';
 import { ReceiptStatus } from './constant.js';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import _ from 'lodash'
 const getBadge = status => {
   switch (status) {
     case 'APPROVED':
@@ -36,7 +37,7 @@ const Receipt = props => {
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.receipt);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -97,10 +98,20 @@ const Receipt = props => {
     .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
+
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value)
   };
 
   useEffect(() => {
@@ -123,12 +134,12 @@ const Receipt = props => {
   };
 
   const rejectTicket = receipt => () => {
-    const data = { id: receipt.id, status: ReceiptStatus.REJECTED, action: cancel };
+    const data = { id: receipt.id, status: ReceiptStatus.REJECTED, action: 'cancel' };
     dispatch(updateReceiptStatus(data));
   };
 
   const approveTicket = receipt => () => {
-    const data = { id: receipt.id, status: ReceiptStatus.APPROVED, action: approve };
+    const data = { id: receipt.id, status: ReceiptStatus.APPROVED, action: 'approve' };
     dispatch(updateReceiptStatus(data));
   };
 
@@ -168,31 +179,35 @@ const Receipt = props => {
                 CHỈNH SỬA
               </CButton>
             )}
-            <CButton
-              onClick={event => {
-                event.stopPropagation();
-                alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu thu này không', approveTicket);
-              }}
-              color="success"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              DUYỆT PHIẾU
-            </CButton>
-            <CButton
-              onClick={event => {
-                event.stopPropagation();
-                alertFunc(item, 'Bạn có chắc chắn muốn hủy phiếu thu này không', rejectTicket);
-              }}
-              color="danger"
-              variant="outline"
-              shape="square"
-              size="sm"
-            >
-              HỦY PHIẾU
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/receipts/approve').length > 0) && (
+              <CButton
+                onClick={event => {
+                  event.stopPropagation();
+                  alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu thu này không', approveTicket);
+                }}
+                color="success"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                DUYỆT PHIẾU
+              </CButton>
+            )}
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/receipts/cancel').length > 0) && (
+              <CButton
+                onClick={event => {
+                  event.stopPropagation();
+                  alertFunc(item, 'Bạn có chắc chắn muốn hủy phiếu thu này không', rejectTicket);
+                }}
+                color="danger"
+                variant="outline"
+                shape="square"
+                size="sm"
+              >
+                HỦY PHIẾU
+              </CButton>
+            )}
           </CRow>
         );
 
@@ -224,7 +239,7 @@ const Receipt = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter

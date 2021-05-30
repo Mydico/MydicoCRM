@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react/lib';
-// import usersData from '../../../users/UsersData.js';
+import _ from 'lodash'
 import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {useDispatch, useSelector} from 'react-redux';
 import {getProductWarehouse} from './product-warehouse.api.js';
@@ -17,7 +17,7 @@ const ProductWarehouse = (props) => {
   const isFirstRender = useRef(true);
   const {initialState} = useSelector((state) => state.productWarehouse);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -91,7 +91,7 @@ const ProductWarehouse = (props) => {
         return 'primary';
     }
   };
-  const [,] = useState([]);
+
   const csvContent = computedItems(productProductWarehouses)
       .map((item) => Object.values(item).join(','))
       .join('\n');
@@ -102,10 +102,20 @@ const ProductWarehouse = (props) => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const onFilterColumn = (value) => {
-    if(Object.keys(value).length > 0){
-      if (!isFirstRender.current) dispatch(getProductWarehouse({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
-    }
+
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getProductWarehouse({page: 0, size: size, sort: 'createdDate,DESC', ...value}))}
+    }, 1000),
+    []
+  );
+
+  const onFilterColumn = value => {
+    debouncedSearchColumn(value)
   };
 
 
@@ -130,7 +140,7 @@ const ProductWarehouse = (props) => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [10, 20, 30, 50]}}
+          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [50, 100, 150, 200]}}
           itemsPerPage={size}
           hover
           sorter

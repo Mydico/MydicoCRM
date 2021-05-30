@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CDataTable, CPagination, CRow, CCol } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-
+import _ from 'lodash'
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -28,7 +28,7 @@ const mappingStatus = {
 const Branch = props => {
   const isInitialMount = useRef(true);
 
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -104,7 +104,7 @@ const Branch = props => {
         return 'primary';
     }
   };
-  const [,] = useState([]);
+
   const csvContent = computedItems(branchs)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -117,14 +117,21 @@ const Branch = props => {
   const toCreateBranch = () => {
     history.push(`${props.match.url}/new`);
   };
-  const toBranchStructure = () => {
-    history.push(`${props.match.url}structure`);
-  };
+
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
 
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value)
   };
 
   const memoComputedItems = React.useCallback(
@@ -153,7 +160,7 @@ const Branch = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter

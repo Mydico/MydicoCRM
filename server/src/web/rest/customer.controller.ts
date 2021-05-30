@@ -56,7 +56,6 @@ export class CustomerController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    filter.push({ department: In(departmentVisible) });
     if (filter.length === 0) {
       filter['department'] = In(departmentVisible);
       filter['dateOfBirth'] = Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7)));
@@ -85,19 +84,26 @@ export class CustomerController {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = [];
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department') {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency') {
         filter.push({ [item]: Like(`%${req.query[item]}%`) });
       }
     });
     let departmentVisible = [];
 
     const currentUser = req.user as User;
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE);
     if (currentUser.department) {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    filter.push({ department: In(departmentVisible) });
+    if (filter.length === 0) {
+      filter.push({ department: In(departmentVisible) });
+      if (isEmployee.length > 0) filter[0]['sale'] = currentUser.id;
+    } else {
+      filter[filter.length - 1]['department'] = In(departmentVisible);
+      if (isEmployee.length > 0) filter[filter.length - 1]['sale'] = currentUser.id;
+    }
     const [results, count] = await this.customerService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,

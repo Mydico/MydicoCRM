@@ -72,7 +72,7 @@ const DetailReceipt = props => {
 
   useEffect(() => {
     dispatch(getCustomer());
-    dispatch(getDetailReceipt(props.match.params.receiptId));
+    dispatch(getDetailReceipt({id: props.match.params.receiptId}));
   }, []);
 
   return (

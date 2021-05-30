@@ -114,7 +114,9 @@ export const resourceDesc = {
   providers: 'nhà cung cấp',
   'customer-debits': 'công nợ',
   'customer-statuses': 'trạng thái',
-  receipts: 'phiếu thu'
+  receipts: 'phiếu thu',
+  'store-inputs': 'phiếu xuất/nhập kho',
+  export: 'xuất kho'
 };
 
 export const actionDesc = {
@@ -137,13 +139,23 @@ export const contentException = [
   }
 ];
 
-export const removeExceptional = ['approve', 'delete', 'create-cod', 'cancel','shipping','complete','transporter'];
+export const blackListPermission = [
+  {
+    method: 'POST',
+    url: '/api/bills',
+  },
+  {
+    method: 'DELETE',
+    url: '/api/bills/:id',
+  }
+];
+
+export const removeExceptional = ['approve', 'delete', 'create-cod', 'cancel', 'shipping', 'complete', 'transporter'];
 
 export const blackList = [
   'histories',
   'associates',
   'associations',
-  'input',
   'utils',
   'report',
   'orders/status',

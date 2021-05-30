@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +11,7 @@ import moment from 'moment';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-
+import _ from 'lodash'
 const getBadge = status => {
   switch (status) {
     case 'ACTIVE':
@@ -58,7 +58,7 @@ const Order = props => {
       return {
         ...item,
         customerName: item.customer?.name,
-        tel: item.customer?.tel,
+        createdBy: item.createdBy,
         quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
         createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
         total: Number(item.realMoney)?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''
@@ -93,7 +93,7 @@ const Order = props => {
     },
     { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
     { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
-    { key: 'tel', label: 'Số điện thoại', _style: { width: '10%' } },
+    { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
     { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' } },
     { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
     { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
@@ -126,10 +126,20 @@ const Order = props => {
     history.push(`${props.match.url}/new`);
   };
 
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
+
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value)
   };
 
   const toEditOrder = typeId => {
@@ -147,7 +157,7 @@ const Order = props => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.APPROVED,
-      action: approve
+      action: 'approve'
     };
     dispatch(updateStatusOrder(newOrder));
   };
@@ -156,7 +166,7 @@ const Order = props => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.CANCEL,
-      action: cancel
+      action: 'cancel'
     };
     dispatch(updateStatusOrder(newOrder));
   };
@@ -247,45 +257,82 @@ const Order = props => {
       case OrderStatus.WAITING:
         return (
           <CCol>
-            <CButton
-              onClick={() => {
-                approveAlert(item);
-              }}
-              color="success"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              DUYỆT ĐƠN HÀNG
-            </CButton>
-            <CButton
-              onClick={() => {
-                cancelAlert(item);
-              }}
-              color="danger"
-              variant="outline"
-              shape="square"
-              size="sm"
-            >
-              HỦY ĐƠN HÀNG
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/approve').length > 0) && (
+              <CButton
+                onClick={() => {
+                  approveAlert(item);
+                }}
+                color="success"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                DUYỆT ĐƠN HÀNG
+              </CButton>
+            )}
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
+              <CButton
+                onClick={() => {
+                  cancelAlert(item);
+                }}
+                color="danger"
+                variant="outline"
+                shape="square"
+                size="sm"
+              >
+                HỦY ĐƠN HÀNG
+              </CButton>
+            )}
+            {item.createdBy === account.login &&
+              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length === 0 &&
+              !isAdmin && (
+                <CButton
+                  onClick={() => {
+                    toEditOrder(item.id);
+                  }}
+                  color="warning"
+                  variant="outline"
+                  shape="square"
+                  size="sm"
+                >
+                  <CIcon name="cil-pencil" />
+                  CHỈNH SỬA
+                </CButton>
+              )}
+            {item.createdBy === account.login &&
+              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length === 0 &&
+              !isAdmin && (
+                <CButton
+                  onClick={() => {
+                    cancelAlert(item);
+                  }}
+                  color="danger"
+                  variant="outline"
+                  shape="square"
+                  size="sm"
+                >
+                  HỦY ĐƠN HÀNG
+                </CButton>
+              )}
           </CCol>
         );
       case OrderStatus.APPROVED:
         return (
           <CCol>
-            <CButton
-              onClick={() => {
-                codAlert(item);
-              }}
-              color="primary"
-              variant="outline"
-              shape="square"
-              size="sm"
-            >
-              TẠO VẬN ĐƠN
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/create-cod').length > 0) && (
+              <CButton
+                onClick={() => {
+                  codAlert(item);
+                }}
+                color="primary"
+                variant="outline"
+                shape="square"
+                size="sm"
+              >
+                TẠO VẬN ĐƠN
+              </CButton>
+            )}
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
               <CButton
                 onClick={() => {
@@ -300,17 +347,19 @@ const Order = props => {
                 CHỈNH SỬA
               </CButton>
             )}
-            <CButton
-              onClick={() => {
-                cancelAlert(item);
-              }}
-              color="danger"
-              variant="outline"
-              shape="square"
-              size="sm"
-            >
-              HỦY ĐƠN HÀNG
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
+              <CButton
+                onClick={() => {
+                  cancelAlert(item);
+                }}
+                color="danger"
+                variant="outline"
+                shape="square"
+                size="sm"
+              >
+                HỦY ĐƠN HÀNG
+              </CButton>
+            )}
           </CCol>
         );
       case OrderStatus.CREATE_COD:
@@ -356,10 +405,7 @@ const Order = props => {
     }
   };
 
-  const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
-    []
-  );
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
 
   return (

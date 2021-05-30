@@ -103,7 +103,7 @@ const EditOrder = props => {
       setSelectedPromotion(order.promotion);
       setSelectedWarehouse(order.store)
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
-      dispatch(getOrderDetail({ id: props.match.params.id, dependency: true }));
+      dispatch(getOrderDetail({ orderId: props.match.params.id, dependency: true }));
     }
   }, [order]);
 
@@ -186,6 +186,27 @@ const EditOrder = props => {
     }
   };
 
+  const debouncedSearchProduct = useCallback(
+    _.debounce(value => {
+      dispatch(
+        getProductWarehouse({
+          store: selectedWarehouse?.id,
+          page: 0,
+          size: 20,
+          sort: 'createdDate,DESC',
+          name: value,
+          status: 'ACTIVE',
+          dependency: true
+        })
+      );
+    }, 1000),
+    []
+  );
+
+  const onSearchProduct = value => {
+    debouncedSearchProduct(value);
+  };
+
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = Number(target.value);
@@ -251,16 +272,6 @@ const EditOrder = props => {
     setIsSelectedWarehouse(true);
   };
 
-  const debouncedSearchProduct = useCallback(
-    _.debounce(value => {
-      dispatch(getProductWarehouse({ store: selectedWarehouse?.id , page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value }));
-    }, 1000),
-    []
-  );
-
-  const onSearchProduct = value => {
-    debouncedSearchProduct(value);
-  };
 
   const editAlert = (values, { setSubmitting, setErrors }) => {
     confirmAlert({
@@ -446,7 +457,6 @@ const EditOrder = props => {
                           setFieldValue('store', item.value);
                           onSelectWarehouse(item);
                         }}
-                        onInputChange={onSearchProduct}
                         value={{
                           value: values.store,
                           label: values.store?.name
@@ -532,11 +542,12 @@ const EditOrder = props => {
                                 value: item.product?.id,
                                 label: item.product?.name
                               }}
+                              onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
                               options={productInWarehouses.map(item => ({
                                 value: item.product.id,
-                                label: `${item.product.productBrand?.name}-${item.product.name}-${item.product.volume}`
+                                label: `${item.product.productBrand?.code}-${item.product.name}-${item.product.volume}`
                               }))}
                             />
                           </td>
@@ -564,7 +575,7 @@ const EditOrder = props => {
                                 onChange={event => onChangePrice(event, index)}
                                 value={
                                   typeof productList[index].priceReal !== 'number'
-                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: '' }).format(
                                         productList[index].priceReal
                                       )
                                     : productList[index].priceReal
@@ -576,7 +587,7 @@ const EditOrder = props => {
                           <td>
                             {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                               style: 'currency',
-                              currency: 'VND'
+                              currency: ''
                             }) || ''}
                           </td>
 
@@ -595,7 +606,7 @@ const EditOrder = props => {
                               'it-IT',
                               {
                                 style: 'currency',
-                                currency: 'VND'
+                                currency: ''
                               }
                             ) || ''}
                           </td>

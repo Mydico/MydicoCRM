@@ -4,6 +4,7 @@ import { BaseEntity } from './base/base.entity';
 
 import { User } from './user.entity';
 import PermissionGroup from './permission-group.entity';
+import { Authority } from './authority.entity';
 
 /**
  * A UserRole.
@@ -23,6 +24,9 @@ export default class UserRole extends BaseEntity {
 
   @ManyToMany(type => PermissionGroup, other => other.roles)
   permissionGroups?: PermissionGroup[];
+
+  @Column({ name: 'authority', length: 255, nullable: true })
+  authority?: string;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

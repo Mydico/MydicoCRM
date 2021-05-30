@@ -67,7 +67,7 @@ export class ReceiptService {
             await this.transactionService.save(transaction);
             const incomeItem = new IncomeDashboard();
             incomeItem.amount = entity.money;
-            incomeItem.type = DashboardType.RETURN;
+            incomeItem.type = DashboardType.DEBT;
             incomeItem.userId = entity.customer.sale.id;
             await this.incomeDashboardService.save(incomeItem);
         }

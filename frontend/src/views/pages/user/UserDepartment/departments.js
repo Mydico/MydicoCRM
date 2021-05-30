@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CDataTable, CPagination, CRow, CCol } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,7 +9,7 @@ import { Tree, TreeNode } from 'react-organizational-chart';
 import styled from 'styled-components';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-
+import _ from 'lodash'
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -48,7 +48,7 @@ const Department = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.provider);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
 
   useEffect(() => {
     dispatch(getDepartment({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
@@ -107,7 +107,6 @@ const Department = props => {
         return 'primary';
     }
   };
-  const [,] = useState([]);
   const csvContent = computedItems(providers)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -124,11 +123,22 @@ const Department = props => {
     history.push(`${props.match.url}/structure`);
   };
 
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getDepartment({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
+
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value)
   };
+
   const renderChild = children => {
     if (children && Array.isArray(children) && children.length > 0) {
       return children.map((item, index) => (
@@ -168,7 +178,7 @@ const Department = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter

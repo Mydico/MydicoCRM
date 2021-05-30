@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../domain/user.entity';
 import { UserRepository } from '../repository/user.repository';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
 import { RoleService } from './role.service';
+import { ChangePasswordDTO } from './dto/user.dto';
 const relationshipNames = [];
-// relationshipNames.push('departPositions');
 relationshipNames.push('roles');
 relationshipNames.push('department');
 relationshipNames.push('branch');
@@ -64,6 +64,15 @@ export class UserService {
         }
         await this.roleService.addGroupingPolicies(newGroupingRules)
         return this.flatAuthorities(result);
+    }
+
+    async changePassword(user: ChangePasswordDTO): Promise<User | undefined> {
+        const userFind = await this.findByfields({ where: {  password: user.password } });
+        if (!userFind) {
+            throw new HttpException('Mật khẩu cũ không đúng', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        userFind.password = user.newPassword
+        return await this.save(userFind);
     }
 
     async update(user: User): Promise<User | undefined> {

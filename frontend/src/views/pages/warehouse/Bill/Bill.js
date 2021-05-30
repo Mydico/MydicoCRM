@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   CCardBody,
   CBadge,
@@ -19,7 +19,7 @@ import {
 } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBill, updateBill } from './bill.api';
+import { getBill, updateBill, updateTransporterBill } from './bill.api';
 import { globalizedBillsSelectors, reset } from './bill.reducer';
 import { useHistory } from 'react-router-dom';
 import { Table } from 'reactstrap';
@@ -27,9 +27,11 @@ import { BillStatus } from './bill-status';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Select from 'react-select';
-import { getUser } from '../../user/UserList/user.api';
+import { getTranporter, getUser } from '../../user/UserList/user.api';
 import { globalizedUserSelectors } from '../../user/UserList/user.reducer';
 import moment from 'moment';
+import { userSafeSelector } from '../../login/authenticate.reducer';
+import _ from 'lodash'
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -42,6 +44,8 @@ const mappingStatus = {
 const { selectAll } = globalizedBillsSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
 const Bill = props => {
+  const { account } = useSelector(userSafeSelector);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const selectedBill = useRef(null);
   const selectedTransporter = useRef(null);
   const [details, setDetails] = useState([]);
@@ -53,7 +57,7 @@ const Bill = props => {
   const history = useHistory();
   useEffect(() => {
     dispatch(reset());
-    dispatch(getUser());
+    dispatch(getTranporter({ dependency: true }));
   }, []);
 
   const bills = useSelector(selectAll);
@@ -143,10 +147,20 @@ const Bill = props => {
     history.push(`${props.match.url}/new`);
   };
 
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getBill({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
+
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getBill({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value)
   };
 
   const toEditBill = typeId => {
@@ -162,12 +176,12 @@ const Bill = props => {
   }, [initialState.updatingSuccess]);
 
   const approveBill = bill => () => {
-    const data = { id: bill.id, status: BillStatus.APPROVED, action: approve };
+    const data = { id: bill.id, status: BillStatus.APPROVED, action: 'approve' };
     dispatch(updateBill(data));
   };
 
   const rejectBill = bill => () => {
-    const data = { id: bill.id, status: BillStatus.REJECTED, action: cancel };
+    const data = { id: bill.id, status: BillStatus.REJECTED, action: 'cancel' };
     dispatch(updateBill(data));
   };
 
@@ -176,7 +190,7 @@ const Bill = props => {
       updateBill({
         id: bill.id,
         status: BillStatus.SHIPPING,
-        action: shipping
+        action: 'shipping'
       })
     );
   };
@@ -186,7 +200,7 @@ const Bill = props => {
       updateBill({
         id: bill.id,
         status: BillStatus.SUCCESS,
-        action: complete
+        action: 'complete'
       })
     );
   };
@@ -254,106 +268,124 @@ const Bill = props => {
       case BillStatus.CREATED:
         return (
           <CRow>
-            <CButton
-              onClick={() => {
-                approveAlert(item);
-              }}
-              color="success"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              DUYỆT VẬN ĐƠN
-            </CButton>
-            <CButton
-              onClick={() => {
-                alertAction(item, rejectBill, 'Bạn có chắc chắn muốn từ chối vận đơn này?');
-              }}
-              color="danger"
-              variant="outline"
-              shape="square"
-              size="sm"
-            >
-              HỦY VẬN ĐƠN
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/bills/approve').length > 0) && (
+              <CButton
+                onClick={() => {
+                  approveAlert(item);
+                }}
+                color="success"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                DUYỆT VẬN ĐƠN
+              </CButton>
+            )}
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/bills/cancel').length > 0) && (
+              <CButton
+                onClick={() => {
+                  alertAction(item, rejectBill, 'Bạn có chắc chắn muốn từ chối vận đơn này?');
+                }}
+                color="danger"
+                variant="outline"
+                shape="square"
+                size="sm"
+              >
+                HỦY VẬN ĐƠN
+              </CButton>
+            )}
           </CRow>
         );
       case BillStatus.APPROVED:
         return (
           <CRow>
-            <CButton
-              onClick={() => {
-                setModal(true);
-                selectedBill.current = item;
-                // alertAction(item, supplyWaitingBill, 'Bạn có chắc chắn muốn gán vận đơn này?');
-              }}
-              color="primary"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              GÁN NGƯỜI VẬN CHUYỂN
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/bills/transporter').length > 0) && (
+              <CButton
+                onClick={() => {
+                  setModal(true);
+                  selectedBill.current = item;
+                  // alertAction(item, supplyWaitingBill, 'Bạn có chắc chắn muốn gán vận đơn này?');
+                }}
+                color="primary"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                GÁN NGƯỜI VẬN CHUYỂN
+              </CButton>
+            )}
           </CRow>
         );
       case BillStatus.SUPPLY_WAITING:
         return (
-          <CButton
-            onClick={() => {
-              alertAction(item, shippingBill, 'Bạn có chắc chắn muốn xuất kho?');
-            }}
-            color="info"
-            variant="outline"
-            shape="square"
-            size="sm"
-          >
-            XUẤT KHO
-          </CButton>
+          <CRow>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/bills/shipping').length > 0) && (
+              <CButton
+                onClick={() => {
+                  alertAction(item, shippingBill, 'Bạn có chắc chắn muốn xuất kho?');
+                }}
+                color="info"
+                variant="outline"
+                shape="square"
+                size="sm"
+              >
+                XUẤT KHO
+              </CButton>
+            )}
+          </CRow>
         );
       case BillStatus.SHIPPING:
         return (
-          <CButton
-            onClick={() => {
-              alertAction(item, successBill, 'Bạn có chắc chắn muốn hoàn thành vận đơn này?');
-            }}
-            color="info"
-            variant="outline"
-            shape="square"
-            size="sm"
-          >
-            HOÀN THÀNH
-          </CButton>
+          <CRow>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/bills/complete').length > 0) && (
+              <CButton
+                onClick={() => {
+                  alertAction(item, successBill, 'Bạn có chắc chắn muốn hoàn thành vận đơn này?');
+                }}
+                color="info"
+                variant="outline"
+                shape="square"
+                size="sm"
+              >
+                HOÀN THÀNH
+              </CButton>
+            )}
+          </CRow>
         );
       case BillStatus.CANCEL:
         return (
           <CRow>
-            <CButton
-              onClick={() => {
-                toEditBill(item.id);
-              }}
-              color="warning"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              <CIcon name="cil-pencil" />
-              CHỈNH SỬA
-            </CButton>
-            <CButton
-              onClick={() => {
-                deleteAlert(item);
-              }}
-              color="secondary"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              XÓA ĐƠN
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/bills').length > 0) && (
+              <CButton
+                onClick={() => {
+                  toEditBill(item.id);
+                }}
+                color="warning"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                <CIcon name="cil-pencil" />
+                CHỈNH SỬA
+              </CButton>
+            )}
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/bills/delete').length > 0) && (
+              <CButton
+                onClick={() => {
+                  deleteAlert(item);
+                }}
+                color="secondary"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                XÓA ĐƠN
+              </CButton>
+            )}
           </CRow>
         );
       default:
@@ -368,7 +400,7 @@ const Bill = props => {
         transporter: selectedTransporter.current,
         status: BillStatus.SUPPLY_WAITING
       };
-      dispatch(updateBill(copyObject));
+      dispatch(updateTransporterBill(copyObject));
     }
   };
 
@@ -442,7 +474,7 @@ const Bill = props => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
-                    <h5>Thông tin vận đơng</h5>
+                    <h5>Thông tin vận đơn</h5>
                     <CRow className="mb-4">
                       <CCol sm="4">
                         <h6 className="mb-3">Tới:</h6>

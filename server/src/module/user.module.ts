@@ -5,9 +5,10 @@ import { UserRepository } from '../repository/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from '../service/user.service';
 import { RoleModule } from './role.module';
+import { BranchModule } from './branch.module';
 
 @Module({
-    imports: [CacheModule.register(),TypeOrmModule.forFeature([UserRepository]), RoleModule],
+    imports: [CacheModule.register(),TypeOrmModule.forFeature([UserRepository]), RoleModule, BranchModule],
     controllers: [UserController, ManagementController],
     providers: [UserService],
     exports: [UserService],

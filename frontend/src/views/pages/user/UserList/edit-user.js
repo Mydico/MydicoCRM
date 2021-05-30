@@ -240,25 +240,6 @@ const EditUser = props => {
                     />
                     <CInvalidFeedback className="d-block">{errors.phone}</CInvalidFeedback>
                   </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="userName">Trạng thái</CLabel>
-                    <Select
-                      name="status"
-                      onChange={e => {
-                        setFieldValue('status', e.value);
-                      }}
-                      placeholder="Chọn chi nhánh"
-                      value={{
-                        value: values.status,
-                        label: ProductStatus.filter(item => item.value === values.status)[0]?.title
-                      }}
-                      options={ProductStatus.map(item => ({
-                        value: item.value,
-                        label: item.title
-                      }))}
-                    />
-                    <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>
-                  </CFormGroup>
                 </CCol>
               </CRow>
               <CFormGroup>

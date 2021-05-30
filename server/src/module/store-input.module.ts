@@ -9,6 +9,7 @@ import { StoreInputDetailsModule } from './store-input-details.module';
 import { TransactionModule } from './transaction.module';
 import { OrderModule } from './order.module';
 import { DepartmentModule } from './department.module';
+import { IncomeDashboardModule } from './income-dashboard.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { DepartmentModule } from './department.module';
     StoreInputDetailsModule,
     TransactionModule,
     OrderModule,
-    DepartmentModule
+    DepartmentModule,
+    IncomeDashboardModule
   ],
   controllers: [StoreInputController],
   providers: [StoreInputService],

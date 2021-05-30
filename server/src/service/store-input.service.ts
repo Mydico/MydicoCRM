@@ -14,11 +14,15 @@ import { TransactionService } from './transaction.service';
 import Transaction from '../domain/transaction.entity';
 import { TransactionType } from '../domain/enumeration/transaction-type';
 import { OrderService } from './order.service';
+import IncomeDashboard from '../domain/income-dashboard.entity';
+import { DashboardType } from '../domain/enumeration/dashboard-type';
+import { IncomeDashboardService } from './income-dashboard.service';
 
 const relationshipNames = [];
 relationshipNames.push('approver');
 relationshipNames.push('store');
 relationshipNames.push('customer');
+relationshipNames.push('customer.sale');
 relationshipNames.push('customer.department');
 relationshipNames.push('customer.type');
 relationshipNames.push('storeTransfer');
@@ -34,7 +38,8 @@ export class StoreInputService {
     private readonly productQuantityService: ProductQuantityService,
     private readonly storeInputDetailsService: StoreInputDetailsService,
     private readonly transactionService: TransactionService,
-    private readonly orderService: OrderService
+    private readonly orderService: OrderService,
+    private readonly incomeDashboardService: IncomeDashboardService
   ) {}
 
   async findById(id: string): Promise<StoreInput | undefined> {
@@ -119,6 +124,11 @@ export class StoreInputService {
         await this.importStore(founded, entity);
         if (entity.type === StoreImportType.RETURN) {
           this.createDebit(entity);
+          const incomeItem = new IncomeDashboard();
+          incomeItem.amount = entity.realMoney;
+          incomeItem.type = DashboardType.RETURN;
+          incomeItem.userId = entity.customer.sale.id;
+          await this.incomeDashboardService.save(incomeItem);
         }
       } else {
         await this.exportStore(founded, entity);
@@ -154,13 +164,18 @@ export class StoreInputService {
     });
     await this.productQuantityService.saveMany(productInStore);
     if (entity.storeTransfer) {
+      let arrDetails = [];
+      if (Array.isArray(entity.storeInputDetails)) {
+        arrDetails = entity.storeInputDetails.map(item => ({ ...item, id: null }));
+      }
       const importStore = new StoreInput();
       importStore.store = entity.storeTransfer;
       importStore.type = StoreImportType.IMPORT_FROM_STORE;
       importStore.storeTransfer = entity.store;
-      importStore.storeInputDetails = entity.storeInputDetails;
+      importStore.department = entity.department
+      importStore.storeInputDetails = arrDetails;
       importStore.createdBy = 'system';
-      await this.storeInputRepository.save(importStore);
+      await this.save(importStore);
     }
   }
 
@@ -172,6 +187,7 @@ export class StoreInputService {
         store: entity.store,
         department: entity.store.department,
         quantity: item.quantity,
+        name: item.product.name,
         type: StoreHistoryType.IMPORT
       }));
     const productInStore = founded.map(item => {

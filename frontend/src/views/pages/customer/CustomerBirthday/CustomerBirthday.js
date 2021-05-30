@@ -13,7 +13,7 @@ const Customer = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.customer);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -75,7 +75,7 @@ const Customer = props => {
         return 'primary';
     }
   };
-  const [,] = useState([]);
+
   const csvContent = computedItems(customers)
     .map(item => Object.values(item).join(','))
     .join('\n');

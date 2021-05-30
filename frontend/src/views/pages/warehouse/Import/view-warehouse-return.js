@@ -49,7 +49,7 @@ const DetailWarehouseReturn = props => {
   };
 
   useEffect(() => {
-    dispatch(getDetailWarehouseImport(props.match.params.storeId));
+    dispatch(getDetailWarehouseImport({id: props.match.params.storeId}));
   }, []);
 
   useEffect(() => {

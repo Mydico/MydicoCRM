@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { CBadge, CCard, CCardHeader, CCardBody, CCol, CDataTable, CRow, CPagination, CCardTitle, CLink } from '@coreui/react/lib';
 
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useHistory } from 'react-router-dom';
-import moment from 'moment'
+import moment from 'moment';
 import { getTransaction } from './debt.api';
+import _ from 'lodash'
 const getBadge = status => {
   switch (status) {
     case 'PAYMENT':
@@ -19,7 +20,7 @@ const getBadge = status => {
   }
 };
 const mappingStatus = {
-  DEBIT: 'GHI NỢ',
+  DEBIT: 'HÓA ĐƠN',
   PAYMENT: 'THANH TOÁN',
   RETURN: 'TRẢ HÀNG'
 };
@@ -30,7 +31,7 @@ const Transaction = props => {
   const history = useHistory();
   const [debt, setDebt] = useState(null);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
 
   const computedItems = items => {
     return items
@@ -41,11 +42,11 @@ const Transaction = props => {
           name: item.customer?.name || '',
           phone: item.customer?.phone || '',
           sale: item.sale?.name || '',
-          createdDate: moment(item.createdDate).format("DD-MM-YYYY")
+          createdDate: moment(item.createdDate).format('DD-MM-YYYY')
         };
       })
       .sort((a, b) => {
-        return new Date(b.createdDate) - new Date(a.createdDate)
+        return new Date(b.createdDate) - new Date(a.createdDate);
       });
   };
 
@@ -56,11 +57,11 @@ const Transaction = props => {
       _style: { width: '1%' },
       filter: false
     },
-    { key: 'type', label: 'Loại công nợ', _style: { width: '10%' } },
-    { key: 'entity', label: 'Công nợ', _style: { width: '15%' } },
-    { key: 'previousDebt', label: 'Nợ cũ', _style: { width: '15%' } },
-    { key: 'issueDebt', label: 'Phát sinh nợ', _style: { width: '10%' } },
-    { key: 'earlyDebt', label: 'Nợ mới', _style: { width: '15%' } },
+    { key: 'type', label: 'Loại chứng từ', _style: { width: '10%' } },
+    { key: 'entity', label: 'Diễn giải', _style: { width: '15%' } },
+    { key: 'previousDebt', label: 'Số dư ban đầu', _style: { width: '15%' } },
+    { key: 'issueDebt', label: 'Phát sinh', _style: { width: '10%' } },
+    { key: 'earlyDebt', label: 'Số dư cuối kì', _style: { width: '15%' } },
     { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } }
   ];
 
@@ -70,31 +71,43 @@ const Transaction = props => {
     }
   }, [props.location.state?.customer]);
 
+
   useEffect(() => {
-    dispatch(getTransaction({ customer: props.match.params.id }));
-  }, []);
+    dispatch(getTransaction({ customer: props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC' }));
+  }, [activePage, size]);
+
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
 
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value)
   };
+
 
   const renderLink = item => {
     let link = '';
     let href = '';
     if (item.order) {
       link = `Đơn hàng ${item.order.code}`;
-      href = `${props.match.url}/order/${item.order.id}`
+      href = `${props.match.url}/order/${item.order.id}`;
     } else if (item.receipt) {
       link = `Phiếu thu ${item.receipt.code}`;
-      href = `${props.match.url}/receipt/${item.receipt.id}`
+      href = `${props.match.url}/receipt/${item.receipt.id}`;
     } else {
       link = `Đơn trả hàng`;
-      href = `${props.match.url}/store/${item.storeInput.id}`
+      href = `${props.match.url}/store/${item.storeInput.id}`;
     }
     return (
-      <CLink onClick={() => history.push({pathname: href})} target="_blank">
+      <CLink onClick={() => history.push({ pathname: href })} target="_blank">
         {link}
       </CLink>
     );
@@ -112,10 +125,7 @@ const Transaction = props => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(debt);
   };
 
-  const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
-    []
-  );
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(initialState.transactions), [initialState.transactions]);
 
   return (
@@ -159,7 +169,7 @@ const Transaction = props => {
             columnFilter
             tableFilter
             cleaner
-            itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+            itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
             itemsPerPage={size}
             hover
             sorter

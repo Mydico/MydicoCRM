@@ -20,13 +20,21 @@ export class TransactionSubscriber implements EntitySubscriberInterface<Transact
   async afterInsert(event: InsertEvent<Transaction>): Promise<any> {
     const customerDebitRepo = event.manager.getRepository(CustomerDebit);
     const customerRepo = event.manager.getRepository(Customer);
-    const foundedCustomer = await customerRepo.findOne({ where: { id: event.entity.customer.id }, relations: ['sale'] });
+    const foundedCustomer = await customerRepo.findOne({ where: { id: event.entity.customer.id }, relations: ['sale','department'] });
     const debtRepo = event.manager.getRepository(DebtDashboard);
     const debtDashboard = new DebtDashboard();
-    if (event.entity.type === TransactionType.DEBIT || event.entity.type === TransactionType.PAYMENT) {
+    if (event.entity.type === TransactionType.DEBIT) {
       debtDashboard.amount = event.entity.totalMoney;
       debtDashboard.userId = foundedCustomer.sale?.id || null;
       debtDashboard.type = DashboardType.DEBT;
+    }else if(event.entity.type === TransactionType.PAYMENT) {
+      debtDashboard.amount = event.entity.collectMoney;
+      debtDashboard.userId = foundedCustomer.sale?.id || null;
+      debtDashboard.type = DashboardType.DEBT_RECEIPT;
+    }else if(event.entity.type === TransactionType.RETURN) {
+      debtDashboard.amount = event.entity.refundMoney;
+      debtDashboard.userId = foundedCustomer.sale?.id || null;
+      debtDashboard.type = DashboardType.DEBT_RETURN;
     }
     await debtRepo.save(debtDashboard);
     let exist = await customerDebitRepo.findOne({ where: { customer: event.entity.customer } });

@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {CCardBody, CBadge, CDataTable, CCard, CCardHeader, CPagination} from '@coreui/react/lib';
-// import usersData from '../../../users/UsersData.js';
+import _ from 'lodash'
 import CIcon from '@coreui/icons-react/lib/CIcon';;
 import {useDispatch, useSelector} from 'react-redux';
 import {getStoreHistory} from './warehouse-history.api.js';
@@ -21,13 +21,14 @@ const getBadge = (status) => {
       return 'primary';
   }
 };
+const {selectAll} = globalizedStoreHistorySelectors;
 const storeHistorys = useSelector(selectAll);
 
 const StoreHistory = () => {
   const [] = useState([]);
   const {initialState} = useSelector((state) => state.storeHistory);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -38,7 +39,6 @@ const StoreHistory = () => {
     dispatch(getStoreHistory({page: activePage - 1, size, sort: 'createdDate,DESC'}));
   }, [activePage, size]);
 
-  const {selectAll} = globalizedStoreHistorySelectors;
   const computedItems = (items) => {
     return items.map((item) => {
       return {
@@ -65,10 +65,20 @@ const StoreHistory = () => {
     {key: 'quantity', label: 'Số lượng', _style: {width: '15%'}},
   ];
 
-  const onFilterColumn = (value) => {
-    if (value) {
-      dispatch(getStoreHistory({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
-    }
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getStoreHistory({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
+      }
+    }, 1000),
+    []
+  );
+
+  const onFilterColumn = value => {
+    debouncedSearchColumn(value)
   };
 
   return (
@@ -83,7 +93,7 @@ const StoreHistory = () => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [10, 20, 30, 50]}}
+          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [50, 100, 150, 200]}}
           itemsPerPage={size}
           hover
           sorter

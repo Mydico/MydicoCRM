@@ -127,7 +127,7 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Sản phẩm trong kho',
-        to: '/stores/product',
+        to: '/product-quantities',
       },
       {
         _tag: 'CSidebarNavItem',
@@ -137,12 +137,12 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Phiếu nhập kho',
-        to: '/stores/import',
+        to: '/store-inputs',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Phiếu xuất kho',
-        to: '/stores/export',
+        to: '/store-inputs/export',
       },
       {
         _tag: 'CSidebarNavItem',

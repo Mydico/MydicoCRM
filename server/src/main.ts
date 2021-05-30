@@ -10,7 +10,14 @@ import * as path from 'path';
 import * as fs from 'fs';
 import helmet from 'helmet';
 import { mkdirSync } from 'fs';
-import { actionDesc, blackList, contentException, removeExceptional, resourceDesc } from './utils/constants/permission-desc';
+import {
+  actionDesc,
+  blackList,
+  blackListPermission,
+  contentException,
+  removeExceptional,
+  resourceDesc
+} from './utils/constants/permission-desc';
 import { permissionDescriptionNormalize } from './utils/helper/permission-normalization';
 import { PermissionGroupStatus } from './domain/enumeration/permission-group-status';
 import Permission from './domain/permission.entity';
@@ -65,7 +72,7 @@ async function bootstrap(): Promise<void> {
   });
   app.useGlobalPipes(
     new ValidationPipe({
-      exceptionFactory: (): BadRequestException => new BadRequestException('Validation error')
+      exceptionFactory: (errors): BadRequestException => new BadRequestException(errors)
     })
   );
   app.register(compression, { encodings: ['gzip', 'deflate'] });
@@ -78,9 +85,11 @@ async function bootstrap(): Promise<void> {
     logger.log('No client it has been found');
   }
   if (fs.existsSync(staticFilePath)) {
-      app.use('/images', express.static(staticFilePath));
-      logger.log(`Serving static file resources on ${staticFilePath}`);
-  } else {mkdirSync(staticFilePath);}
+    app.use('/images', express.static(staticFilePath));
+    logger.log(`Serving static file resources on ${staticFilePath}`);
+  } else {
+    mkdirSync(staticFilePath);
+  }
   setupSwagger(app);
 
   await app.listen(port, () => {});
@@ -100,10 +109,10 @@ async function bootstrap(): Promise<void> {
       type = splitedEndpoint[0];
     }
     if (type) {
-      let desc = permissionDescriptionNormalize(splitedEndpoint);
+      let desc = permissionDescriptionNormalize(splitedEndpoint, false);
       const perType: PermissionType = {
         name: type,
-        description: `Quản lý ${desc}`,
+        description: `Quản lý ${permissionDescriptionNormalize(splitedEndpoint, true)}`,
         status:
           blackList.filter(value => type.includes(value)).length > 0 || type === 'reports'
             ? PermissionGroupStatus.DISABLED
@@ -117,8 +126,11 @@ async function bootstrap(): Promise<void> {
           type,
           typeName: `Quản lý ${resourceDesc[type] || ''}`,
           status:
-            blackList.filter(value => element.path.includes(value)).length > 0 ? PermissionStatus.NONEPUBLIC : PermissionStatus.PUBLIC,
-          description: `${foundedException.length > 0 ? "" : actionDesc[method]} ${desc}`
+            blackList.filter(value => element.path.includes(value)).length > 0 ||
+            blackListPermission.filter(value => element.path === value.url && method === value.method).length > 0
+              ? PermissionStatus.NONEPUBLIC
+              : PermissionStatus.PUBLIC,
+          description: `${foundedException.length > 0 ? '' : actionDesc[method]} ${desc}`
         };
 
         permissionList.push(per);

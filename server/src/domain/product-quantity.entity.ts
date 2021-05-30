@@ -16,6 +16,10 @@ export default class ProductQuantity extends BaseEntity {
     @Index()
     quantity: number;
 
+    @Column({  name: 'name' })
+    @Index()
+    name: string;
+
     @ManyToOne(type => Department)
     department: Department;
 

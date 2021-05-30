@@ -176,7 +176,7 @@ const CreateOrder = props => {
 
   useEffect(() => {
     if (selectedWarehouse?.id) {
-      dispatch(getProductWarehouse({ store: selectedWarehouse?.id, status: 'ACTIVE' }));
+      dispatch(getProductWarehouse({ store: selectedWarehouse?.id, status: 'ACTIVE', page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     }
   }, [selectedWarehouse]);
 
@@ -197,9 +197,9 @@ const CreateOrder = props => {
           page: 0,
           size: 20,
           sort: 'createdDate,DESC',
-          code: value,
           name: value,
-          status: 'ACTIVE'
+          status: 'ACTIVE',
+          dependency: true
         })
       );
     }, 1000),
@@ -546,7 +546,7 @@ const CreateOrder = props => {
                               menuPortalTarget={document.body}
                               options={productInWarehouses.map(item => ({
                                 value: item.product,
-                                label: `${item.product.productBrand?.name}-${item.product.name}-${item.product.volume}`
+                                label: `${item.product.productBrand?.code}-${item.product.name}-${item.product.volume}`
                               }))}
                             />
                           </td>
@@ -568,14 +568,14 @@ const CreateOrder = props => {
                                 <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
                               )}
                           </td>
-                          <td>
+                          <td style={{ width: 100 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
                                 value={
                                   typeof item.priceReal !== 'number'
-                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceReal)
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: '' }).format(item.priceReal)
                                     : item.priceReal
                                 }
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
@@ -585,7 +585,7 @@ const CreateOrder = props => {
                           <td>
                             {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                               style: 'currency',
-                              currency: 'VND'
+                              currency: ''
                             }) || ''}
                           </td>
 
@@ -606,7 +606,7 @@ const CreateOrder = props => {
                               'it-IT',
                               {
                                 style: 'currency',
-                                currency: 'VND'
+                                currency: ''
                               }
                             ) || ''}
                           </td>

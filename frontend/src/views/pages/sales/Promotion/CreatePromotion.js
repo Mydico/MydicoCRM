@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   CButton,
   CCard,
@@ -21,6 +21,7 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {useDispatch, useSelector} from 'react-redux';
 import {creatingPromotion} from './promotion.api';
+import _ from 'lodash';
 
 
 import {useHistory} from 'react-router-dom';
@@ -66,13 +67,13 @@ const CreatePromotion = () => {
   const products = useSelector(selectAllProduct);
   useEffect(() => {
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', status: "ACTIVE" }));
+    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', status: "ACTIVE", dependency: true }));
   }, []);
 
   const [productList, setProductList] = useState([]);
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE' }));
+      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
     }, 1000),
     []
   );

@@ -28,6 +28,15 @@ export const updateBill = createAsyncThunk('api/update/bills', async (body, thun
   }
 });
 
+export const updateTransporterBill = createAsyncThunk('api/update/transporter/bills', async (body, thunkAPI) => {
+  try {
+    const result = await axios.put('api/bills', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const getBillDetail = createAsyncThunk('api/get/bill-detail', async (billId, thunkAPI) => {
   try {
     const result = await axios.get('api/bill-details/bill', { params: { billId } });

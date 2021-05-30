@@ -1,19 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUser } from './user.api.js';
+import { getUser, updateUser } from './user.api.js';
 import { globalizedUserSelectors, reset } from './user.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import _ from 'lodash';
+import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 
-const mappingStatus = {
-  ACTIVE: 'ĐANG HOẠT ĐỘNG',
-  DISABLED: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA'
-};
 const { selectAll } = globalizedUserSelectors;
 
 const User = props => {
@@ -23,7 +20,9 @@ const User = props => {
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.user);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
+  const selectedPro = useRef({ id: null, activated: true });
+  const [primary, setPrimary] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -38,9 +37,7 @@ const User = props => {
   }, []);
 
   useEffect(() => {
-    if (!isInitialMount.current) {
-      dispatch(getUser({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
-    }
+    dispatch(getUser({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
   }, [activePage, size]);
 
   const users = useSelector(selectAll);
@@ -82,7 +79,7 @@ const User = props => {
     { key: 'branch', label: 'Phòng ban', _style: { width: '15%' } },
     { key: 'roles', label: 'Chức vụ', _style: { width: '15%' } },
     { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '15%' } },
+    { key: 'activated', label: 'Trạng thái', _style: { width: '15%' } },
     {
       key: 'show_details',
       label: '',
@@ -93,13 +90,9 @@ const User = props => {
 
   const getBadge = status => {
     switch (status) {
-      case 'ACTIVE':
+      case true:
         return 'success';
-      case 'DISABLED':
-        return 'danger';
-      case 'DELETED':
-        return 'warning';
-      case 'Banned':
+      case false:
         return 'danger';
       default:
         return 'primary';
@@ -116,16 +109,37 @@ const User = props => {
   const toEditUser = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if (
+          Object.keys(value).forEach(key => {
+            if (!value[key]) delete value[key];
+          })
+        )
+          dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
 
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value);
+  };
+
+  const lockUser = () => {
+    dispatch(updateUser({ id: selectedPro.current.id, activated: !selectedPro.current.activated }));
+    setPrimary(false);
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(users), [users]);
-
+  useEffect(() => {
+    if (initialState.updatingSuccess) {
+      dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC' }));
+      dispatch(reset());
+    }
+  }, [initialState.updatingSuccess]);
   return (
     <CCard>
       <CCardHeader>
@@ -146,7 +160,7 @@ const User = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter
@@ -161,9 +175,9 @@ const User = props => {
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
-            status: item => (
+            activated: item => (
               <td>
-                <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
+                <CBadge color={getBadge(item.activated)}>{item.activated ? 'Đang hoạt động' : 'Không hoạt động'}</CBadge>
               </td>
             ),
             department: item => <td>{item.department?.name || ''}</td>,
@@ -196,11 +210,24 @@ const User = props => {
                     variant="outline"
                     shape="square"
                     size="sm"
+                    className="mr-3"
                     onClick={() => {
                       toggleDetails(item.id);
                     }}
                   >
                     <CIcon name="cilZoom" />
+                  </CButton>
+                  <CButton
+                    color="primary"
+                    variant="outline"
+                    shape="square"
+                    size="sm"
+                    onClick={() => {
+                      selectedPro.current = { id: item.id, activated: item.activated };
+                      setPrimary(!primary);
+                    }}
+                  >
+                    <CIcon name={!item.activated ? 'cilLockLocked' : 'cilLockUnlocked'} />
                   </CButton>
                 </td>
               );
@@ -240,7 +267,7 @@ const User = props => {
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Trạng thái</dt>
-                          <dd className="col-sm-9">{mappingStatus[item.status]}</dd>
+                          <dd className="col-sm-9">{item.activated ? 'Đang hoạt động' : 'Không hoạt động'}</dd>
                         </dl>
                       </CCol>
                     </CRow>
@@ -256,6 +283,20 @@ const User = props => {
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
+      <CModal show={primary} onClose={() => setPrimary(!primary)} color="primary">
+        <CModalHeader closeButton>
+          <CModalTitle>Khóa nhân viên</CModalTitle>
+        </CModalHeader>
+        <CModalBody>{`Bạn có chắc chắn muốn ${!selectedPro.current.activated ? 'mở khóa' : 'khóa'} nhân viên này không?`}</CModalBody>
+        <CModalFooter>
+          <CButton color="primary" onClick={lockUser}>
+            Đồng ý
+          </CButton>
+          <CButton color="secondary" onClick={() => setPrimary(!primary)}>
+            Hủy
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </CCard>
   );
 };

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getWarehouseExport, updateWarehouseImport } from '../Import/warehouse-import.api.js';
+import { getWarehouseExport, updateWarehouseImport, updateWarehouseStatusImport } from '../Import/warehouse-import.api.js';
 import { globalizedWarehouseImportSelectors, reset } from '../Import/warehouse-import.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { WarehouseImportStatus, WarehouseImportType } from './contants.js';
@@ -11,7 +11,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-
+import _ from 'lodash'
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -23,7 +23,7 @@ const WarehouseImport = props => {
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -126,10 +126,20 @@ const WarehouseImport = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getWarehouseExport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 1000),
+    []
+  );
+
   const onFilterColumn = value => {
-    if (Object.keys(value).length > 0) {
-      dispatch(getWarehouseExport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    debouncedSearchColumn(value)
   };
 
   const alertFunc = (item, message, operation) => {
@@ -149,12 +159,12 @@ const WarehouseImport = props => {
   };
 
   const rejectTicket = bill => () => {
-    const data = { id: bill.id, status: WarehouseImportStatus.REJECTED, action: cancel };
+    const data = { id: bill.id, status: WarehouseImportStatus.REJECTED, action: 'cancel' };
     dispatch(updateWarehouseStatusImport(data));
   };
 
   const approveTicket = bill => () => {
-    const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, action: approve };
+    const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, action: 'approve' };
     dispatch(updateWarehouseStatusImport(data));
   };
 
@@ -166,7 +176,7 @@ const WarehouseImport = props => {
       case WarehouseImportStatus.WAITING:
         return (
           <CRow>
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs').length > 0) && (
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export').length > 0) && (
               <CButton
                 onClick={() => {
                   item.type !== WarehouseImportType.EXPORT_TO_PROVIDER
@@ -183,30 +193,34 @@ const WarehouseImport = props => {
                 CHỈNH SỬA
               </CButton>
             )}
-            <CButton
-              onClick={() => {
-                alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu xuất kho này không', approveTicket);
-              }}
-              color="success"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              DUYỆT
-            </CButton>
-            <CButton
-              onClick={() => {
-                alertFunc(item, 'Bạn có chắc chắn muốn từ chối phiếu xuất kho này không', rejectTicket);
-              }}
-              color="danger"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              KHÔNG DUYỆT
-            </CButton>
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/approve').length > 0) && (
+              <CButton
+                onClick={() => {
+                  alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu xuất kho này không', approveTicket);
+                }}
+                color="success"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                DUYỆT
+              </CButton>
+            )}
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/cancel').length > 0) && (
+              <CButton
+                onClick={() => {
+                  alertFunc(item, 'Bạn có chắc chắn muốn từ chối phiếu xuất kho này không', rejectTicket);
+                }}
+                color="danger"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                KHÔNG DUYỆT
+              </CButton>
+            )}
           </CRow>
         );
       default:
@@ -214,22 +228,24 @@ const WarehouseImport = props => {
     }
   };
 
-  const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
-    []
-  );
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(warehouses), [warehouses]);
-
+  useEffect(() => {
+    if (initialState.updatingSuccess) {
+      dispatch(getWarehouseExport());
+      dispatch(reset());
+    }
+  }, [initialState.updatingSuccess]);
   return (
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách phiếu xuất kho
-        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/store-inputs').length > 0) && (
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/store-inputs/export').length > 0) && (
           <CButton color="success" variant="outline" className="ml-3" onClick={toCreateWarehouseImport}>
             <CIcon name="cil-plus" /> Thêm mới phiếu xuất kho
           </CButton>
         )}
-        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/store-inputs').length > 0) && (
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/store-inputs/export').length > 0) && (
           <CButton color="info" variant="outline" className="ml-3" onClick={toCreateWarehouseExportProvider}>
             <CIcon name="cil-plus" /> Thêm mới phiếu trả hàng cho nhà cung cấp
           </CButton>
@@ -245,7 +261,7 @@ const WarehouseImport = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [10, 20, 30, 50] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter

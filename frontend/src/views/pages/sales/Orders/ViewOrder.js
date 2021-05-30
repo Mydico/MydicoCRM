@@ -12,13 +12,12 @@ const { selectById } = globalizedOrdersSelectors;
 const ViewOrder = props => {
   const dispatch = useDispatch();
 
-
   const order = useSelector(state => selectById(state, props.match.params.orderId));
 
   const [invoice, setInvoice] = useState(null);
 
   useEffect(() => {
-    dispatch(getDetailOrder(props.match.params.orderId));
+    dispatch(getDetailOrder({ id: props.match.params.orderId }));
   }, []);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {CCardBody, CButton, CDataTable, CCard, CCardHeader, CRow, CPagination} from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';;
@@ -9,13 +9,14 @@ import {useHistory} from 'react-router-dom';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import {globalizedDebtsSelectors, reset} from './debt.reducer.js';
 import moment from 'moment'
+import _ from 'lodash'
 const {selectAll} = globalizedDebtsSelectors;
 
 const Debt = (props) => {
-  const [,] = useState([]);
+
   const {initialState} = useSelector((state) => state.debt);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -66,10 +67,21 @@ const Debt = (props) => {
       .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
-  const onFilterColumn = (value) => {
-    if (value) {
-      dispatch(getCustomerDebts({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
-    }
+
+  const debouncedSearchColumn = useCallback(
+    _.debounce(value => {
+      if (Object.keys(value).length > 0) {
+        if(Object.keys(value).forEach(key => {
+          if(!value[key]) delete value[key]
+        }))
+        dispatch(getCustomerDebts({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
+      }
+    }, 1000),
+    []
+  );
+
+  const onFilterColumn = value => {
+    debouncedSearchColumn(value)
   };
 
   const toDetail = (item) => {
@@ -97,7 +109,7 @@ const Debt = (props) => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [10, 20, 30, 50]}}
+          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [50, 100, 150, 200]}}
           itemsPerPage={size}
           hover
           sorter
