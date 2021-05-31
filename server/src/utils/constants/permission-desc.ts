@@ -116,7 +116,8 @@ export const resourceDesc = {
   'customer-statuses': 'trạng thái',
   receipts: 'phiếu thu',
   'store-inputs': 'phiếu xuất/nhập kho',
-  export: 'xuất kho'
+  export: 'xuất kho',
+  'product-quantities': 'sản phẩm trong kho'
 };
 
 export const actionDesc = {
@@ -142,11 +143,23 @@ export const contentException = [
 export const blackListPermission = [
   {
     method: 'POST',
-    url: '/api/bills',
+    url: '/api/bills'
   },
   {
     method: 'DELETE',
-    url: '/api/bills/:id',
+    url: '/api/bills/:id'
+  },
+  {
+    method: 'POST',
+    url: '/api/product-quantities'
+  },
+  {
+    method: 'PUT',
+    url: '/api/product-quantities'
+  },
+  {
+    method: 'DELETE',
+    url: '/api/product-quantities/:id'
   }
 ];
 
@@ -172,6 +185,9 @@ export const blackList = [
   'promotion-customer-levels',
   'requests',
   'fanpages',
+  '/api/product-quantities/quantity',
+  '/api/product-quantities/field',
+  '/api/product-quantities/:id',
   'temps',
   'notifies',
   'skins',
@@ -183,7 +199,6 @@ export const blackList = [
   'customer-tokens',
   'product-details',
   'product-group-maps',
-  'product-quantities',
   'register',
   'wards',
   'v2',

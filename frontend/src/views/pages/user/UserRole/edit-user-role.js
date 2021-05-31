@@ -106,7 +106,7 @@ const EditUserRole = props => {
           {({
             values,
             errors,
-
+            setFieldValue,
             handleChange,
             handleBlur,
             handleSubmit,

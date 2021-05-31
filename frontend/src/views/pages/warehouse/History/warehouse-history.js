@@ -68,9 +68,9 @@ const StoreHistory = () => {
   const debouncedSearchColumn = useCallback(
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
-        if(Object.keys(value).forEach(key => {
+        Object.keys(value).forEach(key => {
           if(!value[key]) delete value[key]
-        }))
+        })
         dispatch(getStoreHistory({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
       }
     }, 1000),

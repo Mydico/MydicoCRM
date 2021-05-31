@@ -575,7 +575,7 @@ const CreateOrder = props => {
                                 onChange={event => onChangePrice(event, index)}
                                 value={
                                   typeof item.priceReal !== 'number'
-                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: '' }).format(item.priceReal)
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceReal)
                                     : item.priceReal
                                 }
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
@@ -585,7 +585,7 @@ const CreateOrder = props => {
                           <td>
                             {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                               style: 'currency',
-                              currency: ''
+                              currency: 'VND'
                             }) || ''}
                           </td>
 
@@ -606,7 +606,7 @@ const CreateOrder = props => {
                               'it-IT',
                               {
                                 style: 'currency',
-                                currency: ''
+                                currency: 'VND'
                               }
                             ) || ''}
                           </td>

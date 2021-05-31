@@ -575,7 +575,7 @@ const EditOrder = props => {
                                 onChange={event => onChangePrice(event, index)}
                                 value={
                                   typeof productList[index].priceReal !== 'number'
-                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: '' }).format(
+                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
                                         productList[index].priceReal
                                       )
                                     : productList[index].priceReal
@@ -587,7 +587,7 @@ const EditOrder = props => {
                           <td>
                             {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                               style: 'currency',
-                              currency: ''
+                              currency: 'VND'
                             }) || ''}
                           </td>
 
@@ -606,7 +606,7 @@ const EditOrder = props => {
                               'it-IT',
                               {
                                 style: 'currency',
-                                currency: ''
+                                currency: 'VND'
                               }
                             ) || ''}
                           </td>

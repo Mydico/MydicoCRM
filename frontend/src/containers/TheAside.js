@@ -99,6 +99,7 @@ const TheAside = () => {
                 className="text-uppercase mb-1 mt-4"
                 onClick={() => {
                   history.push(`/change-password`);
+                  setState(false)
                 }}
               >
                 <small>
@@ -111,6 +112,7 @@ const TheAside = () => {
                 className="text-uppercase mb-1 mt-4"
                 onClick={() => {
                   history.push(`/edit-profile`);
+                  setState(false)
                 }}
               >
                 <small>
