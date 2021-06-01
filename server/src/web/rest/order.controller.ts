@@ -22,9 +22,10 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { Like, Not } from 'typeorm';
+import { In, Like, Not } from 'typeorm';
 import { OrderStatus } from '../../domain/enumeration/order-status';
 import { User } from '../../domain/user.entity';
+import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/orders')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -33,7 +34,7 @@ import { User } from '../../domain/user.entity';
 export class OrderController {
   logger = new Logger('OrderController');
 
-  constructor(private readonly orderService: OrderService) {}
+  constructor(private readonly orderService: OrderService,  private readonly departmentService: DepartmentService) {}
 
   @Get('/')
   @Roles(RoleType.USER)
@@ -43,10 +44,36 @@ export class OrderController {
     type: Order
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Order[]> {
-    const currentUser = req.user as User;
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const [results, count] = await this.orderService.findAndCount(pageRequest, req, currentUser);
-    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    const filter = [];
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency' && item !== 'status') {
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+      }
+    });
+    let departmentVisible = [];
+
+    const currentUser = req.user as User;
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE);
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    if (filter.length === 0) {
+      filter.push({ department: In(departmentVisible), status: Not(OrderStatus.DELETED) });
+      if (isEmployee.length > 0) filter[0]['sale'] = currentUser.id;
+    } else {
+      filter[filter.length - 1]['department'] = In(departmentVisible);
+      filter[filter.length - 1]['status'] = Not(OrderStatus.DELETED);
+      if (isEmployee.length > 0) filter[filter.length - 1]['sale'] = currentUser.id;
+    }
+    const [results, count] = await this.orderService.findAndCount({
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+      where: filter
+    });    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }
 

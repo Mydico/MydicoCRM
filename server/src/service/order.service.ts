@@ -28,6 +28,7 @@ relationshipNames.push('customer.sale');
 relationshipNames.push('orderDetails');
 relationshipNames.push('orderDetails.product');
 relationshipNames.push('promotion');
+relationshipNames.push('promotion.customerType');
 relationshipNames.push('store');
 relationshipNames.push('department');
 
@@ -53,39 +54,40 @@ export class OrderService {
     return await this.orderRepository.findOne(options);
   }
 
-  async findAndCount(pageRequest: PageRequest, req: Request, currentUser: User): Promise<[Order[], number]> {
-    let departmentVisible = [];
-    if (currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible.push(currentUser.department);
-    }
-    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+  async findAndCount(options: FindManyOptions<Order>): Promise<[Order[], number]> {
+    // let departmentVisible = [];
+    // if (currentUser.department) {
+    //   departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+    //   departmentVisible.push(currentUser.department);
+    // }
+    // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
 
-    let queryString = "Order.status <> 'DELETED'";
-    Object.keys(req.query).forEach((item, index) => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        queryString += `Order.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'OR '}`;
-      }
-    });
-    if (departmentVisible.length > 0) {
-      queryString += ` AND Order.department IN ${JSON.stringify(departmentVisible.map(item => item.id))
-        .replace('[', '(')
-        .replace(']', ')')}`;
-    }
-    if(isEmployee) queryString += ` AND Order.createdBy = ${currentUser.login}`
-    return await this.orderRepository
-      .createQueryBuilder('Order')
-      .leftJoinAndSelect('Order.customer', 'customer')
-      .leftJoinAndSelect('Order.promotion', 'promotion')
-      .leftJoinAndSelect('promotion.customerType', 'customerType')
-      .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
-      .leftJoinAndSelect('orderDetails.product', 'product')
-      .where(queryString)
-      .orderBy('Order.createdDate', 'DESC')
-      .skip(pageRequest.page * pageRequest.size)
-      .take(pageRequest.size)
-      .getManyAndCount();
-    // return await this.orderRepository.findAndCount(options);
+    // let queryString = "Order.status <> 'DELETED'";
+    // Object.keys(req.query).forEach((item, index) => {
+    //   if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+    //     queryString += `Order.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'OR '}`;
+    //   }
+    // });
+    // if (departmentVisible.length > 0) {
+    //   queryString += ` AND Order.department IN ${JSON.stringify(departmentVisible.map(item => item.id))
+    //     .replace('[', '(')
+    //     .replace(']', ')')}`;
+    // }
+    // if(isEmployee) queryString += ` AND Order.createdBy = ${currentUser.login}`
+    // return await this.orderRepository
+    //   .createQueryBuilder('Order')
+    //   .leftJoinAndSelect('Order.customer', 'customer')
+    //   .leftJoinAndSelect('Order.promotion', 'promotion')
+    //   .leftJoinAndSelect('promotion.customerType', 'customerType')
+    //   .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
+    //   .leftJoinAndSelect('orderDetails.product', 'product')
+    //   .where(queryString)
+    //   .orderBy('Order.createdDate', 'DESC')
+    //   .skip(pageRequest.page * pageRequest.size)
+    //   .take(pageRequest.size)
+    //   .getManyAndCount();
+    options.relations = relationshipNames;
+    return await this.orderRepository.findAndCount(options);
   }
 
   async getProductInStore(arrIds: string[], store: Store): Promise<ProductQuantity[]> {

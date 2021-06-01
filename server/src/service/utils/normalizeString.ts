@@ -25,6 +25,17 @@ export const getLoginNameFromName = name => {
   }
   return `${splitName[splitName.length - 1]}${suffix}`;
 };
+export const getLoginFromName = (name, department, branch) => {
+  const normalName = name
+    .trim()
+    .normalize('NFD')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .replace(/ /g, '')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+  return `${department.trim()}_${branch.trim()}_${normalName}`.toLowerCase();
+};
 export const getCodeByCustomer = (name) => {
   if (!name) return name;
   return name

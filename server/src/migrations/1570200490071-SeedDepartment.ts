@@ -5,7 +5,7 @@ import Store from '../domain/store.entity';
 import Branch from '../domain/branch.entity';
 import userhn from './excel/userhn.json';
 import customers from './excel/customer.json';
-import { getCodeByCustomer, getLoginNameFromName, increment_alphanumeric_str } from '../service/utils/normalizeString';
+import { getCodeByCustomer, getLoginFromName, getLoginNameFromName, increment_alphanumeric_str } from '../service/utils/normalizeString';
 import { RoleService } from '../service/role.service';
 import Customer from '../domain/customer.entity';
 import CustomerType from '../domain/customer-type.entity';
@@ -96,13 +96,14 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
       .values(branches)
       .execute();
     const users = userhn.map(item => ({
-      login: item["Tài khoản đăng nhập"].toLowerCase(),
-      code: item["Tài khoản đăng nhập"].toLowerCase(),
-      lastName: item['Tên nhân viên'].split(" ")[0],
-      firstName: item['Tên nhân viên'].split(" ").slice(1, item['Tên nhân viên'].split(" ").length).join(" "),
-      password: item['Mật Khẩu'].toString(),
-      email: "",
-      phone: item['Số điện thoại']?.toString() || "",
+      login: getLoginFromName(item.full_name, item['Chi nhánh'],item['Phòng Ban']),
+      code: getLoginFromName(item.full_name, item['Chi nhánh'],item['Phòng Ban']),
+      lastName: item.full_name.split(" ")[0],
+      firstName: item.full_name.split(" ").slice(1, item.full_name.split(" ").length).join(" "),
+      password: '123456',
+      email: item.email || '',
+      phone: item.phone_number?.toString() || "",
+      old_login: item.username,
       activated: true,
       branch: resultBranch.identifiers[branches.findIndex(branch => branch.code === item['Phòng Ban'])],
       department: resultDepartment.identifiers[departments.findIndex(branch => branch.code === item["Chi nhánh"])],
@@ -134,27 +135,35 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
       .into(User)
       .values(users)
       .execute();
+    const resultUsersWithOldData = resultUsers.identifiers.map((id,index) => ({
+      id: id,
+      ...users[index]
+    }))
     const customerList = customers.map(item => ({
-      name: item['Tên khách hàng'],
-      address: item['Địa Chỉ'],
-      tel: item['ĐT cố định'],
-      code: `${item['Chi nhánh']}_${item["Loại khách hàng"]}_${getCodeByCustomer(item['Tên khách hàng'])}`,
+      name: item.name,
+      address: item.address,
+      tel: item.tel.toString(),
+      code: `${item['Chi nhánh']}_${item.type}_${getCodeByCustomer(item.name)}`,
       department: resultDepartment.identifiers[departments.findIndex(branch => branch.code === item["Chi nhánh"])],
-      type: resultCustomerType.identifiers[customerType.findIndex(type => type.code === item["Loại khách hàng"])],
-      sale: resultUsers.identifiers[users.findIndex(user => user.code === item["Nhân viên quản lý"])],
-      contactName: item["Người Liên hệ"],
-      city: city.filter(element => element.label.toLowerCase() === item["Tỉnh (Thành Phố)"].toLowerCase())[0]?.value || "",
-      district: districts.filter(element => element.label.toLowerCase() === item["Quận (Huyện)"].toLowerCase())[0]?.value || ""
+      departmentString: item['Chi nhánh'],
+      type: resultCustomerType.identifiers[customerType.findIndex(type => type.code === item.type)],
+      typeString: item.type,
+      sale: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.old_login === item.nhanvien_chamsoc)]?.id || null,
+      contactName: item.contact_name,
+      city: city.filter(element => element.label.toLowerCase().includes(item.city_name.toLowerCase()))[0]?.value || "",
+      district: districts.filter(element => element.label.toLowerCase().includes(item.district_name.toLowerCase()))[0]?.value || "",
     }));
+    let lastestIndex = 1
     for (let index = 0; index < customerList.length - 1; index++) {
       for (let innerIndex = index + 1; innerIndex < customerList.length; innerIndex++) {
-        let lastestDuplicate = null
         if (customerList[innerIndex].code === customerList[index].code) {
-          customerList[innerIndex].code = increment_alphanumeric_str(lastestDuplicate || customerList[innerIndex].code)
-          lastestDuplicate = increment_alphanumeric_str(customerList[innerIndex].code)
+          customerList[innerIndex].code = `${customerList[innerIndex].departmentString}_${customerList[innerIndex].typeString}_${getCodeByCustomer(customerList[innerIndex].name)}${lastestIndex}`
+          lastestIndex++
         }
       }
     }
+
+
     await conn
       .createQueryBuilder()
       .insert()
