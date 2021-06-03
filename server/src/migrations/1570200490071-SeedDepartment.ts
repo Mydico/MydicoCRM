@@ -136,7 +136,6 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
       activated: true,
       branch: resultBranch.identifiers[branches.findIndex(branch => branch.code === item['Phòng Ban'])],
       department: resultDepartment.identifiers[departments.findIndex(branch => branch.code === item["Chi nhánh"])],
-      roles: [{ id: resultPosition.identifiers[position.findIndex(position => position.code === item["Mã Chức Vụ"])]?.toString() || '' }]
     }));
     for (let index = 0; index < users.length - 1; index++) {
       for (let innerIndex = index + 1; innerIndex < users.length; innerIndex++) {
