@@ -2,6 +2,7 @@
 import { Entity, Column, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { DashboardType } from './enumeration/dashboard-type';
+import { TransactionType } from './enumeration/transaction-type';
 
 /**
  * A AttributeMap.
@@ -19,4 +20,12 @@ export default class DebtDashboard extends BaseEntity {
   @Column({ type: 'bigint', name: 'amount', nullable: true })
   @Index()
   amount: number;
+
+  @Column({  name: 'entityId', nullable: true })
+  @Index()
+  entityId: string;
+
+  @Column({ type: 'simple-enum', name: 'entity_type', enum: TransactionType, default: TransactionType.DEBIT })
+  @Index()
+  entityType?: TransactionType;
 }

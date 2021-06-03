@@ -40,9 +40,7 @@ export default class CustomerRequest extends BaseEntity {
     @Index()
     status: boolean;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
+
 
     @ManyToOne(type => Product)
     product: Product;

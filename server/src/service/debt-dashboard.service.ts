@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
-import DebtDashboard from '../domain/income-dashboard.entity';
+import DebtDashboard from '../domain/debt-dashboard.entity';
 import { DebtDashboardRepository } from '../repository/debt-dashboard.repository';
 
 const relationshipNames = [];

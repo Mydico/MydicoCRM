@@ -37,9 +37,7 @@ export default class Store extends BaseEntity {
     @Index()
     transportId: number;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
+
 
     @Column({ type: 'simple-enum', name: 'status', enum: StoreStatus, default: StoreStatus.ACTIVE })
     @Index()

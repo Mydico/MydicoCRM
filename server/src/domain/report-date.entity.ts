@@ -18,9 +18,7 @@ export default class ReportDate extends BaseEntity {
     /**
    * chi nhánh
    */
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
+
 
     /**
    * nhân viên

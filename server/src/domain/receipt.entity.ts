@@ -15,8 +15,8 @@ export default class Receipt extends BaseEntity {
     @ManyToOne(type => Customer, customer => customer.receipts)
     customer?: Customer;
 
-    @Column({ name: 'sale', length: 255, nullable: true })
-    sale?: string;
+    @ManyToOne(type => User)
+    sale?: User;
 
     @Column({ name: 'code', length: 255, nullable: true })
     @Index()

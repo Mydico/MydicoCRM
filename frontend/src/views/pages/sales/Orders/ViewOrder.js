@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getDetailOrder } from './order.api';
 
 import { globalizedOrdersSelectors } from './order.reducer';
-
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 import { Table } from 'reactstrap';
 const { selectById } = globalizedOrdersSelectors;
 
@@ -53,9 +54,9 @@ const ViewOrder = props => {
                 <strong>{invoice?.customer.contactName}</strong>
               </div>
               <div>{invoice?.address}</div>
-              <div>{`${invoice?.customer?.district?.name}, ${invoice?.customer?.city?.name}`}</div>
-              <div>Email: {invoice?.customer.email}</div>
-              <div>Phone: {invoice?.customer.tel}</div>
+              <div>{`${district.filter(dist => dist.value === invoice?.customer?.district)[0]?.label || ''}, ${cities.filter(city => city.value === invoice?.customer?.city)[0]?.label || ''}`}</div>
+              <div>Email: {invoice?.customer?.email || ''}</div>
+              <div>Phone: {invoice?.customer?.tel || ''}</div>
             </CCol>
             <CCol sm="4">
               <h6 className="mb-3">Chương trình bán hàng:</h6>
@@ -120,8 +121,7 @@ const ViewOrder = props => {
                       <strong>Tổng tiền</strong>
                     </td>
                     <td className="right">
-                      {invoice?.orderDetails
-                        .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
+                      {Number(invoice?.totalMoney || 0)
                         .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                     </td>
                   </tr>
@@ -130,8 +130,7 @@ const ViewOrder = props => {
                       <strong>Chiết khấu</strong>
                     </td>
                     <td className="right">
-                      {invoice?.orderDetails
-                        .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
+                      {Number(invoice?.reduceMoney || 0)
                         .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                     </td>
                   </tr>
@@ -141,13 +140,7 @@ const ViewOrder = props => {
                     </td>
                     <td className="right">
                       <strong>
-                        {invoice?.orderDetails
-                          .reduce(
-                            (sum, current) =>
-                              sum +
-                              (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
-                            0
-                          )
+                        {Number(invoice?.realMoney || 0)
                           .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                       </strong>
                     </td>

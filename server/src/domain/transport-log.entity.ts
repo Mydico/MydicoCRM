@@ -60,9 +60,7 @@ export default class TransportLog extends BaseEntity {
     @Index()
     updatedBy: string;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
+
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

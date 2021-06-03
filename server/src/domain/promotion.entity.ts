@@ -35,10 +35,6 @@ export default class Promotion extends BaseEntity {
     @Index()
     totalRevenue?: number;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId?: number;
-
     @Column({ type: 'boolean', name: 'isLock', nullable: false, default: false })
     @Index()
     isLock: boolean;

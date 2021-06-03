@@ -23,10 +23,6 @@ export default class Department extends BaseEntity {
     @Index()
     name: string;
 
-    @Column({ type: 'simple-enum', name: 'status', enum: DepartmentStatus })
-    @Index()
-    status: DepartmentStatus;
-
     @TreeChildren()
     children?: Department[];
   

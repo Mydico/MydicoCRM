@@ -107,6 +107,7 @@ export class StoreInputService {
     if (Array.isArray(storeInput.storeInputDetails)) {
       await this.storeInputDetailsService.saveMany(storeInput.storeInputDetails);
     }
+    storeInput.sale =  storeInput.customer?.sale || null
     return await this.storeInputRepository.save(storeInput);
   }
 

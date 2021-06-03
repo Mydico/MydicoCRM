@@ -29,6 +29,9 @@ export default class StoreInput extends BaseEntity {
     @ManyToOne(type => Customer, customer => customer.storeInput)
     customer?: Customer;
 
+    @ManyToOne(type => User)
+    sale?: User;
+
     @Column({ type: 'bigint', name: 'total_money', nullable: true })
     @Index()
     totalMoney?: number;

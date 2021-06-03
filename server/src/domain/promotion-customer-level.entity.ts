@@ -31,9 +31,7 @@ export default class PromotionCustomerLevel extends BaseEntity {
     @Index()
     createdAt: number;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
+
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

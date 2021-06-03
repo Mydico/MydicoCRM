@@ -8,6 +8,8 @@ import { globalizedWarehouseSelectors, reset } from './warehouse.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash'
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 import moment from 'moment';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -197,7 +199,7 @@ const Warehouse = props => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
-                    <h5>Thông tin người dùng</h5>
+                    <h5>Thông tin kho</h5>
                     <CRow>
                       <CCol lg="6">
                         <dl className="row">
@@ -220,15 +222,11 @@ const Warehouse = props => {
                       <CCol lg="6">
                         <dl className="row">
                           <dt className="col-sm-3">Thành phố</dt>
-                          <dd className="col-sm-9">{item.city}</dd>
+                          <dd className="col-sm-9">{cities.filter(city => city.value === item.city)[0]?.label || ''}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Quận huyện</dt>
-                          <dd className="col-sm-9">{item.district}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Xã Phường</dt>
-                          <dd className="col-sm-9">{item.ward}</dd>
+                          <dd className="col-sm-9">{district.filter(dist => dist.value === item?.district)[0]?.label || ''}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Trạng thái</dt>

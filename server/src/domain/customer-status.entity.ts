@@ -21,9 +21,5 @@ export default class CustomerStatus extends BaseEntity {
     @Index()
     isDel?: boolean;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId?: number;
-
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

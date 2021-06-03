@@ -10,15 +10,13 @@ import OrderDetails from './order-details.entity';
 import PromotionItem from './promotion-item.entity';
 import Bill from './bill.entity';
 import Department from './department.entity';
+import { User } from './user.entity';
 
 /**
  * A Order.
  */
 @Entity('order')
 export default class Order extends BaseEntity {
-  @Column({ type: 'boolean', name: 'is_del', nullable: true })
-  @Index()
-  isDel?: boolean;
 
   @ManyToOne(type => Customer, customer => customer.order)
   customer?: Customer;
@@ -56,25 +54,10 @@ export default class Order extends BaseEntity {
   @Index()
   totalMoney?: number;
 
-  @Column({ name: 'summary', length: 255, nullable: true })
-  @Index()
-  summary?: string;
-
-  @Column({ type: 'integer', name: 'request_id', nullable: true })
-  @Index()
-  requestId?: number;
-
   @Column({ name: 'note', length: 500, nullable: true })
   @Index()
   note?: string;
 
-  @Column({ name: 'customer_note', length: 250, nullable: true })
-  @Index()
-  customerNote?: string;
-
-  @Column({ type: 'boolean', name: 'push_status', nullable: true })
-  @Index()
-  pushStatus?: boolean;
 
   @ManyToOne(type => Promotion, promotion => promotion.orders)
   promotion?: Promotion;
@@ -84,6 +67,9 @@ export default class Order extends BaseEntity {
 
   @OneToMany(type => Bill, bill => bill.order)
   bill?: Bill;
+
+  @ManyToOne(type => User)
+  sale?: User;
 
   @Column({ type: 'integer', name: 'promotion_item_id', nullable: true })
   @Index()
@@ -96,10 +82,6 @@ export default class Order extends BaseEntity {
   @Column({ type: 'bigint', name: 'reduce_money', nullable: true })
   @Index()
   reduceMoney?: number;
-
-  @Column({ type: 'integer', name: 'site_id', nullable: true })
-  @Index()
-  siteId?: number;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

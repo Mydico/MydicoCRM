@@ -62,7 +62,7 @@ if (process.env.NODE_ENV === 'dev') {
     entities: commonConf.ENTITIES,
     migrations: commonConf.MIGRATIONS,
     cli: commonConf.CLI,
-    verboseRetryLog: true,
+    verboseRetryLog: false,
     migrationsRun: commonConf.MIGRATIONS_RUN
   };
 }

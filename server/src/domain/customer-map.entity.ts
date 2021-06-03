@@ -15,9 +15,7 @@ export default class CustomerMap extends BaseEntity {
     @Index()
     userId: number;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
+
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

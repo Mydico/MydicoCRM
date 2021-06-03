@@ -58,7 +58,7 @@ const Order = props => {
       return {
         ...item,
         customerName: item.customer?.name,
-        createdBy: item.createdBy,
+        createdBy: item.createdBy || '',
         quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
         createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
         total: Number(item.realMoney)?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''
@@ -500,7 +500,7 @@ const Order = props => {
                         <tr>
                           <th className="center">#</th>
                           <th>Tên sản phẩm</th>
-                          <th>Dunh tích</th>
+                          <th>Dung tích</th>
                           <th className="center">Số lượng</th>
                           <th className="right">Đơn giá</th>
                           <th className="right">Chiết khấu(%)</th>

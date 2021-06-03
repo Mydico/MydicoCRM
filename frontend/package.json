@@ -146,8 +146,8 @@
     "webpack:test": "npm run test",
     "lint": "eslint . --ignore-path .frontend.eslintignore --no-eslintrc --config .eslintrc.json --ext .js,.ts",
     "lint:fix": "npm run lint -- --fix",
-    "webpack-dev-server": "node --max_old_space_size=4096 node_modules/webpack-dev-server/bin/webpack-dev-server.js",
-    "webpack": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js"
+    "webpack-dev-server": "node --max_old_space_size=8192 node_modules/webpack-dev-server/bin/webpack-dev-server.js",
+    "webpack": "node --max_old_space_size=8192 node_modules/webpack/bin/webpack.js"
   },
   "bugs": {
     "url": "https://github.com/coreui/coreui-pro-react-admin-template-starter/issues"

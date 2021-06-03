@@ -27,7 +27,7 @@ export default class OrderDetails extends BaseEntity {
     @Index()
     attachTo: number;
 
-    @ManyToOne(type => Store, promotion => promotion)
+    @ManyToOne(type => Store, store => store)
     store: Store;
 
     @Column({ type: 'double', name: 'price_total', nullable: true })
@@ -42,9 +42,7 @@ export default class OrderDetails extends BaseEntity {
     @Index()
     priceReal: number;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
+
 
     @ManyToOne(type => Order)
     order: Order;

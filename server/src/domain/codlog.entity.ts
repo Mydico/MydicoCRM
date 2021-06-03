@@ -23,9 +23,7 @@ export default class Codlog extends BaseEntity {
     @Index()
     orderId: number;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
+
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

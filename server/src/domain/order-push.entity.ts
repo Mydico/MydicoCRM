@@ -48,9 +48,7 @@ export default class OrderPush extends BaseEntity {
     @Index()
     status: number;
 
-    @Column({ type: 'integer', name: 'site_id', nullable: true })
-    @Index()
-    siteId: number;
+
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }
