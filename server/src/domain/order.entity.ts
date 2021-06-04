@@ -21,6 +21,9 @@ export default class Order extends BaseEntity {
   @ManyToOne(type => Customer, customer => customer.order)
   customer?: Customer;
 
+  @Column({ name: 'customer_name', length: 255, nullable: true })
+  customerName?: string;
+
   @ManyToOne(type => Store, store => store.order)
   store?: Store;
 

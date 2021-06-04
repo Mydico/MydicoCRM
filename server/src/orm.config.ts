@@ -39,12 +39,19 @@ if (process.env.NODE_ENV === 'prod') {
     port: 3306,
     username: 'root',
     password: 'Dunghd@123',
-    logging: true,
+    logging: false,
     synchronize: commonConf.SYNCRONIZE,
     entities: commonConf.ENTITIES,
     migrations: commonConf.MIGRATIONS,
     cli: commonConf.CLI,
-    migrationsRun: commonConf.MIGRATIONS_RUN
+    migrationsRun: commonConf.MIGRATIONS_RUN,
+    cache: {
+      type: 'ioredis',
+      options: {
+        host: 'localhost',
+        port: 6379
+      }
+    }
   };
 }
 
@@ -63,7 +70,14 @@ if (process.env.NODE_ENV === 'dev') {
     migrations: commonConf.MIGRATIONS,
     cli: commonConf.CLI,
     verboseRetryLog: false,
-    migrationsRun: commonConf.MIGRATIONS_RUN
+    migrationsRun: commonConf.MIGRATIONS_RUN,
+    cache: {
+      type: 'ioredis',
+      options: {
+        host: 'localhost',
+        port: 6379
+      }
+    }
   };
 }
 

@@ -98,8 +98,9 @@ export class CustomerController {
       departmentVisible.push(currentUser.department.id);
     }
     if (filter.length === 0) {
-      filter.push({ department: In(departmentVisible) });
-      if (isEmployee.length > 0) filter[0]['sale'] = currentUser.id;
+      const saleFilter = { department: In(departmentVisible) }
+      if (isEmployee.length > 0) saleFilter['sale'] = currentUser.id
+      filter.push(saleFilter);
     } else {
       filter[filter.length - 1]['department'] = In(departmentVisible);
       if (isEmployee.length > 0) filter[filter.length - 1]['sale'] = currentUser.id;

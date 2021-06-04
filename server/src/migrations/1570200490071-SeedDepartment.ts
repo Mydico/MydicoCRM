@@ -261,12 +261,12 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
       if (exist) {
         exist.debt = entity.earlyDebt;
         exist.customer = entity.customer;
-        exist.department = resultOrderWithOldData[index].department.id
+        exist.department = resultOrderWithOldData[index]?.department?.id || null
       } else {
         exist = new CustomerDebit();
         exist.debt = entity.earlyDebt;
         exist.customer = entity.customer;
-        exist.department = resultOrderWithOldData[index].department.id
+        exist.department = resultOrderWithOldData[index]?.department?.id || null
       }
       await customerDebitRepo.save(exist);
     }

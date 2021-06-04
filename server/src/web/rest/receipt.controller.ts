@@ -60,7 +60,7 @@ export class ReceiptController {
     }
     if (filter.length === 0) {
       filter['department'] = In(departmentVisible);
-      if (isEmployee) filter[0]['sale'] = currentUser.login;
+      if (isEmployee) filter['sale'] = currentUser.login;
     } else {
       filter[filter.length - 1]['department'] = In(departmentVisible);
       if (isEmployee) filter[filter.length - 1]['sale'] = currentUser.login;

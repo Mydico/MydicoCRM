@@ -1,1 +1,1 @@
-export const whiteList = ['/password/first-change', '/account/password','/dashboard','/invoice'];
+export const whiteList = ['/password/first-change', '/change-password','/edit-profile','/dashboard','/invoice'];

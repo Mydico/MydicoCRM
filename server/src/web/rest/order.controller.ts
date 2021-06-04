@@ -61,8 +61,9 @@ export class OrderController {
       departmentVisible.push(currentUser.department.id);
     }
     if (filter.length === 0) {
-      filter.push({ department: In(departmentVisible), status: Not(OrderStatus.DELETED) });
-      if (isEmployee.length > 0) filter[0]['sale'] = currentUser.id;
+      const saleFilter = { department: In(departmentVisible), status: Not(OrderStatus.DELETED) }
+      if (isEmployee.length > 0) saleFilter['sale'] = currentUser.id
+      filter.push(saleFilter);
     } else {
       filter[filter.length - 1]['department'] = In(departmentVisible);
       filter[filter.length - 1]['status'] = Not(OrderStatus.DELETED);
@@ -100,6 +101,7 @@ export class OrderController {
     const currentUser = req.user as User;
     order.createdBy = currentUser.login;
     order.department = currentUser.department;
+    order.customerName = order.customer.name;
     const created = await this.orderService.save(order);
     HeaderUtil.addEntityCreatedHeaders(res, 'Order', created.id);
     return res.send(created);

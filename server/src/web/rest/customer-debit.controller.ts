@@ -60,7 +60,7 @@ export class CustomerDebitController {
     if (filter.length === 0) {
       filter['department'] = In(departmentVisible);
       if(filter['customer']) filter['customer'] = req.query['customer']
-      if (isEmployee) filter[0]['sale'] = currentUser.id;
+      if (isEmployee) filter['sale'] = currentUser.id;
     } else {
       filter[0]['department'] = In(departmentVisible);
       if(filter[0]['customer']) filter['customer'] = req.query['customer']
