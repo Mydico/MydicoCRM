@@ -89,6 +89,7 @@ const slice = createSlice({
     [login.rejected]: (state, action) => {
       state.loginError = action.payload.statusCode;
       state.errorMessage = action.payload.message;
+      state.loading = false;
     }
   }
 });
@@ -97,7 +98,7 @@ export default slice.reducer;
 
 // Actions
 
-export const { logout } = slice.actions;
+export const { logout, request } = slice.actions;
 
 export const userSafeSelector = createDraftSafeSelector(
   state => state.authentication,

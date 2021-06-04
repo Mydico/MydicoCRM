@@ -1,1 +1,20 @@
 // Variable overrides
+$sk-size: 10px !default;
+$sk-color: #fff !default;
+
+/* Config */
+:root {
+  --sk-size: $sk-size;
+  --sk-color: $sk-color;
+}
+
+/*  Plane */
+.sk-plane {
+  width:$sk-size;
+  height: $sk-size;
+  background-color: $sk-color;
+  width: var(--sk-size);
+  height: var(--sk-size);
+  background-color: var(--sk-color);
+  animation: sk-plane 1.2s infinite ease-in-out; 
+}

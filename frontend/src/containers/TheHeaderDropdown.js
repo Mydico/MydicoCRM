@@ -3,10 +3,13 @@ import { CBadge, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CImg 
 import CIcon from '@coreui/icons-react/lib/CIcon';;
 import { useDispatch,useSelector } from 'react-redux';
 import { logout, userSafeSelector } from '../views/pages/login/authenticate.reducer';
+import { setAsideShow } from '../App.reducer';
 
 const TheHeaderDropdown = () => {
   const dispatch = useDispatch();
   const { account } = useSelector(userSafeSelector);
+  const show = useSelector(state => state.app.asideShow);
+  const setState = state => dispatch(setAsideShow(state));
 
   const onLogout = () => {
     dispatch(logout());
@@ -23,7 +26,7 @@ const TheHeaderDropdown = () => {
         <CDropdownItem header tag="div" color="light" className="text-center">
         Xin chào <strong>{account.firstName} {account.lastName}</strong>
         </CDropdownItem>
-        <CDropdownItem>
+        <CDropdownItem onClick={() =>  setState(true)}>
           <CIcon name="cil-user" className="mfe-2" />
           Thông tin cá nhân
         </CDropdownItem>

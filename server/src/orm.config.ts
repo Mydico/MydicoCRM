@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === 'prod') {
     port: 3306,
     username: 'root',
     password: 'Dunghd@123',
-    logging: false,
+    logging: true,
     synchronize: commonConf.SYNCRONIZE,
     entities: commonConf.ENTITIES,
     migrations: commonConf.MIGRATIONS,

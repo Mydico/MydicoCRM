@@ -111,7 +111,7 @@ const CreateWarehouse = () => {
   };
 
   const onSearchCustomer = value => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value, dependency: true }));
   };
 
   const onSelectCustomer = ({ value }) => {

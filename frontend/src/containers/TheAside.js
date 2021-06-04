@@ -58,7 +58,7 @@ const TheAside = () => {
               </CListGroupItem>
               <CListGroupItem accent="warning" href="#" className="list-group-item-divider">
                 <div>
-                  Họ tên:
+                  Họ tên: {" "}
                   <strong>
                     {account.lastName} {account.firstName}
                   </strong>
@@ -82,6 +82,11 @@ const TheAside = () => {
               <CListGroupItem accent="info" href="#">
                 <div>
                   Phòng ban: <strong>{account.branch?.name}</strong>
+                </div>
+              </CListGroupItem>
+              <CListGroupItem accent="info" href="#">
+                <div>
+                  Chức vụ: <strong>{account.roles?.map(item => item.name).join(', ')}</strong>
                 </div>
               </CListGroupItem>
               <CListGroupItem accent="info" href="#">

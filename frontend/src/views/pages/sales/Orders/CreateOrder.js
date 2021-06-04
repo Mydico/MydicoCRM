@@ -115,11 +115,11 @@ const CreateOrder = props => {
   };
 
   const onSearchCustomer = value => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value, dependency: true }));
   };
 
   const onSearchPromition = value => {
-    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,DESC', name: value }));
+    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,DESC', name: value, dependency: true }));
   };
 
   const onSubmit = (values, {}) => {

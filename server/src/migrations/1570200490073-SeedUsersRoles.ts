@@ -81,14 +81,9 @@ export class SeedUsersRoles1570200490073 implements MigrationInterface {
     await conn
       .createQueryBuilder()
       .relation(User, 'authorities')
-      .of([this.user1, this.user3])
+      .of([this.user3])
       .add([this.role1, this.role2]);
 
-    await conn
-      .createQueryBuilder()
-      .relation(User, 'authorities')
-      .of(this.user4)
-      .add([this.role2]);
   }
 
   // eslint-disable-next-line
