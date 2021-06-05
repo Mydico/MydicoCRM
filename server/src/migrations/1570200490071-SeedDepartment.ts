@@ -262,11 +262,13 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
         exist.debt = entity.earlyDebt;
         exist.customer = entity.customer;
         exist.department = resultOrderWithOldData[index]?.department?.id || null
+        exist.sale = entity.sale
       } else {
         exist = new CustomerDebit();
         exist.debt = entity.earlyDebt;
         exist.customer = entity.customer;
         exist.department = resultOrderWithOldData[index]?.department?.id || null
+        exist.sale = entity.sale
       }
       await customerDebitRepo.save(exist);
     }
@@ -383,8 +385,8 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
         type: TransactionType.PAYMENT,
         previousDebt: latestTransaction ? latestTransaction.earlyDebt : 0,
         earlyDebt: latestTransaction
-          ? Number(latestTransaction.earlyDebt) + Number(savedReceipt[index].money)
-          : Number(savedReceipt[index].money)
+          ? Number(latestTransaction.earlyDebt) - Number(savedReceipt[index].money)
+          : 0-Number(savedReceipt[index].money)
       }
       const savedEntity = await conn.getRepository(Transaction).save(entity);
 
@@ -402,11 +404,13 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
         exist.debt = entity.earlyDebt;
         exist.customer = entity.customer;
         exist.department = resultOrderWithOldData[index].department.id
+        exist.sale = entity.sale
       } else {
         exist = new CustomerDebit();
         exist.debt = entity.earlyDebt;
         exist.customer = entity.customer;
-        exist.department = resultOrderWithOldData[index].department.id
+        exist.department = savedReceipt[index].department
+        exist.sale = entity.sale
       }
       await customerDebitRepo.save(exist);
     }
@@ -466,11 +470,13 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
         exist.debt = entity.earlyDebt;
         exist.customer = entity.customer;
         exist.department = resultOrderWithOldData[index].department.id
+        exist.sale = entity.sale
       } else {
         exist = new CustomerDebit();
         exist.debt = entity.earlyDebt;
         exist.customer = entity.customer;
-        exist.department = resultOrderWithOldData[index].department.id
+        exist.department = savedstoreInput[index].department
+        exist.sale = entity.sale
       }
       await customerDebitRepo.save(exist);
 

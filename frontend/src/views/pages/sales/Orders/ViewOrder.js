@@ -18,7 +18,7 @@ const ViewOrder = props => {
   const [invoice, setInvoice] = useState(null);
 
   useEffect(() => {
-    dispatch(getDetailOrder({ id: props.match.params.orderId }));
+    dispatch(getDetailOrder({ id: props.match.params.orderId, dependency: true }));
   }, []);
 
   useEffect(() => {

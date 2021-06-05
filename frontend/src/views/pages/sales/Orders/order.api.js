@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const getDetailOrder = createAsyncThunk('api/detail/orders', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/orders/' + params.id);
+    const result = await axios.get('api/orders/' + params.id, { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

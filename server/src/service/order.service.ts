@@ -21,7 +21,6 @@ import { User } from '../domain/user.entity';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
-relationshipNames.push('customer.sale');
 relationshipNames.push('orderDetails');
 relationshipNames.push('orderDetails.product');
 relationshipNames.push('promotion');
@@ -171,8 +170,6 @@ export class OrderService {
     if (!order.id) {
       order.code = `${count + 1}`;
     }
-    const foundedUser = await this.customerService.findByfields({ where: { id: order.customer.id }, relations: ['sale'] })
-    order.sale = foundedUser.sale;
     return await this.orderRepository.save(order);
   }
 
@@ -195,7 +192,7 @@ export class OrderService {
         });
         const transaction = new Transaction();
         transaction.customer = foundedOrder.customer;
-        transaction.order = order;
+        transaction.order = foundedOrder;
         transaction.bill = createdBill;
         transaction.totalMoney = foundedOrder.realMoney;
         transaction.type = TransactionType.DEBIT;
@@ -207,7 +204,7 @@ export class OrderService {
         const incomeItem = new IncomeDashboard();
         incomeItem.amount = foundedOrder.realMoney;
         incomeItem.type = DashboardType.ORDER;
-        incomeItem.userId = foundedOrder.customer.sale?.id || null;
+        incomeItem.userId = foundedOrder.sale.id || null;
         await this.incomeDashboardService.save(incomeItem);
       }
     }

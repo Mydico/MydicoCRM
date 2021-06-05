@@ -32,7 +32,6 @@ const { selectById } = globalizedWarehouseImportSelectors;
 const DetailWarehouseReturn = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
 
-
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -49,7 +48,7 @@ const DetailWarehouseReturn = props => {
   };
 
   useEffect(() => {
-    dispatch(getDetailWarehouseImport({id: props.match.params.storeId}));
+    dispatch(getDetailWarehouseImport({ id: props.match.params.storeId, dependency: true }));
   }, []);
 
   useEffect(() => {
@@ -78,10 +77,7 @@ const DetailWarehouseReturn = props => {
   return (
     <CCard>
       <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
-        {({
-          values,
-          handleSubmit
-        }) => (
+        {({ values, handleSubmit }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
               <CCardHeader>
@@ -204,12 +200,7 @@ const DetailWarehouseReturn = props => {
                           <td className="right">
                             <strong>
                               {productList
-                                .reduce(
-                                  (sum, current) =>
-                                    sum +
-                                    (Number(current.price || current.product.price) * current.quantity),
-                                  0
-                                )
+                                .reduce((sum, current) => sum + Number(current.price || current.product.price) * current.quantity, 0)
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                             </strong>
                           </td>

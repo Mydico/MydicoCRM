@@ -591,8 +591,6 @@ const CreateOrder = props => {
                           <td style={{ width: 100 }}>
                             <CInput
                               type="number"
-                              name="code"
-                              id="code"
                               min={0}
                               max={100}
                               onChange={event => onChangeReducePercent(event, index)}

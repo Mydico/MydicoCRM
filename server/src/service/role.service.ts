@@ -47,6 +47,11 @@ export class RoleService {
     return groupPolicyFounded;
   }
 
+  public async filterPolicies(index, groupPolicy) {
+    const groupPolicyFounded = await this.enforcer.getFilteredPolicy(index, groupPolicy);
+    return groupPolicyFounded;
+  }
+
   public async addGroupingPolicies(params: string[][]) {
     await this.enforcer.addGroupingPolicies(params);
   }

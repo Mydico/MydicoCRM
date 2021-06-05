@@ -47,7 +47,6 @@ const DetailReceipt = props => {
   const formikRef = useRef();
   const {} = useSelector(state => state.receipt);
 
-
   const dispatch = useDispatch();
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -72,7 +71,7 @@ const DetailReceipt = props => {
 
   useEffect(() => {
     dispatch(getCustomer());
-    dispatch(getDetailReceipt({id: props.match.params.receiptId}));
+    dispatch(getDetailReceipt({ id: props.match.params.receiptId, dependency: true }));
   }, []);
 
   return (

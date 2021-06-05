@@ -64,13 +64,13 @@ export class PermissionGroupService {
         users: User[] = []
     ): Promise<void | undefined> {
         await Promise.all(
-            users.map(async user => await this.roleService.addGroupPolicy(permissionGroup.id, user.id))
+            users.map(async user => await this.roleService.addGroupPolicy(permissionGroup.id, user.login))
         );
         const foundedPermissionList = await Promise.all(
             permissions.map(async permission => await this.permissionService.findByfields({ where: { action: permission.action, resource: permission.resource } }))
         );
         const policies = [];
-        this.roleService.removePolicies(permissionGroup.id);
+        await this.roleService.removePolicies(permissionGroup.id);
         const permissionAssociate = await Promise.all(
             foundedPermissionList.map(async permission => {
                 if (permission) {

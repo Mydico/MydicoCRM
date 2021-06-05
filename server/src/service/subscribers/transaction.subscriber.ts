@@ -25,7 +25,7 @@ export class TransactionSubscriber implements EntitySubscriberInterface<Transact
     const debtDashboard = new DebtDashboard();
     if (event.entity.type === TransactionType.DEBIT) {
       debtDashboard.amount = event.entity.totalMoney;
-      debtDashboard.userId = foundedCustomer.sale?.id || null;
+      debtDashboard.userId = event.entity.order.sale.id || null;
       debtDashboard.type = DashboardType.DEBT;
     }else if(event.entity.type === TransactionType.PAYMENT) {
       debtDashboard.amount = event.entity.collectMoney;
@@ -42,11 +42,13 @@ export class TransactionSubscriber implements EntitySubscriberInterface<Transact
       exist.debt = event.entity.earlyDebt;
       exist.customer = event.entity.customer;
       exist.department = foundedCustomer.department
+      exist.sale = event.entity.type === TransactionType.DEBIT?event.entity.order.sale : foundedCustomer.sale
     } else {
       exist = new CustomerDebit();
       exist.debt = event.entity.earlyDebt;
       exist.customer = event.entity.customer;
       exist.department = foundedCustomer.department
+      exist.sale = event.entity.type === TransactionType.DEBIT? event.entity.order.sale : foundedCustomer.sale
     }
     await customerDebitRepo.save(exist);
   }

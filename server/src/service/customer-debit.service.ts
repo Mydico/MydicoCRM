@@ -7,7 +7,7 @@ import { CustomerDebitRepository } from '../repository/customer-debit.repository
 
 const relationshipNames = [];
 relationshipNames.push('customer');
-relationshipNames.push('customer.sale');
+relationshipNames.push('sale');
 
 @Injectable()
 export class CustomerDebitService {
@@ -46,7 +46,7 @@ export class CustomerDebitService {
     const queryBuilder = this.customerDebitRepository
       .createQueryBuilder('CustomerDebit')
       .leftJoinAndSelect('CustomerDebit.customer', 'customer')
-      .leftJoinAndSelect('customer.sale', 'sale')
+      .leftJoinAndSelect('CustomerDebit.sale', 'sale')
       .where(andQueryString)
       .orderBy(`CustomerDebit.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)

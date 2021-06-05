@@ -116,7 +116,8 @@ const EditOrder = props => {
         dispatch(
           getProductWarehouseByField({
             store: initialState.orderDetails[0].store.id,
-            product: JSON.stringify(initialState.orderDetails.map(item => item.product.id))
+            product: JSON.stringify(initialState.orderDetails.map(item => item.product.id)),
+            dependency: true
           })
         ).then(numberOfQuantityInStore => {
           if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
@@ -167,13 +168,13 @@ const EditOrder = props => {
 
   useEffect(() => {
     if (selectedPromotion?.id) {
-      dispatch(getDetailProductPromotion({ promotion: selectedPromotion.id }));
+      dispatch(getDetailProductPromotion({ promotion: selectedPromotion.id, dependency: true }));
     }
   }, [selectedPromotion]);
 
   useEffect(() => {
     if (selectedWarehouse?.id) {
-      dispatch(getProductWarehouse({ store: selectedWarehouse?.id }));
+      dispatch(getProductWarehouse({ store: selectedWarehouse?.id, dependency: true}));
     }
   }, [selectedWarehouse]);
 
@@ -239,7 +240,8 @@ const EditOrder = props => {
       dispatch(
         getProductInstore({
           storeId: selectedWarehouse.id,
-          productId: copyArr[index].product.id
+          productId: copyArr[index].product.id,
+          dependency: true
         })
       ).then(numberOfQuantityInStore => {
         if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
@@ -594,8 +596,8 @@ const EditOrder = props => {
                           <td style={{ width: 100 }}>
                             <CInput
                               type="number"
-                              name="code"
-                              id="code"
+                              min={0}
+                              max={100}
                               onChange={event => onChangeReducePercent(event, index)}
                               onBlur={handleBlur}
                               value={item.reducePercent}

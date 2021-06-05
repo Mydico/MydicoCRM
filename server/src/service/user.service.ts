@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../domain/user.entity';
 import { UserRepository } from '../repository/user.repository';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
+import { Brackets, FindManyOptions, FindOneOptions } from 'typeorm';
 import { RoleService } from './role.service';
 import { ChangePasswordDTO } from './dto/user.dto';
 const relationshipNames = [];
@@ -35,10 +35,48 @@ export class UserService {
         return this.flatAuthorities(result);
     }
 
-    async findAndCount(options: FindManyOptions<User>): Promise<[User[], number]> {
+    async findAndCount(options: FindManyOptions<User>, filter = [],
+        departmentVisible = [],
+        branch = []): Promise<[User[], number]> {
         options.relations = relationshipNames;
         // options.cache = 36000000
-        const resultList = await this.userRepository.findAndCount(options);
+        let queryString = '';
+        Object.keys(filter).forEach((item, index) => {
+          queryString += `User.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+        });
+        let andQueryString = '';
+    
+        if (departmentVisible.length > 0) {
+          andQueryString += `User.department IN ${JSON.stringify(departmentVisible)
+            .replace('[', '(')
+            .replace(']', ')')}`;
+        }
+        if (branch.length > 0) {
+            andQueryString += ` AND User.branch IN ${JSON.stringify(branch)
+              .replace('[', '(')
+              .replace(']', ')')}`;
+          }
+        const queryBuilder = this.userRepository
+          .createQueryBuilder('User')
+          .leftJoinAndSelect('User.roles', 'roles')
+          .leftJoinAndSelect('User.department', 'department')
+          .leftJoinAndSelect('User.branch', 'branch')
+          .leftJoinAndSelect('User.authorities', 'authorities')
+          .leftJoinAndSelect('User.permissionGroups', 'permissionGroups')
+          .leftJoinAndSelect('permissionGroups.permissionGroupAssociates', 'permissionGroupAssociates')
+          .where(andQueryString)
+          .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+          .skip(options.skip)
+          .take(options.take)
+          if(queryString){
+            queryBuilder.andWhere(
+              new Brackets(sqb => {
+                sqb.where(queryString);
+              })
+            )
+          }
+        const resultList = await queryBuilder.getManyAndCount();
+        // const resultList = await this.userRepository.findAndCount(options);
         const users: User[] = [];
         if (resultList && resultList[0]) {
             resultList[0].forEach(user => users.push(this.flatAuthorities(user)));

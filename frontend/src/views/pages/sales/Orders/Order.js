@@ -157,7 +157,8 @@ const Order = props => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.APPROVED,
-      action: 'approve'
+      action: 'approve',
+      customer: order.customer
     };
     dispatch(updateStatusOrder(newOrder));
   };
@@ -166,7 +167,8 @@ const Order = props => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.CANCEL,
-      action: 'cancel'
+      action: 'cancel',
+      customer: order.customer
     };
     dispatch(updateStatusOrder(newOrder));
   };
@@ -175,7 +177,8 @@ const Order = props => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.DELETED,
-      action: 'delete'
+      action: 'delete',
+      customer: order.customer
     };
     dispatch(updateStatusOrder(newOrder));
   };
@@ -184,7 +187,8 @@ const Order = props => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.CREATE_COD,
-      action: 'create-cod'
+      action: 'create-cod',
+      customer: order.customer
     };
     dispatch(updateStatusOrder(newOrder));
   };
@@ -271,7 +275,7 @@ const Order = props => {
                 DUYỆT ĐƠN HÀNG
               </CButton>
             )}
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
+            {(isAdmin || (item.createdBy === account.login && account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0)) && (
               <CButton
                 onClick={() => {
                   cancelAlert(item);
@@ -284,9 +288,9 @@ const Order = props => {
                 HỦY ĐƠN HÀNG
               </CButton>
             )}
-            {item.createdBy === account.login &&
-              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length === 0 &&
-              !isAdmin && (
+            {(item.createdBy === account.login &&
+              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0 &&
+              !isAdmin) && (
                 <CButton
                   onClick={() => {
                     toEditOrder(item.id);
@@ -298,21 +302,6 @@ const Order = props => {
                 >
                   <CIcon name="cil-pencil" />
                   CHỈNH SỬA
-                </CButton>
-              )}
-            {item.createdBy === account.login &&
-              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length === 0 &&
-              !isAdmin && (
-                <CButton
-                  onClick={() => {
-                    cancelAlert(item);
-                  }}
-                  color="danger"
-                  variant="outline"
-                  shape="square"
-                  size="sm"
-                >
-                  HỦY ĐƠN HÀNG
                 </CButton>
               )}
           </CCol>

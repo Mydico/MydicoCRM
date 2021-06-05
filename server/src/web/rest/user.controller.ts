@@ -1,4 +1,19 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put, UseGuards, Req, UseInterceptors, Res, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+  Req,
+  UseInterceptors,
+  Res,
+  HttpException,
+  HttpStatus
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
@@ -10,6 +25,7 @@ import { UserService } from '../../service/user.service';
 import { In, Like } from 'typeorm';
 import { BranchService } from '../../service/branch.service';
 import { ChangePasswordDTO } from '../../service/dto/user.dto';
+import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/users')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -18,7 +34,11 @@ import { ChangePasswordDTO } from '../../service/dto/user.dto';
 export class UserController {
   logger = new Logger('UserController');
 
-  constructor(private readonly userService: UserService, private readonly branchServices: BranchService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly branchServices: BranchService,
+    private readonly departmentService: DepartmentService
+  ) {}
 
   @Get('/transporter')
   @ApiResponse({
@@ -31,31 +51,34 @@ export class UserController {
     const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+        filter[item] = req.query[item];
       }
     });
+    let departmentVisible = [];
+
+    const currentUser = req.user as User;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
     const arrBranch = await this.branchServices.findAndCount({
       where: {
         code: In(['GN', 'KD'])
       }
-    });
-    const currentUser = req.user as User;
-    if (filter.length === 0) {
-      filter.push({ branch: In(arrBranch[0].map(item => item.id)), department: currentUser.department });
-    } else {
-      filter[0]['branch'] = In(arrBranch[0].map(item => item.id));
-      filter[0]['department'] = currentUser.department;
-    }
+    })[0]?.map(item => item.id) || [];
+    // const currentUser = req.user as User;
+    // if (filter.length === 0) {
+    //   filter.push({ branch: In(arrBranch[0].map(item => item.id)), department: currentUser.department });
+    // } else {
+    //   filter[0]['branch'] = In(arrBranch[0].map(item => item.id));
+    //   filter[0]['department'] = currentUser.department;
+    // }
     const [results, count] = await this.userService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: [
-        {
-          branch: In(arrBranch[0].map(item => item.id))
-        }
-      ]
-    });
+      order: pageRequest.sort.asOrder()
+    },filter,departmentVisible,arrBranch);
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }
@@ -71,15 +94,14 @@ export class UserController {
     const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+        filter[item] = req.query[item];
       }
     });
     const [results, count] = await this.userService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
-      where: filter
-    });
+    },filter, [] ,[]);
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }
@@ -107,7 +129,7 @@ export class UserController {
     const currentUser = req.user as User;
     const isAdmin = currentUser.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
 
-    if(!isAdmin && currentUser.login !== user.login){
+    if (!isAdmin && currentUser.login !== user.login) {
       throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
     }
     HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.login);

@@ -413,7 +413,8 @@ const EditWarehouseReturn = props => {
                           <td style={{ width: 100 }}>
                             <CInput
                               type="number"
-                              min={1}
+                              min={0}
+                              max={100}
                               onChange={event => onChangeReducePercent(event, index)}
                               value={item.reducePercent}
                             />

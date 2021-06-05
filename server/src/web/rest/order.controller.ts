@@ -107,6 +107,7 @@ export class OrderController {
   async post(@Req() req: Request, @Res() res: Response, @Body() order: Order): Promise<Response> {
     const currentUser = req.user as User;
     order.createdBy = currentUser.login;
+    order.sale = currentUser;
     order.department = currentUser.department;
     order.customerName = order.customer.name;
     const created = await this.orderService.save(order);
