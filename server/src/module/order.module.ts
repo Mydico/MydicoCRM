@@ -8,9 +8,10 @@ import { ProductQuantityModule } from './product-quantity.module';
 import { TransactionModule } from './transaction.module';
 import { DepartmentModule } from './department.module';
 import { IncomeDashboardModule } from './income-dashboard.module';
+import { CustomerModule } from './customer.module';
 
 @Module({
-    imports: [CacheModule.register(),TypeOrmModule.forFeature([OrderRepository]), BillModule, ProductQuantityModule, TransactionModule, DepartmentModule, IncomeDashboardModule],
+    imports: [CacheModule.register(),TypeOrmModule.forFeature([OrderRepository]), BillModule, ProductQuantityModule, TransactionModule, DepartmentModule, IncomeDashboardModule, CustomerModule],
     controllers: [OrderController],
     providers: [OrderService],
     exports: [OrderService],

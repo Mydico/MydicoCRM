@@ -34,7 +34,7 @@ import { DepartmentService } from '../../service/department.service';
 export class OrderController {
   logger = new Logger('OrderController');
 
-  constructor(private readonly orderService: OrderService,  private readonly departmentService: DepartmentService) {}
+  constructor(private readonly orderService: OrderService, private readonly departmentService: DepartmentService) {}
 
   @Get('/')
   @Roles(RoleType.USER)
@@ -48,33 +48,40 @@ export class OrderController {
     const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency' && item !== 'status') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+        filter[item] = req.query[item];
       }
     });
     let departmentVisible = [];
 
     const currentUser = req.user as User;
-    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE);
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
     if (currentUser.department) {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    if (filter.length === 0) {
-      const saleFilter = { department: In(departmentVisible), status: Not(OrderStatus.DELETED) }
-      if (isEmployee.length > 0) saleFilter['sale'] = currentUser.id
-      filter.push(saleFilter);
-    } else {
-      filter[filter.length - 1]['department'] = In(departmentVisible);
-      filter[filter.length - 1]['status'] = Not(OrderStatus.DELETED);
-      if (isEmployee.length > 0) filter[filter.length - 1]['sale'] = currentUser.id;
-    }
-    const [results, count] = await this.orderService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: filter
-    });    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    // if (filter.length === 0) {
+    //   const saleFilter = { department: In(departmentVisible), status: Not(OrderStatus.DELETED) }
+    //   if (isEmployee.length > 0) saleFilter['sale'] = currentUser.id
+    //   filter.push(saleFilter);
+    // } else {
+    //   filter[filter.length - 1]['department'] = In(departmentVisible);
+    //   filter[filter.length - 1]['status'] = Not(OrderStatus.DELETED);
+    //   if (isEmployee.length > 0) filter[filter.length - 1]['sale'] = currentUser.id;
+    // }
+    const [results, count] = await this.orderService.findAndCount(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder(),
+        where: filter
+      },
+      filter,
+      departmentVisible,
+      isEmployee,
+      currentUser
+    );
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }
 

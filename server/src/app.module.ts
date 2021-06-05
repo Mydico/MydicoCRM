@@ -2,7 +2,6 @@ import { CacheModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as path from 'path';
 import { AuthModule } from './module/auth.module';
-import { RedisModule } from '@nestjs-modules/ioredis';
 import { ormconfig, roleBDConfig } from './orm.config';
 import { CustomerTokenModule } from './module/customer-token.module';
 import { PromotionModule } from './module/promotion.module';
@@ -66,13 +65,6 @@ import { BranchModule } from './module/branch.module';
 
 @Module({
     imports: [
-        RedisModule.forRootAsync({
-            useFactory: () => ({
-              config: { 
-                url: 'redis://localhost:6379',
-              },
-            }),
-        }),
         TypeOrmModule.forRoot(ormconfig),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, './', 'classes/static')

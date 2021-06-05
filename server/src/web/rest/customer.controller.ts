@@ -10,7 +10,8 @@ import {
   UseGuards,
   Req,
   UseInterceptors,
-  Res
+  Res,
+  CacheInterceptor
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -26,7 +27,7 @@ import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/customers')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor)
+@UseInterceptors(LoggingInterceptor, CacheInterceptor)
 @ApiBearerAuth()
 export class CustomerController {
   logger = new Logger('CustomerController');
@@ -56,21 +57,26 @@ export class CustomerController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    if (filter.length === 0) {
-      filter['department'] = In(departmentVisible);
-      filter['dateOfBirth'] = Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7)));
-    } else {
-      filter[0]['department'] = In(departmentVisible);
-      filter[0]['dateOfBirth'] = Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7)));
-    }
-    const [results, count] = await this.customerService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: filter
-    });
+    // if (filter.length === 0) {
+    //   filter['department'] = In(departmentVisible);
+    //   filter['dateOfBirth'] = Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7)));
+    // } else {
+    //   filter[0]['department'] = In(departmentVisible);
+    //   filter[0]['dateOfBirth'] = Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7)));
+    // }
+    const [results, count] = await this.customerService.findAndCount(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder()
+      },
+      filter,
+      departmentVisible,
+      false,
+      null
+    );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
-    return results;
+    return null;
   }
 
   @Get('/')
@@ -82,35 +88,40 @@ export class CustomerController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Customer[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = [];
+    const filter: any = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+        filter[item] = req.query[item];
       }
     });
-    let departmentVisible = [];
+    let departmentVisible: any = [];
 
     const currentUser = req.user as User;
-    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE);
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
     if (currentUser.department) {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    if (filter.length === 0) {
-      const saleFilter = { department: In(departmentVisible) }
-      if (isEmployee.length > 0) saleFilter['sale'] = currentUser.id
-      filter.push(saleFilter);
-    } else {
-      filter[filter.length - 1]['department'] = In(departmentVisible);
-      if (isEmployee.length > 0) filter[filter.length - 1]['sale'] = currentUser.id;
-    }
-    const [results, count] = await this.customerService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: filter
-    });
+    // if (filter.length === 0) {
+    //   const saleFilter = { department: In(departmentVisible) };
+    //   if (isEmployee.length > 0) saleFilter['sale'] = currentUser.id;
+    //   filter.push(saleFilter);
+    // } else {
+    //   filter[0]['department'] = In(departmentVisible);
+    //   // if (isEmployee.length > 0) filter[filter.length - 1]['sale'] = currentUser.id;
+    // }
+    const [results, count] = await this.customerService.findAndCount(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder()
+      },
+      filter,
+      departmentVisible,
+      isEmployee,
+      currentUser
+    );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }

@@ -10,7 +10,9 @@ import {
   UseGuards,
   Req,
   UseInterceptors,
-  Res
+  Res,
+  CacheInterceptor,
+  CacheTTL
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';

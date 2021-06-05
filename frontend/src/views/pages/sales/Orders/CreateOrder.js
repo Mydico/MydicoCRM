@@ -60,7 +60,6 @@ const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
 const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
 const { selectAll: selectAllProductInWarehouse } = globalizedProductWarehouseSelectors;
 const CreateOrder = props => {
-  const {} = useSelector(state => state.order);
   const { initialState: promotionState } = useSelector(state => state.promotion);
   const { account } = useSelector(userSafeSelector);
 

@@ -23,18 +23,21 @@ export class UserService {
 
     async findByfields(options: FindOneOptions<User>): Promise<User | undefined> {
         options.relations = relationshipNames;
+        // options.cache = 36000000
         const result = await this.userRepository.findOne(options);
         return this.flatAuthorities(result);
     }
 
     async find(options: FindManyOptions<User>): Promise<User | undefined> {
         options.relations = relationshipNames;
+        // options.cache = 36000000
         const result = await this.userRepository.findOne(options);
         return this.flatAuthorities(result);
     }
 
     async findAndCount(options: FindManyOptions<User>): Promise<[User[], number]> {
         options.relations = relationshipNames;
+        // options.cache = 36000000
         const resultList = await this.userRepository.findAndCount(options);
         const users: User[] = [];
         if (resultList && resultList[0]) {

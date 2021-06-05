@@ -46,7 +46,7 @@ export class CustomerDebitController {
     const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+        filter[item] = req.query[item];
       }
     });
     let departmentVisible = [];
@@ -57,21 +57,27 @@ export class CustomerDebitController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    if (filter.length === 0) {
-      filter['department'] = In(departmentVisible);
-      if(filter['customer']) filter['customer'] = req.query['customer']
-      if (isEmployee) filter['sale'] = currentUser.id;
-    } else {
-      filter[0]['department'] = In(departmentVisible);
-      if(filter[0]['customer']) filter['customer'] = req.query['customer']
-      if (isEmployee) filter[0]['sale'] = currentUser.id;
-    }
-    const [results, count] = await this.customerDebitService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: filter
-    });
+    // if (filter.length === 0) {
+    //   filter['department'] = In(departmentVisible);
+    //   if(filter['customer']) filter['customer'] = req.query['customer']
+    //   if (isEmployee) filter['sale'] = currentUser.id;
+    // } else {
+    //   filter[0]['department'] = In(departmentVisible);
+    //   if(filter[0]['customer']) filter['customer'] = req.query['customer']
+    //   if (isEmployee) filter[0]['sale'] = currentUser.id;
+    // }
+    const [results, count] = await this.customerDebitService.findAndCount(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder(),
+        where: filter
+      },
+      filter,
+      departmentVisible,
+      isEmployee,
+      currentUser
+    );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }

@@ -1,10 +1,8 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PageRequest } from '../domain/base/pagination.entity';
-import { FindManyOptions, FindOneOptions, In } from 'typeorm';
+import { Brackets, FindManyOptions, FindOneOptions, In } from 'typeorm';
 import Order from '../domain/order.entity';
 import { OrderRepository } from '../repository/order.repository';
-import { Request, Response } from 'express';
 import { BillService } from './bill.service';
 import Bill from '../domain/bill.entity';
 import { OrderStatus } from '../domain/enumeration/order-status';
@@ -15,12 +13,11 @@ import _ from 'lodash';
 import { TransactionService } from './transaction.service';
 import Transaction from '../domain/transaction.entity';
 import { TransactionType } from '../domain/enumeration/transaction-type';
-import { User } from '../domain/user.entity';
-import { DepartmentService } from './department.service';
 import { IncomeDashboardService } from './income-dashboard.service';
 import IncomeDashboard from '../domain/income-dashboard.entity';
 import { DashboardType } from '../domain/enumeration/dashboard-type';
-import { RoleType } from '../security';
+import { CustomerService } from './customer.service';
+import { User } from '../domain/user.entity';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -30,6 +27,7 @@ relationshipNames.push('orderDetails.product');
 relationshipNames.push('promotion');
 relationshipNames.push('promotion.customerType');
 relationshipNames.push('store');
+relationshipNames.push('sale');
 relationshipNames.push('department');
 
 @Injectable()
@@ -41,7 +39,7 @@ export class OrderService {
     private readonly billService: BillService,
     private readonly productQuantityService: ProductQuantityService,
     private readonly transactionService: TransactionService,
-    private readonly departmentService: DepartmentService,
+    private readonly customerService: CustomerService,
     private readonly incomeDashboardService: IncomeDashboardService
   ) { }
 
@@ -54,40 +52,49 @@ export class OrderService {
     return await this.orderRepository.findOne(options);
   }
 
-  async findAndCount(options: FindManyOptions<Order>): Promise<[Order[], number]> {
-    // let departmentVisible = [];
-    // if (currentUser.department) {
-    //   departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-    //   departmentVisible.push(currentUser.department);
-    // }
-    // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+  async findAndCount(options: FindManyOptions<Order>, filter = [],
+    departmentVisible = [],
+    isEmployee: boolean,
+    currentUser: User): Promise<[Order[], number]> {
+      // options.relations = relationshipNames;
+      // return await this.orderRepository.findAndCount(options);
 
-    // let queryString = "Order.status <> 'DELETED'";
-    // Object.keys(req.query).forEach((item, index) => {
-    //   if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-    //     queryString += `Order.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'OR '}`;
-    //   }
-    // });
-    // if (departmentVisible.length > 0) {
-    //   queryString += ` AND Order.department IN ${JSON.stringify(departmentVisible.map(item => item.id))
-    //     .replace('[', '(')
-    //     .replace(']', ')')}`;
-    // }
-    // if(isEmployee) queryString += ` AND Order.createdBy = ${currentUser.login}`
-    // return await this.orderRepository
-    //   .createQueryBuilder('Order')
-    //   .leftJoinAndSelect('Order.customer', 'customer')
-    //   .leftJoinAndSelect('Order.promotion', 'promotion')
-    //   .leftJoinAndSelect('promotion.customerType', 'customerType')
-    //   .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
-    //   .leftJoinAndSelect('orderDetails.product', 'product')
-    //   .where(queryString)
-    //   .orderBy('Order.createdDate', 'DESC')
-    //   .skip(pageRequest.page * pageRequest.size)
-    //   .take(pageRequest.size)
-    //   .getManyAndCount();
-    options.relations = relationshipNames;
-    return await this.orderRepository.findAndCount(options);
+      let queryString = '';
+      Object.keys(filter).forEach((item, index) => {
+        queryString += `Order.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+      });
+      let andQueryString = '';
+  
+      if (departmentVisible.length > 0) {
+        andQueryString += `Order.department IN ${JSON.stringify(departmentVisible)
+          .replace('[', '(')
+          .replace(']', ')')}`;
+      }
+      if (isEmployee) andQueryString += ` AND Order.sale = ${currentUser.id}`;
+      const queryBuilder = this.orderRepository
+        .createQueryBuilder('Order')
+        .leftJoinAndSelect('Order.customer', 'customer')
+        .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
+        .leftJoinAndSelect('orderDetails.product', 'product')
+        .leftJoinAndSelect('Order.promotion', 'promotion')
+        .leftJoinAndSelect('promotion.customerType', 'customerType')
+        .leftJoinAndSelect('Order.store', 'store')
+        .leftJoinAndSelect('Order.sale', 'sale')
+        .leftJoinAndSelect('Order.department', 'department')
+        .where(andQueryString)
+        .orderBy(`Order.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+        .skip(options.skip)
+        .take(options.take)
+        if(queryString){
+          queryBuilder.andWhere(
+            new Brackets(sqb => {
+              sqb.where(queryString);
+            })
+          )
+        }
+        return await queryBuilder.getManyAndCount();
+
+    // options.cache = 3600000
   }
 
   async getProductInStore(arrIds: string[], store: Store): Promise<ProductQuantity[]> {
@@ -164,6 +171,8 @@ export class OrderService {
     if (!order.id) {
       order.code = `${count + 1}`;
     }
+    const foundedUser = await this.customerService.findByfields({ where: { id: order.customer.id }, relations: ['sale'] })
+    order.sale = foundedUser.sale;
     return await this.orderRepository.save(order);
   }
 

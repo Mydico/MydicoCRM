@@ -37,11 +37,13 @@ export class PromotionService {
     }
 
     async findByfields(options: FindOneOptions<Promotion>): Promise<Promotion | undefined> {
+        // options.cache = 36000000
         return await this.promotionRepository.findOne(options);
     }
 
     async findAndCount(options: FindManyOptions<Promotion>): Promise<[Promotion[], number]> {
         options.relations = relationshipNames;
+        // options.cache = 36000000
         return await this.promotionRepository.findAndCount(options);
     }
 

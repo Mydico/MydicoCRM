@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReceiptStatus } from '../domain/enumeration/receipt-status';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
+import { Brackets, FindManyOptions, FindOneOptions } from 'typeorm';
 import Receipt from '../domain/receipt.entity';
 import { ReceiptRepository } from '../repository/receipt.repository';
 import { TransactionService } from './transaction.service';
@@ -10,6 +10,7 @@ import { TransactionType } from '../domain/enumeration/transaction-type';
 import { IncomeDashboardService } from './income-dashboard.service';
 import { DashboardType } from '../domain/enumeration/dashboard-type';
 import IncomeDashboard from '../domain/income-dashboard.entity';
+import { User } from '../domain/user.entity';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -23,7 +24,7 @@ export class ReceiptService {
         @InjectRepository(ReceiptRepository) private receiptRepository: ReceiptRepository,
         private readonly transactionService: TransactionService,
         private readonly incomeDashboardService: IncomeDashboardService
-    ) {}
+    ) { }
 
     async findById(id: string): Promise<Receipt | undefined> {
         const options = { relations: relationshipNames };
@@ -34,9 +35,43 @@ export class ReceiptService {
         return await this.receiptRepository.findOne(options);
     }
 
-    async findAndCount(options: FindManyOptions<Receipt>): Promise<[Receipt[], number]> {
-        options.relations = relationshipNames;
-        return await this.receiptRepository.findAndCount(options);
+    async findAndCount(options: FindManyOptions<Receipt>, filter = [],
+        departmentVisible = [],
+        isEmployee: boolean,
+        currentUser: User): Promise<[Receipt[], number]> {
+        let queryString = '';
+        Object.keys(filter).forEach((item, index) => {
+            queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+        });
+        let andQueryString = '';
+
+        if (departmentVisible.length > 0) {
+            andQueryString += `Receipt.department IN ${JSON.stringify(departmentVisible)
+                .replace('[', '(')
+                .replace(']', ')')}`;
+        }
+        if (isEmployee) andQueryString += ` AND Receipt.sale = ${currentUser.id}`;
+        const queryBuilder = this.receiptRepository
+            .createQueryBuilder('Receipt')
+            .leftJoinAndSelect('Receipt.customer', 'customer')
+            .leftJoinAndSelect('Receipt.sale', 'sale')
+            .leftJoinAndSelect('Receipt.approver', 'approver')
+            .where(andQueryString)
+
+            .orderBy(`Receipt.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+            .skip(options.skip)
+            .take(options.take)
+        if (queryString) {
+            queryBuilder.andWhere(
+                new Brackets(sqb => {
+                    sqb.where(queryString);
+                })
+            )
+        }
+        return await queryBuilder.getManyAndCount();
+
+        // options.relations = relationshipNames;
+        // return await this.receiptRepository.findAndCount(options);
     }
 
     async save(receipt: Receipt): Promise<Receipt | undefined> {
@@ -51,10 +86,10 @@ export class ReceiptService {
     }
 
     async update(receipt: Receipt): Promise<Receipt | undefined> {
-        if(receipt.status === ReceiptStatus.APPROVED){
+        if (receipt.status === ReceiptStatus.APPROVED) {
             const entity = await this.findById(receipt.id);
             const latestTransaction = await this.transactionService.findByfields({
-                where : {customer: entity.customer},
+                where: { customer: entity.customer },
                 order: { createdDate: 'DESC' },
             });
             const transaction = new Transaction();
@@ -63,7 +98,7 @@ export class ReceiptService {
             transaction.collectMoney = entity.money;
             transaction.type = TransactionType.PAYMENT;
             transaction.previousDebt = latestTransaction ? latestTransaction.earlyDebt : 0;
-            transaction.earlyDebt = latestTransaction?  Number(latestTransaction.earlyDebt) -  Number(entity.money) : 0 -  Number(entity.money);
+            transaction.earlyDebt = latestTransaction ? Number(latestTransaction.earlyDebt) - Number(entity.money) : 0 - Number(entity.money);
             await this.transactionService.save(transaction);
             const incomeItem = new IncomeDashboard();
             incomeItem.amount = entity.money;

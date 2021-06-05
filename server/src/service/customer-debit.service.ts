@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
+import { User } from '../domain/user.entity';
+import { Brackets, FindManyOptions, FindOneOptions } from 'typeorm';
 import CustomerDebit from '../domain/customer-debit.entity';
 import { CustomerDebitRepository } from '../repository/customer-debit.repository';
 
@@ -10,33 +11,66 @@ relationshipNames.push('customer.sale');
 
 @Injectable()
 export class CustomerDebitService {
-    logger = new Logger('CustomerDebitService');
+  logger = new Logger('CustomerDebitService');
 
-    constructor(@InjectRepository(CustomerDebitRepository) private customerDebitRepository: CustomerDebitRepository) {}
+  constructor(@InjectRepository(CustomerDebitRepository) private customerDebitRepository: CustomerDebitRepository) {}
 
-    async findById(id: string): Promise<CustomerDebit | undefined> {
-        const options = { relations: relationshipNames };
-        return await this.customerDebitRepository.findOne(id, options);
+  async findById(id: string): Promise<CustomerDebit | undefined> {
+    const options = { relations: relationshipNames };
+    return await this.customerDebitRepository.findOne(id, options);
+  }
+
+  async findByfields(options: FindOneOptions<CustomerDebit>): Promise<CustomerDebit | undefined> {
+    return await this.customerDebitRepository.findOne(options);
+  }
+
+  async findAndCount(
+    options: FindManyOptions<CustomerDebit>,
+    filter = [],
+    departmentVisible = [],
+    isEmployee: boolean,
+    currentUser: User
+  ): Promise<[CustomerDebit[], number]> {
+    let queryString = '';
+    Object.keys(filter).forEach((item, index) => {
+      queryString += `CustomerDebit.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+    });
+    let andQueryString = '';
+
+    if (departmentVisible.length > 0) {
+      andQueryString += `CustomerDebit.department IN ${JSON.stringify(departmentVisible)
+        .replace('[', '(')
+        .replace(']', ')')}`;
     }
-
-    async findByfields(options: FindOneOptions<CustomerDebit>): Promise<CustomerDebit | undefined> {
-        return await this.customerDebitRepository.findOne(options);
+    if (isEmployee) andQueryString += ` AND CustomerDebit.sale = ${currentUser.id}`;
+    const queryBuilder = this.customerDebitRepository
+      .createQueryBuilder('CustomerDebit')
+      .leftJoinAndSelect('CustomerDebit.customer', 'customer')
+      .leftJoinAndSelect('customer.sale', 'sale')
+      .where(andQueryString)
+      .orderBy(`CustomerDebit.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take);
+    if (queryString) {
+      queryBuilder.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
     }
+    return await queryBuilder.getManyAndCount();
+    // return await this.customerDebitRepository.findAndCount(options);
+  }
 
-    async findAndCount(options: FindManyOptions<CustomerDebit>): Promise<[CustomerDebit[], number]> {
-        options.relations = relationshipNames;
-        return await this.customerDebitRepository.findAndCount(options);
-    }
+  async save(customerDebit: CustomerDebit): Promise<CustomerDebit | undefined> {
+    return await this.customerDebitRepository.save(customerDebit);
+  }
 
-    async save(customerDebit: CustomerDebit): Promise<CustomerDebit | undefined> {
-        return await this.customerDebitRepository.save(customerDebit);
-    }
+  async update(customerDebit: CustomerDebit): Promise<CustomerDebit | undefined> {
+    return await this.save(customerDebit);
+  }
 
-    async update(customerDebit: CustomerDebit): Promise<CustomerDebit | undefined> {
-        return await this.save(customerDebit);
-    }
-
-    async delete(customerDebit: CustomerDebit): Promise<CustomerDebit | undefined> {
-        return await this.customerDebitRepository.remove(customerDebit);
-    }
+  async delete(customerDebit: CustomerDebit): Promise<CustomerDebit | undefined> {
+    return await this.customerDebitRepository.remove(customerDebit);
+  }
 }
