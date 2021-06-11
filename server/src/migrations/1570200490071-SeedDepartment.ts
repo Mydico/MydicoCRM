@@ -56,7 +56,7 @@ const departments = [
   { code: 'DNI', store: 'KDNI', name: 'Chi nhánh Đồng Nai', nameStore: "Kho Đồng Nai" }
 ];
 const branches = [
-  { code: 'GD', store: 'KHN', name: 'Phòng Giám Đốc' },
+  { code: 'PGD', store: 'KHN', name: 'Phòng Giám Đốc' },
   { code: 'KDBS', store: 'KHD', name: 'Phòng Kinh Doanh Beauty Salon' },
   { code: 'KDBB', store: 'KHD', name: 'Phòng Kinh Doanh Bán Buôn' },
   { code: 'KDT', store: 'KHD', name: 'Phòng Kinh Doanh Tỉnh' },
@@ -205,6 +205,7 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
         customer: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id)[0] || null,
         sale: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id)[0]?.sale || null,
         code: (index + 1).toString(),
+        customerName: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id)[0].name || null,
         totalMoney: Number(item.total_money) || 0,
         realMoney: Number(item.real_money) || 0,
         reduceMoney: Number(item.reduce_money) || 0,

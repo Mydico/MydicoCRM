@@ -42,9 +42,15 @@ export class ProductService {
   }
 
   async findAndCount(options: FindManyOptions<Product>): Promise<[Product[], number]> {
-    // options.cache = 36000000
+    options.cache = {
+      id: `get_products_filter_${JSON.stringify(options.where)}_skip_${options.skip}_${options.take}`,
+      milliseconds: 604800
+    }
     options.relations = relationshipNames;
-    return await this.productRepository.findAndCount(options);
+    const count = await this.productRepository.count();
+    const result = await this.productRepository.findAndCount(options);
+    result[1] = count;
+    return result;
   }
 
   async save(product: Product): Promise<Product | undefined> {

@@ -4,7 +4,7 @@ import { ProductController } from '../web/rest/product.controller';
 import { ProductRepository } from '../repository/product.repository';
 import { ProductService } from '../service/product.service';
 import { ProductQuantityModule } from './product-quantity.module';
-import * as redisStore from 'cache-manager-redis-store';
+import { ProductSubscriber } from '../service/subscribers/product.subscriber';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import * as redisStore from 'cache-manager-redis-store';
     ProductQuantityModule
   ],
   controllers: [ProductController],
-  providers: [ProductService],
+  providers: [ProductService, ProductSubscriber],
   exports: [ProductService]
 })
 export class ProductModule {}

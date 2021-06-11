@@ -120,7 +120,7 @@ const Transaction = props => {
     } else if (item.receipt) {
       debt = item.receipt.money;
     } else {
-      debt = item.storeInput.totalMoney;
+      debt = item.storeInput.refundMoney;
     }
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(debt);
   };

@@ -147,6 +147,23 @@ export class UserController {
     return res.send(await this.userService.update(user));
   }
 
+  @Put('/change-info')
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: User
+  })
+  async changeInfo(@Req() req: Request, @Res() res: Response, @Body() user: User): Promise<Response> {
+    const currentUser = req.user as User;
+    const isAdmin = currentUser.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+
+    if (!isAdmin && currentUser.login !== user.login) {
+      throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.id);
+    return res.send(await this.userService.update(user));
+  }
+
   @Get('/:id')
   @ApiResponse({
     status: 200,

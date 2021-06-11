@@ -205,7 +205,7 @@ const WarehouseImport = props => {
                 DUYỆT
               </CButton>
             )}
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/cancel').length > 0) && (
+            {(!item.export &&  (isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/cancel').length > 0)) && (
               <CButton
                 onClick={() => {
                   alertFunc(item, 'Bạn có chắc chắn muốn từ chối phiếu nhập kho này không', rejectTicket);

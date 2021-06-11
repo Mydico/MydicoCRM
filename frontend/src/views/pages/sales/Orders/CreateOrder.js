@@ -534,11 +534,11 @@ const CreateOrder = props => {
                               : {}
                           }
                         >
-                          <td style={{ width: 300 }}>
+                          <td style={{ minWidth: 300 }}>
                             <Select
                               value={{
                                 value: item.product,
-                                label: `${item.product.productBrand?.name || ''}-${item.product.name || ''}-${item.product.volume || ''}`
+                                label: `${item.product.productBrand?.code || ''}-${item.product.name || ''}-${item.product.volume || ''}`
                               }}
                               onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
@@ -551,7 +551,7 @@ const CreateOrder = props => {
                           </td>
                           <td>{item.product?.unit}</td>
                           <td>{item.product?.volume}</td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
                               min={1}
@@ -567,7 +567,7 @@ const CreateOrder = props => {
                                 <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
                               )}
                           </td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 200 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}
@@ -588,7 +588,7 @@ const CreateOrder = props => {
                             }) || ''}
                           </td>
 
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
                               min={0}
@@ -607,7 +607,7 @@ const CreateOrder = props => {
                               }
                             ) || ''}
                           </td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 100 }}>
                             <CButton
                               color="danger"
                               variant="outline"

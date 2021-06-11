@@ -41,7 +41,7 @@ export class BranchService {
     }
     const result = await this.branchRepository.save(branch);
     if (branch.permissionGroups && Array.isArray(branch.permissionGroups)) {
-      const founded = await this.roleService.filterGroupingPolicies(1, result);
+      const founded = await this.roleService.filterGroupingPolicies(1, result.code);
       await this.roleService.removeGroupingPolicies(founded);
       const newGroupingRules = [];
       branch.permissionGroups.map(perG => {

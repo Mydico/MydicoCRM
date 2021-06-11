@@ -49,6 +49,15 @@ export const updateUser = createAsyncThunk('api/update/users', async (body, thun
   }
 });
 
+export const updateUserInfo = createAsyncThunk('api/update/users/info', async (body, thunkAPI) => {
+  try {
+    const result = await axios.put('api/users/change-info', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const changePassword = createAsyncThunk('api/changePassword/users', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/users/change-password', body);

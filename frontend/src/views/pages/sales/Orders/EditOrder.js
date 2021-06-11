@@ -538,7 +538,7 @@ const EditOrder = props => {
                               : {}
                           }
                         >
-                          <td style={{ width: 300 }}>
+                          <td style={{ minWidth: 300 }}>
                             <Select
                               value={{
                                 value: item.product?.id,
@@ -555,7 +555,7 @@ const EditOrder = props => {
                           </td>
                           <td>{item.product?.unit}</td>
                           <td>{item.product?.volume}</td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
                               min={1}
@@ -570,7 +570,7 @@ const EditOrder = props => {
                                 <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
                               )}
                           </td>
-                          <td style={{ width: 150 }}>
+                          <td style={{ minWidth: 250 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}
@@ -593,7 +593,7 @@ const EditOrder = props => {
                             }) || ''}
                           </td>
 
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
                               min={0}
@@ -612,7 +612,7 @@ const EditOrder = props => {
                               }
                             ) || ''}
                           </td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 100 }}>
                             <CButton
                               color="danger"
                               variant="outline"

@@ -7,11 +7,12 @@ import { UserService } from '../service/user.service';
 import { RoleModule } from './role.module';
 import { BranchModule } from './branch.module';
 import { DepartmentModule } from './department.module';
+import { UserSubscriber } from '../service/subscribers/user.subscriber';
 
 @Module({
     imports: [CacheModule.register(),TypeOrmModule.forFeature([UserRepository]), RoleModule, BranchModule, DepartmentModule],
     controllers: [UserController, ManagementController],
-    providers: [UserService],
+    providers: [UserService, UserSubscriber],
     exports: [UserService],
 })
 export class UserModule {}

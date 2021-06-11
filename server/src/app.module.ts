@@ -58,6 +58,7 @@ import { UserModule } from './module/user.module';
 import { IncomeDashboardModule } from './module/income-dashboard.module';
 import { DebtDashboardModule } from './module/debt-dashboard.module';
 import { BranchModule } from './module/branch.module';
+import { RedisQueryResultCache } from './service/query/custom-query.cache';
 
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
@@ -65,7 +66,11 @@ import { BranchModule } from './module/branch.module';
 
 @Module({
     imports: [
-        TypeOrmModule.forRoot(ormconfig),
+        TypeOrmModule.forRoot({...ormconfig, cache: {
+            provider(connection) {
+                return new RedisQueryResultCache(connection, 'ioredis');
+            }
+        }}),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, './', 'classes/static')
           }),

@@ -11,7 +11,7 @@ import moment from 'moment';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import _ from 'lodash'
+import _ from 'lodash';
 const getBadge = status => {
   switch (status) {
     case 'ACTIVE':
@@ -130,8 +130,8 @@ const Order = props => {
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
+          if (!value[key]) delete value[key];
+        });
         dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
     }, 1000),
@@ -139,7 +139,7 @@ const Order = props => {
   );
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
 
   const toEditOrder = typeId => {
@@ -275,7 +275,7 @@ const Order = props => {
                 DUYỆT ĐƠN HÀNG
               </CButton>
             )}
-            {(isAdmin || (item.createdBy === account.login && account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0)) && (
+            {(isAdmin || item.createdBy === account.login || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
               <CButton
                 onClick={() => {
                   cancelAlert(item);
@@ -288,22 +288,20 @@ const Order = props => {
                 HỦY ĐƠN HÀNG
               </CButton>
             )}
-            {(item.createdBy === account.login &&
-              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0 &&
-              !isAdmin) && (
-                <CButton
-                  onClick={() => {
-                    toEditOrder(item.id);
-                  }}
-                  color="warning"
-                  variant="outline"
-                  shape="square"
-                  size="sm"
-                >
-                  <CIcon name="cil-pencil" />
-                  CHỈNH SỬA
-                </CButton>
-              )}
+            {(item.createdBy === account.login || isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
+              <CButton
+                onClick={() => {
+                  toEditOrder(item.id);
+                }}
+                color="warning"
+                variant="outline"
+                shape="square"
+                size="sm"
+              >
+                <CIcon name="cil-pencil" />
+                CHỈNH SỬA
+              </CButton>
+            )}
           </CCol>
         );
       case OrderStatus.APPROVED:
@@ -417,15 +415,15 @@ const Order = props => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [20, 30, 50] }}
-          itemsPerPage={20}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPage={size}
           hover
           sorter
           // loading
-          // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
+          onPaginationChange={val => setSize(val)}
           onPageChange={val => console.log('new page:', val)}
           onPagesChange={val => console.log('new pages:', val)}
-          onPaginationChange={val => console.log('new pagination:', val)}
+          onPaginationChange={val => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
           onTableFilterChange={val => console.log('new table filter:', val)}

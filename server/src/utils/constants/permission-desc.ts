@@ -21,7 +21,6 @@ export const resourceDesc = {
   orders: 'đơn hàng',
   account: 'Tài khoản',
   birthday: '',
-  'change-password': 'Đổi mật khẩu',
 
   'reset-password': 'Xóa mật khẩu',
 
@@ -171,6 +170,8 @@ export const blackList = [
   'associations',
   'utils',
   'report',
+  'change-password',
+  'change-info',
   'orders/status',
   'customer-categories',
   'income-dashboards',

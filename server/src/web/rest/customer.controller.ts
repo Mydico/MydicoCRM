@@ -103,14 +103,6 @@ export class CustomerController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    // if (filter.length === 0) {
-    //   const saleFilter = { department: In(departmentVisible) };
-    //   if (isEmployee.length > 0) saleFilter['sale'] = currentUser.id;
-    //   filter.push(saleFilter);
-    // } else {
-    //   filter[0]['department'] = In(departmentVisible);
-    //   // if (isEmployee.length > 0) filter[filter.length - 1]['sale'] = currentUser.id;
-    // }
     const [results, count] = await this.customerService.findAndCount(
       {
         skip: +pageRequest.page * pageRequest.size,
@@ -149,7 +141,14 @@ export class CustomerController {
     const currentUser = req.user as User;
     customer.department = currentUser.department;
     customer.sale = currentUser;
-    const created = await this.customerService.save(customer);
+    let departmentVisible: any = [];
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    const created = await this.customerService.save(customer, departmentVisible, isEmployee, currentUser);
     HeaderUtil.addEntityCreatedHeaders(res, 'Customer', created.id);
     return res.send(created);
   }
@@ -161,9 +160,19 @@ export class CustomerController {
     description: 'The record has been successfully updated.',
     type: Customer
   })
-  async put(@Res() res: Response, @Body() customer: Customer): Promise<Response> {
+  async put(@Req() req: Request, @Res() res: Response, @Body() customer: Customer): Promise<Response> {
+    const currentUser = req.user as User;
+    customer.department = currentUser.department;
+    customer.sale = currentUser;
+    let departmentVisible: any = [];
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
     HeaderUtil.addEntityUpdatedHeaders(res, 'Customer', customer.id);
-    return res.send(await this.customerService.update(customer));
+    return res.send(await this.customerService.update(customer, departmentVisible, isEmployee, currentUser));
   }
 
   @Delete('/:id')

@@ -54,7 +54,7 @@ export class DepartmentService {
 
     const result = await this.departmentRepository.save(department);
     if (department.permissionGroups && Array.isArray(department.permissionGroups)) {
-      const founded = await this.roleService.filterGroupingPolicies(1, result);
+      const founded = await this.roleService.filterGroupingPolicies(1, result.code);
       await this.roleService.removeGroupingPolicies(founded);
       const newGroupingRules = [];
       department.permissionGroups.map(perG => {

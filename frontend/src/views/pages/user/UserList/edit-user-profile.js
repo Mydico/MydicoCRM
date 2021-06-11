@@ -17,7 +17,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUser } from './user.api';;
+import { updateUserInfo } from './user.api';;
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedUserSelectors, reset } from './user.reducer';
 
@@ -88,7 +88,7 @@ const EditUserProfile = props => {
     values.departments = selectedDepartment;
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
-    dispatch(updateUser(values));
+    dispatch(updateUserInfo(values));
   };
 
 

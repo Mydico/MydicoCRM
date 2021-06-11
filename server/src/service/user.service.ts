@@ -42,7 +42,11 @@ export class UserService {
         // options.cache = 36000000
         let queryString = '';
         Object.keys(filter).forEach((item, index) => {
-          queryString += `User.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+            if(item === 'name'){
+                queryString += `User.firstName like '%${filter[item]}%' OR  User.lastName like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+            }else{
+                queryString += `User.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+            }
         });
         let andQueryString = '';
     
@@ -65,6 +69,7 @@ export class UserService {
           .leftJoinAndSelect('User.permissionGroups', 'permissionGroups')
           .leftJoinAndSelect('permissionGroups.permissionGroupAssociates', 'permissionGroupAssociates')
           .where(andQueryString)
+          .cache(`get_users_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}`,3600000)
           .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
           .skip(options.skip)
           .take(options.take)
@@ -75,7 +80,9 @@ export class UserService {
               })
             )
           }
+        const count = await this.userRepository.count();
         const resultList = await queryBuilder.getManyAndCount();
+        resultList[1] = count;
         // const resultList = await this.userRepository.findAndCount(options);
         const users: User[] = [];
         if (resultList && resultList[0]) {
