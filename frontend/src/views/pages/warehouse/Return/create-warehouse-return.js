@@ -17,10 +17,10 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingWarehouseImport } from './warehouse-import.api';
+import { creatingWarehouseImport } from '../Import/warehouse-import.api';
 import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
-import { fetching } from './warehouse-import.reducer';
+import { fetching } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
@@ -59,7 +59,6 @@ const CreateWarehouse = () => {
   const { initialState } = useSelector(state => state.warehouseImport);
   const { account } = useSelector(userSafeSelector);
 
-
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -94,7 +93,7 @@ const CreateWarehouse = () => {
     );
     values.reduceMoney = productList.reduce((sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100, 0);
     values.type = WarehouseImportType.RETURN;
-    values.department = { id: account.department?.id || null};
+    values.department = { id: account.department?.id || null };
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
   };
@@ -102,16 +101,34 @@ const CreateWarehouse = () => {
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
       dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
-    }, 1000),
+    }, 300),
     []
   );
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value)
+    debouncedSearchProduct(value);
   };
 
+  const debouncedSearchCustomer = useCallback(
+    _.debounce(value => {
+      dispatch(
+        getCustomer({
+          page: 0,
+          size: 20,
+          sort: 'createdDate,DESC',
+          code: value,
+          name: value,
+          address: value,
+          contactName: value,
+          dependency: true
+        })
+      );
+    }, 300),
+    []
+  );
+
   const onSearchCustomer = value => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value, dependency: true }));
+    debouncedSearchCustomer(value);
   };
 
   const onSelectCustomer = ({ value }) => {
@@ -301,8 +318,8 @@ const CreateWarehouse = () => {
                       <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
-                      <dt className="col-sm-3">Loại khách hàng: </dt>
-                      <dd className="col-sm-9">{selectedCustomer?.type?.name}</dd>
+                      <dt className="col-sm-3">Nhân viên phụ trách: </dt>
+                      <dd className="col-sm-9">{selectedCustomer?.sale?.login}</dd>
                     </dl>
                   </CCol>
                 </CRow>

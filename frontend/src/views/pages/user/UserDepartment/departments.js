@@ -27,54 +27,6 @@ const mappingStatus = {
   DELETED: 'ĐÃ XÓA'
 };
 const { selectAll } = globalizedDepartmentSelectors;
-
-const Department = props => {
-  const isInitialMount = useRef(true);
-  const { account } = useSelector(userSafeSelector);
-  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
-  const dispatch = useDispatch();
-  const history = useHistory();
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    }
-  });
-  useEffect(() => {
-    dispatch(reset());
-    dispatch(getTreeDepartment());
-  }, []);
-
-  const departments = useSelector(selectAll);
-  const [details, setDetails] = useState([]);
-  const { initialState } = useSelector(state => state.provider);
-  const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(50);
-
-  useEffect(() => {
-    dispatch(getDepartment({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
-  }, [activePage, size]);
-
-  const providers = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
-      return {
-        ...item,
-        code: item.code || '',
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
-      };
-    });
-  };
-  const toggleDetails = index => {
-    const position = details.indexOf(index);
-    let newDetails = details.slice();
-    if (position !== -1) {
-      newDetails.splice(position, 1);
-    } else {
-      newDetails = [...details, index];
-    }
-    setDetails(newDetails);
-  };
-
   // Code	Tên nhà cung cấp	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại nhà cung cấp	Phân loại	Sửa	Tạo đơn
   const fields = [
     {
@@ -107,6 +59,50 @@ const Department = props => {
         return 'primary';
     }
   };
+const Department = props => {
+  const { account } = useSelector(userSafeSelector);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const departments = useSelector(selectAll);
+  const [details, setDetails] = useState([]);
+  const { initialState } = useSelector(state => state.provider);
+  const [activePage, setActivePage] = useState(1);
+  const [size, setSize] = useState(50);
+  const paramRef = useRef(null);
+
+  useEffect(() => {
+    dispatch(reset());
+    dispatch(getTreeDepartment());
+  }, []);
+
+
+  useEffect(() => {
+    dispatch(getDepartment({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+  }, [activePage, size]);
+
+  const providers = useSelector(selectAll);
+  const computedItems = items => {
+    return items.map(item => {
+      return {
+        ...item,
+        code: item.code || '',
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+      };
+    });
+  };
+  const toggleDetails = index => {
+    const position = details.indexOf(index);
+    let newDetails = details.slice();
+    if (position !== -1) {
+      newDetails.splice(position, 1);
+    } else {
+      newDetails = [...details, index];
+    }
+    setDetails(newDetails);
+  };
+
+
   const csvContent = computedItems(providers)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -129,9 +125,10 @@ const Department = props => {
         Object.keys(value).forEach(key => {
           if(!value[key]) delete value[key]
         })
+        paramRef.current = value
         dispatch(getDepartment({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

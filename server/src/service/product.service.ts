@@ -6,6 +6,7 @@ import { ProductRepository } from '../repository/product.repository';
 import { increment_alphanumeric_str } from './utils/normalizeString';
 import { ProductQuantityService } from './product-quantity.service';
 import { Cache } from 'cache-manager';
+import { convertArrayToObject } from './utils/helperFunc';
 const relationshipNames = [];
 relationshipNames.push('productGroup');
 relationshipNames.push('productBrand');
@@ -47,7 +48,11 @@ export class ProductService {
       milliseconds: 604800
     }
     options.relations = relationshipNames;
-    const count = await this.productRepository.count();
+    const count = await this.productRepository.count({...options,cache: {
+      id: `cache_count_get_products_filter_${JSON.stringify(options.where)}_Product.${Object.keys(options.order)[0] ||
+        'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`,
+      milliseconds: 604800
+    }});
     const result = await this.productRepository.findAndCount(options);
     result[1] = count;
     return result;

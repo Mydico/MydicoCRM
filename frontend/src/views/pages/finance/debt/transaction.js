@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CBadge, CCard, CCardHeader, CCardBody, CCol, CDataTable, CRow, CPagination, CCardTitle, CLink } from '@coreui/react/lib';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,6 +24,21 @@ const mappingStatus = {
   PAYMENT: 'THANH TOÁN',
   RETURN: 'TRẢ HÀNG'
 };
+
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'type', label: 'Loại chứng từ', _style: { width: '10%' } },
+  { key: 'entity', label: 'Diễn giải', _style: { width: '15%' } },
+  { key: 'previousDebt', label: 'Số dư ban đầu', _style: { width: '15%' } },
+  { key: 'issueDebt', label: 'Phát sinh', _style: { width: '10%' } },
+  { key: 'earlyDebt', label: 'Số dư cuối kì', _style: { width: '15%' } },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } }
+];
 const Transaction = props => {
   const { initialState } = useSelector(state => state.debt);
 
@@ -32,7 +47,7 @@ const Transaction = props => {
   const [debt, setDebt] = useState(null);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-
+  const paramRef = useRef(null);
   const computedItems = items => {
     return items
       .map(item => {
@@ -50,20 +65,6 @@ const Transaction = props => {
       });
   };
 
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'type', label: 'Loại chứng từ', _style: { width: '10%' } },
-    { key: 'entity', label: 'Diễn giải', _style: { width: '15%' } },
-    { key: 'previousDebt', label: 'Số dư ban đầu', _style: { width: '15%' } },
-    { key: 'issueDebt', label: 'Phát sinh', _style: { width: '10%' } },
-    { key: 'earlyDebt', label: 'Số dư cuối kì', _style: { width: '15%' } },
-    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } }
-  ];
 
   useEffect(() => {
     if (props.location.state?.customer) {
@@ -73,7 +74,7 @@ const Transaction = props => {
 
 
   useEffect(() => {
-    dispatch(getTransaction({ customer: props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC' }));
+    dispatch(getTransaction({ customer: props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
   const debouncedSearchColumn = useCallback(
@@ -82,9 +83,10 @@ const Transaction = props => {
         Object.keys(value).forEach(key => {
           if(!value[key]) delete value[key]
         })
+        paramRef.current = value
         dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 
@@ -120,7 +122,7 @@ const Transaction = props => {
     } else if (item.receipt) {
       debt = item.receipt.money;
     } else {
-      debt = item.storeInput.refundMoney;
+      debt = item.storeInput.realMoney;
     }
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(debt);
   };

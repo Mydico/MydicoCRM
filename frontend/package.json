@@ -25,6 +25,7 @@
     "compression-webpack-plugin": "^6.1.1",
     "core-js": "^3.6.5",
     "formik": "^2.2.6",
+    "query-string": "^5.1.1",
     "react": "^16.13.1",
     "react-app-polyfill": "^1.0.6",
     "react-confirm-alert": "^2.7.0",

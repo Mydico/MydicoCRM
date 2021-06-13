@@ -26,6 +26,7 @@ import { globalizedDepartmentSelectors } from '../../user/UserDepartment/departm
 import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city'
 import district from '../../../../shared/utils/district.json'
+import { userSafeSelector } from '../../login/authenticate.reducer';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = function() {
@@ -51,6 +52,8 @@ const { selectById } = globalizedCustomerSelectors;
 const EditCustomer = props => {
   const ref = useRef(null);
   const { initialState } = useSelector(state => state.customer);
+  const { account } = useSelector(userSafeSelector);
+
   const initialValues = {
     code: '',
     name: '',
@@ -72,13 +75,12 @@ const EditCustomer = props => {
 
 
 
-  const departments = useSelector(selectAll);
+  const departments = [account.department];
   const customer = useSelector(state => selectById(state, props.match.params.id));
 
   useEffect(() => {
     dispatch(getDetailCustomer({ id: props.match.params.id, dependency: true }));
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 

@@ -164,7 +164,7 @@ const CreateReceipt = () => {
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
       dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
-    }, 1000),
+    }, 300),
     []
   );
 

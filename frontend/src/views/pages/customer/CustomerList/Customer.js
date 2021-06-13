@@ -1,18 +1,54 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomer } from '../customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import _ from 'lodash'
+import _ from 'lodash';
 const { selectAll } = globalizedCustomerSelectors;
+// Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
+  { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
+  { key: 'address', label: 'Địa chỉ', _style: { width: '15%' } },
+  { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
+  { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '15%' } },
+  { key: 'typeName', label: 'Loại khách hàng', _style: { width: '10%' } },
+  { key: 'department', label: 'Chi nhánh', _style: { width: '20%' } },
+  {
+    key: 'show_details',
+    label: '',
+    _style: { width: '1%' },
+    filter: false
+  }
+];
 
+const getBadge = status => {
+  switch (status) {
+    case 'Active':
+      return 'success';
+    case 'Inactive':
+      return 'secondary';
+    case 'Pending':
+      return 'warning';
+    case 'Banned':
+      return 'danger';
+    default:
+      return 'primary';
+  }
+};
 const Customer = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
@@ -20,6 +56,7 @@ const Customer = props => {
   const { initialState } = useSelector(state => state.customer);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
+  const paramRef = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -27,7 +64,14 @@ const Customer = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomer({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
+    const localParams = localStorage.getItem('params');
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    if (localParams) {
+      params = JSON.parse(localParams);
+      setActivePage(params.page + 1);
+      localStorage.removeItem('params');
+    }
+    dispatch(getCustomer(params));
   }, [activePage, size]);
 
   const customers = useSelector(selectAll);
@@ -53,53 +97,21 @@ const Customer = props => {
     setDetails(newDetails);
   };
 
-  // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
-    { key: 'address', label: 'Địa chỉ', _style: { width: '15%' } },
-    { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
-    { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '15%' } },
-    { key: 'typeName', label: 'Loại khách hàng', _style: { width: '10%' } },
-    { key: 'department', label: 'Chi nhánh', _style: { width: '20%' } },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
-  ];
-
-  const getBadge = status => {
-    switch (status) {
-      case 'Active':
-        return 'success';
-      case 'Inactive':
-        return 'secondary';
-      case 'Pending':
-        return 'warning';
-      case 'Banned':
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
-
   const csvContent = computedItems(customers)
     .map(item => Object.values(item).join(','))
     .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {
-    history.push(`${props.match.url}/new`);
+    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    localStorage.setItem('params', JSON.stringify(params));
+    history.push({
+      pathname: `${props.match.url}/new`
+    });
   };
 
   const toEditCustomer = userId => {
+    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
@@ -107,22 +119,20 @@ const Customer = props => {
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
+          if (!value[key]) delete value[key];
+        });
+        paramRef.current = value;
         dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
 
-  const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
-    []
-  );
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(customers), [customers]);
 
   return (

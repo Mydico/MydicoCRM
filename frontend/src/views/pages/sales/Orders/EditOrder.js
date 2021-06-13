@@ -18,7 +18,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDetailOrder, getOrderDetail, updateOrder } from './order.api';
+import { editSelfOrder, getDetailOrder, getOrderDetail, updateOrder } from './order.api';
 import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { globalizedOrdersSelectors } from './order.reducer';
@@ -35,8 +35,9 @@ import { FormFeedback, Table } from 'reactstrap';
 import { OrderStatus } from './order-status';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import { userSafeSelector } from '../../login/authenticate.reducer.js';
-
+import { userSafeSelector, removePermission } from '../../login/authenticate.reducer.js';
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object()
@@ -76,13 +77,11 @@ const EditOrder = props => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-
   const promotions = useSelector(selectAllPromotion);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
   const order = useSelector(state => selectById(state, props.match.params.id));
   const warehouses = useSelector(selectAllWarehouse);
 
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [productList, setProductList] = useState([]);
@@ -91,7 +90,7 @@ const EditOrder = props => {
   const [showProductPromotion, setShowProductPromotion] = useState(false);
 
   useEffect(() => {
-    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true ,isLock: 0 }));
+    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, isLock: 0 }));
     dispatch(getDetailOrder({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
   }, []);
@@ -99,9 +98,8 @@ const EditOrder = props => {
   useEffect(() => {
     if (order) {
       setInitValuesState(order);
-      setSelectedCustomer(order.customer);
       setSelectedPromotion(order.promotion);
-      setSelectedWarehouse(order.store)
+      setSelectedWarehouse(order.store);
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
       dispatch(getOrderDetail({ orderId: props.match.params.id, dependency: true }));
     }
@@ -144,9 +142,12 @@ const EditOrder = props => {
     if (values.status === OrderStatus.CANCEL) {
       values.status = OrderStatus.WAITING;
     }
-    dispatch(updateOrder(values));
+    if (values.createdBy !== account.login) {
+      dispatch(updateOrder(values));
+    } else {
+      dispatch(editSelfOrder(values));
+    }
   };
-
 
   const onSelectPromotion = ({ value }) => {
     const arr = promotions.filter(customer => customer.id === value);
@@ -174,7 +175,7 @@ const EditOrder = props => {
 
   useEffect(() => {
     if (selectedWarehouse?.id) {
-      dispatch(getProductWarehouse({ store: selectedWarehouse?.id, dependency: true}));
+      dispatch(getProductWarehouse({ store: selectedWarehouse?.id, dependency: true }));
     }
   }, [selectedWarehouse]);
 
@@ -200,7 +201,7 @@ const EditOrder = props => {
           dependency: true
         })
       );
-    }, 1000),
+    }, 300),
     []
   );
 
@@ -274,7 +275,6 @@ const EditOrder = props => {
     setIsSelectedWarehouse(true);
   };
 
-
   const editAlert = (values, { setSubmitting, setErrors }) => {
     confirmAlert({
       title: 'Xác nhận',
@@ -299,6 +299,7 @@ const EditOrder = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
+      dispatch(removePermission());
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -349,11 +350,11 @@ const EditOrder = props => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{values.customer?.city?.name}</dd>
+                      <dd className="col-sm-9">{cities.filter(city => city.value === values.customer?.city)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{values.customer?.district?.name}</dd>
+                      <dd className="col-sm-9">{district.filter(city => city.value === values.customer?.district)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Loại khách hàng: </dt>
@@ -400,9 +401,6 @@ const EditOrder = props => {
                     <dl className="row">
                       <dt className="col-sm-3">Ngày bắt đầu:</dt>
                       <dd className="col-sm-9">{selectedPromotion?.startTime}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Sản phẩm áp dụng</dt>
                     </dl>
                   </CCol>
                   <CCol lg="6">
@@ -650,7 +648,7 @@ const EditOrder = props => {
                         invalid={touched.address && !!errors.address}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        value={values.address || selectedCustomer?.address}
+                        value={values.address || values.customer?.address}
                       />
                     </CFormGroup>
                     <CFormGroup>
@@ -661,13 +659,26 @@ const EditOrder = props => {
                         id="note"
                         placeholder="ghi chú"
                         autoComplete="note"
-                        valid={errors.note || null}
-                        invalid={touched.note && !!errors.note}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.note}
                       />
                     </CFormGroup>
+                    {values.status === 'CANCEL' && (
+                      <CFormGroup>
+                        <CLabel htmlFor="userName">Lý do hủy</CLabel>
+                        <CTextarea
+                          type="text"
+                          name="reject"
+                          id="reject"
+                          disabled
+                          autoComplete="note"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.reject}
+                        />
+                      </CFormGroup>
+                    )}
                   </CCol>
                   <CCol lg="4" sm="5" className="ml-auto">
                     <Table className="table-clear">

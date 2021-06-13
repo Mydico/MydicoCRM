@@ -13,6 +13,7 @@ export class ProductSubscriber implements EntitySubscriberInterface<Product> {
 
   async afterInsert(event: InsertEvent<Product>): Promise<any> {
     event.manager.connection.queryResultCache.remove(["get_products"]);
+    event.manager.connection.queryResultCache.remove(["cache_count_get_products"]);
   }
 
   async afterUpdate(event: InsertEvent<Product>): Promise<any> {

@@ -97,7 +97,7 @@ const ProductGroup = props => {
         })
         dispatch(getProductGroup({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

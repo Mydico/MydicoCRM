@@ -44,7 +44,7 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDetailOrder.fulfilled]: (state, action) => {
-      orderAdapter.addOne(state, action.payload);
+      orderAdapter.setAll(state, [action.payload]);
       state.initialState.loading = false;
     },
     [getOrderDetail.fulfilled]: (state, action) => {

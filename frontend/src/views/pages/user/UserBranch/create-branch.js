@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CButton, CCard, CCardHeader, CCardBody, CForm, CInvalidFeedback, CFormGroup, CLabel, CInput, CCardTitle } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +13,7 @@ import Select from 'react-select';
 import { globalizedPermissionGroupsSelectors } from '../UserPermission/permission.reducer';
 import { getPermissionGroups } from '../UserPermission/permission.api';
 import { validate } from '../../../../shared/utils/normalize';
+import { CInputCheckbox } from '@coreui/react';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -38,7 +39,6 @@ const CreateBranch = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const branchs = useSelector(selectAllBranchs);
 
@@ -46,7 +46,8 @@ const CreateBranch = () => {
 
   const initialValues = {
     name: '',
-    code: ''
+    code: '',
+    allow: false
   };
 
   useEffect(() => {
@@ -87,15 +88,7 @@ const CreateBranch = () => {
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
-          {({
-            values,
-            errors,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-            handleReset
-          }) => (
+          {({ values, errors, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CFormGroup>
                 <CLabel htmlFor="login">Mã phòng ban</CLabel>
@@ -124,6 +117,18 @@ const CreateBranch = () => {
                   value={values.name}
                 />
                 <CInvalidFeedback>{errors.name}</CInvalidFeedback>
+              </CFormGroup>
+              <CFormGroup variant="custom-checkbox" className="pb-3">
+                <CInputCheckbox
+                  custom={true}
+                  id="allow"
+                  name="allow"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <CLabel variant="custom-checkbox" htmlFor="allow">
+                  Cho phép chỉnh sửa và hủy đơn hàng sau khi duyệt
+                </CLabel>
               </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="userName">Nhóm quyền</CLabel>

@@ -31,7 +31,7 @@ export class CustomerService {
 
   async findAndCount(
     options: FindManyOptions<Customer>,
-    filter = [],
+    filter = {},
     departmentVisible = [],
     isEmployee: boolean,
     currentUser: User
@@ -49,9 +49,10 @@ export class CustomerService {
         .replace(']', ')')}`;
     }
     if (isEmployee) andQueryString += ` AND Customer.sale = ${currentUser.id}`;
-    const cacheKeyBuilder = `get_customers_department_${JSON.stringify(departmentVisible)}_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${
-      options.skip
-    }_${options.take}`;
+    const cacheKeyBuilder = `get_customers_department_${JSON.stringify(departmentVisible)}_sale_${
+      isEmployee ? currentUser.id : -1
+    }_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Customer.${Object.keys(options.order)[0] ||
+      'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
     const queryBuilder = this.customerRepository
       .createQueryBuilder('Customer')
       .leftJoinAndSelect('Customer.status', 'status')
@@ -63,6 +64,31 @@ export class CustomerService {
       .skip(options.skip)
       .take(options.take)
       .cache(cacheKeyBuilder, 3600000);
+
+    const count = this.customerRepository
+      .createQueryBuilder('Customer')
+      .where(andQueryString)
+      .orderBy(`Customer.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take)
+      .cache(
+        `cache_count_get_customers_department_${JSON.stringify(departmentVisible)}_sale_${
+          isEmployee ? currentUser.id : -1
+        }_filter_${JSON.stringify(filter)}`
+      );
+    if (queryString) {
+      queryBuilder.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
+      count.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
+    }
+
     if (queryString) {
       queryBuilder.andWhere(
         new Brackets(sqb => {
@@ -70,15 +96,14 @@ export class CustomerService {
         })
       );
     }
-    const count = await this.customerRepository.count();
     const result = await queryBuilder.getManyAndCount();
-    result[1] = count;
+    result[1] = await count.getCount();
     return result;
   }
 
   async save(customer: Customer, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Customer | undefined> {
     const cacheKeyBuilder = `get_customers_department_${JSON.stringify(departmentVisible)}_sale_${isEmployee ? currentUser.id : -1}`;
-    await this.customerRepository.removeCache(cacheKeyBuilder);
+    await this.customerRepository.removeCache([cacheKeyBuilder, 'Customer']);
     const foundedCustomer = await this.customerRepository.find({
       code: Like(`%${customer.code}%`)
     });

@@ -84,7 +84,7 @@ const ProductBrand = props => {
         })
         dispatch(getProductBrand({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

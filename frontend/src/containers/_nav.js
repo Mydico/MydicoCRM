@@ -141,6 +141,11 @@ export default [
       },
       {
         _tag: 'CSidebarNavItem',
+        name: 'Phiếu trả hàng',
+        to: '/store-inputs/return',
+      },
+      {
+        _tag: 'CSidebarNavItem',
         name: 'Phiếu xuất kho',
         to: '/store-inputs/export',
       },

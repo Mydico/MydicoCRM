@@ -12,9 +12,42 @@ import _ from 'lodash';
 import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 
 const { selectAll } = globalizedUserSelectors;
+// Code	Tên người dùng	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại người dùng	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'login', label: 'Tên đăng nhập', _style: { width: '10%' } },
+  { key: 'name', label: 'Họ tên', _style: { width: '15%' } },
+  { key: 'code', label: 'Mã nhân viên', _style: { width: '15%' } },
+  { key: 'phone', label: 'Số điện thoại', _style: { width: '15%' } },
+  { key: 'department', label: 'Chi nhánh', _style: { width: '15%' } },
+  { key: 'branch', label: 'Phòng ban', _style: { width: '15%' } },
+  { key: 'roles', label: 'Chức vụ', _style: { width: '15%' } },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
+  { key: 'activated', label: 'Trạng thái', _style: { width: '15%' } },
+  {
+    key: 'show_details',
+    label: '',
+    _style: { width: '1%' },
+    filter: false
+  }
+];
 
+const getBadge = status => {
+  switch (status) {
+    case true:
+      return 'success';
+    case false:
+      return 'danger';
+    default:
+      return 'primary';
+  }
+};
 const User = props => {
-  const isInitialMount = useRef(true);
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
@@ -25,19 +58,20 @@ const User = props => {
   const [primary, setPrimary] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
+  const paramRef = useRef(null);
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    }
-  });
-  useEffect(() => {
-    // dispatch(fetching());
-    // dispatch(getUser());
     dispatch(reset());
   }, []);
 
   useEffect(() => {
-    dispatch(getUser({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
+    const localParams = localStorage.getItem('params');
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    if (localParams) {
+      params = JSON.parse(localParams);
+      setActivePage(params.page + 1);
+      localStorage.removeItem('params');
+    }
+    dispatch(getUser(params));
   }, [activePage, size]);
 
   const users = useSelector(selectAll);
@@ -63,61 +97,31 @@ const User = props => {
     setDetails(newDetails);
   };
 
-  // Code	Tên người dùng	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại người dùng	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'login', label: 'Tên đăng nhập', _style: { width: '10%' } },
-    { key: 'name', label: 'Họ tên', _style: { width: '15%' } },
-    { key: 'code', label: 'Mã nhân viên', _style: { width: '15%' } },
-    { key: 'phone', label: 'Số điện thoại', _style: { width: '15%' } },
-    { key: 'department', label: 'Chi nhánh', _style: { width: '15%' } },
-    { key: 'branch', label: 'Phòng ban', _style: { width: '15%' } },
-    { key: 'roles', label: 'Chức vụ', _style: { width: '15%' } },
-    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
-    { key: 'activated', label: 'Trạng thái', _style: { width: '15%' } },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
-  ];
-
-  const getBadge = status => {
-    switch (status) {
-      case true:
-        return 'success';
-      case false:
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
   const csvContent = computedItems(users)
     .map(item => Object.values(item).join(','))
     .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateUser = () => {
+    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/new`);
   };
 
   const toEditUser = userId => {
+    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/${userId}/edit`);
   };
   const debouncedSearchColumn = useCallback(
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
-          Object.keys(value).forEach(key => {
-            if (!value[key]) delete value[key];
-          })
-          dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+        Object.keys(value).forEach(key => {
+          if (!value[key]) delete value[key];
+        });
+        paramRef.current = value;
+        dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

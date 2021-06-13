@@ -27,6 +27,7 @@ import { globalizedDepartmentSelectors } from '../../user/UserDepartment/departm
 import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city'
 import district from '../../../../shared/utils/district'
+import { userSafeSelector } from '../../login/authenticate.reducer';
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 const { selectAll } = globalizedDepartmentSelectors;
@@ -51,6 +52,7 @@ const validationSchema = function() {
 
 const CreateCustomer = () => {
   const ref = useRef(null);
+  const { account } = useSelector(userSafeSelector);
   const { initialState } = useSelector(state => state.customer);
   const initialValues = {
     code: '',
@@ -67,10 +69,9 @@ const CreateCustomer = () => {
   const history = useHistory();
   const [selectedCity, setSelectedCity] = useState(null);
   const [districts, setDistricts] = useState([])
-  const departments = useSelector(selectAll);
+  const departments = [account.department];
   useEffect(() => {
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 

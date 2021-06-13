@@ -45,7 +45,7 @@ export class OrderController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Order[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = [];
+    const filter = {};
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency' && item !== 'status') {
         filter[item] = req.query[item];
@@ -60,15 +60,6 @@ export class OrderController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    // if (filter.length === 0) {
-    //   const saleFilter = { department: In(departmentVisible), status: Not(OrderStatus.DELETED) }
-    //   if (isEmployee.length > 0) saleFilter['sale'] = currentUser.id
-    //   filter.push(saleFilter);
-    // } else {
-    //   filter[filter.length - 1]['department'] = In(departmentVisible);
-    //   filter[filter.length - 1]['status'] = Not(OrderStatus.DELETED);
-    //   if (isEmployee.length > 0) filter[filter.length - 1]['sale'] = currentUser.id;
-    // }
     const [results, count] = await this.orderService.findAndCount(
       {
         skip: +pageRequest.page * pageRequest.size,
@@ -237,6 +228,31 @@ export class OrderController {
       }
     }
 
+    return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
+  }
+
+  @Put('/self-edit')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Order
+  })
+  async selfEdit(@Req() req: Request, @Res() res: Response, @Body() order: Order): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'Order', order.id);
+    const currentUser = req.user as User;
+    order.lastModifiedBy = currentUser.login;
+    const isAdmin = currentUser.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+    if (!isAdmin && currentUser.login !== order.createdBy) {
+      throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    let departmentVisible = [];
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
     return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
   }
 

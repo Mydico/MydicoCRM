@@ -116,6 +116,7 @@ export const resourceDesc = {
   receipts: 'phiếu thu',
   'store-inputs': 'phiếu xuất/nhập kho',
   export: 'xuất kho',
+  return: 'trả hàng',
   'product-quantities': 'sản phẩm trong kho'
 };
 
@@ -168,6 +169,7 @@ export const blackList = [
   'histories',
   'associates',
   'associations',
+  'self-edit',
   'utils',
   'report',
   'change-password',

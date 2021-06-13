@@ -6,6 +6,7 @@ import {
   updateWarehouseImport,
   getWarehouseExport,
   updateWarehouseStatusImport,
+  getWarehouseReturn,
 } from './warehouse-import.api';
 
 const initialState = {
@@ -69,7 +70,7 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDetailWarehouseImport.fulfilled]: (state, action) => {
-      warehouseImportAdapter.addOne(state, action.payload);
+      warehouseImportAdapter.setAll(state, [action.payload]);
       state.initialState.loading = false;
     },
     [getWarehouseImport.fulfilled]: (state, action) => {
@@ -77,14 +78,23 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
+    [getWarehouseImport.rejected]: (state ) => {
+      state.loading = false;
+    },
+    [getWarehouseReturn.fulfilled]: (state, action) => {
+      warehouseImportAdapter.setAll(state, action.payload.data);
+      state.initialState.totalItem = action.payload.total;
+      state.initialState.loading = false;
+    },
+    [getWarehouseReturn.rejected]: (state ) => {
+      state.loading = false;
+    },
     [getWarehouseExport.fulfilled]: (state, action) => {
       warehouseImportAdapter.setAll(state, action.payload.data);
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [getWarehouseImport.rejected]: (state ) => {
-      state.loading = false;
-    },
+
   },
 });
 

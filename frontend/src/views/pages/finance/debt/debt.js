@@ -76,7 +76,7 @@ const Debt = (props) => {
         })
         dispatch(getCustomerDebts({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

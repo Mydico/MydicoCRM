@@ -91,7 +91,7 @@ export class UserController {
   })
   async getAllUsers(@Req() req: Request, @Res() res): Promise<User[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = [];
+    const filter = {};
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         filter[item] = req.query[item];

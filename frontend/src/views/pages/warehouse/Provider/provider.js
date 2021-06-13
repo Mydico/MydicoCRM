@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
-import _ from 'lodash'
+import _ from 'lodash';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProvider } from './provider.api.js';
@@ -24,12 +24,13 @@ const Provider = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
+  const paramRef = useRef();
   useEffect(() => {
     dispatch(reset());
   }, []);
 
   useEffect(() => {
-    dispatch(getProvider({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
+    dispatch(getProvider({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
   const providers = useSelector(selectAll);
@@ -103,14 +104,13 @@ const Provider = props => {
   const debouncedSearchColumn = useCallback(
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
-        if (
-          Object.keys(value).forEach(key => {
-            if (!value[key]) delete value[key];
-          })
-        )
-          dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+        Object.keys(value).forEach(key => {
+          if (!value[key]) delete value[key];
+        });
+        paramRef.current = value
+        dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

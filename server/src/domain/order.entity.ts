@@ -34,6 +34,10 @@ export default class Order extends BaseEntity {
   @Index()
   address?: string;
 
+  @Column({ name: 'reject', length: 255, nullable: true })
+  @Index()
+  reject?: string;
+
   @Column({ name: 'code', length: 255, nullable: true })
   @Index()
   code?: string;

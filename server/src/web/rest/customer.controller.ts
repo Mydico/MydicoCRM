@@ -88,7 +88,7 @@ export class CustomerController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Customer[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter: any = [];
+    const filter: any = {};
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency') {
         filter[item] = req.query[item];

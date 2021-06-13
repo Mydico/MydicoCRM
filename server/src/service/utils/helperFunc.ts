@@ -13,3 +13,12 @@ export function flatNestedObject(entity: Entity, flattened: Entity[] = []): Enti
     });
     return flattened;
 }
+export const convertArrayToObject = (array, key) => {
+    const initialValue = {};
+    return array.reduce((obj, item) => {
+      return {
+        ...obj,
+        [item[key]]: item,
+      };
+    }, initialValue);
+  };

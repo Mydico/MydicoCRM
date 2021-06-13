@@ -23,10 +23,53 @@ import { getPromotion, updatePromotion } from './promotion.api.js';
 import { globalizedPromotionSelectors, reset } from './promotion.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import _ from 'lodash'
+import _ from 'lodash';
+import moment from 'moment';
+
 const { selectAll } = globalizedPromotionSelectors;
 
-import moment from 'moment';
+// Code	Tên chương trình bán hàng	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại chương trình bán hàng	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'name', label: 'Tên chương trình bán hàng', _style: { width: '20%' } },
+  { key: 'type', label: 'Loại chương trình', _style: { width: '15%' } },
+  { key: 'startTime', label: 'Thời gian bắt đầu', _style: { width: '15%' } },
+  { key: 'endTime', label: 'Thời gian kết thúc', _style: { width: '15%' } },
+  { key: 'customerType', label: 'Đối tượng áp dụng', _style: { width: '15%' } },
+  { key: 'isLock', label: 'Trạng thái', _style: { width: '10%' } },
+  {
+    key: 'show_details',
+    label: '',
+    _style: { width: '10%' },
+    filter: false
+  }
+];
+
+const getBadge = status => {
+  switch (status) {
+    case false:
+      return 'success';
+    case true:
+      return 'danger';
+    default:
+      return 'success';
+  }
+};
+
+const getBadgeType = status => {
+  switch (status) {
+    case 'SHORTTERM':
+      return 'info';
+    default:
+      return 'primary';
+  }
+};
+
 const Promotion = props => {
   const [details, setDetails] = useState([]);
   const selectedPro = useRef({ id: null, isLock: false });
@@ -35,7 +78,8 @@ const Promotion = props => {
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.promotion);
   const [activePage, setActivePage] = useState(1);
-  const [size] = useState(20);
+  const [size, setSize] = useState(50);
+  const paramRef = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -43,8 +87,8 @@ const Promotion = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getPromotion({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
-  }, [activePage]);
+    dispatch(getPromotion({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+  }, [activePage, size]);
 
   const Promotions = useSelector(selectAll);
   const computedItems = items => {
@@ -68,49 +112,6 @@ const Promotion = props => {
     setDetails(newDetails);
   };
 
-  // Code	Tên chương trình bán hàng	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại chương trình bán hàng	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'name', label: 'Tên chương trình bán hàng', _style: { width: '20%' } },
-    { key: 'type', label: 'Loại chương trình', _style: { width: '15%' } },
-    { key: 'startTime', label: 'Thời gian bắt đầu', _style: { width: '15%' } },
-    { key: 'endTime', label: 'Thời gian kết thúc', _style: { width: '15%' } },
-    { key: 'customerType', label: 'Đối tượng áp dụng', _style: { width: '15%' } },
-    { key: 'isLock', label: 'Trạng thái', _style: { width: '10%' } },
-    { key: 'description', label: 'Mô tả', _style: { width: '20%' } },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '10%' },
-      filter: false
-    }
-  ];
-
-  const getBadge = status => {
-    switch (status) {
-      case false:
-        return 'success';
-      case true:
-        return 'danger';
-      default:
-        return 'success';
-    }
-  };
-
-  const getBadgeType = status => {
-    switch (status) {
-      case 'SHORTTERM':
-        return 'info';
-      default:
-        return 'primary';
-    }
-  };
-
   const csvContent = computedItems(Promotions)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -132,16 +133,17 @@ const Promotion = props => {
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
+          if (!value[key]) delete value[key];
+        });
+        paramRef.current = value;
         dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
 
   useEffect(() => {
@@ -156,10 +158,7 @@ const Promotion = props => {
     dispatch(updatePromotion({ id: selectedPro.current.id, isLock: !selectedPro.current.isLock }));
   };
 
-  const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
-    []
-  );
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(Promotions), [Promotions]);
 
   return (
@@ -284,10 +283,6 @@ const Promotion = props => {
                         <dl className="row">
                           <dt className="col-sm-3">Đối tượng áp dụng</dt>
                           <dd className="col-sm-9">{item.customerType}</dd>
-                        </dl>
-                        <dl className="row">
-                          <dt className="col-sm-3">Mô tả:</dt>
-                          <dd className="col-sm-9">{item.description}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Trạng thái</dt>

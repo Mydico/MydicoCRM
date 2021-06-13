@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { CCardBody, CBadge, CButton, CDataTable, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
@@ -30,7 +30,27 @@ const mappingStatus = {
   REJECTED: 'ĐÃ HỦY'
 };
 const { selectAll } = globalizedReceiptsSelectors;
-
+  // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
+  const fields = [
+    {
+      key: 'order',
+      label: 'STT',
+      _style: { width: '1%' },
+      filter: false
+    },
+    { key: 'code', label: 'Mã', _style: { width: '10%' } },
+    { key: 'customer', label: 'Khách hàng', _style: { width: '15%' } },
+    { key: 'money', label: 'Số tiền', _style: { width: '10%' } },
+    { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
+    { key: 'approver', label: 'Người duyệt', _style: { width: '15%' } },
+    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+    {
+      key: 'action',
+      label: '',
+      _style: { width: '20%' },
+      filter: false
+    }
+  ];
 const Receipt = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
@@ -38,6 +58,7 @@ const Receipt = props => {
   const { initialState } = useSelector(state => state.receipt);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
+  const paramRef = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -45,7 +66,7 @@ const Receipt = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getReceipt({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
+    dispatch(getReceipt({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
   const warehouses = useSelector(selectAll);
@@ -71,27 +92,7 @@ const Receipt = props => {
     setDetails(newDetails);
   };
 
-  // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'customer', label: 'Khách hàng', _style: { width: '15%' } },
-    { key: 'money', label: 'Số tiền', _style: { width: '10%' } },
-    { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-    { key: 'approver', label: 'Người duyệt', _style: { width: '15%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
-    {
-      key: 'action',
-      label: '',
-      _style: { width: '20%' },
-      filter: false
-    }
-  ];
+
 
   const csvContent = computedItems(warehouses)
     .map(item => Object.values(item).join(','))
@@ -104,9 +105,10 @@ const Receipt = props => {
         Object.keys(value).forEach(key => {
           if(!value[key]) delete value[key]
         })
+        paramRef.current = value
         dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

@@ -113,8 +113,15 @@ const CreateOrder = props => {
     history.push({ pathname: `${props.match.url}/invoice`, state: data });
   };
 
+  const debouncedSearchCustomer = useCallback(
+    _.debounce(value => {
+      dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value, dependency: true }));
+    }, 300),
+    []
+  );
+
   const onSearchCustomer = value => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value, dependency: true }));
+    debouncedSearchCustomer(value)  
   };
 
   const onSearchPromition = value => {
@@ -201,7 +208,7 @@ const CreateOrder = props => {
           dependency: true
         })
       );
-    }, 1000),
+    }, 300),
     []
   );
 
@@ -399,9 +406,6 @@ const CreateOrder = props => {
                       <dt className="col-sm-3">Ngày bắt đầu:</dt>
                       <dd className="col-sm-9">{selectedPromotion?.startTime}</dd>
                     </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Sản phẩm áp dụng</dt>
-                    </dl>
                   </CCol>
                   <CCol lg="6">
                     <dl className="row">
@@ -473,28 +477,6 @@ const CreateOrder = props => {
                     <dl className="row">
                       <dt className="col-sm-3">Tên kho:</dt>
                       <dd className="col-sm-9">{selectedWarehouse?.name}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Số điện thoại:</dt>
-                      <dd className="col-sm-9">{selectedWarehouse?.tel}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Địa chỉ:</dt>
-                      <dd className="col-sm-9">{selectedWarehouse?.address}</dd>
-                    </dl>
-                  </CCol>
-                  <CCol lg="6">
-                    <dl className="row">
-                      <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{selectedWarehouse?.city?.name}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{selectedWarehouse?.district?.name}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Xã phường:</dt>
-                      <dd className="col-sm-9">{selectedWarehouse?.ward?.name}</dd>
                     </dl>
                   </CCol>
                 </CRow>
@@ -656,8 +638,6 @@ const CreateOrder = props => {
                         id="note"
                         placeholder="ghi chú"
                         autoComplete="note"
-                        valid={errors.note || null}
-                        invalid={touched.note && !!errors.note}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.note}

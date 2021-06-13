@@ -16,7 +16,6 @@ const mappingStatus = {
 const { selectAll } = globalizedPermissionGroupsSelectors;
 
 const PermissionGroups = props => {
-  const isInitialMount = useRef(true);
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
@@ -25,13 +24,14 @@ const PermissionGroups = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
+  const paramRef = useRef(null);
 
   useEffect(() => {
     dispatch(reset());
   }, []);
 
   useEffect(() => {
-      dispatch(getPermissionGroups({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
+      dispatch(getPermissionGroups({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
   const groupPermisions = useSelector(selectAll);
@@ -105,9 +105,10 @@ const PermissionGroups = props => {
         Object.keys(value).forEach(key => {
           if(!value[key]) delete value[key]
         })
+        paramRef.current = value
         dispatch(getPermissionGroups({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

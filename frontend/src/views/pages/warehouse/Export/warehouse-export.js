@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
@@ -17,45 +17,6 @@ const mappingStatus = {
   APPROVED: 'ĐÃ DUYỆT',
   REJECTED: 'KHÔNG DUYỆT'
 };
-const WarehouseImport = props => {
-  const [details, setDetails] = useState([]);
-  const { initialState } = useSelector(state => state.warehouseImport);
-  const { account } = useSelector(userSafeSelector);
-  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
-  const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(50);
-  const dispatch = useDispatch();
-  const history = useHistory();
-  useEffect(() => {
-    dispatch(reset());
-  }, []);
-
-  useEffect(() => {
-    dispatch(getWarehouseExport({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
-  }, [activePage, size]);
-
-  const { selectAll } = globalizedWarehouseImportSelectors;
-  const warehouses = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
-      return {
-        ...item,
-        store: item.store?.name || '',
-        approver: item.approver?.login || '',
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
-      };
-    });
-  };
-  const toggleDetails = index => {
-    const position = details.indexOf(index);
-    let newDetails = details.slice();
-    if (position !== -1) {
-      newDetails.splice(position, 1);
-    } else {
-      newDetails = [...details, index];
-    }
-    setDetails(newDetails);
-  };
 
   // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
   const fields = [
@@ -109,6 +70,47 @@ const WarehouseImport = props => {
         return 'primary';
     }
   };
+const WarehouseImport = props => {
+  const [details, setDetails] = useState([]);
+  const { initialState } = useSelector(state => state.warehouseImport);
+  const { account } = useSelector(userSafeSelector);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const [activePage, setActivePage] = useState(1);
+  const [size, setSize] = useState(50);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const paramRef = useRef(null);
+  useEffect(() => {
+    dispatch(reset());
+  }, []);
+
+  useEffect(() => {
+    dispatch(getWarehouseExport({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+  }, [activePage, size]);
+
+  const { selectAll } = globalizedWarehouseImportSelectors;
+  const warehouses = useSelector(selectAll);
+  const computedItems = items => {
+    return items.map(item => {
+      return {
+        ...item,
+        store: item.store?.name || '',
+        approver: item.approver?.login || '',
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+      };
+    });
+  };
+  const toggleDetails = index => {
+    const position = details.indexOf(index);
+    let newDetails = details.slice();
+    if (position !== -1) {
+      newDetails.splice(position, 1);
+    } else {
+      newDetails = [...details, index];
+    }
+    setDetails(newDetails);
+  };
+
   const csvContent = computedItems(warehouses)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -132,9 +134,10 @@ const WarehouseImport = props => {
         Object.keys(value).forEach(key => {
           if(!value[key]) delete value[key]
         })
+        paramRef.current = value
         dispatch(getWarehouseExport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

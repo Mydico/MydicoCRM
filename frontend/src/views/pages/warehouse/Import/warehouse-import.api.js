@@ -13,6 +13,18 @@ export const getWarehouseImport = createAsyncThunk(
   }
 );
 
+export const getWarehouseReturn = createAsyncThunk(
+  'api/store-inputs/return',
+  async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
+    try {
+      const result = await axios.get('api/store-inputs/return', { params: params });
+      return { data: result.data, total: result.headers['x-total-count'] };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const getWarehouseExport = createAsyncThunk(
   'api/store-inputs/export',
   async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {

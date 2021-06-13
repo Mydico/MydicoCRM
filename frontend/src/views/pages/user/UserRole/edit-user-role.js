@@ -147,6 +147,10 @@ const EditUserRole = props => {
                   name="authority"
                   onChange={e => setFieldValue('authority', e.value)}
                   placeholder="Chọn vai trò"
+                  value={{
+                    value: values.authority,
+                    label: authorities.filter(item => item.name === values.authority)[0]?.label || ''
+                  }}
                   options={authorities.map(item => ({
                     value: item.name,
                     label: item.label

@@ -78,11 +78,6 @@ const Invoice = () => {
               <div>
                 <strong> {invoice?.promotion?.name}</strong>
               </div>
-              <div>
-                {invoice?.promotion?.description.length > 200 ?
-                  `${invoice?.promotion?.description.substring(0, 200)}` :
-                  invoice?.promotion?.description}
-              </div>
               <div>Loại khách hàng: {invoice?.promotion?.customerType?.name}</div>
             </CCol>
           </CRow>
@@ -173,7 +168,7 @@ const Invoice = () => {
             </CCol>
           </CRow>
           <CRow className="d-flex justify-content-between mr-5">
-            <CButton size="lg" className="btn btn-secondary" onClick={() => history.goBack()}>
+            <CButton size="lg" className="btn btn-secondary ml-3" onClick={() => history.goBack()}>
               Quay lại
             </CButton>
             <CButton type="submit" size="lg" className="btn btn-success mr-5" onClick={onCreateOrder}>

@@ -1,52 +1,76 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination} from '@coreui/react/lib';
-import _ from 'lodash'
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {useDispatch, useSelector} from 'react-redux';
-import {getProductWarehouse} from './product-warehouse.api.js';
-import {globalizedProductWarehouseSelectors, reset} from './product-warehouse.reducer.js';
-import {useHistory} from 'react-router-dom';
-import moment from 'moment'
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import _ from 'lodash';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProductWarehouse } from './product-warehouse.api.js';
+import { globalizedProductWarehouseSelectors, reset } from './product-warehouse.reducer.js';
+import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
-  DELETED: 'ĐÃ XÓA',
+  DELETED: 'ĐÃ XÓA'
 };
-const ProductWarehouse = (props) => {
+
+// Code	Tên sản phẩm	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Nhóm sản phẩm	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã sản phẩm', _style: { width: '10%' } },
+  { key: 'name', label: 'Tên sản phẩm', _style: { width: '15%' } },
+  { key: 'store', label: 'Tên kho', _style: { width: '15%' } },
+  { key: 'quantity', label: 'Số lượng', _style: { width: '15%' } }
+];
+
+const getBadge = status => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'success';
+    case 'DISABLED':
+      return 'danger';
+    case 'DELETED':
+      return 'warning';
+    case 'Banned':
+      return 'danger';
+    default:
+      return 'primary';
+  }
+};
+const ProductWarehouse = props => {
   const [details, setDetails] = useState([]);
-  const isFirstRender = useRef(true);
-  const {initialState} = useSelector((state) => state.productWarehouse);
+  const { initialState } = useSelector(state => state.productWarehouse);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
+  const paramRef = useRef();
   useEffect(() => {
-    // dispatch(fetching());
-    // dispatch(getProductWarehouse());
     dispatch(reset());
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-    }
   }, []);
 
   useEffect(() => {
-    if (!isFirstRender.current) dispatch(getProductWarehouse({page: activePage - 1, size, sort: 'createdDate,DESC'}));
+    dispatch(getProductWarehouse({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
-  const {selectAll} = globalizedProductWarehouseSelectors;
+  const { selectAll } = globalizedProductWarehouseSelectors;
   const productProductWarehouses = useSelector(selectAll);
-  const computedItems = (items) => {
-    return items.map((item) => {
+  const computedItems = items => {
+    return items.map(item => {
       return {
         ...item,
         code: item.product?.code,
         name: item.product?.name,
         store: item.store?.name,
-        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
   };
-  const toggleDetails = (index) => {
+  const toggleDetails = index => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -57,72 +81,33 @@ const ProductWarehouse = (props) => {
     setDetails(newDetails);
   };
 
-  // Code	Tên sản phẩm	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Nhóm sản phẩm	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: {width: '1%'},
-      filter: false,
-    },
-    {key: 'code', label: 'Mã sản phẩm', _style: {width: '10%'}},
-    {key: 'name', label: 'Tên sản phẩm', _style: {width: '15%'}},
-    {key: 'store', label: 'Tên kho', _style: {width: '15%'}},
-    {key: 'quantity', label: 'Số lượng', _style: {width: '15%'}},
-    // {
-    //   key: 'show_details',
-    //   label: '',
-    //   _style: { width: '1%' },
-    //   filter: false,
-    // },
-  ];
-
-  const getBadge = (status) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'DISABLED':
-        return 'danger';
-      case 'DELETED':
-        return 'warning';
-      case 'Banned':
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
-
   const csvContent = computedItems(productProductWarehouses)
-      .map((item) => Object.values(item).join(','))
-      .join('\n');
+    .map(item => Object.values(item).join(','))
+    .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
-
-  const toEditProductWarehouse = (userId) => {
+  const toEditProductWarehouse = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
-
 
   const debouncedSearchColumn = useCallback(
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
-        dispatch(getProductWarehouse({page: 0, size: size, sort: 'createdDate,DESC', ...value}))}
-    }, 1000),
+          if (!value[key]) delete value[key];
+        });
+        paramRef.current = value;
+        dispatch(getProductWarehouse({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      }
+    }, 300),
     []
   );
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
 
-
-  const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
-    []
-  );
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(productProductWarehouses), [productProductWarehouses]);
 
   return (
@@ -140,27 +125,27 @@ const ProductWarehouse = (props) => {
           columnFilter
           tableFilter
           cleaner
-          itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [50, 100, 150, 200]}}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter
           loading={initialState.loading}
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={(val) => console.log('new page:', val)}
-          onPagesChange={(val) => console.log('new pages:', val)}
-          onPaginationChange={(val) => setSize(val)}
+          onPageChange={val => console.log('new page:', val)}
+          onPagesChange={val => console.log('new pages:', val)}
+          onPaginationChange={val => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={(val) => console.log('new table filter:', val)}
+          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
-            status: (item) => (
+            status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
-            show_details: (item) => {
+            show_details: item => {
               return (
                 <td className="d-flex py-2">
                   <CButton
@@ -189,7 +174,7 @@ const ProductWarehouse = (props) => {
                 </td>
               );
             },
-            details: (item) => {
+            details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
@@ -235,13 +220,13 @@ const ProductWarehouse = (props) => {
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / size) + 1}
-          onActivePageChange={(i) => setActivePage(i)}
+          onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
     </CCard>

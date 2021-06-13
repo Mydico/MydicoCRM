@@ -4,10 +4,10 @@ import { CCard, CCardHeader, CCardBody, CCol, CForm, CTextarea, CFormGroup, CLab
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDetailWarehouseImport, updateWarehouseImport } from './warehouse-import.api';
+import { getDetailWarehouseImport, updateWarehouseImport } from '../Import/warehouse-import.api';
 
 import { useHistory } from 'react-router-dom';
-import { fetching, globalizedWarehouseImportSelectors } from './warehouse-import.reducer';
+import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
 
 import { Table } from 'reactstrap';
 import cities from '../../../../shared/utils/city';
@@ -160,10 +160,12 @@ const DetailWarehouseReturn = props => {
                   <thead>
                     <tr>
                       <th>Sản phẩm</th>
-                      <th>Đơn vị</th>
                       <th>Dung tích</th>
                       <th>Giá</th>
                       <th>Số lượng</th>
+                      <th>Tổng tiền</th>
+                      <th>Chiết khấu</th>
+                      <th>Thành tiền</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -172,7 +174,6 @@ const DetailWarehouseReturn = props => {
                         <tr key={index}>
                           <td style={{ width: 500 }}>{`${item?.product?.productBrand?.name || ''}-${item?.product?.name || ''}-${item
                             ?.product?.volume || ''}`}</td>
-                          <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
                           <td>
                             {Number(item?.price || item?.product?.price).toLocaleString('it-IT', {
@@ -180,7 +181,23 @@ const DetailWarehouseReturn = props => {
                               currency: 'VND'
                             }) || ''}
                           </td>
-                          <td style={{ width: 100 }}>{item.quantity}</td>
+                          <td style={{ minWidth: 100 }}>{item.quantity}</td>
+                          <td style={{ minWidth: 100 }}>
+                            {(Number(item?.price || item?.product?.price) *
+                              Number(item.quantity)).toLocaleString('it-IT', {
+                                style: 'currency',
+                                currency: 'VND'
+                              }) || ''}
+                          </td>
+                          <td style={{ minWidth: 100 }}>{item.reducePercent}</td>
+                          <td style={{ minWidth: 100 }}>
+                            {(Number(item?.price || item?.product?.price) *
+                              Number(item.quantity) *
+                              ((100 - Number(item.reducePercent)) / 100)).toLocaleString('it-IT', {
+                                style: 'currency',
+                                currency: 'VND'
+                              }) || ''}
+                          </td>
                         </tr>
                       );
                     })}
@@ -195,13 +212,31 @@ const DetailWarehouseReturn = props => {
                       <tbody>
                         <tr>
                           <td className="left">
+                            <strong>Tổng tiền</strong>
+                          </td>
+                          <td className="right">
+                            <strong>
+                              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(warehouseImport?.totalMoney)}
+                            </strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left">
+                            <strong>Chiết khấu</strong>
+                          </td>
+                          <td className="right">
+                            <strong>
+                              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(warehouseImport?.reduceMoney)}
+                            </strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left">
                             <strong>Tiền thanh toán</strong>
                           </td>
                           <td className="right">
                             <strong>
-                              {productList
-                                .reduce((sum, current) => sum + Number(current.price || current.product.price) * current.quantity, 0)
-                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(warehouseImport?.realMoney)}
                             </strong>
                           </td>
                         </tr>

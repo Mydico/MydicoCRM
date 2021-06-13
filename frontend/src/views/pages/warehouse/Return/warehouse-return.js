@@ -3,8 +3,8 @@ import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, 
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getWarehouseImport, updateWarehouseStatusImport } from './warehouse-import.api.js';
-import { globalizedWarehouseImportSelectors, reset } from './warehouse-import.reducer.js';
+import { getWarehouseReturn, updateWarehouseStatusImport } from '../Import/warehouse-import.api.js';
+import { globalizedWarehouseImportSelectors, reset } from '../Import/warehouse-import.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { WarehouseImportStatus, WarehouseImportType } from './contants.js';
 import { confirmAlert } from 'react-confirm-alert'; // Import
@@ -81,7 +81,7 @@ const WarehouseImport = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getWarehouseImport({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    dispatch(getWarehouseReturn({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
   const warehouses = useSelector(selectAll);
@@ -113,18 +113,15 @@ const WarehouseImport = props => {
     .map(item => Object.values(item).join(','))
     .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
-  const toCreateWarehouseImport = () => {
-    history.push(`${props.match.url}/new`);
-  };
   const toCreateWarehouseReturn = () => {
-    history.push(`${props.match.url}/return/new`);
+    history.push(`${props.match.url}/new`);
   };
   const toEditWarehouseImport = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
   const toEditWarehouseReturn = userId => {
-    history.push(`${props.match.url}/return/${userId}/edit`);
+    history.push(`${props.match.url}/${userId}/edit`);
   };
 
   const debouncedSearchColumn = useCallback(
@@ -134,7 +131,7 @@ const WarehouseImport = props => {
           if(!value[key]) delete value[key]
         })
         paramRef.current = value
-        dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+        dispatch(getWarehouseReturn({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
     }, 300),
     []
@@ -178,7 +175,7 @@ const WarehouseImport = props => {
       case WarehouseImportStatus.WAITING:
         return (
           <CRow>
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs').length > 0) && (
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/return').length > 0) && (
               <CButton
                 onClick={() => {
                   item.type === WarehouseImportType.NEW ? toEditWarehouseImport(item.id) : toEditWarehouseReturn(item.id);
@@ -193,7 +190,7 @@ const WarehouseImport = props => {
                 CHỈNH SỬA
               </CButton>
             )}
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/approve').length > 0) && (
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/return/approve').length > 0) && (
               <CButton
                 onClick={() => {
                   alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu nhập kho này không', approveTicket);
@@ -207,7 +204,7 @@ const WarehouseImport = props => {
                 DUYỆT
               </CButton>
             )}
-            {(!item.export &&  (isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/cancel').length > 0)) && (
+            {(!item.export &&  (isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/return/cancel').length > 0)) && (
               <CButton
                 onClick={() => {
                   alertFunc(item, 'Bạn có chắc chắn muốn từ chối phiếu nhập kho này không', rejectTicket);
@@ -230,7 +227,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(getWarehouseImport());
+      dispatch(getWarehouseReturn());
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
@@ -242,9 +239,9 @@ const WarehouseImport = props => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách phiếu nhập kho
-        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/store-inputs').length > 0) && (
-          <CButton color="success" variant="outline" className="ml-3" onClick={toCreateWarehouseImport}>
-            <CIcon name="cil-plus" /> Thêm mới phiếu nhập kho
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/store-inputs/return').length > 0) && (
+          <CButton color="primary" variant="outline" className="ml-3" onClick={toCreateWarehouseReturn}>
+            <CIcon name="cil-plus" /> Thêm mới phiếu trả hàng
           </CButton>
         )}
       </CCardHeader>

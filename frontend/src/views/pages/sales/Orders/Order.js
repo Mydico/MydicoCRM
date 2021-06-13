@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getOrder, updateStatusOrder } from './order.api';
+import { editSelfOrder, getOrder, updateStatusOrder } from './order.api';
 import { globalizedOrdersSelectors, reset } from './order.reducer';
 import { useHistory } from 'react-router-dom';
 import { Table } from 'reactstrap';
@@ -10,22 +10,10 @@ import { OrderStatus } from './order-status';
 import moment from 'moment';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import { userSafeSelector, addPermission } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
-const getBadge = status => {
-  switch (status) {
-    case 'ACTIVE':
-      return 'success';
-    case 'DISABLED':
-      return 'danger';
-    case 'DELETED':
-      return 'warning';
-    case 'Banned':
-      return 'danger';
-    default:
-      return 'primary';
-  }
-};
+import { CTextarea } from '@coreui/react';
+
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -33,14 +21,58 @@ const mappingStatus = {
   CANCEL: 'ĐÃ HỦY'
 };
 const { selectAll } = globalizedOrdersSelectors;
+// Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	đơn hàngg	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  {
+    key: 'show_details',
+    label: 'Xem chi tiết',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
+  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
+  { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
+  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' } },
+  { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+  {
+    key: 'action',
+    label: '',
+    _style: { width: '30%' },
+    filter: false
+  }
+];
 
+const getBadge = status => {
+  switch (status) {
+    case 'APPROVED':
+      return 'success';
+    case 'CREATE_COD':
+      return 'info';
+    case 'WAITING':
+      return 'warning';
+    case 'CANCEL':
+      return 'danger';
+    default:
+      return 'primary';
+  }
+};
 const Order = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.order);
   const [activePage, setActivePage] = useState(1);
-  const [size] = useState(20);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
+  const rejectRef = useRef("");
+  const paramRef = useRef(null);
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   useEffect(() => {
@@ -50,8 +82,15 @@ const Order = props => {
   const orders = useSelector(selectAll);
 
   useEffect(() => {
-    dispatch(getOrder({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
-  }, [activePage]);
+    const localParams = localStorage.getItem('params');
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    if (localParams) {
+      params = JSON.parse(localParams);
+      setActivePage(params.page + 1);
+      localStorage.removeItem('params');
+    }
+    dispatch(getOrder(params));
+  }, [activePage, size]);
 
   const computedItems = items => {
     return items.map(item => {
@@ -77,52 +116,11 @@ const Order = props => {
     setDetails(newDetails);
   };
 
-  // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	đơn hàngg	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    {
-      key: 'show_details',
-      label: 'Xem chi tiết',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
-    { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
-    { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-    { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' } },
-    { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
-    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
-    {
-      key: 'action',
-      label: '',
-      _style: { width: '30%' },
-      filter: false
-    }
-  ];
-
-  const getBadge = status => {
-    switch (status) {
-      case 'APPROVED':
-        return 'success';
-      case 'CREATE_COD':
-        return 'info';
-      case 'WAITING':
-        return 'warning';
-      case 'CANCEL':
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
   const csvContent = orders.map(item => Object.values(item).join(',')).join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateOrder = () => {
+    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/new`);
   };
 
@@ -132,9 +130,10 @@ const Order = props => {
         Object.keys(value).forEach(key => {
           if (!value[key]) delete value[key];
         });
+        paramRef.current = value;
         dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 
@@ -143,6 +142,8 @@ const Order = props => {
   };
 
   const toEditOrder = typeId => {
+    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/${typeId}/edit`);
   };
 
@@ -163,14 +164,20 @@ const Order = props => {
     dispatch(updateStatusOrder(newOrder));
   };
 
-  const cancelOrder = order => () => {
+  const cancelOrder = (order) => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.CANCEL,
       action: 'cancel',
-      customer: order.customer
+      customer: order.customer,
+      createdBy: order.createdBy,
+      reject: rejectRef.current
     };
-    dispatch(updateStatusOrder(newOrder));
+    if (order.createdBy !== account.login) {
+      dispatch(updateStatusOrder(newOrder));
+    } else {
+      dispatch(editSelfOrder(newOrder));
+    }
   };
 
   const deleteOrder = order => () => {
@@ -211,17 +218,26 @@ const Order = props => {
 
   const cancelAlert = item => {
     confirmAlert({
-      title: 'Xác nhận',
-      message: 'Bạn có chắc chắn muốn hủy đơn hàng này?',
-      buttons: [
-        {
-          label: 'Đồng ý',
-          onClick: cancelOrder(item)
-        },
-        {
-          label: 'Hủy'
-        }
-      ]
+      customUI: ({ onClose }) => {
+        return (
+          <div className="react-confirm-alert-body">
+            <h1>Xác nhận</h1>
+            <p>Bạn có chắc chắn muốn hủy đơn hàng này?</p>
+            <CTextarea placeholder="Nhập lý do hủy" onChange={(event) => rejectRef.current = event.target.value} />
+            <div className="react-confirm-alert-button-group">
+              <button onClick={onClose}>Không</button>
+              <button
+                onClick={() => {
+                  cancelOrder(item)
+                  onClose();
+                }}
+              >
+                Đồng ý
+              </button>
+            </div>
+          </div>
+        );
+      },
     });
   };
 
@@ -263,7 +279,8 @@ const Order = props => {
           <CCol>
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/approve').length > 0) && (
               <CButton
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
                   approveAlert(item);
                 }}
                 color="success"
@@ -275,9 +292,12 @@ const Order = props => {
                 DUYỆT ĐƠN HÀNG
               </CButton>
             )}
-            {(isAdmin || item.createdBy === account.login || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
+            {(isAdmin ||
+              item.createdBy === account.login ||
+              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
               <CButton
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
                   cancelAlert(item);
                 }}
                 color="danger"
@@ -288,9 +308,13 @@ const Order = props => {
                 HỦY ĐƠN HÀNG
               </CButton>
             )}
-            {(item.createdBy === account.login || isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
+            {(item.createdBy === account.login ||
+              isAdmin ||
+              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
               <CButton
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
+                  dispatch(addPermission({ method: 'PUT', entity: '/api/orders', isSelf: true }));
                   toEditOrder(item.id);
                 }}
                 color="warning"
@@ -309,7 +333,8 @@ const Order = props => {
           <CCol>
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/create-cod').length > 0) && (
               <CButton
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
                   codAlert(item);
                 }}
                 color="primary"
@@ -320,9 +345,12 @@ const Order = props => {
                 TẠO VẬN ĐƠN
               </CButton>
             )}
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
+            {(isAdmin ||
+              (account.branch?.allow &&
+                account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders' && !rol.isSelf).length > 0)) && (
               <CButton
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
                   toEditOrder(item.id);
                 }}
                 color="warning"
@@ -334,9 +362,12 @@ const Order = props => {
                 CHỈNH SỬA
               </CButton>
             )}
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
+            {(isAdmin ||
+              (account.branch?.allow &&
+                account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0)) && (
               <CButton
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
                   cancelAlert(item);
                 }}
                 color="danger"
@@ -358,9 +389,10 @@ const Order = props => {
       case OrderStatus.CANCEL:
         return (
           <CCol>
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders' && !rol.isSelf).length > 0) && (
               <CButton
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
                   toEditOrder(item.id);
                 }}
                 color="warning"
@@ -374,7 +406,8 @@ const Order = props => {
               </CButton>
             )}
             <CButton
-              onClick={() => {
+              onClick={event => {
+                event.stopPropagation();
                 deleteAlert(item);
               }}
               color="secondary"
@@ -394,7 +427,9 @@ const Order = props => {
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
-
+  const toDetailOrder = id => {
+    history.push(`${props.match.url}/${id}/detail`);
+  };
   return (
     <CCard>
       <CCardHeader>
@@ -423,11 +458,11 @@ const Order = props => {
           onPaginationChange={val => setSize(val)}
           onPageChange={val => console.log('new page:', val)}
           onPagesChange={val => console.log('new pages:', val)}
-          onPaginationChange={val => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
+          onRowClick={val => toDetailOrder(val.id)}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
             status: item => (

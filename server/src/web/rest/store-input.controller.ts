@@ -74,6 +74,40 @@ export class StoreInputController {
     return res.send(results);
   }
 
+  @Get('/return')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: StoreInput
+  })
+  async getAllReturn(@Req() req: Request, @Res() res): Promise<StoreInput[]> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter = [];
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+      }
+    });
+    let departmentVisible = [];
+    const currentUser = req.user as User;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    filter.push({ department: In(departmentVisible) });
+    const [results, count] = await this.storeInputService.findAndCountReturn({
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+      where: filter
+    });
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
+  }
+
+
   @Get('/')
   @Roles(RoleType.USER)
   @ApiResponse({
@@ -145,6 +179,22 @@ export class StoreInputController {
     return res.send(created);
   }
 
+  @PostMethod('/return')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+    type: StoreInput
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  async postReturn(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+    const currentUser = req.user as User;
+    storeInput.createdBy = currentUser.login;
+    const created = await this.storeInputService.save(storeInput);
+    HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
+    return res.send(created);
+  }
+
   @PostMethod('/')
   @Roles(RoleType.USER)
   @ApiResponse({
@@ -177,6 +227,23 @@ export class StoreInputController {
     return res.send(await this.storeInputService.update(storeInput));
   }
 
+
+  @Put('/return/approve')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: StoreInput
+  })
+  async approveReturn(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
+    if (storeInput.status === StoreImportStatus.APPROVED) {
+      const currentUser = req.user as User;
+      storeInput.approver = currentUser;
+    }
+    return res.send(await this.storeInputService.update(storeInput));
+  }
+
   @Put('/approve')
   @Roles(RoleType.USER)
   @ApiResponse({
@@ -192,6 +259,7 @@ export class StoreInputController {
     }
     return res.send(await this.storeInputService.update(storeInput));
   }
+
   @Put('/export/cancel')
   @Roles(RoleType.USER)
   @ApiResponse({
@@ -200,6 +268,22 @@ export class StoreInputController {
     type: StoreInput
   })
   async cancelExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
+    if (storeInput.status === StoreImportStatus.APPROVED) {
+      const currentUser = req.user as User;
+      storeInput.approver = currentUser;
+    }
+    return res.send(await this.storeInputService.update(storeInput));
+  }
+
+  @Put('/return/cancel')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: StoreInput
+  })
+  async cancelReturn(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
     if (storeInput.status === StoreImportStatus.APPROVED) {
       const currentUser = req.user as User;
@@ -232,6 +316,26 @@ export class StoreInputController {
     type: StoreInput
   })
   async putExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'StoreInput', storeInput.id);
+    const currentUser = req.user as User;
+    storeInput.approver = currentUser;
+    if (storeInput.status === StoreImportStatus.APPROVED) {
+      const canExport = await this.storeInputService.canExportStore(storeInput);
+      if (!canExport) {
+        throw new HttpException('Sản phẩm trong kho không đủ để tạo phiếu xuất', HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+    }
+    return res.send(await this.storeInputService.update(storeInput));
+  }
+
+  @Put('/return')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: StoreInput
+  })
+  async putReturn(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     HeaderUtil.addEntityUpdatedHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
     storeInput.approver = currentUser;

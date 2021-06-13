@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {CCardBody, CBadge, CDataTable, CCard, CCardHeader, CPagination} from '@coreui/react/lib';
 import _ from 'lodash'
 import CIcon from '@coreui/icons-react/lib/CIcon';;
@@ -22,7 +22,6 @@ const getBadge = (status) => {
   }
 };
 const {selectAll} = globalizedStoreHistorySelectors;
-const storeHistorys = useSelector(selectAll);
 
 const StoreHistory = () => {
   const [] = useState([]);
@@ -30,13 +29,15 @@ const StoreHistory = () => {
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const storeHistorys = useSelector(selectAll);
+
+  const paramRef = useRef(null);
   useEffect(() => {
     dispatch(reset());
   }, []);
 
   useEffect(() => {
-    dispatch(getStoreHistory({page: activePage - 1, size, sort: 'createdDate,DESC'}));
+    dispatch(getStoreHistory({page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current}));
   }, [activePage, size]);
 
   const computedItems = (items) => {
@@ -71,9 +72,10 @@ const StoreHistory = () => {
         Object.keys(value).forEach(key => {
           if(!value[key]) delete value[key]
         })
+        paramRef.current = value
         dispatch(getStoreHistory({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

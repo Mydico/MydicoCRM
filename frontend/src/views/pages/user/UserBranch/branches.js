@@ -25,21 +25,42 @@ const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
-const Branch = props => {
-  const isInitialMount = useRef(true);
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
+  { key: 'name', label: 'Tên phòng ban', _style: { width: '15%' } },
+  {
+    key: 'show_details',
+    label: '',
+    _style: { width: '1%' },
+    filter: false
+  }
+];
 
+const getBadge = status => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'success';
+    case 'DISABLED':
+      return 'danger';
+    case 'DELETED':
+      return 'warning';
+    case 'Banned':
+      return 'danger';
+    default:
+      return 'primary';
+  }
+};
+
+const Branch = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    }
-  });
-  useEffect(() => {
-    dispatch(reset());
-  }, []);
-
   const { selectAll } = globalizedBranchSelectors;
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
@@ -47,9 +68,14 @@ const Branch = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.provider);
   const [activePage, setActivePage] = useState(1);
+  const paramRef = useRef(null);
 
   useEffect(() => {
-    dispatch(getBranch({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
+    dispatch(reset());
+  }, []);
+
+  useEffect(() => {
+    dispatch(getBranch({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
   const computedItems = items => {
@@ -73,37 +99,6 @@ const Branch = props => {
   };
 
   // Code	Tên nhà cung cấp	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại nhà cung cấp	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên phòng ban', _style: { width: '15%' } },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
-  ];
-
-  const getBadge = status => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'DISABLED':
-        return 'danger';
-      case 'DELETED':
-        return 'warning';
-      case 'Banned':
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
 
   const csvContent = computedItems(branchs)
     .map(item => Object.values(item).join(','))
@@ -124,9 +119,10 @@ const Branch = props => {
         Object.keys(value).forEach(key => {
           if(!value[key]) delete value[key]
         })
+        paramRef.current = value
         dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

@@ -197,93 +197,93 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
       ...entity,
       old_id: customerList[index].old_id
     }))
-    const orderList = orderJSON.map((item, index) => {
-      return ({
-        old_id: item.id,
-        note: item.note,
-        createdBy: resultUsersWithOldData.filter(user => user.old_id === item.created_by)[0]?.login || null,
-        customer: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id)[0] || null,
-        sale: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id)[0]?.sale || null,
-        code: (index + 1).toString(),
-        customerName: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id)[0].name || null,
-        totalMoney: Number(item.total_money) || 0,
-        realMoney: Number(item.real_money) || 0,
-        reduceMoney: Number(item.reduce_money) || 0,
-        department: resultDepartment.identifiers[departments.findIndex(branch => branch.name.toLocaleLowerCase().includes(item.name.toLocaleLowerCase()))],
-        address: item.address,
-        status: OrderStatus.CREATE_COD,
-      })
-    });
+    // const orderList = orderJSON.map((item, index) => {
+    //   return ({
+    //     old_id: item.id,
+    //     note: item.note,
+    //     createdBy: resultUsersWithOldData.filter(user => user.old_id === item.created_by)[0]?.login || null,
+    //     customer: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id)[0] || null,
+    //     sale: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id)[0]?.sale || null,
+    //     code: (index + 1).toString(),
+    //     customerName: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id)[0].name || null,
+    //     totalMoney: Number(item.total_money) || 0,
+    //     realMoney: Number(item.real_money) || 0,
+    //     reduceMoney: Number(item.reduce_money) || 0,
+    //     department: resultDepartment.identifiers[departments.findIndex(branch => branch.name.toLocaleLowerCase().includes(item.name.toLocaleLowerCase()))],
+    //     address: item.address,
+    //     status: OrderStatus.CREATE_COD,
+    //   })
+    // });
 
-    const debtRepo = conn.getRepository(DebtDashboard);
-    const customerDebitRepo = conn.getRepository(CustomerDebit);
+    // const debtRepo = conn.getRepository(DebtDashboard);
+    // const customerDebitRepo = conn.getRepository(CustomerDebit);
 
-    const a = [...orderList];
-    let orderIdArr = []
-    while (a.length) {
-      const insertedOrder = await conn
-        .getRepository(Order)
-        .save(a.splice(0, 500))
-      orderIdArr = orderIdArr.concat(insertedOrder)
-    }
+    // const a = [...orderList];
+    // let orderIdArr = []
+    // while (a.length) {
+    //   const insertedOrder = await conn
+    //     .getRepository(Order)
+    //     .save(a.splice(0, 500))
+    //   orderIdArr = orderIdArr.concat(insertedOrder)
+    // }
 
-    const resultOrderWithOldData = orderIdArr.map((entity, index) => ({
-      ...entity,
-      old_id: orderList[index].old_id
-    }))
-    for (let index = 0; index < resultOrderWithOldData.length; index++) {
-      const latestTransaction = await conn.getRepository(Transaction).findOne({
-        where: { customer: resultOrderWithOldData[index].customer },
-        order: { createdDate: 'DESC' }
-      });
-      const entity = {
-        customer: resultOrderWithOldData[index].customer,
-        order: resultOrderWithOldData[index].id,
-        sale: resultOrderWithOldData[index].sale,
-        totalMoney: resultOrderWithOldData[index].realMoney,
-        type: TransactionType.DEBIT,
-        previousDebt: latestTransaction ? latestTransaction.earlyDebt : 0,
-        earlyDebt: latestTransaction
-          ? Number(latestTransaction.earlyDebt) + Number(resultOrderWithOldData[index].realMoney)
-          : Number(resultOrderWithOldData[index].realMoney)
-      }
-      const savedEntity = await conn.getRepository(Transaction).save(entity);
+    // const resultOrderWithOldData = orderIdArr.map((entity, index) => ({
+    //   ...entity,
+    //   old_id: orderList[index].old_id
+    // }))
+    // for (let index = 0; index < resultOrderWithOldData.length; index++) {
+    //   const latestTransaction = await conn.getRepository(Transaction).findOne({
+    //     where: { customer: resultOrderWithOldData[index].customer },
+    //     order: { createdDate: 'DESC' }
+    //   });
+    //   const entity = {
+    //     customer: resultOrderWithOldData[index].customer,
+    //     order: resultOrderWithOldData[index].id,
+    //     sale: resultOrderWithOldData[index].sale,
+    //     totalMoney: resultOrderWithOldData[index].realMoney,
+    //     type: TransactionType.DEBIT,
+    //     previousDebt: latestTransaction ? latestTransaction.earlyDebt : 0,
+    //     earlyDebt: latestTransaction
+    //       ? Number(latestTransaction.earlyDebt) + Number(resultOrderWithOldData[index].realMoney)
+    //       : Number(resultOrderWithOldData[index].realMoney)
+    //   }
+    //   const savedEntity = await conn.getRepository(Transaction).save(entity);
 
-      const debtDashboard = new DebtDashboard();
-      if (entity.type === TransactionType.DEBIT) {
-        debtDashboard.amount = entity.totalMoney;
-        debtDashboard.userId = entity.sale?.id || null;
-        debtDashboard.type = DashboardType.DEBT;
-        debtDashboard.entityId = savedEntity.id,
-          debtDashboard.entityType = TransactionType.DEBIT
-      }
-      await debtRepo.save(debtDashboard);
-      let exist = await customerDebitRepo.findOne({ where: { customer: entity.customer } });
-      if (exist) {
-        exist.debt = entity.earlyDebt;
-        exist.customer = entity.customer;
-        exist.department = resultOrderWithOldData[index]?.department?.id || null
-        exist.sale = entity.sale
-      } else {
-        exist = new CustomerDebit();
-        exist.debt = entity.earlyDebt;
-        exist.customer = entity.customer;
-        exist.department = resultOrderWithOldData[index]?.department?.id || null
-        exist.sale = entity.sale
-      }
-      await customerDebitRepo.save(exist);
-    }
+    //   const debtDashboard = new DebtDashboard();
+    //   if (entity.type === TransactionType.DEBIT) {
+    //     debtDashboard.amount = entity.totalMoney;
+    //     debtDashboard.userId = entity.sale?.id || null;
+    //     debtDashboard.type = DashboardType.DEBT;
+    //     debtDashboard.entityId = savedEntity.id,
+    //       debtDashboard.entityType = TransactionType.DEBIT
+    //   }
+    //   await debtRepo.save(debtDashboard);
+    //   let exist = await customerDebitRepo.findOne({ where: { customer: entity.customer } });
+    //   if (exist) {
+    //     exist.debt = entity.earlyDebt;
+    //     exist.customer = entity.customer;
+    //     exist.department = resultOrderWithOldData[index]?.department?.id || null
+    //     exist.sale = entity.sale
+    //   } else {
+    //     exist = new CustomerDebit();
+    //     exist.debt = entity.earlyDebt;
+    //     exist.customer = entity.customer;
+    //     exist.department = resultOrderWithOldData[index]?.department?.id || null
+    //     exist.sale = entity.sale
+    //   }
+    //   await customerDebitRepo.save(exist);
+    // }
 
-    const incomeDash = resultOrderWithOldData.map(item => {
-      return ({
-        userId: item.sale?.id || null,
-        type: DashboardType.ORDER,
-        amount: item.realMoney,
-        entityId: item.id,
-        entityType: TransactionType.DEBIT
-      })
-    })
-    await conn.getRepository(IncomeDashboard).save(incomeDash);
+    // const incomeDash = resultOrderWithOldData.map(item => {
+    //   return ({
+    //     userId: item.sale?.id || null,
+    //     type: DashboardType.ORDER,
+    //     amount: item.realMoney,
+    //     entityId: item.id,
+    //     entityType: TransactionType.DEBIT
+    //   })
+    // })
+    // await conn.getRepository(IncomeDashboard).save(incomeDash);
 
     const brand = brands.map(item => ({
       code: item['Mã thương hiệu'],
@@ -342,156 +342,156 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
       ...entity,
       old_id: productList[index].old_id,
     }));
-    const orderDetailList = orderDetail.map((item, index) => {
-      return ({
-        order: resultOrderWithOldData.filter(order => order.old_id === item.order_id)[0]?.id || null,
-        product: resultProductWithOldData.filter(product => product.old_id === item.product_id)[0] || null,
-        price: Number(item.price),
-        priceReal: Number(item.price_real),
-        priceTotal: Number(item.price_total),
-        reducePercent: Number(item.reduce_percent),
-        quantity: Number(item.quantity),
-        store: resultStore.identifiers[departments.findIndex(store => store.nameStore.toLocaleLowerCase().trim() === item.name.toLocaleLowerCase().trim())],
-      })
-    });
-    const copyorderDetailList = [...orderDetailList];
-    while (copyorderDetailList.length) {
-      await conn
-        .getRepository(OrderDetails)
-        .save(copyorderDetailList.splice(0, 500))
-    }
+    // const orderDetailList = orderDetail.map((item, index) => {
+    //   return ({
+    //     order: resultOrderWithOldData.filter(order => order.old_id === item.order_id)[0]?.id || null,
+    //     product: resultProductWithOldData.filter(product => product.old_id === item.product_id)[0] || null,
+    //     price: Number(item.price),
+    //     priceReal: Number(item.price_real),
+    //     priceTotal: Number(item.price_total),
+    //     reducePercent: Number(item.reduce_percent),
+    //     quantity: Number(item.quantity),
+    //     store: resultStore.identifiers[departments.findIndex(store => store.nameStore.toLocaleLowerCase().trim() === item.name.toLocaleLowerCase().trim())],
+    //   })
+    // });
+    // const copyorderDetailList = [...orderDetailList];
+    // while (copyorderDetailList.length) {
+    //   await conn
+    //     .getRepository(OrderDetails)
+    //     .save(copyorderDetailList.splice(0, 500))
+    // }
 
-    const receiptList = receipt.map((item, index) => {
-      return ({
-        customer: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id.toString())[0] || null,
-        sale: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id.toString())[0]?.sale || null,
-        code: item.code,
-        status: ReceiptStatus.APPROVED,
-        note: item.note,
-        money: item.money,
-        department: resultDepartment.identifiers[departments.findIndex(branch => branch.name.toLocaleLowerCase().includes(item.name.toLocaleLowerCase()))],
-      })
-    });
-    const savedReceipt = await conn.getRepository(Receipt).save(receiptList)
-    for (let index = 0; index < savedReceipt.length; index++) {
-      const latestTransaction = await conn.getRepository(Transaction).findOne({
-        where: { customer: savedReceipt[index].customer },
-        order: { createdDate: 'DESC' }
-      });
-      const entity = {
-        customer: savedReceipt[index].customer,
-        receipt: savedReceipt[index],
-        sale: savedReceipt[index].sale,
-        collectMoney: savedReceipt[index].money,
-        type: TransactionType.PAYMENT,
-        previousDebt: latestTransaction ? latestTransaction.earlyDebt : 0,
-        earlyDebt: latestTransaction
-          ? Number(latestTransaction.earlyDebt) - Number(savedReceipt[index].money)
-          : 0-Number(savedReceipt[index].money)
-      }
-      const savedEntity = await conn.getRepository(Transaction).save(entity);
+    // const receiptList = receipt.map((item, index) => {
+    //   return ({
+    //     customer: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id.toString())[0] || null,
+    //     sale: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id.toString())[0]?.sale || null,
+    //     code: item.code,
+    //     status: ReceiptStatus.APPROVED,
+    //     note: item.note,
+    //     money: item.money,
+    //     department: resultDepartment.identifiers[departments.findIndex(branch => branch.name.toLocaleLowerCase().includes(item.name.toLocaleLowerCase()))],
+    //   })
+    // });
+    // const savedReceipt = await conn.getRepository(Receipt).save(receiptList)
+    // for (let index = 0; index < savedReceipt.length; index++) {
+    //   const latestTransaction = await conn.getRepository(Transaction).findOne({
+    //     where: { customer: savedReceipt[index].customer },
+    //     order: { createdDate: 'DESC' }
+    //   });
+    //   const entity = {
+    //     customer: savedReceipt[index].customer,
+    //     receipt: savedReceipt[index],
+    //     sale: savedReceipt[index].sale,
+    //     collectMoney: savedReceipt[index].money,
+    //     type: TransactionType.PAYMENT,
+    //     previousDebt: latestTransaction ? latestTransaction.earlyDebt : 0,
+    //     earlyDebt: latestTransaction
+    //       ? Number(latestTransaction.earlyDebt) - Number(savedReceipt[index].money)
+    //       : 0-Number(savedReceipt[index].money)
+    //   }
+    //   const savedEntity = await conn.getRepository(Transaction).save(entity);
 
-      const debtDashboard = new DebtDashboard();
-      if (entity.type === TransactionType.PAYMENT) {
-        debtDashboard.amount = entity.collectMoney;
-        debtDashboard.userId = entity.sale?.id || null;
-        debtDashboard.type = DashboardType.DEBT_RECEIPT;
-        debtDashboard.entityId = savedEntity.id,
-          debtDashboard.entityType = TransactionType.PAYMENT
-      }
-      await debtRepo.save(debtDashboard);
-      let exist = await customerDebitRepo.findOne({ where: { customer: entity.customer } });
-      if (exist) {
-        exist.debt = entity.earlyDebt;
-        exist.customer = entity.customer;
-        exist.department = resultOrderWithOldData[index].department.id
-        exist.sale = entity.sale
-      } else {
-        exist = new CustomerDebit();
-        exist.debt = entity.earlyDebt;
-        exist.customer = entity.customer;
-        exist.department = savedReceipt[index].department
-        exist.sale = entity.sale
-      }
-      await customerDebitRepo.save(exist);
-    }
+    //   const debtDashboard = new DebtDashboard();
+    //   if (entity.type === TransactionType.PAYMENT) {
+    //     debtDashboard.amount = entity.collectMoney;
+    //     debtDashboard.userId = entity.sale?.id || null;
+    //     debtDashboard.type = DashboardType.DEBT_RECEIPT;
+    //     debtDashboard.entityId = savedEntity.id,
+    //       debtDashboard.entityType = TransactionType.PAYMENT
+    //   }
+    //   await debtRepo.save(debtDashboard);
+    //   let exist = await customerDebitRepo.findOne({ where: { customer: entity.customer } });
+    //   if (exist) {
+    //     exist.debt = entity.earlyDebt;
+    //     exist.customer = entity.customer;
+    //     exist.department = resultOrderWithOldData[index].department.id
+    //     exist.sale = entity.sale
+    //   } else {
+    //     exist = new CustomerDebit();
+    //     exist.debt = entity.earlyDebt;
+    //     exist.customer = entity.customer;
+    //     exist.department = savedReceipt[index].department
+    //     exist.sale = entity.sale
+    //   }
+    //   await customerDebitRepo.save(exist);
+    // }
 
-    const incomeDashReceipt = savedReceipt.map(item => {
-      return ({
-        userId: item.sale?.id || null,
-        type: DashboardType.DEBT,
-        amount: item.money,
-        entityId: item.id,
-        entityType: TransactionType.PAYMENT
-      })
-    })
-    await conn.getRepository(IncomeDashboard).save(incomeDashReceipt);
+    // const incomeDashReceipt = savedReceipt.map(item => {
+    //   return ({
+    //     userId: item.sale?.id || null,
+    //     type: DashboardType.DEBT,
+    //     amount: item.money,
+    //     entityId: item.id,
+    //     entityType: TransactionType.PAYMENT
+    //   })
+    // })
+    // await conn.getRepository(IncomeDashboard).save(incomeDashReceipt);
 
-    const storeInputList = storeInput.map((item, index) => {
-      return ({
-        type: StoreImportType.EXPORT,
-        status: StoreImportStatus.APPROVED,
-        totalMoney: item.total_money,
-        realMoney: item.total_money,
-        reduceMoney: 0,
-        customer: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id.toString())[0] || null,
-        sale: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id.toString())[0]?.sale || null,
-        department: resultDepartment.identifiers[departments.findIndex(branch => branch.name.toLocaleLowerCase().includes(item.name.toLocaleLowerCase()))],
-      })
-    });
-    const savedstoreInput = await conn.getRepository(StoreInput).save(storeInputList)
-    for (let index = 0; index < savedstoreInput.length; index++) {
-      const latestTransaction = await conn.getRepository(Transaction).findOne({
-        where: { customer: savedstoreInput[index].customer },
-        order: { createdDate: 'DESC' }
-      });
-      const entity = {
-        customer: savedstoreInput[index].customer,
-        storeInput: savedstoreInput[index],
-        refundMoney: savedstoreInput[index].realMoney,
-        type: TransactionType.RETURN,
-        sale: savedstoreInput[index].sale,
-        previousDebt: latestTransaction ? latestTransaction.earlyDebt : 0,
-        earlyDebt: latestTransaction
-          ? Number(latestTransaction.earlyDebt) - Number(savedstoreInput[index].realMoney)
-          : 0 - Number(savedstoreInput[index].realMoney),
-      }
-      const savedEntity = await conn.getRepository(Transaction).save(entity);
-      const debtDashboard = new DebtDashboard();
-      if (entity.type === TransactionType.RETURN) {
-        debtDashboard.amount = entity.refundMoney;
-        debtDashboard.userId = entity.sale?.id || null;
-        debtDashboard.type = DashboardType.DEBT_RETURN;
-        debtDashboard.entityId = savedEntity.id,
-          debtDashboard.entityType = TransactionType.RETURN
-      }
-      await debtRepo.save(debtDashboard);
-      let exist = await customerDebitRepo.findOne({ where: { customer: entity.customer } });
-      if (exist) {
-        exist.debt = entity.earlyDebt;
-        exist.customer = entity.customer;
-        exist.department = resultOrderWithOldData[index].department.id
-        exist.sale = entity.sale
-      } else {
-        exist = new CustomerDebit();
-        exist.debt = entity.earlyDebt;
-        exist.customer = entity.customer;
-        exist.department = savedstoreInput[index].department
-        exist.sale = entity.sale
-      }
-      await customerDebitRepo.save(exist);
+    // const storeInputList = storeInput.map((item, index) => {
+    //   return ({
+    //     type: StoreImportType.EXPORT,
+    //     status: StoreImportStatus.APPROVED,
+    //     totalMoney: item.total_money,
+    //     realMoney: item.total_money,
+    //     reduceMoney: 0,
+    //     customer: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id.toString())[0] || null,
+    //     sale: resultCustomerWithOldData.filter(customer => customer.old_id === item.customer_id.toString())[0]?.sale || null,
+    //     department: resultDepartment.identifiers[departments.findIndex(branch => branch.name.toLocaleLowerCase().includes(item.name.toLocaleLowerCase()))],
+    //   })
+    // });
+    // const savedstoreInput = await conn.getRepository(StoreInput).save(storeInputList)
+    // for (let index = 0; index < savedstoreInput.length; index++) {
+    //   const latestTransaction = await conn.getRepository(Transaction).findOne({
+    //     where: { customer: savedstoreInput[index].customer },
+    //     order: { createdDate: 'DESC' }
+    //   });
+    //   const entity = {
+    //     customer: savedstoreInput[index].customer,
+    //     storeInput: savedstoreInput[index],
+    //     refundMoney: savedstoreInput[index].realMoney,
+    //     type: TransactionType.RETURN,
+    //     sale: savedstoreInput[index].sale,
+    //     previousDebt: latestTransaction ? latestTransaction.earlyDebt : 0,
+    //     earlyDebt: latestTransaction
+    //       ? Number(latestTransaction.earlyDebt) - Number(savedstoreInput[index].realMoney)
+    //       : 0 - Number(savedstoreInput[index].realMoney),
+    //   }
+    //   const savedEntity = await conn.getRepository(Transaction).save(entity);
+    //   const debtDashboard = new DebtDashboard();
+    //   if (entity.type === TransactionType.RETURN) {
+    //     debtDashboard.amount = entity.refundMoney;
+    //     debtDashboard.userId = entity.sale?.id || null;
+    //     debtDashboard.type = DashboardType.DEBT_RETURN;
+    //     debtDashboard.entityId = savedEntity.id,
+    //       debtDashboard.entityType = TransactionType.RETURN
+    //   }
+    //   await debtRepo.save(debtDashboard);
+    //   let exist = await customerDebitRepo.findOne({ where: { customer: entity.customer } });
+    //   if (exist) {
+    //     exist.debt = entity.earlyDebt;
+    //     exist.customer = entity.customer;
+    //     exist.department = resultOrderWithOldData[index].department.id
+    //     exist.sale = entity.sale
+    //   } else {
+    //     exist = new CustomerDebit();
+    //     exist.debt = entity.earlyDebt;
+    //     exist.customer = entity.customer;
+    //     exist.department = savedstoreInput[index].department
+    //     exist.sale = entity.sale
+    //   }
+    //   await customerDebitRepo.save(exist);
 
-    }
-    const incomeDashstoreInput = savedstoreInput.map(item => {
-      return ({
-        userId: item.sale?.id || null,
-        type: DashboardType.DEBT,
-        amount: item.realMoney,
-        entityId: item.id,
-        entityType: TransactionType.RETURN
-      })
-    })
-    await conn.getRepository(IncomeDashboard).save(incomeDashstoreInput);
+    // }
+    // const incomeDashstoreInput = savedstoreInput.map(item => {
+    //   return ({
+    //     userId: item.sale?.id || null,
+    //     type: DashboardType.DEBT,
+    //     amount: item.realMoney,
+    //     entityId: item.id,
+    //     entityType: TransactionType.RETURN
+    //   })
+    // })
+    // await conn.getRepository(IncomeDashboard).save(incomeDashstoreInput);
 
   }
 

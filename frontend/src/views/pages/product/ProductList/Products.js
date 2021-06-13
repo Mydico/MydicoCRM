@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
@@ -15,45 +15,6 @@ const mappingStatus = {
   DELETED: 'ĐÃ XÓA'
 };
 const { selectAll } = globalizedProductSelectors;
-
-const Product = props => {
-  const [details, setDetails] = useState([]);
-  const { account } = useSelector(userSafeSelector);
-  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
-  const { initialState } = useSelector(state => state.product);
-  const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(50);
-  const dispatch = useDispatch();
-  const history = useHistory();
-  useEffect(() => {
-    dispatch(reset());
-  }, []);
-
-  useEffect(() => {
-    dispatch(getProduct({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
-  }, [activePage, size]);
-
-  const products = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
-      return {
-        ...item,
-        productGroup: item.productGroup?.name,
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
-      };
-    });
-  };
-  const toggleDetails = index => {
-    const position = details.indexOf(index);
-    let newDetails = details.slice();
-    if (position !== -1) {
-      newDetails.splice(position, 1);
-    } else {
-      newDetails = [...details, index];
-    }
-    setDetails(newDetails);
-  };
-
   // Code	Tên sản phẩm	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Nhóm sản phẩm	Phân loại	Sửa	Tạo đơn
   const fields = [
     {
@@ -90,16 +51,68 @@ const Product = props => {
         return 'primary';
     }
   };
+const Product = props => {
+  const [details, setDetails] = useState([]);
+  const { account } = useSelector(userSafeSelector);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const { initialState } = useSelector(state => state.product);
+  const [activePage, setActivePage] = useState(1);
+  const [size, setSize] = useState(50);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const paramRef = useRef(null);
+
+  useEffect(() => {
+    dispatch(reset());
+  }, []);
+
+  useEffect(() => {
+    const localParams = localStorage.getItem('params');
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    if (localParams) {
+      params = JSON.parse(localParams);
+      setActivePage(params.page + 1);
+      localStorage.removeItem('params');
+    }
+    dispatch(getProduct(params));
+  }, [activePage, size]);
+
+  const products = useSelector(selectAll);
+  const computedItems = items => {
+    return items.map(item => {
+      return {
+        ...item,
+        productGroup: item.productGroup?.name,
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+      };
+    });
+  };
+  const toggleDetails = index => {
+    const position = details.indexOf(index);
+    let newDetails = details.slice();
+    if (position !== -1) {
+      newDetails.splice(position, 1);
+    } else {
+      newDetails = [...details, index];
+    }
+    setDetails(newDetails);
+  };
+
+
 
   const csvContent = computedItems(products)
     .map(item => Object.values(item).join(','))
     .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateProduct = () => {
+    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/new`);
   };
 
   const toEditProduct = userId => {
+    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
@@ -109,9 +122,10 @@ const Product = props => {
         Object.keys(value).forEach(key => {
           if(!value[key]) delete value[key]
         })
+        paramRef.current = value;
         dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

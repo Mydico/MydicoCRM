@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
@@ -7,7 +7,7 @@ import { getWarehouse } from './warehouse.api.js';
 import { globalizedWarehouseSelectors, reset } from './warehouse.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import _ from 'lodash'
+import _ from 'lodash';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import moment from 'moment';
@@ -18,7 +18,6 @@ const mappingStatus = {
 };
 const { selectAll } = globalizedWarehouseSelectors;
 
-
 const Warehouse = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
@@ -28,12 +27,14 @@ const Warehouse = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
+  const paramRef = useRef();
+
   useEffect(() => {
     dispatch(reset());
   }, []);
 
   useEffect(() => {
-    dispatch(getWarehouse({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
+    dispatch(getWarehouse({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
   const warehouses = useSelector(selectAll);
@@ -109,11 +110,10 @@ const Warehouse = props => {
   const debouncedSearchColumn = useCallback(
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
-        if (
-          Object.keys(value).forEach(key => {
-            if (!value[key]) delete value[key];
-          })
-        )
+        Object.keys(value).forEach(key => {
+          if (!value[key]) delete value[key];
+        });
+        paramRef.current = value
         dispatch(getWarehouse({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
     }, 1000),

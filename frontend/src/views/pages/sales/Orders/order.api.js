@@ -28,6 +28,15 @@ export const updateOrder = createAsyncThunk('api/update/orders', async (body, th
   }
 });
 
+export const editSelfOrder = createAsyncThunk('api/update/orders', async (body, thunkAPI) => {
+  try {
+    const result = await axios.put('api/orders/self-edit', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const updateStatusOrder = createAsyncThunk('api/update/orders/status', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/orders/' + body.action, body);

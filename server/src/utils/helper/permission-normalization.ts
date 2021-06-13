@@ -25,8 +25,11 @@ export const permissionDescriptionNormalize = (splitedEndpoint, isType) => {
     });
   }
   if(isType){
-    desc = desc.replace('nhập kho', '').trim();
+    desc = desc.replace('xuất kho', '').trim();
     return desc
+  }
+  if(desc.includes('trả hàng')){
+    desc = desc.replace('xuất/nhập kho', '').trim();
   }
   if (desc.includes('xuất/nhập kho') && desc.includes('xuất kho')) {
     desc = desc.replace('xuất/nhập kho', '').trim();

@@ -43,7 +43,12 @@ export class OrderService {
   ) {}
 
   async findById(id: string): Promise<Order | undefined> {
+    if(!relationshipNames.includes('customer.department') &&  !relationshipNames.includes('customer.type')){
+      relationshipNames.push('customer.department')
+      relationshipNames.push('customer.type')
+    }
     const options = { relations: relationshipNames };
+
     return await this.orderRepository.findOne(id, options);
   }
 
@@ -53,14 +58,11 @@ export class OrderService {
 
   async findAndCount(
     options: FindManyOptions<Order>,
-    filter = [],
+    filter = {},
     departmentVisible = [],
     isEmployee: boolean,
     currentUser: User
   ): Promise<[Order[], number]> {
-    // options.relations = relationshipNames;
-    // return await this.orderRepository.findAndCount(options);
-
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
       queryString += `Order.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
@@ -73,9 +75,10 @@ export class OrderService {
         .replace(']', ')')}`;
     }
     if (isEmployee) andQueryString += ` AND Order.sale = ${currentUser.id}`;
-    const cacheKeyBuilder = `get_orders_department_${JSON.stringify(departmentVisible)}_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${
-      options.skip
-    }_${options.take}`;
+    const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_sale_${
+      isEmployee ? currentUser.id : -1
+    }_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Order.${Object.keys(options.order)[0] ||
+      'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .leftJoinAndSelect('Order.customer', 'customer')
@@ -91,16 +94,28 @@ export class OrderService {
       .orderBy(`Order.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);
+
+    const count = this.orderRepository
+      .createQueryBuilder('Order')
+      .where(andQueryString)
+      .orderBy(`Order.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take);
     if (queryString) {
       queryBuilder.andWhere(
         new Brackets(sqb => {
           sqb.where(queryString);
         })
       );
+      count.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
     }
-    const count = await this.orderRepository.count();
+
     const result = await queryBuilder.getManyAndCount();
-    result[1] = count;
+    result[1] = await count.getCount();
     return result;
 
     // options.cache = 3600000
@@ -173,9 +188,9 @@ export class OrderService {
   }
 
   async save(order: Order, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Order | undefined> {
-    const cacheKeyBuilder = `get_orders_department_${JSON.stringify(departmentVisible)}_sale_${isEmployee ? currentUser.id : -1}`;
+    const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_sale_${isEmployee ? currentUser.id : -1}`;
 
-    await this.orderRepository.removeCache(cacheKeyBuilder);
+    await this.orderRepository.removeCache([cacheKeyBuilder, 'Order']);
 
     const count = await this.orderRepository
       .createQueryBuilder('order')

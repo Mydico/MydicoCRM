@@ -31,7 +31,7 @@ import { getTranporter, getUser } from '../../user/UserList/user.api';
 import { globalizedUserSelectors } from '../../user/UserList/user.reducer';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer';
-import _ from 'lodash'
+import _ from 'lodash';
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -43,6 +43,54 @@ const mappingStatus = {
 };
 const { selectAll } = globalizedBillsSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
+// Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	vận đơng	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'bill',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  {
+    key: 'show_details',
+    label: 'Xem chi tiết',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã vận đơn', _style: { width: '10%' } },
+  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
+  { key: 'transporter', label: 'Người vận chuyển', _style: { width: '10%' } },
+  { key: 'tel', label: 'Số điện thoại', _style: { width: '10%' } },
+  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '5%' } },
+  { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
+  { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+  {
+    key: 'action',
+    label: '',
+    _style: { width: '30%' },
+    filter: false
+  }
+];
+
+const getBadge = status => {
+  switch (status) {
+    case BillStatus.APPROVED:
+    case BillStatus.SUCCESS:
+      return 'success';
+    case BillStatus.SHIPPING:
+      return 'info';
+    case BillStatus.CREATED:
+    case BillStatus.SUPPLY_WAITING:
+      return 'warning';
+    case BillStatus.REJECTED:
+    case BillStatus.CANCEL:
+      return 'danger';
+    default:
+      return 'primary';
+  }
+};
 const Bill = props => {
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
@@ -51,8 +99,9 @@ const Bill = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.bill);
   const [activePage, setActivePage] = useState(1);
-  const [size] = useState(20);
+  const [size, setSize] = useState(50);
   const [modal, setModal] = useState(false);
+  const paramRef = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -63,8 +112,8 @@ const Bill = props => {
   const bills = useSelector(selectAll);
   const users = useSelector(selectUserAll);
   useEffect(() => {
-    dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
-  }, [activePage]);
+    dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+  }, [activePage, size]);
 
   const computedItems = items => {
     return items.map(item => {
@@ -93,54 +142,6 @@ const Bill = props => {
     setDetails(newDetails);
   };
 
-  // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	vận đơng	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'bill',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    {
-      key: 'show_details',
-      label: 'Xem chi tiết',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'code', label: 'Mã vận đơn', _style: { width: '10%' } },
-    { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
-    { key: 'transporter', label: 'Người vận chuyển', _style: { width: '10%' } },
-    { key: 'tel', label: 'Số điện thoại', _style: { width: '10%' } },
-    { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '5%' } },
-    { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
-    { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
-    {
-      key: 'action',
-      label: '',
-      _style: { width: '30%' },
-      filter: false
-    }
-  ];
-
-  const getBadge = status => {
-    switch (status) {
-      case BillStatus.APPROVED:
-      case BillStatus.SUCCESS:
-        return 'success';
-      case BillStatus.SHIPPING:
-        return 'info';
-      case BillStatus.CREATED:
-      case BillStatus.SUPPLY_WAITING:
-        return 'warning';
-      case BillStatus.REJECTED:
-      case BillStatus.CANCEL:
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
   const csvContent = bills.map(item => Object.values(item).join(',')).join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateBill = () => {
@@ -151,16 +152,17 @@ const Bill = props => {
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
+          if (!value[key]) delete value[key];
+        });
+        paramRef.current = value;
         dispatch(getBill({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
 
   const toEditBill = typeId => {

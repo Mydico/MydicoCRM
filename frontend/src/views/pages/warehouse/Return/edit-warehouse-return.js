@@ -17,10 +17,10 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDetailWarehouseImport, updateWarehouseImport } from './warehouse-import.api';
-
+import { getDetailWarehouseImport, updateWarehouseImport } from '../Import/warehouse-import.api';
+import { currencyMask } from '../../../components/currency-input/currency-input';
 import { useHistory } from 'react-router-dom';
-import { fetching, globalizedWarehouseImportSelectors } from './warehouse-import.reducer';
+import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
 import _ from 'lodash';
 import { FormFeedback, Table } from 'reactstrap';
@@ -36,6 +36,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import MaskedInput from 'react-text-mask';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -100,6 +101,7 @@ const EditWarehouseReturn = props => {
   }, [warehouseImport]);
 
   const onSubmit = (values, {}) => () => {
+    values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.totalMoney = productList.reduce((sum, current) => sum + current.price * current.quantity, 0);
     values.realMoney = productList.reduce(
@@ -113,7 +115,7 @@ const EditWarehouseReturn = props => {
   };
 
   const onChangeQuantity = ({ target }, index) => {
-    const copyArr = [...productList];
+    const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].quantity = target.value;
     setProductList(copyArr);
   };
@@ -149,7 +151,7 @@ const EditWarehouseReturn = props => {
   const debouncedSearchProduct = useCallback(
     _.debounce(value => {
       dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
-    }, 1000),
+    }, 300),
     []
   );
 
@@ -157,23 +159,30 @@ const EditWarehouseReturn = props => {
     debouncedSearchProduct(value);
   };
 
+  const debouncedSearchCustomer = useCallback(
+    _.debounce(value => {
+      dispatch(
+        getCustomer({
+          page: 0,
+          size: 20,
+          sort: 'createdDate,DESC',
+          code: value,
+          name: value,
+          address: value,
+          contactName: value,
+          dependency: true
+        })
+      );
+    }, 300),
+    []
+  );
+
   const onSearchCustomer = value => {
-    dispatch(
-      getCustomer({
-        page: 0,
-        size: 20,
-        sort: 'createdDate,DESC',
-        code: value,
-        name: value,
-        address: value,
-        contactName: value,
-        dependency: true
-      })
-    );
+    debouncedSearchCustomer(value);
   };
 
   const onChangeReducePercent = ({ target }, index) => {
-    const copyArr = [...productList];
+    const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].reducePercent = target.value;
     copyArr[index].priceTotal =
       copyArr[index].price * copyArr[index].quantity -
@@ -337,8 +346,8 @@ const EditWarehouseReturn = props => {
                       <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
-                      <dt className="col-sm-3">Loại khách hàng: </dt>
-                      <dd className="col-sm-9">{selectedCustomer?.type?.name}</dd>
+                      <dt className="col-sm-3">Nhân viên phụ trách: </dt>
+                      <dd className="col-sm-9">{selectedCustomer?.sale?.login}</dd>
                     </dl>
                   </CCol>
                 </CRow>
@@ -394,23 +403,17 @@ const EditWarehouseReturn = props => {
                               value={item.quantity}
                             />
                           </td>
-                          <td style={{ width: 200 }}>
+                          <td style={{ minWidth: 200 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
-                                value={
-                                  typeof productList[index].price !== 'number'
-                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                                        productList[index].price
-                                      )
-                                    : productList[index].price
-                                }
+                                value={productList[index].price}
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
                           </td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
                               min={0}
@@ -419,7 +422,7 @@ const EditWarehouseReturn = props => {
                               value={item.reducePercent}
                             />
                           </td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 100 }}>
                             {(item.price * item.quantity - (item.price * item.quantity * item.reducePercent) / 100).toLocaleString(
                               'it-IT',
                               {
@@ -428,7 +431,7 @@ const EditWarehouseReturn = props => {
                               }
                             ) || ''}
                           </td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 100 }}>
                             <CButton
                               color="danger"
                               variant="outline"

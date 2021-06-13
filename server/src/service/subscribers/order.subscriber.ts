@@ -12,7 +12,7 @@ export class OrderSubscriber implements EntitySubscriberInterface<Order> {
   }
 
   async afterInsert(event: InsertEvent<Order>): Promise<any> {
-    // event.manager.connection.queryResultCache.remove(["get_orders"]);
+    event.manager.connection.queryResultCache.remove(["cache_count_get_orders"]);
   }
 
   async afterUpdate(event: InsertEvent<Order>): Promise<any> {

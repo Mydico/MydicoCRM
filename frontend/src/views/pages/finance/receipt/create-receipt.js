@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CButton, CCard, CCardHeader, CCardBody, CCol, CForm, CTextarea, CFormGroup, CLabel, CRow, CCardTitle } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
@@ -10,7 +10,7 @@ import Select from 'react-select';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { FormFeedback } from 'reactstrap';
 import { getCustomer } from '../../customer/customer.api';
-
+import _ from 'lodash'
 import CurrencyInput from '../../../components/currency-input/currency-input';
 import { creatingReceipt } from './receipt.api';
 import { fetching } from './receipt.reducer';
@@ -90,6 +90,16 @@ const CreateReceipt = () => {
       ]
     });
   };
+  const debouncedSearchCustomer = useCallback(
+    _.debounce(value => {
+      dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value, dependency: true }));
+    }, 300),
+    []
+  );
+
+  const onSearchCustomer = value => {
+    debouncedSearchCustomer(value)  
+  };
 
   return (
     <CCard>
@@ -127,6 +137,7 @@ const CreateReceipt = () => {
                               setSelectedCustomer(item.value);
                               setFieldValue('customer', item.value);
                             }}
+                            onInputChange={onSearchCustomer}
                             options={customers.map(item => ({
                               value: item,
                               label: `[${item.code}] ${item.name} ${item.address}`
@@ -177,8 +188,8 @@ const CreateReceipt = () => {
                           <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
                         </dl>
                         <dl className="row">
-                          <dt className="col-sm-3">Loại khách hàng: </dt>
-                          <dd className="col-sm-9">{selectedCustomer?.type?.name}</dd>
+                          <dt className="col-sm-3">Nhân viên phụ trách: </dt>
+                          <dd className="col-sm-9">{selectedCustomer?.sale?.login}</dd>
                         </dl>
                       </CCol>
                     </CRow>

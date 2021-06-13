@@ -1,52 +1,36 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  CButton,
-  CCard,
-  CCardHeader,
-  CCardBody,
-  CCol,
-  CForm,
-  CTextarea,
-  CFormGroup,
-  CLabel,
-  
-  CRow,
-  
-  CCardTitle,
-} from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { CButton, CCard, CCardHeader, CCardBody, CCol, CForm, CTextarea, CFormGroup, CLabel, CRow, CCardTitle } from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import {useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
-import {globalizedCustomerSelectors} from '../../customer/customer.reducer';
-import {FormFeedback} from 'reactstrap';
-import {getCustomer} from '../../customer/customer.api';
-
+import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
+import { FormFeedback } from 'reactstrap';
+import { getCustomer } from '../../customer/customer.api';
+import _ from 'lodash';
 import CurrencyInput from '../../../components/currency-input/currency-input';
-import { getDetailReceipt, updateReceipt} from './receipt.api';
-import {fetching, globalizedReceiptsSelectors} from './receipt.reducer';
+import { getDetailReceipt, updateReceipt } from './receipt.api';
+import { fetching, globalizedReceiptsSelectors } from './receipt.reducer';
 import { validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object().required('Khách hàng không để trống'),
-    money: Yup.string().required('Tiền không để trống'),
+    money: Yup.string().required('Tiền không để trống')
   });
 };
 
+const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
+const { selectById } = globalizedReceiptsSelectors;
 
-const {selectAll: selectAllCustomer} = globalizedCustomerSelectors;
-const {selectById} = globalizedReceiptsSelectors;
-
-const EditReceipt = (props) => {
+const EditReceipt = props => {
   const formikRef = useRef();
-  const {initialState} = useSelector((state) => state.receipt);
-
+  const { initialState } = useSelector(state => state.receipt);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -55,25 +39,43 @@ const EditReceipt = (props) => {
   const [initValuesState, setInitValuesState] = useState(null);
 
   const customers = useSelector(selectAllCustomer);
-  const receipt = useSelector((state) => selectById(state, props.match.params.id));
+  const receipt = useSelector(state => selectById(state, props.match.params.id));
 
   const initialValues = {
     customer: {},
     money: '',
-    note: '',
+    note: ''
   };
 
   useEffect(() => {
     if (receipt) {
       const customCeceipt = JSON.parse(JSON.stringify(receipt));
-      customCeceipt.money = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(receipt.money);
+      customCeceipt.money = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(receipt.money);
       setInitValuesState(customCeceipt);
       setSelectedCustomer(customCeceipt.customer);
     }
   }, [receipt]);
 
+  const debouncedSearchCustomer = useCallback(
+    _.debounce(value => {
+      dispatch(
+        getCustomer({
+          page: 0,
+          size: 20,
+          sort: 'createdDate,DESC',
+          code: value,
+          name: value,
+          address: value,
+          contactName: value,
+          dependency: true
+        })
+      );
+    }, 300),
+    []
+  );
+
   const onSearchCustomer = value => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value, dependency: true }));
+    debouncedSearchCustomer(value);
   };
 
   useEffect(() => {
@@ -81,7 +83,7 @@ const EditReceipt = (props) => {
     dispatch(getDetailReceipt({ id: props.match.params.id, dependency: true }));
   }, []);
 
-  const onSubmit = (values, {resetForm}) => () => {
+  const onSubmit = (values, { resetForm }) => () => {
     dispatch(fetching());
     values.money = Number(values.money.replace(/\D/g, ''));
     dispatch(updateReceipt(values));
@@ -125,17 +127,13 @@ const EditReceipt = (props) => {
           {({
             values,
             errors,
-            
-            
-            
+
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
-            
-            
+
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CCol lg="12">
@@ -146,17 +144,17 @@ const EditReceipt = (props) => {
                       <Select
                         name="customer"
                         onInputChange={onSearchCustomer}
-                        onChange={(item) => {
+                        onChange={item => {
                           setSelectedCustomer(item.value);
                           setFieldValue('customer', item.value);
                         }}
                         value={{
                           value: values.customer,
-                          label: `${values.customer.name}`,
+                          label: `${values.customer.name}`
                         }}
-                        options={customers.map((item) => ({
+                        options={customers.map(item => ({
                           value: item,
-                          label: `[${item.code}] ${item.name} ${item.address}`,
+                          label: `[${item.code}] ${item.name} ${item.address}`
                         }))}
                       />
                     </CCol>
@@ -197,8 +195,8 @@ const EditReceipt = (props) => {
                       <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
                     </dl>
                     <dl className="row">
-                      <dt className="col-sm-3">Loại khách hàng: </dt>
-                      <dd className="col-sm-9">{selectedCustomer?.type?.name}</dd>
+                      <dt className="col-sm-3">Nhân viên phụ trách: </dt>
+                      <dd className="col-sm-9">{selectedCustomer?.sale?.login}</dd>
                     </dl>
                   </CCol>
                 </CRow>

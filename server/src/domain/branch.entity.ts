@@ -18,9 +18,9 @@ export default class Branch extends BaseEntity {
     @Index()
     name: string;
 
-    @Column({ type: 'simple-enum', name: 'status', enum: DepartmentStatus, default: DepartmentStatus.ACTIVE })
+    @Column({ name: 'allow', nullable: true, default: false})
     @Index()
-    status: DepartmentStatus;
+    allow: boolean;
     
     @ManyToMany(type => PermissionGroup, other => other.branches)
     permissionGroups?: PermissionGroup[];

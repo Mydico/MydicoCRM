@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CButton, CCard, CCardHeader, CCardBody, CForm, CInvalidFeedback, CFormGroup, CLabel, CInput, CCardTitle } from '@coreui/react/lib';
+import { CButton, CCard, CCardHeader, CCardBody, CForm, CInvalidFeedback, CFormGroup, CLabel, CInput, CCardTitle, CInputCheckbox } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';;
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBranch, getDetailBranch, updateBranch } from './branch.api';
-
+import { validate } from '../../../../shared/utils/normalize';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedBranchSelectors, reset } from './branch.reducer';
 import { Table } from 'reactstrap';
@@ -24,7 +24,7 @@ const validationSchema = function() {
   });
 };
 
-import { validate } from '../../../../shared/utils/normalize';
+
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -140,6 +140,19 @@ const EditBranch = props => {
                   />
                   <CInvalidFeedback>{errors.name}</CInvalidFeedback>
                 </CFormGroup>
+                <CFormGroup variant="custom-checkbox" className="pb-3">
+                <CInputCheckbox
+                  custom={true}
+                  id="allow"
+                  name="allow"
+                  checked={values.allow}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <CLabel variant="custom-checkbox" htmlFor="allow">
+                  Cho phép chỉnh sửa và hủy đơn hàng sau khi duyệt
+                </CLabel>
+              </CFormGroup>
                 <CFormGroup>
                   <CLabel htmlFor="userName">Nhóm quyền</CLabel>
                   <Select

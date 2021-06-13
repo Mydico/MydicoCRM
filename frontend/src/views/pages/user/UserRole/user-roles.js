@@ -19,7 +19,6 @@ const mapping = {
   EMPLOYEE: 'Nhân viên'
 };
 const UserRole = props => {
-  const isInitialMount = useRef(true);
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
@@ -28,16 +27,10 @@ const UserRole = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    }
-  });
+  const paramRef = useRef(null);
 
   useEffect(() => {
-    if (!isInitialMount.current) {
-      dispatch(getUserRole({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
-    }
+    dispatch(getUserRole({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.value }));
   }, [activePage, size]);
 
   const { selectAll } = globalizedUserRoleSelectors;
@@ -81,21 +74,6 @@ const UserRole = props => {
     }
   ];
 
-  const getBadge = status => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'DISABLED':
-        return 'danger';
-      case 'DELETED':
-        return 'warning';
-      case 'Banned':
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
-
   const csvContent = computedItems(users)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -111,14 +89,13 @@ const UserRole = props => {
   const debouncedSearchColumn = useCallback(
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
-        if (
-          Object.keys(value).forEach(key => {
-            if (!value[key]) delete value[key];
-          })
-        )
-          dispatch(getUserRole({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+        Object.keys(value).forEach(key => {
+          if (!value[key]) delete value[key];
+        });
+        paramRef.current = value;
+        dispatch(getUserRole({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 

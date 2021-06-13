@@ -90,7 +90,17 @@ export class StoreInputService {
       relationshipNames.push('storeInputDetails');
       relationshipNames.push('storeInputDetails.product');
     }
-    options.where = { type: In([StoreImportType.IMPORT_FROM_STORE, StoreImportType.NEW, StoreImportType.RETURN]) };
+    options.where = { type: In([StoreImportType.IMPORT_FROM_STORE, StoreImportType.NEW]) };
+    return await this.storeInputRepository.findAndCount(options);
+  }
+
+  async findAndCountReturn(options: FindManyOptions<StoreInput>): Promise<[StoreInput[], number]> {
+    options.relations = relationshipNames;
+    if (!relationshipNames.includes('storeInputDetails') && !relationshipNames.includes('storeInputDetails.product')) {
+      relationshipNames.push('storeInputDetails');
+      relationshipNames.push('storeInputDetails.product');
+    }
+    options.where = { type: In([StoreImportType.RETURN]) };
     return await this.storeInputRepository.findAndCount(options);
   }
 

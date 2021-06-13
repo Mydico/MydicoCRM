@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CPagination } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +15,7 @@ const CustomerType = props => {
   const { initialState } = useSelector(state => state.customerType);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
+  const paramRef = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -22,7 +23,7 @@ const CustomerType = props => {
   }, []);
   const customerTypes = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getCustomerType({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
+    dispatch(getCustomerType({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
   const toggleDetails = index => {
@@ -77,6 +78,7 @@ const CustomerType = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
+      paramRef.current = value
       dispatch(getCustomerType({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };

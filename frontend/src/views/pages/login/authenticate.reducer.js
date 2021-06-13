@@ -1,4 +1,4 @@
-import { createAsyncThunk, createDraftSafeSelector, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createDraftSafeSelector, createSlice, current } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Storage } from 'react-jhipster';
 const AUTH_TOKEN_KEY = 'authenticationToken';
@@ -53,6 +53,15 @@ const slice = createSlice({
       state.loading = true;
       state.errorMessage = null;
     },
+    addPermission: (state, action) => {
+      const copyedRole = [...current(state.account.role)];
+      copyedRole.push(action.payload)
+      state.account.role = copyedRole;
+    },
+    removePermission: (state) => {
+      const copyedRole = state.account.role.filter(item => !item.isSelf);
+      state.account.role = copyedRole;
+    },
     logout: state => {
       state.account = {};
       state.isAuthenticated = false;
@@ -98,7 +107,7 @@ export default slice.reducer;
 
 // Actions
 
-export const { logout, request } = slice.actions;
+export const { logout, request, addPermission, removePermission } = slice.actions;
 
 export const userSafeSelector = createDraftSafeSelector(
   state => state.authentication,

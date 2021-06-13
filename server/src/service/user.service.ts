@@ -35,54 +35,65 @@ export class UserService {
         return this.flatAuthorities(result);
     }
 
-    async findAndCount(options: FindManyOptions<User>, filter = [],
+    async findAndCount(options: FindManyOptions<User>, filter = {},
         departmentVisible = [],
         branch = []): Promise<[User[], number]> {
         options.relations = relationshipNames;
         // options.cache = 36000000
         let queryString = '';
         Object.keys(filter).forEach((item, index) => {
-            if(item === 'name'){
+            if (item === 'name') {
                 queryString += `User.firstName like '%${filter[item]}%' OR  User.lastName like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
-            }else{
+            } else {
                 queryString += `User.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
             }
         });
         let andQueryString = '';
-    
+
         if (departmentVisible.length > 0) {
-          andQueryString += `User.department IN ${JSON.stringify(departmentVisible)
-            .replace('[', '(')
-            .replace(']', ')')}`;
+            andQueryString += `User.department IN ${JSON.stringify(departmentVisible)
+                .replace('[', '(')
+                .replace(']', ')')}`;
         }
         if (branch.length > 0) {
             andQueryString += ` AND User.branch IN ${JSON.stringify(branch)
-              .replace('[', '(')
-              .replace(']', ')')}`;
-          }
+                .replace('[', '(')
+                .replace(']', ')')}`;
+        }
         const queryBuilder = this.userRepository
-          .createQueryBuilder('User')
-          .leftJoinAndSelect('User.roles', 'roles')
-          .leftJoinAndSelect('User.department', 'department')
-          .leftJoinAndSelect('User.branch', 'branch')
-          .leftJoinAndSelect('User.authorities', 'authorities')
-          .leftJoinAndSelect('User.permissionGroups', 'permissionGroups')
-          .leftJoinAndSelect('permissionGroups.permissionGroupAssociates', 'permissionGroupAssociates')
-          .where(andQueryString)
-          .cache(`get_users_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}`,3600000)
-          .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
-          .skip(options.skip)
-          .take(options.take)
-          if(queryString){
+            .createQueryBuilder('User')
+            .leftJoinAndSelect('User.roles', 'roles')
+            .leftJoinAndSelect('User.department', 'department')
+            .leftJoinAndSelect('User.branch', 'branch')
+            .where(andQueryString)
+            .cache(`get_users_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}`, 3600000)
+            .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+            .skip(options.skip)
+            .take(options.take)
+
+        const count = this.userRepository
+            .createQueryBuilder('User')
+            .where(andQueryString)
+            .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+            .skip(options.skip)
+            .take(options.take)
+            .cache(`cache_count_get_users_filter_${JSON.stringify(filter)}`)
+        if (queryString) {
             queryBuilder.andWhere(
-              new Brackets(sqb => {
-                sqb.where(queryString);
-              })
+                new Brackets(sqb => {
+                    sqb.where(queryString);
+                })
             )
-          }
-        const count = await this.userRepository.count();
+            count.andWhere(
+                new Brackets(sqb => {
+                    sqb.where(queryString);
+                })
+            )
+        }
+
+
         const resultList = await queryBuilder.getManyAndCount();
-        resultList[1] = count;
+        resultList[1] = await count.getCount();
         // const resultList = await this.userRepository.findAndCount(options);
         const users: User[] = [];
         if (resultList && resultList[0]) {
@@ -115,7 +126,7 @@ export class UserService {
     }
 
     async changePassword(user: ChangePasswordDTO): Promise<User | undefined> {
-        const userFind = await this.findByfields({ where: {  password: user.password } });
+        const userFind = await this.findByfields({ where: { password: user.password } });
         if (!userFind) {
             throw new HttpException('Mật khẩu cũ không đúng', HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -124,6 +135,8 @@ export class UserService {
     }
 
     async update(user: User): Promise<User | undefined> {
+        await this.userRepository.removeCache([user.login]);
+        await this.userRepository.removeCache(['User']);
         return await this.save(user);
     }
 
