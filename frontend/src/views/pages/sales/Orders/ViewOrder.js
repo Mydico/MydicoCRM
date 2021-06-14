@@ -54,7 +54,9 @@ const ViewOrder = props => {
                 <strong>{invoice?.customer.contactName}</strong>
               </div>
               <div>{invoice?.address}</div>
-              <div>{`${district.filter(dist => dist.value === invoice?.customer?.district)[0]?.label || ''}, ${cities.filter(city => city.value === invoice?.customer?.city)[0]?.label || ''}`}</div>
+              <div>{`${district.filter(dist => dist.value === invoice?.customer?.district)[0]?.label || ''}, ${cities.filter(
+                city => city.value === invoice?.customer?.city
+              )[0]?.label || ''}`}</div>
               <div>Email: {invoice?.customer?.email || ''}</div>
               <div>Phone: {invoice?.customer?.tel || ''}</div>
             </CCol>
@@ -81,6 +83,8 @@ const ViewOrder = props => {
                 <th className="right">Đơn giá</th>
                 <th className="right">Chiết khấu(%)</th>
                 <th className="right">Tổng</th>
+                <th className="right">Giảm trừ</th>
+                <th className="right">Thanh toán</th>
               </tr>
             </thead>
             <tbody>
@@ -91,10 +95,15 @@ const ViewOrder = props => {
                     <td>{item.product?.name}</td>
                     <td>{item.product?.volume}</td>
                     <td>{item.quantity}</td>
-
                     <td>{Number(item.priceReal).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                     <td>{item.reducePercent}%</td>
                     <td>{(item.priceReal * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
+                    <td>
+                      {((item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString('it-IT', {
+                        style: 'currency',
+                        currency: 'VND'
+                      }) || ''}
+                    </td>
                     <td>
                       {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
                         'it-IT',
@@ -112,7 +121,13 @@ const ViewOrder = props => {
           <CRow>
             <CCol lg="4" sm="5">
               Ghi chú: <strong>{invoice?.note}</strong>
+              {invoice?.status === 'CANCEL' && (
+                <div>
+                  Lý do hủy: <strong>{invoice?.reject}</strong>
+                </div>
+              )}
             </CCol>
+
             <CCol lg="4" sm="5" className="ml-auto">
               <Table className="table-clear">
                 <tbody>
@@ -121,8 +136,7 @@ const ViewOrder = props => {
                       <strong>Tổng tiền</strong>
                     </td>
                     <td className="right">
-                      {Number(invoice?.totalMoney || 0)
-                        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                      {Number(invoice?.totalMoney || 0).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                     </td>
                   </tr>
                   <tr>
@@ -130,8 +144,7 @@ const ViewOrder = props => {
                       <strong>Chiết khấu</strong>
                     </td>
                     <td className="right">
-                      {Number(invoice?.reduceMoney || 0)
-                        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                      {Number(invoice?.reduceMoney || 0).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                     </td>
                   </tr>
                   <tr>
@@ -140,8 +153,7 @@ const ViewOrder = props => {
                     </td>
                     <td className="right">
                       <strong>
-                        {Number(invoice?.realMoney || 0)
-                          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                        {Number(invoice?.realMoney || 0).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                       </strong>
                     </td>
                   </tr>

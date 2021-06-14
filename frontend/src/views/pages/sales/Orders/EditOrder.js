@@ -138,11 +138,21 @@ const EditOrder = props => {
     if (selectedPromotion) {
       values.promotion = selectedPromotion;
     }
+
     values.orderDetails = productList;
+    values.totalMoney = values?.orderDetails.reduce((sum, current) => sum + current.priceReal * current.quantity, 0);
+    values.realMoney = values?.orderDetails.reduce(
+      (sum, current) => sum + (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
+      0
+    );
+    values.reduceMoney = values?.orderDetails.reduce(
+      (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100,
+      0
+    );
     if (values.status === OrderStatus.CANCEL) {
       values.status = OrderStatus.WAITING;
     }
-    if (values.createdBy !== account.login) {
+    if (values.createdBy !== account.login && !account.allow) {
       dispatch(updateOrder(values));
     } else {
       dispatch(editSelfOrder(values));

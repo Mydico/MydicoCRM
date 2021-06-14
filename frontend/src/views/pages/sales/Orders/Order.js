@@ -71,7 +71,7 @@ const Order = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
-  const rejectRef = useRef("");
+  const rejectRef = useRef('');
   const paramRef = useRef(null);
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
@@ -164,7 +164,7 @@ const Order = props => {
     dispatch(updateStatusOrder(newOrder));
   };
 
-  const cancelOrder = (order) => {
+  const cancelOrder = order => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.CANCEL,
@@ -173,7 +173,7 @@ const Order = props => {
       createdBy: order.createdBy,
       reject: rejectRef.current
     };
-    if (order.createdBy !== account.login) {
+    if (order.createdBy !== account.login && !account.allow) {
       dispatch(updateStatusOrder(newOrder));
     } else {
       dispatch(editSelfOrder(newOrder));
@@ -223,12 +223,12 @@ const Order = props => {
           <div className="react-confirm-alert-body">
             <h1>Xác nhận</h1>
             <p>Bạn có chắc chắn muốn hủy đơn hàng này?</p>
-            <CTextarea placeholder="Nhập lý do hủy" onChange={(event) => rejectRef.current = event.target.value} />
+            <CTextarea placeholder="Nhập lý do hủy" onChange={event => (rejectRef.current = event.target.value)} />
             <div className="react-confirm-alert-button-group">
               <button onClick={onClose}>Không</button>
               <button
                 onClick={() => {
-                  cancelOrder(item)
+                  cancelOrder(item);
                   onClose();
                 }}
               >
@@ -237,7 +237,7 @@ const Order = props => {
             </div>
           </div>
         );
-      },
+      }
     });
   };
 
@@ -345,39 +345,37 @@ const Order = props => {
                 TẠO VẬN ĐƠN
               </CButton>
             )}
-            {(isAdmin ||
-              (account.branch?.allow &&
-                account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders' && !rol.isSelf).length > 0)) && (
-              <CButton
-                onClick={event => {
-                  event.stopPropagation();
-                  toEditOrder(item.id);
-                }}
-                color="warning"
-                variant="outline"
-                shape="square"
-                size="sm"
-              >
-                <CIcon name="cil-pencil" />
-                CHỈNH SỬA
-              </CButton>
-            )}
-            {(isAdmin ||
-              (account.branch?.allow &&
-                account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0)) && (
-              <CButton
-                onClick={event => {
-                  event.stopPropagation();
-                  cancelAlert(item);
-                }}
-                color="danger"
-                variant="outline"
-                shape="square"
-                size="sm"
-              >
-                HỦY ĐƠN HÀNG
-              </CButton>
-            )}
+            {isAdmin ||
+              (account.branch?.allow && (
+                <CButton
+                  onClick={event => {
+                    event.stopPropagation();
+                    toEditOrder(item.id);
+                  }}
+                  color="warning"
+                  variant="outline"
+                  shape="square"
+                  size="sm"
+                >
+                  <CIcon name="cil-pencil" />
+                  CHỈNH SỬA
+                </CButton>
+              ))}
+            {isAdmin ||
+              (account.branch?.allow && (
+                <CButton
+                  onClick={event => {
+                    event.stopPropagation();
+                    cancelAlert(item);
+                  }}
+                  color="danger"
+                  variant="outline"
+                  shape="square"
+                  size="sm"
+                >
+                  HỦY ĐƠN HÀNG
+                </CButton>
+              ))}
           </CCol>
         );
       case OrderStatus.CREATE_COD:
@@ -480,7 +478,8 @@ const Order = props => {
                     variant="outline"
                     shape="square"
                     size="sm"
-                    onClick={() => {
+                    onClick={event => {
+                      event.stopPropagation();
                       toggleDetails(item.id);
                     }}
                   >
@@ -568,6 +567,11 @@ const Order = props => {
                     <CRow>
                       <CCol lg="4" sm="5">
                         Ghi chú: <strong>{item?.note}</strong>
+                        {item.status === 'CANCEL' && (
+                          <div>
+                            Lý do hủy: <strong>{item?.reject}</strong>
+                          </div>
+                        )}
                       </CCol>
                       <CCol lg="4" sm="5" className="ml-auto">
                         <Table className="table-clear">

@@ -116,7 +116,7 @@ const Warehouse = props => {
         paramRef.current = value
         dispatch(getWarehouse({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 1000),
+    }, 300),
     []
   );
 
