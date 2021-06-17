@@ -10,6 +10,11 @@ import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
+import { globalizedBranchSelectors } from '../UserBranch/branch.reducer.js';
+import { globalizedDepartmentSelectors } from '../UserDepartment/department.reducer.js';
+import { getDepartment } from '../UserDepartment/department.api.js';
+import Select from 'react-select';
+import { getBranch } from '../UserBranch/branch.api.js';
 
 const { selectAll } = globalizedUserSelectors;
 // Code	Tên người dùng	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại người dùng	Phân loại	Sửa	Tạo đơn
@@ -26,7 +31,7 @@ const fields = [
   { key: 'phone', label: 'Số điện thoại', _style: { width: '15%' } },
   { key: 'department', label: 'Chi nhánh', _style: { width: '15%' } },
   { key: 'branch', label: 'Phòng ban', _style: { width: '15%' } },
-  { key: 'roles', label: 'Chức vụ', _style: { width: '15%' } },
+  { key: 'roles', label: 'Chức vụ', _style: { width: '15%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
   { key: 'activated', label: 'Trạng thái', _style: { width: '15%' } },
   {
@@ -47,6 +52,9 @@ const getBadge = status => {
       return 'primary';
   }
 };
+const { selectAll: selectAllBranch } = globalizedBranchSelectors;
+const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
+
 const User = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
@@ -59,8 +67,15 @@ const User = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const paramRef = useRef(null);
+  const users = useSelector(selectAll);
+  const branches = useSelector(selectAllBranch)
+  const departments = useSelector(selectAllDepartment)
+
   useEffect(() => {
     dispatch(reset());
+    dispatch(getBranch({ page: 0, size: 100, sort: 'createdDate,DESC' }));
+    dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC' }));
+
   }, []);
 
   useEffect(() => {
@@ -74,7 +89,7 @@ const User = props => {
     dispatch(getUser(params));
   }, [activePage, size]);
 
-  const users = useSelector(selectAll);
+
   const computedItems = items => {
     return items.map(item => {
       return {
@@ -177,6 +192,38 @@ const User = props => {
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
+          columnFilterSlot={{
+            department: (
+              <div style={{minWidth: 200}}>
+
+              <Select
+                onChange={item => {
+                  onFilterColumn({ departmentId: item.value, ...paramRef.current });
+                }}
+                placeholder="chọn chi nhánh"
+                options={departments.map(item => ({
+                  value: item.id,
+                  label: item.name
+                }))}
+              />
+              </div>
+            ),
+            branch: (
+              <div style={{minWidth: 200}}>
+
+              <Select
+                onChange={item => {
+                  onFilterColumn({ branchId: item.value, ...paramRef.current });
+                }}
+                placeholder="Chọn phòng ban"
+                options={branches.map(item => ({
+                  value: item.id,
+                  label: item.name
+                }))}
+              />
+              </div>
+            ),
+          }}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
             activated: item => (

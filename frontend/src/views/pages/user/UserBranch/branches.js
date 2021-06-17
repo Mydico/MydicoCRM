@@ -56,15 +56,16 @@ const getBadge = status => {
       return 'primary';
   }
 };
+const { selectAll } = globalizedBranchSelectors;
 
 const Branch = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectAll } = globalizedBranchSelectors;
+  const branchs = useSelector(selectAll);
+
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
-  const branchs = useSelector(selectAll);
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.provider);
   const [activePage, setActivePage] = useState(1);
