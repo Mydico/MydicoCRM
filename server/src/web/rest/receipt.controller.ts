@@ -105,6 +105,8 @@ export class ReceiptController {
     let currentUser = req.user as User;
     receipt.createdBy = currentUser.login;
     receipt.sale = receipt.customer.sale;
+    receipt.branch = currentUser.branch;
+    receipt.department = currentUser.department;
     const created = await this.receiptService.save(receipt);
     HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', created.id);
     return res.send(created);

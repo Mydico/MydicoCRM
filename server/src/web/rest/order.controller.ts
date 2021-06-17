@@ -100,6 +100,7 @@ export class OrderController {
     order.createdBy = currentUser.login;
     order.sale = currentUser;
     order.department = currentUser.department;
+    order.branch = currentUser.branch;
     order.customerName = order.customer.name;
     let departmentVisible = [];
     const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;

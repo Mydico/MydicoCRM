@@ -20,7 +20,8 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { Like } from 'typeorm';
+import { User } from '../../domain/user.entity';
+import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/store-histories')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -29,7 +30,7 @@ import { Like } from 'typeorm';
 export class StoreHistoryController {
   logger = new Logger('StoreHistoryController');
 
-  constructor(private readonly storeHistoryService: StoreHistoryService) {}
+  constructor(private readonly storeHistoryService: StoreHistoryService, private readonly departmentService: DepartmentService) {}
 
   @Get('/')
   @Roles(RoleType.USER)
@@ -42,18 +43,29 @@ export class StoreHistoryController {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter[item] = Like(`%${req.query[item]}%`);
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency' && item !== 'status') {
+        filter[item] = req.query[item];
       }
     });
-    const [results, count] = await this.storeHistoryService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: {
-        ...filter
-      }
-    });
+    let departmentVisible = [];
+
+    const currentUser = req.user as User;
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    const [results, count] = await this.storeHistoryService.findAndCount(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder(),
+        where: filter
+      },
+      filter,
+      departmentVisible,
+      currentUser
+    );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }

@@ -35,14 +35,21 @@ export class CustomerDebitService {
     Object.keys(filter).forEach((item, index) => {
       queryString += `CustomerDebit.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
     });
-    let andQueryString = '';
+    let andQueryString = '1=1 ';
 
     if (departmentVisible.length > 0) {
-      andQueryString += `CustomerDebit.department IN ${JSON.stringify(departmentVisible)
+      andQueryString += `AND CustomerDebit.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
     }
     if (isEmployee) andQueryString += ` AND CustomerDebit.sale = ${currentUser.id}`;
+    if (currentUser.branch) {
+      if (!currentUser.branch.seeAll) {
+        andQueryString += ` AND CustomerDebit.branch = ${currentUser.branch.id}`;
+      }
+    }else{
+      andQueryString += ` AND CustomerDebit.branch is NULL`;
+    }
     const queryBuilder = this.customerDebitRepository
       .createQueryBuilder('CustomerDebit')
       .leftJoinAndSelect('CustomerDebit.customer', 'customer')

@@ -16,12 +16,15 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
     }
 
     async afterInsert(event: UpdateEvent<ProductQuantity>): Promise<any> {
+        event.manager.connection.queryResultCache.remove(["get_StoreHistories"]);
+        event.manager.connection.queryResultCache.remove(["cache_count_get_StoreHistories"]);
         event.entity.lastModifiedDate = new Date();
         event.entity.lastModifiedBy = 'system';
         const history = new StoreHistory();
         const old = event.databaseEntity;
         const updateEntity = event.entity;
         history.product = updateEntity.product;
+        history.department = updateEntity.department;
         history.store = updateEntity.store;
         history.createdDate = new Date();
         if(old){

@@ -152,7 +152,7 @@ const EditOrder = props => {
     if (values.status === OrderStatus.CANCEL) {
       values.status = OrderStatus.WAITING;
     }
-    if (values.createdBy !== account.login && !account.allow) {
+    if (values.createdBy !== account.login && !account.branch?.allow) {
       dispatch(updateOrder(values));
     } else {
       dispatch(editSelfOrder(values));

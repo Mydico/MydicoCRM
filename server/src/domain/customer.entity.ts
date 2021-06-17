@@ -13,6 +13,7 @@ import StoreInput from './store-input.entity';
 import Department from './department.entity';
 import Receipt from './receipt.entity';
 import Transaction from './transaction.entity';
+import Branch from './branch.entity';
 
 /**
  * A Customer.
@@ -63,9 +64,6 @@ export default class Customer extends BaseEntity {
     @Index()
     marriage?: boolean;
 
-    @Column({ type: 'boolean', name: 'is_del', nullable: true })
-    @Index()
-    isDel?: boolean;
 
     @Column({ type: 'boolean', name: 'activated', nullable: true })
     @Index()
@@ -119,6 +117,9 @@ export default class Customer extends BaseEntity {
 
     @ManyToOne(type => Department)
     department?: Department;
+
+    @ManyToOne(type => Branch)
+    branch?: Branch;
 
     @Column({ name: 'ward', length: 255, nullable: true })
     @Index()

@@ -43,9 +43,9 @@ export class OrderService {
   ) {}
 
   async findById(id: string): Promise<Order | undefined> {
-    if(!relationshipNames.includes('customer.department') &&  !relationshipNames.includes('customer.type')){
-      relationshipNames.push('customer.department')
-      relationshipNames.push('customer.type')
+    if (!relationshipNames.includes('customer.department') && !relationshipNames.includes('customer.type')) {
+      relationshipNames.push('customer.department');
+      relationshipNames.push('customer.type');
     }
     const options = { relations: relationshipNames };
 
@@ -67,15 +67,24 @@ export class OrderService {
     Object.keys(filter).forEach((item, index) => {
       queryString += `Order.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
     });
-    let andQueryString = '';
+    let andQueryString = '1=1 ';
 
     if (departmentVisible.length > 0) {
-      andQueryString += `Order.department IN ${JSON.stringify(departmentVisible)
+      andQueryString += `AND Order.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
     }
     if (isEmployee) andQueryString += ` AND Order.sale = ${currentUser.id}`;
-    const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_sale_${
+    if (currentUser.branch) {
+      if (!currentUser.branch.seeAll) {
+        andQueryString += ` AND Order.branch = ${currentUser.branch.id}`;
+      }
+    }else{
+      andQueryString += ` AND Order.branch is NULL`;
+    }
+    const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_branch_${
+      currentUser.branch ? !currentUser.branch.seeAll ? currentUser.branch.id : -1 : null
+    }_sale_${
       isEmployee ? currentUser.id : -1
     }_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Order.${Object.keys(options.order)[0] ||
       'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
@@ -100,7 +109,14 @@ export class OrderService {
       .where(andQueryString)
       .orderBy(`Order.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
-      .take(options.take);
+      .take(options.take)
+      .cache(
+        `cache_count_get_orders_department_${JSON.stringify(departmentVisible)}_branch_${
+          currentUser.branch ? !currentUser.branch.seeAll ? currentUser.branch.id : -1 : null
+        }_sale_${
+          isEmployee ? currentUser.id : -1
+        }_filter_${JSON.stringify(filter)}`
+      );
     if (queryString) {
       queryBuilder.andWhere(
         new Brackets(sqb => {
@@ -117,8 +133,6 @@ export class OrderService {
     const result = await queryBuilder.getManyAndCount();
     result[1] = await count.getCount();
     return result;
-
-    // options.cache = 3600000
   }
 
   async getProductInStore(arrIds: string[], store: Store): Promise<ProductQuantity[]> {

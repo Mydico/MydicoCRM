@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
+import Branch from './branch.entity';
 
 import Customer from './customer.entity';
 import Department from './department.entity';
@@ -28,6 +29,9 @@ export default class Receipt extends BaseEntity {
     @Column({ type: 'simple-enum', name: 'status', enum: ReceiptStatus, default: ReceiptStatus.WAITING })
     @Index()
     status: ReceiptStatus;
+
+    @ManyToOne(type => Branch)
+    branch?: Branch;
 
     @Column({ name: 'note', length: 255, nullable: true })
     @Index()

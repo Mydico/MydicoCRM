@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StoreImportStatus } from '../domain/enumeration/store-import-status';
-import { FindManyOptions, FindOneOptions, In, Not } from 'typeorm';
+import { Brackets, FindManyOptions, FindOneOptions, In, Not } from 'typeorm';
 import StoreInput from '../domain/store-input.entity';
 import { StoreInputRepository } from '../repository/store-input.repository';
 import { ProductQuantityService } from './product-quantity.service';
@@ -17,6 +17,7 @@ import { OrderService } from './order.service';
 import IncomeDashboard from '../domain/income-dashboard.entity';
 import { DashboardType } from '../domain/enumeration/dashboard-type';
 import { IncomeDashboardService } from './income-dashboard.service';
+import { User } from '../domain/user.entity';
 
 const relationshipNames = [];
 relationshipNames.push('approver');
@@ -84,14 +85,78 @@ export class StoreInputService {
     return canExport;
   }
 
-  async findAndCount(options: FindManyOptions<StoreInput>): Promise<[StoreInput[], number]> {
-    options.relations = relationshipNames;
-    if (!relationshipNames.includes('storeInputDetails') && !relationshipNames.includes('storeInputDetails.product')) {
-      relationshipNames.push('storeInputDetails');
-      relationshipNames.push('storeInputDetails.product');
+  // async findAndCount(options: FindManyOptions<StoreInput>): Promise<[StoreInput[], number]> {
+  //   options.relations = relationshipNames;
+  //   if (!relationshipNames.includes('storeInputDetails') && !relationshipNames.includes('storeInputDetails.product')) {
+  //     relationshipNames.push('storeInputDetails');
+  //     relationshipNames.push('storeInputDetails.product');
+  //   }
+  //   options.where = { type: In([StoreImportType.IMPORT_FROM_STORE, StoreImportType.NEW]) };
+  //   return await this.storeInputRepository.findAndCount(options);
+  // }
+
+  async findAndCount(
+    options: FindManyOptions<StoreInput>,
+    filter = {},
+    departmentVisible = [],
+    type = []
+  ): Promise<[StoreInput[], number]> {
+    let queryString = '';
+    Object.keys(filter).forEach((item, index) => {
+      queryString += `StoreInput.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+    });
+    let andQueryString = '1=1 ';
+
+    if (departmentVisible.length > 0) {
+      andQueryString += `AND StoreInput.department IN ${JSON.stringify(departmentVisible)
+        .replace('[', '(')
+        .replace(']', ')')}`;
     }
-    options.where = { type: In([StoreImportType.IMPORT_FROM_STORE, StoreImportType.NEW]) };
-    return await this.storeInputRepository.findAndCount(options);
+    if (type.length > 0) {
+      andQueryString += `AND StoreInput.type IN ${JSON.stringify(type)
+        .replace('[', '(')
+        .replace(']', ')')}`;
+    }
+    const cacheKeyBuilder = `get_StoreInputs_department_${departmentVisible.join(',')}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_StoreInput.${Object.keys(options.order)[0] ||
+      'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+    const queryBuilder = this.storeInputRepository
+      .createQueryBuilder('StoreInput')
+      .leftJoinAndSelect('StoreInput.approver', 'approver')
+      .leftJoinAndSelect('StoreInput.store', 'store')
+      .leftJoinAndSelect('StoreInput.department', 'department')
+      .leftJoinAndSelect('StoreInput.customer', 'customer')
+      .leftJoinAndSelect('StoreInput.storeTransfer', 'storeTransfer')
+      .cache(cacheKeyBuilder, 604800)
+      .where(andQueryString)
+      .orderBy(`StoreInput.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take);
+
+    const count = this.storeInputRepository
+      .createQueryBuilder('StoreInput')
+      .where(andQueryString)
+      .orderBy(`StoreInput.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take)
+      .cache(
+        `cache_count_get_StoreInputs_department_${JSON.stringify(departmentVisible)}_filter_${JSON.stringify(filter)}`
+      );
+    if (queryString) {
+      queryBuilder.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
+      count.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
+    }
+
+    const result = await queryBuilder.getManyAndCount();
+    result[1] = await count.getCount();
+    return result;
   }
 
   async findAndCountReturn(options: FindManyOptions<StoreInput>): Promise<[StoreInput[], number]> {
@@ -128,7 +193,7 @@ export class StoreInputService {
       const founded = await this.productQuantityService.findByfields({
         where: {
           product: In(arrProduct),
-          store: entity.store
+          store: entity.store,
         }
       });
       if (entity.type !== StoreImportType.EXPORT && entity.type !== StoreImportType.EXPORT_TO_PROVIDER) {

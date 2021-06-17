@@ -130,6 +130,18 @@ const CreateBranch = () => {
                   Cho phép chỉnh sửa và hủy đơn hàng sau khi duyệt
                 </CLabel>
               </CFormGroup>
+              <CFormGroup variant="custom-checkbox" className="pb-3">
+                <CInputCheckbox
+                  custom={true}
+                  id="seeAll"
+                  name="seeAll"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <CLabel variant="custom-checkbox" htmlFor="seeAll">
+                  Cho phép xem dữ liệu của phòng ban khác
+                </CLabel>
+              </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="userName">Nhóm quyền</CLabel>
                 <Select

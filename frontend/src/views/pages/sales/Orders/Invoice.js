@@ -1,18 +1,18 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, {useEffect, useState} from 'react';
-import {Table} from 'reactstrap';
-import {useHistory, useLocation} from 'react-router-dom';
-import {creatingOrder} from './order.api';
-import {useDispatch, useSelector} from 'react-redux';
-import {reset} from './order.reducer';
+import React, { useEffect, useState } from 'react';
+import { Table } from 'reactstrap';
+import { useHistory, useLocation } from 'react-router-dom';
+import { creatingOrder } from './order.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { reset, fetching } from './order.reducer';
 
-import {CButton, CCard, CCardHeader, CCardBody, CCol, CRow} from '@coreui/react/lib';
+import { CButton, CCard, CCardHeader, CCardBody, CCol, CRow } from '@coreui/react/lib';
 const Invoice = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const {initialState} = useSelector((state) => state.order);
+  const { initialState } = useSelector(state => state.order);
 
   const [invoice, setInvoice] = useState(null);
   useEffect(() => {
@@ -23,14 +23,15 @@ const Invoice = () => {
     if (invoice) {
       invoice.totalMoney = invoice?.orderDetails.reduce((sum, current) => sum + current.priceReal * current.quantity, 0);
       invoice.realMoney = invoice?.orderDetails.reduce(
-          (sum, current) =>
-            sum + (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
-          0,
+        (sum, current) =>
+          sum + (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
+        0
       );
       invoice.reduceMoney = invoice?.orderDetails.reduce(
-          (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100,
-          0,
+        (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100,
+        0
       );
+      dispatch(fetching())
       dispatch(creatingOrder(invoice));
     }
   };
@@ -102,16 +103,16 @@ const Invoice = () => {
                     <td>{item.product?.volume}</td>
                     <td>{item.quantity}</td>
 
-                    <td>{Number(item.priceReal).toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}</td>
+                    <td>{Number(item.priceReal).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                     <td>{item.reducePercent}%</td>
-                    <td>{(item.priceReal * item.quantity).toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}</td>
+                    <td>{(item.priceReal * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                     <td>
                       {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
-                          'it-IT',
-                          {
-                            style: 'currency',
-                            currency: 'VND',
-                          },
+                        'it-IT',
+                        {
+                          style: 'currency',
+                          currency: 'VND'
+                        }
                       ) || ''}
                     </td>
                   </tr>
@@ -132,8 +133,8 @@ const Invoice = () => {
                     </td>
                     <td className="right">
                       {invoice?.orderDetails
-                          .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
-                          .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
+                        .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
+                        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                     </td>
                   </tr>
                   <tr>
@@ -142,8 +143,8 @@ const Invoice = () => {
                     </td>
                     <td className="right">
                       {invoice?.orderDetails
-                          .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
-                          .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
+                        .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
+                        .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                     </td>
                   </tr>
                   <tr>
@@ -153,13 +154,13 @@ const Invoice = () => {
                     <td className="right">
                       <strong>
                         {invoice?.orderDetails
-                            .reduce(
-                                (sum, current) =>
-                                  sum +
+                          .reduce(
+                            (sum, current) =>
+                              sum +
                               (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
-                                0,
-                            )
-                            .toLocaleString('it-IT', {style: 'currency', currency: 'VND'}) || ''}
+                            0
+                          )
+                          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                       </strong>
                     </td>
                   </tr>
@@ -171,8 +172,8 @@ const Invoice = () => {
             <CButton size="lg" className="btn btn-secondary ml-3" onClick={() => history.goBack()}>
               Quay lại
             </CButton>
-            <CButton type="submit" size="lg" className="btn btn-success mr-5" onClick={onCreateOrder}>
-              Tạo đơn hàng
+            <CButton type="submit" size="lg" className="btn btn-success mr-5" disabled={initialState.loading} onClick={onCreateOrder}>
+              {initialState.loading ? <CSpinner size="sm" /> : ' Tạo đơn hàng'}
             </CButton>
           </CRow>
         </CCardBody>

@@ -41,18 +41,27 @@ export class CustomerService {
     Object.keys(filter).forEach((item, index) => {
       queryString += `Customer.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
     });
-    let andQueryString = '';
+    let andQueryString = '1=1 ';
 
     if (departmentVisible.length > 0) {
-      andQueryString += `Customer.department IN ${JSON.stringify(departmentVisible)
+      andQueryString += `AND Customer.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
     }
     if (isEmployee) andQueryString += ` AND Customer.sale = ${currentUser.id}`;
-    const cacheKeyBuilder = `get_customers_department_${JSON.stringify(departmentVisible)}_sale_${
-      isEmployee ? currentUser.id : -1
-    }_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Customer.${Object.keys(options.order)[0] ||
-      'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+    const cacheKeyBuilder = `get_customers_department_${JSON.stringify(departmentVisible)}_branch_${
+      currentUser.branch ? !currentUser.branch.seeAll ? currentUser.branch.id : -1 : null
+    }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Customer.${Object.keys(
+      options.order
+    )[0] || 'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+    if (currentUser.branch) {
+      if (!currentUser.branch.seeAll) {
+        andQueryString += ` AND Customer.branch = ${currentUser.branch.id} `;
+      }
+    }else{
+      andQueryString += ` AND Customer.branch is NULL `;
+    }
+
     const queryBuilder = this.customerRepository
       .createQueryBuilder('Customer')
       .leftJoinAndSelect('Customer.status', 'status')
@@ -72,9 +81,9 @@ export class CustomerService {
       .skip(options.skip)
       .take(options.take)
       .cache(
-        `cache_count_get_customers_department_${JSON.stringify(departmentVisible)}_sale_${
-          isEmployee ? currentUser.id : -1
-        }_filter_${JSON.stringify(filter)}`
+        `cache_count_get_customers_department_${JSON.stringify(departmentVisible)}_branch_${
+          currentUser.branch ? !currentUser.branch.seeAll ? currentUser.branch.id : -1 : null
+        }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}`
       );
     if (queryString) {
       queryBuilder.andWhere(

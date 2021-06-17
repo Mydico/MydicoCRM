@@ -42,12 +42,13 @@ export class TransactionSubscriber implements EntitySubscriberInterface<Transact
       exist.debt = event.entity.earlyDebt;
       exist.customer = event.entity.customer;
       exist.department = foundedCustomer.department
+      exist.branch = foundedCustomer.branch
       exist.sale = event.entity.type === TransactionType.DEBIT?event.entity.order.sale : foundedCustomer.sale
     } else {
       exist = new CustomerDebit();
       exist.debt = event.entity.earlyDebt;
       exist.customer = event.entity.customer;
-      exist.department = foundedCustomer.department
+      exist.branch = foundedCustomer.branch
       exist.sale = event.entity.type === TransactionType.DEBIT? event.entity.order.sale : foundedCustomer.sale
     }
     await customerDebitRepo.save(exist);

@@ -11,6 +11,7 @@ import PromotionItem from './promotion-item.entity';
 import Bill from './bill.entity';
 import Department from './department.entity';
 import { User } from './user.entity';
+import Branch from './branch.entity';
 
 /**
  * A Order.
@@ -42,17 +43,14 @@ export default class Order extends BaseEntity {
   @Index()
   code?: string;
 
-  @Column({ name: 'cod_code', length: 255, nullable: true })
-  @Index()
-  codCode?: string;
 
   @Column({ type: 'simple-enum', name: 'status', enum: OrderStatus, default: OrderStatus.WAITING })
   @Index()
   status?: OrderStatus;
 
-  @Column({ type: 'integer', name: 'transport_id', nullable: true })
-  @Index()
-  transportId?: number;
+
+  @ManyToOne(type => Branch)
+  branch?: Branch;
 
   /**
    * tổng tiền

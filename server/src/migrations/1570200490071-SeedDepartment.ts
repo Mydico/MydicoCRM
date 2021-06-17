@@ -161,8 +161,8 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
       .getRepository(User)
       .save(users)
     const resultUsersWithOldData = resultUsers.map((entity, index) => ({
+      ...entity,
       ...users[index],
-      ...entity
     }))
     const customerList = customers.map(item => ({
       old_id: item.id.toString(),
@@ -175,6 +175,7 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
       type: resultCustomerType.identifiers[customerType.findIndex(type => type.code === item.type)],
       typeString: item.type,
       sale: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.old_login === item.nhanvien_chamsoc)] || null,
+      branch: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.old_login === item.nhanvien_chamsoc)]?.branch || null,
       contactName: item.contact_name,
       city: city.filter(element => element.label.toLowerCase().includes(item.city_name.toLowerCase()))[0]?.value || "",
       district: districts.filter(element => element.label.toLowerCase().includes(item.district_name.toLowerCase()))[0]?.value || "",

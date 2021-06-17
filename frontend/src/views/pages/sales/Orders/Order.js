@@ -173,7 +173,7 @@ const Order = props => {
       createdBy: order.createdBy,
       reject: rejectRef.current
     };
-    if (order.createdBy !== account.login && !account.allow) {
+    if (order.createdBy !== account.login && (!account.branch || !account.branch.allow)) {
       dispatch(updateStatusOrder(newOrder));
     } else {
       dispatch(editSelfOrder(newOrder));

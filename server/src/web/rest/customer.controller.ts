@@ -140,6 +140,7 @@ export class CustomerController {
   async post(@Req() req: Request, @Res() res: Response, @Body() customer: Customer): Promise<Response> {
     const currentUser = req.user as User;
     customer.department = currentUser.department;
+    customer.branch = currentUser.branch;
     customer.sale = currentUser;
     let departmentVisible: any = [];
     const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;

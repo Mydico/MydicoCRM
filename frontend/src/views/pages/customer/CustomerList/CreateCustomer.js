@@ -13,7 +13,7 @@ import {
   CRow,
   CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,8 +25,8 @@ import { fetching } from '../customer.reducer';
 import { getDepartment } from '../../user/UserDepartment/department.api';
 import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
 import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
-import cities from '../../../../shared/utils/city'
-import district from '../../../../shared/utils/district'
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district';
 import { userSafeSelector } from '../../login/authenticate.reducer';
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -46,6 +46,7 @@ const validationSchema = function() {
     type: Yup.object().required('Loại khách hàng không để trống'),
     dateOfBirth: Yup.date().required('Ngày tháng năm sinh không để trống'),
     department: Yup.object().required('Chi nhánh không để trống'),
+    branch: Yup.object().required('Bạn chưa chọn hoặc chưa có phòng ban. Liên hệ quản trị viên để cài đặt'),
     city: Yup.string().required('Thành phố không để trống')
   });
 };
@@ -68,8 +69,9 @@ const CreateCustomer = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedCity, setSelectedCity] = useState(null);
-  const [districts, setDistricts] = useState([])
+  const [districts, setDistricts] = useState([]);
   const departments = [account.department];
+  const branches = account.branch ? [account.branch]:[];
   useEffect(() => {
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
@@ -82,7 +84,7 @@ const CreateCustomer = () => {
 
   useEffect(() => {
     if (selectedCity) {
-      setDistricts(district.filter(item => item.parent_code === selectedCity))
+      setDistricts(district.filter(item => item.parent_code === selectedCity));
     }
   }, [selectedCity]);
 
@@ -293,7 +295,7 @@ const CreateCustomer = () => {
                       placeholder="Chi nhánh"
                       options={departments.map(item => ({
                         value: item,
-                        label: item.name
+                        label: item?.name || ''
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
@@ -313,20 +315,23 @@ const CreateCustomer = () => {
                     />
                     <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>
                   </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="createdYear">Năm thành lập</CLabel>
-                    <CInput
-                      type="text"
-                      name="createdYear"
-                      id="createdYear"
-                      autoComplete="createdYear"
-                      onChange={handleChange}
-                      valid={errors.createdYear}
-                      onBlur={handleBlur}
-                      value={values.createdYear}
-                    />
-                    <CInvalidFeedback>{errors.createdYear}</CInvalidFeedback>
-                  </CFormGroup>
+                  {branches.length === 0 && (
+                    <CFormGroup>
+                      <CLabel htmlFor="code">Phòng ban</CLabel>
+                      <Select
+                        name="department"
+                        onChange={async item => {
+                          await setFieldValue('branch', item.value);
+                        }}
+                        placeholder="Chi nhánh"
+                        options={branches.map(item => ({
+                          value: item,
+                          label: item?.name || ''
+                        }))}
+                      />
+                      <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
+                    </CFormGroup>
+                  )}
                   <CFormGroup>
                     <CLabel htmlFor="email">Ngày tham gia ObClub</CLabel>
                     <CInput type="date" id="obclubJoinTime" name="obclubJoinTime" onChange={handleChange} />

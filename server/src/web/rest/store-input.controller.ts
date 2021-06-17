@@ -49,7 +49,7 @@ export class StoreInputController {
     let filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+        filter[item] = req.query[item];
       }
     });
     let departmentVisible = [];
@@ -59,17 +59,17 @@ export class StoreInputController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    const object = {
-      department: In(departmentVisible),
-      type: In([StoreImportType.EXPORT, StoreImportType.EXPORT_TO_PROVIDER])
-    };
-    filter.push(object);
-    const [results, count] = await this.storeInputService.findAndCountExport({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: filter
-    });
+    const type = [StoreImportType.EXPORT, StoreImportType.EXPORT_TO_PROVIDER];
+    const [results, count] = await this.storeInputService.findAndCount(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder()
+      },
+      filter,
+      departmentVisible,
+      type
+    );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }
@@ -86,7 +86,7 @@ export class StoreInputController {
     const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+        filter[item] = req.query[item];
       }
     });
     let departmentVisible = [];
@@ -96,17 +96,20 @@ export class StoreInputController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    filter.push({ department: In(departmentVisible) });
-    const [results, count] = await this.storeInputService.findAndCountReturn({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: filter
-    });
+    const type = [StoreImportType.RETURN];
+    const [results, count] = await this.storeInputService.findAndCount(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder()
+      },
+      filter,
+      departmentVisible,
+      type
+    );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }
-
 
   @Get('/')
   @Roles(RoleType.USER)
@@ -120,7 +123,7 @@ export class StoreInputController {
     const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+        filter[item] = req.query[item];
       }
     });
     let departmentVisible = [];
@@ -130,13 +133,17 @@ export class StoreInputController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    filter.push({ department: In(departmentVisible) });
-    const [results, count] = await this.storeInputService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: filter
-    });
+    const type = [StoreImportType.IMPORT_FROM_STORE, StoreImportType.IMPORT_FROM_STORE];
+    const [results, count] = await this.storeInputService.findAndCount(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder()
+      },
+      filter,
+      departmentVisible,
+      type
+    );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }
@@ -174,6 +181,7 @@ export class StoreInputController {
   async postExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     const currentUser = req.user as User;
     storeInput.createdBy = currentUser.login;
+    storeInput.department = currentUser.department;
     const created = await this.storeInputService.save(storeInput);
     HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
     return res.send(created);
@@ -226,7 +234,6 @@ export class StoreInputController {
     }
     return res.send(await this.storeInputService.update(storeInput));
   }
-
 
   @Put('/return/approve')
   @Roles(RoleType.USER)
