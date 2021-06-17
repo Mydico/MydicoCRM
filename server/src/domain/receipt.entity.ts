@@ -23,6 +23,14 @@ export default class Receipt extends BaseEntity {
     @Index()
     code: string;
 
+    @Column({ name: 'customer_name', length: 255, nullable: true })
+    @Index()
+    customerName: string;
+
+    @Column({ name: 'approver_name', length: 255, nullable: true })
+    @Index()
+    approverName: string;
+
     @ManyToOne(type => User)
     approver?: User;
 

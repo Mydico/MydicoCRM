@@ -42,27 +42,20 @@ export class ProductController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Product[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    let filter: any = [];
+    let filter: any = {};
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency' && item !== 'status') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        filter[item] = req.query[item];
       }
     });
-    if (filter.length === 0) {
-      if (req.query['status']) {
-        filter['status'] = req.query['status'];
-      }
-    } else {
-      if (req.query['status']) {
-        filter[filter.length - 1]['status'] = req.query['status'];
-      }
-    }
-    const [results, count] = await this.productService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: filter
-    });
+    const [results, count] = await this.productService.findAndCount(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder()
+      },
+      filter
+    );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }

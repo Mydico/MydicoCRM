@@ -17,6 +17,18 @@ export default class CustomerDebit extends BaseEntity {
     @Index()
     debt: number;
 
+    @Column({ name: 'sale_name', length: 500, nullable: true })
+    @Index()
+    saleName?: string;
+
+    @Column({ name: 'customer_code', length: 500, nullable: true })
+    @Index()
+    customerCode?: string;
+
+    @Column({ name: 'customer_name', length: 500, nullable: true })
+    @Index()
+    customerName?: string;
+
     @ManyToOne(type => Customer)
     customer: Customer;
 

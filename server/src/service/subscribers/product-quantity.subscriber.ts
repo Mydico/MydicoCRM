@@ -26,6 +26,8 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
         history.product = updateEntity.product;
         history.department = updateEntity.department;
         history.store = updateEntity.store;
+        history.storeName = updateEntity.store.name;
+        history.productName = updateEntity.store.name;
         history.createdDate = new Date();
         if(old){
             history.type = updateEntity.quantity > old.quantity  ? StoreHistoryType.IMPORT : StoreHistoryType.EXPORT;

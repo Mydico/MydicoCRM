@@ -53,9 +53,9 @@ export default class Customer extends BaseEntity {
     /**
    * cân nặng(kg)
    */
-    @Column({ type: 'integer', name: 'capacity', nullable: true })
+    @Column({ name: 'sale_name', nullable: true })
     @Index()
-    capacity?: number;
+    saleName?: string;
 
     /**
    * tình trạng hôn nhân (đọc thân, đã kết hôn, đã ly hôn)
@@ -69,9 +69,9 @@ export default class Customer extends BaseEntity {
     @Index()
     activated?: boolean;
 
-    @Column({ name: 'email', length: 250, nullable: true })
+    @Column({ name: 'social', length: 250, nullable: true })
     @Index()
-    email?: string;
+    social?: string;
 
     @Column({ name: 'code', length: 256, unique: true, nullable: false })
     code: string;

@@ -107,6 +107,7 @@ export class ReceiptController {
     receipt.sale = receipt.customer.sale;
     receipt.branch = currentUser.branch;
     receipt.department = currentUser.department;
+    receipt.customerName = receipt.customer.name;
     const created = await this.receiptService.save(receipt);
     HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', created.id);
     return res.send(created);
@@ -122,6 +123,7 @@ export class ReceiptController {
   async approve(@Req() req: Request, @Res() res: Response, @Body() receipt: Receipt): Promise<Response> {
     let currentUser = req.user as User;
     receipt.approver = currentUser;
+    receipt.approverName = currentUser.login;
     HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', receipt.id);
     return res.send(await this.receiptService.update(receipt));
   }

@@ -17,8 +17,16 @@ export default class Bill extends BaseEntity {
   @ManyToOne(type => Customer, customer => customer.bill)
   customer: Customer;
 
+  @Column({ name: 'customer_name', length: 255, nullable: true })
+  @Index()
+  customerName?: string;
+
   @ManyToOne(type => User, user => user.bill)
   transporter: User;
+
+  @Column({ name: 'transporter_name', length: 255, nullable: true })
+  @Index()
+  transporterName?: string;
 
   @ManyToOne(type => Department)
   department? : Department;

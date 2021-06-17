@@ -140,6 +140,7 @@ export class BillController {
   })
   async transporter(@Res() res: Response, @Body() bill: Bill): Promise<Response> {
     HeaderUtil.addEntityUpdatedHeaders(res, 'Bill', bill.id);
+    bill.transporterName = bill.transporter.login;
     return res.send(await this.billService.update(bill));
   }
 

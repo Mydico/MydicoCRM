@@ -41,13 +41,11 @@ export class StoreHistoryService {
             .replace('[', '(')
             .replace(']', ')')}`;
         }    
-        const cacheKeyBuilder = `get_StoreHistories_department_${departmentVisible.join(',')}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_StoreHistory.${Object.keys(options.order)[0] ||
-          'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+
         const queryBuilder = this.storeHistoryRepository
           .createQueryBuilder('StoreHistory')
           .leftJoinAndSelect('StoreHistory.product', 'product')
           .leftJoinAndSelect('StoreHistory.store', 'store')
-          .cache(cacheKeyBuilder, 604800)
           .where(andQueryString)
           .orderBy(`StoreHistory.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
           .skip(options.skip)
@@ -58,10 +56,7 @@ export class StoreHistoryService {
           .where(andQueryString)
           .orderBy(`StoreHistory.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
           .skip(options.skip)
-          .take(options.take)
-          .cache(
-            `cache_count_get_StoreHistories_department_${JSON.stringify(departmentVisible)}_filter_${JSON.stringify(filter)}`
-          );
+          .take(options.take);
         if (queryString) {
           queryBuilder.andWhere(
             new Brackets(sqb => {

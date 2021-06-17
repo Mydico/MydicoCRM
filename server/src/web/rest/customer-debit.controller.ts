@@ -57,15 +57,6 @@ export class CustomerDebitController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    // if (filter.length === 0) {
-    //   filter['department'] = In(departmentVisible);
-    //   if(filter['customer']) filter['customer'] = req.query['customer']
-    //   if (isEmployee) filter['sale'] = currentUser.id;
-    // } else {
-    //   filter[0]['department'] = In(departmentVisible);
-    //   if(filter[0]['customer']) filter['customer'] = req.query['customer']
-    //   if (isEmployee) filter[0]['sale'] = currentUser.id;
-    // }
     const [results, count] = await this.customerDebitService.findAndCount(
       {
         skip: +pageRequest.page * pageRequest.size,

@@ -51,7 +51,13 @@ export class ReceiptService {
                 .replace(']', ')')}`;
         }
         if (isEmployee) andQueryString += ` AND Receipt.sale = ${currentUser.id}`;
-        if (!currentUser.branch.seeAll) andQueryString += ` AND Receipt.branch = ${currentUser.branch.id}`;
+        if (currentUser.branch) {
+            if (!currentUser.branch.seeAll) {
+              andQueryString += ` AND Receipt.branch = ${currentUser.branch.id}`;
+            }
+          }else{
+            andQueryString += ` AND Receipt.branch is NULL `;
+          }
 
         const queryBuilder = this.receiptRepository
             .createQueryBuilder('Receipt')

@@ -99,7 +99,7 @@ export class StoreInputService {
     options: FindManyOptions<StoreInput>,
     filter = {},
     departmentVisible = [],
-    type = []
+    type = ''
   ): Promise<[StoreInput[], number]> {
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
@@ -113,11 +113,9 @@ export class StoreInputService {
         .replace(']', ')')}`;
     }
     if (type.length > 0) {
-      andQueryString += `AND StoreInput.type IN ${JSON.stringify(type)
-        .replace('[', '(')
-        .replace(']', ')')}`;
+      andQueryString += ` AND StoreInput.type like '%${type}%' `;
     }
-    const cacheKeyBuilder = `get_StoreInputs_department_${departmentVisible.join(',')}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_StoreInput.${Object.keys(options.order)[0] ||
+    const cacheKeyBuilder = `get_StoreInputs_department_${departmentVisible.join(',')}_type_${type}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_StoreInput.${Object.keys(options.order)[0] ||
       'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
     const queryBuilder = this.storeInputRepository
       .createQueryBuilder('StoreInput')
@@ -125,6 +123,8 @@ export class StoreInputService {
       .leftJoinAndSelect('StoreInput.store', 'store')
       .leftJoinAndSelect('StoreInput.department', 'department')
       .leftJoinAndSelect('StoreInput.customer', 'customer')
+      .leftJoinAndSelect('StoreInput.storeInputDetails', 'storeInputDetails')
+      .leftJoinAndSelect('storeInputDetails.product', 'product')
       .leftJoinAndSelect('StoreInput.storeTransfer', 'storeTransfer')
       .cache(cacheKeyBuilder, 604800)
       .where(andQueryString)
@@ -139,7 +139,7 @@ export class StoreInputService {
       .skip(options.skip)
       .take(options.take)
       .cache(
-        `cache_count_get_StoreInputs_department_${JSON.stringify(departmentVisible)}_filter_${JSON.stringify(filter)}`
+        `cache_count_get_StoreInputs_department_${JSON.stringify(departmentVisible)}_type_${type}_filter_${JSON.stringify(filter)}`
       );
     if (queryString) {
       queryBuilder.andWhere(
@@ -248,6 +248,7 @@ export class StoreInputService {
       importStore.store = entity.storeTransfer;
       importStore.type = StoreImportType.IMPORT_FROM_STORE;
       importStore.storeTransfer = entity.store;
+      importStore.storeTransferName = entity.store.name;
       importStore.department = entity.department
       importStore.storeInputDetails = arrDetails;
       importStore.createdBy = 'system';
@@ -264,6 +265,7 @@ export class StoreInputService {
         department: entity.store.department,
         quantity: item.quantity,
         name: item.product.name,
+        storeName: entity.store.name,
         type: StoreHistoryType.IMPORT
       }));
     const productInStore = founded.map(item => {

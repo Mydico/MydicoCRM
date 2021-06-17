@@ -42,19 +42,33 @@ export class ProductService {
     return await this.productRepository.findOne(options);
   }
 
-  async findAndCount(options: FindManyOptions<Product>): Promise<[Product[], number]> {
-    options.cache = {
-      id: `get_products_filter_${JSON.stringify(options.where)}_skip_${options.skip}_${options.take}`,
-      milliseconds: 604800
-    }
-    options.relations = relationshipNames;
-    const count = await this.productRepository.count({...options,cache: {
-      id: `cache_count_get_products_filter_${JSON.stringify(options.where)}_Product.${Object.keys(options.order)[0] ||
-        'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`,
-      milliseconds: 604800
-    }});
-    const result = await this.productRepository.findAndCount(options);
-    result[1] = count;
+  async findAndCount(options: FindManyOptions<Product>, filter: {}): Promise<[Product[], number]> {
+    const cacheKeyBuilder = `get_products_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}`;
+    let queryString = '';
+    Object.keys(filter).forEach((item, index) => {
+      queryString += `Product.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+    });
+    const queryBuilder = this.productRepository
+      .createQueryBuilder('Product')
+      .leftJoinAndSelect('Product.productBrand', 'productBrand')
+      .leftJoinAndSelect('Product.productGroup', 'productGroup')
+      .cache(cacheKeyBuilder, 604800)
+      .where(queryString)
+      .orderBy(`Product.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take);
+    const count = this.productRepository
+    .createQueryBuilder('Product')
+    .where(queryString)
+    .orderBy(`Product.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+    .skip(options.skip)
+    .take(options.take)
+    .cache(
+      `cache_count_get_products_filter_${JSON.stringify(filter)}_Product.${Object.keys(options.order)[0] || 'createdDate'}_${options
+        .order[Object.keys(options.order)[0]] || 'DESC'}`
+    );
+    const result = await queryBuilder.getManyAndCount();
+    result[1] = await count.getCount();
     return result;
   }
 
@@ -77,7 +91,7 @@ export class ProductService {
       }
     });
     const updatedStatus = arrProductInStore.map(item => ({ ...item, status: product.status }));
-    await this.productQuantity.saveMany(updatedStatus)
+    await this.productQuantity.saveMany(updatedStatus);
     return await this.save(product);
   }
 

@@ -43,13 +43,6 @@ export class CustomerDebitService {
         .replace(']', ')')}`;
     }
     if (isEmployee) andQueryString += ` AND CustomerDebit.sale = ${currentUser.id}`;
-    if (currentUser.branch) {
-      if (!currentUser.branch.seeAll) {
-        andQueryString += ` AND CustomerDebit.branch = ${currentUser.branch.id}`;
-      }
-    }else{
-      andQueryString += ` AND CustomerDebit.branch is NULL`;
-    }
     const queryBuilder = this.customerDebitRepository
       .createQueryBuilder('CustomerDebit')
       .leftJoinAndSelect('CustomerDebit.customer', 'customer')

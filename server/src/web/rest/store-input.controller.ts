@@ -59,7 +59,7 @@ export class StoreInputController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    const type = [StoreImportType.EXPORT, StoreImportType.EXPORT_TO_PROVIDER];
+    const type = StoreImportType.EXPORT
     const [results, count] = await this.storeInputService.findAndCount(
       {
         skip: +pageRequest.page * pageRequest.size,
@@ -96,7 +96,7 @@ export class StoreInputController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    const type = [StoreImportType.RETURN];
+    const type = StoreImportType.RETURN;
     const [results, count] = await this.storeInputService.findAndCount(
       {
         skip: +pageRequest.page * pageRequest.size,
@@ -133,7 +133,7 @@ export class StoreInputController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
-    const type = [StoreImportType.IMPORT_FROM_STORE, StoreImportType.IMPORT_FROM_STORE];
+    const type = StoreImportType.NEW;
     const [results, count] = await this.storeInputService.findAndCount(
       {
         skip: +pageRequest.page * pageRequest.size,
@@ -182,6 +182,8 @@ export class StoreInputController {
     const currentUser = req.user as User;
     storeInput.createdBy = currentUser.login;
     storeInput.department = currentUser.department;
+    storeInput.customerName = storeInput.customer.name
+    storeInput.storeName = storeInput.store.name
     const created = await this.storeInputService.save(storeInput);
     HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
     return res.send(created);
@@ -198,6 +200,9 @@ export class StoreInputController {
   async postReturn(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     const currentUser = req.user as User;
     storeInput.createdBy = currentUser.login;
+    storeInput.department = currentUser.department;
+    storeInput.customerName = storeInput.customer.name;
+    storeInput.storeName = storeInput.store.name;
     const created = await this.storeInputService.save(storeInput);
     HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
     return res.send(created);
@@ -214,6 +219,9 @@ export class StoreInputController {
   async post(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     const currentUser = req.user as User;
     storeInput.createdBy = currentUser.login;
+    storeInput.department = currentUser.department;
+    storeInput.customerName = storeInput.customer.name
+    storeInput.storeName = storeInput.store.name;
     const created = await this.storeInputService.save(storeInput);
     HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
     return res.send(created);
@@ -231,6 +239,7 @@ export class StoreInputController {
     if (storeInput.status === StoreImportStatus.APPROVED) {
       const currentUser = req.user as User;
       storeInput.approver = currentUser;
+      storeInput.approverName = currentUser.login;
     }
     return res.send(await this.storeInputService.update(storeInput));
   }
@@ -247,6 +256,7 @@ export class StoreInputController {
     if (storeInput.status === StoreImportStatus.APPROVED) {
       const currentUser = req.user as User;
       storeInput.approver = currentUser;
+      storeInput.approverName = currentUser.login;
     }
     return res.send(await this.storeInputService.update(storeInput));
   }
@@ -263,6 +273,7 @@ export class StoreInputController {
     if (storeInput.status === StoreImportStatus.APPROVED) {
       const currentUser = req.user as User;
       storeInput.approver = currentUser;
+      storeInput.approverName = currentUser.login;
     }
     return res.send(await this.storeInputService.update(storeInput));
   }

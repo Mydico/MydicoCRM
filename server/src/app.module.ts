@@ -8,13 +8,8 @@ import { PromotionModule } from './module/promotion.module';
 import { BillModule } from './module/bill.module';
 import { CodlogModule } from './module/codlog.module';
 import { CustomerModule } from './module/customer.module';
-import { CustomerAdvisoryModule } from './module/customer-advisory.module';
-import { CustomerCallModule } from './module/customer-call.module';
 import { CustomerCategoryModule } from './module/customer-category.module';
-import { CustomerRequestModule } from './module/customer-request.module';
-import { CustomerSkinModule } from './module/customer-skin.module';
 import { CustomerStatusModule } from './module/customer-status.module';
-import { CustomerTempModule } from './module/customer-temp.module';
 import { CustomerTypeModule } from './module/customer-type.module';
 import { OrderModule } from './module/order.module';
 import { OrderDetailsModule } from './module/order-details.module';
@@ -82,13 +77,8 @@ import { RedisQueryResultCache } from './service/query/custom-query.cache';
         FileModule,
         CodlogModule,
         CustomerModule,
-        CustomerAdvisoryModule,
-        CustomerCallModule,
         CustomerCategoryModule,
-        CustomerRequestModule,
-        CustomerSkinModule,
         CustomerStatusModule,
-        CustomerTempModule,
         CustomerTypeModule,
         OrderModule,
         OrderDetailsModule,

@@ -52,9 +52,6 @@ export class BillService {
       }
     return await this.billRepository
       .createQueryBuilder('Bill')
-      .leftJoinAndSelect('Bill.customer', 'customer')
-      .leftJoinAndSelect('Bill.transporter', 'transporter')
-      .leftJoinAndSelect('Bill.store', 'store')
       .leftJoinAndSelect('Bill.order', 'order')
       .leftJoinAndSelect('order.orderDetails', 'orderDetails')
       .leftJoinAndSelect('orderDetails.product', 'product')

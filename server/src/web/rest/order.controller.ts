@@ -47,7 +47,7 @@ export class OrderController {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency' && item !== 'status') {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency') {
         filter[item] = req.query[item];
       }
     });
@@ -244,7 +244,7 @@ export class OrderController {
     const currentUser = req.user as User;
     order.lastModifiedBy = currentUser.login;
     const isAdmin = currentUser.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
-    if (!isAdmin && currentUser.login !== order.createdBy) {
+    if (!isAdmin && currentUser.login !== order.createdBy && (currentUser.branch && !currentUser.branch.allow)) {
       throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
     }
     let departmentVisible = [];

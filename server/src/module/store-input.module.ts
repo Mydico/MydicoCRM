@@ -10,6 +10,7 @@ import { TransactionModule } from './transaction.module';
 import { OrderModule } from './order.module';
 import { DepartmentModule } from './department.module';
 import { IncomeDashboardModule } from './income-dashboard.module';
+import { StoreInputSubscriber } from '../service/subscribers/store.subscriber';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { IncomeDashboardModule } from './income-dashboard.module';
     IncomeDashboardModule
   ],
   controllers: [StoreInputController],
-  providers: [StoreInputService],
+  providers: [StoreInputService,StoreInputSubscriber],
   exports: [StoreInputService]
 })
 export class StoreInputModule {}

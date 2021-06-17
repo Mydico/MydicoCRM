@@ -80,7 +80,7 @@ export class OrderService {
         andQueryString += ` AND Order.branch = ${currentUser.branch.id}`;
       }
     }else{
-      andQueryString += ` AND Order.branch is NULL`;
+      andQueryString += ` AND Order.branch is NULL `;
     }
     const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_branch_${
       currentUser.branch ? !currentUser.branch.seeAll ? currentUser.branch.id : -1 : null
@@ -226,6 +226,7 @@ export class OrderService {
         bill.customer = foundedOrder.customer;
         bill.order = foundedOrder;
         bill.store = foundedOrder.store;
+        bill.customerName = foundedOrder.customer.name;
         bill.department = foundedOrder.department;
         bill.createdBy = foundedOrder.lastModifiedBy;
         const createdBill = await this.billService.save(bill);
