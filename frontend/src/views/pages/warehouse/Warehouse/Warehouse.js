@@ -18,6 +18,43 @@ const mappingStatus = {
 };
 const { selectAll } = globalizedWarehouseSelectors;
 
+  // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
+  const fields = [
+    {
+      key: 'order',
+      label: 'STT',
+      _style: { width: '1%' },
+      filter: false
+    },
+    { key: 'code', label: 'Mã', _style: { width: '10%' } },
+    { key: 'name', label: 'Tên kho', _style: { width: '15%' } },
+    { key: 'address', label: 'Địa chỉ', _style: { width: '15%' } },
+    { key: 'tel', label: 'Số điện thoại', _style: { width: '15%' } },
+    { key: 'department', label: 'Chi nhánh', _style: { width: '15%' }, filter: false },
+    { key: 'status', label: 'Trạng thái', _style: { width: '15%' }, filter: false },
+    {
+      key: 'show_details',
+      label: '',
+      _style: { width: '1%' },
+      filter: false
+    }
+  ];
+
+  const getBadge = status => {
+    switch (status) {
+      case 'ACTIVE':
+        return 'success';
+      case 'DISABLED':
+        return 'danger';
+      case 'DELETED':
+        return 'warning';
+      case 'Banned':
+        return 'danger';
+      default:
+        return 'primary';
+    }
+  };
+
 const Warehouse = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
@@ -56,43 +93,6 @@ const Warehouse = props => {
       newDetails = [...details, index];
     }
     setDetails(newDetails);
-  };
-
-  // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên kho', _style: { width: '15%' } },
-    { key: 'address', label: 'Địa chỉ', _style: { width: '15%' } },
-    { key: 'tel', label: 'Số điện thoại', _style: { width: '15%' } },
-    { key: 'department', label: 'Chi nhánh', _style: { width: '15%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '15%' } },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
-  ];
-
-  const getBadge = status => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'DISABLED':
-        return 'danger';
-      case 'DELETED':
-        return 'warning';
-      case 'Banned':
-        return 'danger';
-      default:
-        return 'primary';
-    }
   };
 
   const csvContent = computedItems(warehouses)

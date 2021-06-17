@@ -100,12 +100,14 @@ const Customer = props => {
           items={computedItems(customers)}
           fields={fields}
           columnFilter
-          tableFilter
-          cleaner
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
           onPageChange={val => console.log('new page:', val)}

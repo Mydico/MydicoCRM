@@ -11,7 +11,9 @@ import { globalizedReceiptsSelectors, reset } from './receipt.reducer.js';
 import { ReceiptStatus } from './constant.js';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import _ from 'lodash'
+import _ from 'lodash';
+import Select from 'react-select';
+
 const getBadge = status => {
   switch (status) {
     case 'APPROVED':
@@ -29,28 +31,42 @@ const mappingStatus = {
   APPROVED: 'ĐÃ DUYỆT',
   REJECTED: 'ĐÃ HỦY'
 };
+const statusList = [
+  {
+    value: 'WAITING',
+    label: 'CHỜ DUYỆT'
+  },
+  {
+    value: 'REJECTED',
+    label: 'ĐÃ HỦY'
+  },
+  {
+    value: 'APPROVED',
+    label: 'ĐÃ DUYỆT'
+  }
+];
 const { selectAll } = globalizedReceiptsSelectors;
-  // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'customer', label: 'Khách hàng', _style: { width: '15%' } },
-    { key: 'money', label: 'Số tiền', _style: { width: '10%' } },
-    { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-    { key: 'approver', label: 'Người duyệt', _style: { width: '15%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
-    {
-      key: 'action',
-      label: '',
-      _style: { width: '20%' },
-      filter: false
-    }
-  ];
+// Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
+  { key: 'customerName', label: 'Khách hàng', _style: { width: '15%' } },
+  { key: 'money', label: 'Số tiền', _style: { width: '10%' }, filter: false },
+  { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
+  { key: 'approverName', label: 'Người duyệt', _style: { width: '15%' } },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+  {
+    key: 'action',
+    label: '',
+    _style: { width: '20%' },
+    filter: false
+  }
+];
 const Receipt = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
@@ -92,8 +108,6 @@ const Receipt = props => {
     setDetails(newDetails);
   };
 
-
-
   const csvContent = computedItems(warehouses)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -103,9 +117,9 @@ const Receipt = props => {
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
-        paramRef.current = value
+          if (!value[key]) delete value[key];
+        });
+        paramRef.current = value;
         dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
     }, 300),
@@ -113,7 +127,7 @@ const Receipt = props => {
   );
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
 
   useEffect(() => {
@@ -239,12 +253,14 @@ const Receipt = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          tableFilter
-          cleaner
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
           loading={initialState.loading}
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
           onPageChange={val => console.log('new page:', val)}
@@ -255,6 +271,22 @@ const Receipt = props => {
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           onRowClick={val => toDetailReceipt(val.id)}
+          columnFilterSlot={{
+            status: (
+              <div style={{ minWidth: 200, fontSize: '0.765625rem' }}>
+                <Select
+                  onChange={item => {
+                    onFilterColumn({ status: item.value, ...paramRef.current });
+                  }}
+                  placeholder="Chọn trạng thái"
+                  options={statusList.map(item => ({
+                    value: item.value,
+                    label: item.label
+                  }))}
+                />
+              </div>
+            )
+          }}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
             status: item => (

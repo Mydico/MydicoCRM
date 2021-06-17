@@ -8,49 +8,68 @@ import { globalizedProductSelectors, reset } from './product.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import moment from 'moment';
-import _ from 'lodash'
+import _ from 'lodash';
+import Select from 'react-select';
+import { globalizedproductGroupsSelectors } from '../ProductGroup/product-group.reducer.js';
+import { getProductGroup } from '../ProductGroup/product-group.api.js';
+
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const statusList = [
+  {
+    value: 'ACTIVE',
+    label: 'ĐANG HOẠT ĐỘNG'
+  },
+  {
+    value: 'DISABLED',
+    label: 'KHÔNG HOẠT ĐỘNG'
+  },
+  {
+    value: 'DELETED',
+    label: 'ĐÃ XÓA'
+  },
+];
 const { selectAll } = globalizedProductSelectors;
-  // Code	Tên sản phẩm	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Nhóm sản phẩm	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên sản phẩm', _style: { width: '10%' } },
-    { key: 'price', label: 'Giá salon', _style: { width: '15%' } },
-    { key: 'agentPrice', label: 'Giá đại lý', _style: { width: '10%' } },
-    { key: 'productGroup', label: 'Nhóm sản phẩm', _style: { width: '10%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
-    {
-      key: 'show_details',
-      _style: { width: '10%' },
-      label: '',
-      filter: false
-    }
-  ];
+const { selectAll : selectProfuctGroup } = globalizedproductGroupsSelectors;
 
-  const getBadge = status => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'DISABLED':
-        return 'danger';
-      case 'DELETED':
-        return 'warning';
-      case 'Banned':
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
+// Code	Tên sản phẩm	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Nhóm sản phẩm	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
+  { key: 'name', label: 'Tên sản phẩm', _style: { width: '10%' } },
+  { key: 'price', label: 'Giá salon', _style: { width: '15%' }, filter: false },
+  { key: 'agentPrice', label: 'Giá đại lý', _style: { width: '10%' }, filter: false },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+  {
+    key: 'show_details',
+    _style: { width: '10%' },
+    label: '',
+    filter: false
+  }
+];
+
+const getBadge = status => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'success';
+    case 'DISABLED':
+      return 'danger';
+    case 'DELETED':
+      return 'warning';
+    case 'Banned':
+      return 'danger';
+    default:
+      return 'primary';
+  }
+};
 const Product = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
@@ -61,9 +80,12 @@ const Product = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const paramRef = useRef(null);
+  // const productGroups = useSelector(selectProfuctGroup);
+  const products = useSelector(selectAll);
 
   useEffect(() => {
     dispatch(reset());
+    // dispatch(getProductGroup({ page: 0, size: 100, sort: 'createdDate,DESC' }));
   }, []);
 
   useEffect(() => {
@@ -77,7 +99,6 @@ const Product = props => {
     dispatch(getProduct(params));
   }, [activePage, size]);
 
-  const products = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
       return {
@@ -97,8 +118,6 @@ const Product = props => {
     }
     setDetails(newDetails);
   };
-
-
 
   const csvContent = computedItems(products)
     .map(item => Object.values(item).join(','))
@@ -120,8 +139,8 @@ const Product = props => {
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
+          if (!value[key]) delete value[key];
+        });
         paramRef.current = value;
         dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
@@ -130,7 +149,7 @@ const Product = props => {
   );
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
@@ -155,12 +174,14 @@ const Product = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          tableFilter
-          cleaner
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
           loading={initialState.loading}
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
           onPageChange={val => console.log('new page:', val)}
@@ -170,6 +191,23 @@ const Product = props => {
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
+          columnFilterSlot={{
+            status: (
+              <div style={{ minWidth: 200 }}>
+                <Select
+                  onChange={item => {
+                    onFilterColumn({ status: item.value, ...paramRef.current });
+                  }}
+                  placeholder="Chọn trạng thái"
+                  options={statusList.map(item => ({
+                    value: item.value,
+                    label: item.label
+                  }))}
+                />
+              </div>
+            ),
+
+          }}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
             status: item => (

@@ -5,7 +5,7 @@ export const WarehouseImportStatus = {
 };
 
 export const WarehouseImportType = {
-  NEW: 'NEW',
+  NEW: 'IMPORT',
   RETURN: 'RETURN',
   IMPORT_FROM_STORE: 'IMPORT_FROM_STORE',
 };

@@ -44,8 +44,6 @@ const StoreHistory = () => {
     return items.map((item) => {
       return {
         ...item,
-        store: item.store?.name,
-        product: item.product?.name,
         createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
@@ -59,11 +57,11 @@ const StoreHistory = () => {
       _style: {width: '1%'},
       filter: false,
     },
-    {key: 'store', label: 'Tên kho', _style: {width: '10%'}},
-    {key: 'product', label: 'Tên sản phẩm', _style: {width: '15%'}},
-    {key: 'type', label: 'Hình thức', _style: {width: '15%'}},
-    {key: 'createdDate', label: 'Ngày tạo', _style: {width: '15%'}},
-    {key: 'quantity', label: 'Số lượng', _style: {width: '15%'}},
+    {key: 'storeName', label: 'Tên kho', _style: {width: '10%'}},
+    {key: 'productName', label: 'Tên sản phẩm', _style: {width: '15%'}},
+    {key: 'type', label: 'Hình thức', _style: {width: '15%'}, filter: false},
+    {key: 'createdDate', label: 'Ngày tạo', _style: {width: '15%'}, filter: false},
+    {key: 'quantity', label: 'Số lượng', _style: {width: '15%'}, filter: false},
   ];
 
   const debouncedSearchColumn = useCallback(
@@ -93,12 +91,14 @@ const StoreHistory = () => {
           items={computedItems(storeHistorys)}
           fields={fields}
           columnFilter
-          tableFilter
-          cleaner
           itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [50, 100, 150, 200]}}
           itemsPerPage={size}
           hover
           sorter
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
           loading={initialState.loading}
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
           onPageChange={(val) => console.log('new page:', val)}

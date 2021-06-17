@@ -12,6 +12,26 @@ import moment from 'moment'
 import _ from 'lodash'
 const {selectAll} = globalizedDebtsSelectors;
 
+  // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
+  const fields = [
+    {
+      key: 'order',
+      label: 'STT',
+      _style: {width: '1%'},
+      filter: false,
+    },
+    {key: 'customerCode', label: 'Mã khách hàng', _style: {width: '20%'}},
+    {key: 'customerName', label: 'Tên khách hàng', _style: {width: '15%'}},
+    {key: 'tel', label: 'Số điện thoại', _style: {width: '15%'}, filter: false},
+    {key: 'debt', label: 'Tổng nợ', _style: {width: '10%'}, filter: false},
+    {key: 'saleName', label: 'Nhân viên quản lý', _style: {width: '15%'}},
+    {
+      key: 'action',
+      label: '',
+      _style: {width: '20%'},
+      filter: false,
+    },
+  ];
 const Debt = (props) => {
 
   const {initialState} = useSelector((state) => state.debt);
@@ -32,35 +52,12 @@ const Debt = (props) => {
     return items.map((item) => {
       return {
         ...item,
-        code: item.customer?.code || '',
         tel: item.customer?.tel || '',
-        name: item.customer?.name || '',
-        sale: item.customer?.sale?.code || '',
         createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
   };
 
-  // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: {width: '1%'},
-      filter: false,
-    },
-    {key: 'code', label: 'Mã khách hàng', _style: {width: '20%'}},
-    {key: 'name', label: 'Tên khách hàng', _style: {width: '15%'}},
-    {key: 'tel', label: 'Số điện thoại', _style: {width: '15%'}},
-    {key: 'debt', label: 'Tổng nợ', _style: {width: '10%'}},
-    {key: 'sale', label: 'Nhân viên quản lý', _style: {width: '15%'}},
-    {
-      key: 'action',
-      label: '',
-      _style: {width: '20%'},
-      filter: false,
-    },
-  ];
 
   const csvContent = computedItems(debts)
       .map((item) => Object.values(item).join(','))
@@ -107,12 +104,14 @@ const Debt = (props) => {
           items={memoListed}
           fields={fields}
           columnFilter
-          tableFilter
-          cleaner
           itemsPerPageSelect={{label: 'Số lượng trên một trang', values: [50, 100, 150, 200]}}
           itemsPerPage={size}
           hover
           sorter
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
           loading={initialState.loading}
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
           onPageChange={(val) => console.log('new page:', val)}

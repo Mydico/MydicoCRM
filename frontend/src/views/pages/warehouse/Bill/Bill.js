@@ -41,6 +41,36 @@ const mappingStatus = {
   SHIPPING: 'ĐANG VẬN CHUYỂN',
   SUCCESS: 'GIAO THÀNH CÔNG'
 };
+const statusList = [
+  {
+    value:'CREATED',
+    label:'CHỜ DUYỆT'
+  },
+  {
+    value:'APPROVED',
+    label:'ĐÃ DUYỆT'
+  },
+  {
+    value:'CANCEL',
+    label:'KHÁCH HỦY'
+  },
+  {
+    value:'REJECTED',
+    label:'KHÔNG DUYỆT'
+  },
+  {
+    value:'SUPPLY_WAITING',
+    label:'ĐỢI XUẤT KHO'
+  },
+  {
+    value:'SHIPPING',
+    label:'ĐANG VẬN CHUYỂN'
+  },
+  {
+    value:'SUCCESS',
+    label:'GIAO THÀNH CÔNG'
+  },
+]
 const { selectAll } = globalizedBillsSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
 // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	vận đơng	Phân loại	Sửa	Tạo đơn
@@ -59,12 +89,11 @@ const fields = [
   },
   { key: 'code', label: 'Mã vận đơn', _style: { width: '10%' } },
   { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
-  { key: 'transporter', label: 'Người vận chuyển', _style: { width: '10%' } },
-  { key: 'tel', label: 'Số điện thoại', _style: { width: '10%' } },
-  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '5%' } },
-  { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
+  { key: 'transporterName', label: 'Người vận chuyển', _style: { width: '10%' } },
+  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '5%' }, filter: false},
+  { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false },
   { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
   {
     key: 'action',
@@ -119,8 +148,6 @@ const Bill = props => {
     return items.map(item => {
       return {
         ...item,
-        customerName: `${item.customer?.name} \n ${item.customer?.address}`,
-        transporter: `${item.transporter?.login || 'Chưa có'}`,
         tel: item.customer?.tel,
         quantity: item.order.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
         total: item.order.orderDetails
@@ -144,9 +171,6 @@ const Bill = props => {
 
   const csvContent = bills.map(item => Object.values(item).join(',')).join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
-  const toCreateBill = () => {
-    history.push(`${props.match.url}/new`);
-  };
 
   const debouncedSearchColumn = useCallback(
     _.debounce(value => {
@@ -428,21 +452,37 @@ const Bill = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          tableFilter
-          cleaner
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
           onPaginationChange={val => setSize(val)}
           // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
+          columnFilterSlot={{
+            status: (
+              <div style={{minWidth: 200}}>
+              <Select
+                onChange={item => {
+                  onFilterColumn({ status: item.value, ...paramRef.current });
+                }}
+                maxMenuHeight="200"
+                placeholder="Chọn trạng thái"
+                options={statusList.map(item => ({
+                  value: item.value,
+                  label: item.label
+                }))}
+              />
+              </div>
+            )
+          }}
           scopedSlots={{
             bill: (item, index) => <td>{index + 1}</td>,
             status: item => (

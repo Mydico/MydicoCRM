@@ -1,6 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CButton, CCard, CCardHeader, CCardBody, CForm, CInvalidFeedback, CFormGroup, CLabel, CInput, CCardTitle, CInputCheckbox } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import {
+  CButton,
+  CCard,
+  CCardHeader,
+  CCardBody,
+  CForm,
+  CInvalidFeedback,
+  CFormGroup,
+  CLabel,
+  CInput,
+  CCardTitle,
+  CInputCheckbox
+} from '@coreui/react/lib';
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,8 +36,6 @@ const validationSchema = function() {
   });
 };
 
-
-
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -41,7 +51,6 @@ const EditBranch = props => {
   const initialValues = useRef({
     name: ''
   });
-
 
   const branch = initialState.detail;
 
@@ -101,15 +110,7 @@ const EditBranch = props => {
           validate={validate(validationSchema)}
           onSubmit={onSubmit}
         >
-          {({
-            values,
-            errors,
-            setFieldValue,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            handleReset
-          }) => {
+          {({ values, errors, setFieldValue, handleChange, handleBlur, handleSubmit, handleReset }) => {
             return (
               <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
                 <CFormGroup>
@@ -141,16 +142,28 @@ const EditBranch = props => {
                   <CInvalidFeedback>{errors.name}</CInvalidFeedback>
                 </CFormGroup>
                 <CFormGroup variant="custom-checkbox" className="pb-3">
+                  <CInputCheckbox
+                    custom={true}
+                    id="allow"
+                    name="allow"
+                    checked={values.allow}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <CLabel variant="custom-checkbox" htmlFor="allow">
+                    Cho phép chỉnh sửa và hủy đơn hàng sau khi duyệt
+                  </CLabel>
+                </CFormGroup>
+                <CFormGroup variant="custom-checkbox" className="pb-3">
                 <CInputCheckbox
                   custom={true}
-                  id="allow"
-                  name="allow"
-                  checked={values.allow}
+                  id="seeAll"
+                  name="seeAll"
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
-                <CLabel variant="custom-checkbox" htmlFor="allow">
-                  Cho phép chỉnh sửa và hủy đơn hàng sau khi duyệt
+                <CLabel variant="custom-checkbox" htmlFor="seeAll">
+                  Cho phép xem dữ liệu của phòng ban khác
                 </CLabel>
               </CFormGroup>
                 <CFormGroup>

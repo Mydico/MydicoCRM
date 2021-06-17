@@ -13,6 +13,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { userSafeSelector, addPermission } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import { CTextarea } from '@coreui/react';
+import Select from 'react-select';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -20,6 +21,25 @@ const mappingStatus = {
   CREATE_COD: 'ĐÃ TẠO VẬN ĐƠN',
   CANCEL: 'ĐÃ HỦY'
 };
+
+const statusList = [
+  {
+    value: 'WAITING',
+    label: 'CHỜ DUYỆT'
+  },
+  {
+    value: 'APPROVED',
+    label: 'ĐÃ DUYỆT'
+  },
+  {
+    value: 'CREATE_COD',
+    label: 'ĐÃ TẠO VẬN ĐƠN'
+  },
+  {
+    value: 'CANCEL',
+    label: 'ĐÃ HỦY'
+  }
+];
 const { selectAll } = globalizedOrdersSelectors;
 // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	đơn hàngg	Phân loại	Sửa	Tạo đơn
 const fields = [
@@ -38,10 +58,10 @@ const fields = [
   { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
   { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' } },
-  { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' } },
-  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' } },
-  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' }, filter: false },
+  { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' }, filter: false },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' }, filter: false },
   {
     key: 'action',
     label: '',
@@ -446,12 +466,14 @@ const Order = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          tableFilter
-          cleaner
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
           // loading
           onPaginationChange={val => setSize(val)}
           onPageChange={val => console.log('new page:', val)}
@@ -461,6 +483,23 @@ const Order = props => {
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           onRowClick={val => toDetailOrder(val.id)}
+          columnFilterSlot={{
+            status: (
+              <div style={{minWidth: 200}}>
+
+              <Select
+                onChange={item => {
+                  onFilterColumn({ status: item.value, ...paramRef.current });
+                }}
+                placeholder="Chọn trạng thái"
+                options={statusList.map(item => ({
+                  value: item.value,
+                  label: item.label
+                }))}
+              />
+              </div>
+            )
+          }}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
             status: item => (

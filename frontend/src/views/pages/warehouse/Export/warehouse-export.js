@@ -11,65 +11,80 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import _ from 'lodash'
+import _ from 'lodash';
+import Select from 'react-select';
+
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
   REJECTED: 'KHÔNG DUYỆT'
 };
 
-  // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    {
-      key: 'show_details',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'store', label: 'Tên kho xuất', _style: { width: '10%' } },
-    { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
-    { key: 'import', label: 'Xuất đến', _style: { width: '10%' } },
-    { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-    { key: 'approver', label: 'Người duyệt', _style: { width: '15%' } },
-    { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
-    {
-      key: 'action',
-      label: '',
-      _style: { width: '20%' },
-      filter: false
-    }
-  ];
+// Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  {
+    key: 'show_details',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'storeName', label: 'Tên kho xuất', _style: { width: '10%' } },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
+  { key: 'storeTransferName', label: 'Xuất đến', _style: { width: '10%' } },
+  { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
+  { key: 'approverName', label: 'Người duyệt', _style: { width: '15%' } },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+  {
+    key: 'action',
+    label: '',
+    _style: { width: '20%' },
+    filter: false
+  }
+];
+const statusList = [
+  {
+    value: 'WAITING',
+    label: 'CHỜ DUYỆT'
+  },
+  {
+    value: 'REJECTED',
+    label: 'ĐÃ HỦY'
+  },
+  {
+    value: 'APPROVED',
+    label: 'ĐÃ DUYỆT'
+  }
+];
+const fieldsDetail = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'productName', label: 'Tên sản phẩm', _style: { width: '10%' } },
+  { key: 'unit', label: 'Đơn vị', _style: { width: '10%' } },
+  { key: 'volume', label: 'Dung tích', _style: { width: '10%' } },
+  { key: 'quantity', label: 'Số lượng', _style: { width: '10%' } }
+];
 
-  const fieldsDetail = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'productName', label: 'Tên sản phẩm', _style: { width: '10%' } },
-    { key: 'unit', label: 'Đơn vị', _style: { width: '10%' } },
-    { key: 'volume', label: 'Dung tích', _style: { width: '10%' } },
-    { key: 'quantity', label: 'Số lượng', _style: { width: '10%' } }
-  ];
-
-  const getBadge = status => {
-    switch (status) {
-      case WarehouseImportStatus.APPROVED:
-        return 'success';
-      case WarehouseImportStatus.REJECTED:
-        return 'danger';
-      case WarehouseImportStatus.WAITING:
-        return 'warning';
-      default:
-        return 'primary';
-    }
-  };
+const getBadge = status => {
+  switch (status) {
+    case WarehouseImportStatus.APPROVED:
+      return 'success';
+    case WarehouseImportStatus.REJECTED:
+      return 'danger';
+    case WarehouseImportStatus.WAITING:
+      return 'warning';
+    default:
+      return 'primary';
+  }
+};
 const WarehouseImport = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.warehouseImport);
@@ -132,9 +147,9 @@ const WarehouseImport = props => {
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
-        paramRef.current = value
+          if (!value[key]) delete value[key];
+        });
+        paramRef.current = value;
         dispatch(getWarehouseExport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
     }, 300),
@@ -142,7 +157,7 @@ const WarehouseImport = props => {
   );
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
 
   const alertFunc = (item, message, operation) => {
@@ -196,7 +211,8 @@ const WarehouseImport = props => {
                 CHỈNH SỬA
               </CButton>
             )}
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/approve').length > 0) && (
+            {(isAdmin ||
+              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/approve').length > 0) && (
               <CButton
                 onClick={() => {
                   alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu xuất kho này không', approveTicket);
@@ -210,7 +226,8 @@ const WarehouseImport = props => {
                 DUYỆT
               </CButton>
             )}
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/cancel').length > 0) && (
+            {(isAdmin ||
+              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/cancel').length > 0) && (
               <CButton
                 onClick={() => {
                   alertFunc(item, 'Bạn có chắc chắn muốn từ chối phiếu xuất kho này không', rejectTicket);
@@ -262,12 +279,14 @@ const WarehouseImport = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          tableFilter
-          cleaner
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
           loading={initialState.loading}
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
           onPageChange={val => console.log('new page:', val)}
@@ -277,6 +296,23 @@ const WarehouseImport = props => {
           // onSorterValueChange={(val) => console.log('new sorter value:', val)}
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
+          columnFilterSlot={{
+            status: (
+              <div style={{ minWidth: 200 }}>
+                <Select
+                  onChange={item => {
+                    onFilterColumn({ status: item.value, ...paramRef.current });
+                  }}
+                  maxMenuHeight="200"
+                  placeholder="Chọn trạng thái"
+                  options={statusList.map(item => ({
+                    value: item.value,
+                    label: item.label
+                  }))}
+                />
+              </div>
+            )
+          }}
           scopedSlots={{
             order: (item, index) => <td>{index + 1}</td>,
             status: item => (
@@ -284,7 +320,6 @@ const WarehouseImport = props => {
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
-            import: item => <td>{item.provider ? item.provider.name : item.storeTransfer?.name}</td>,
             action: item => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
             },

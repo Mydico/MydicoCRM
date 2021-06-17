@@ -21,12 +21,12 @@ const fields = [
     filter: false
   },
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
-  { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
+  { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '35%' } },
   { key: 'address', label: 'Địa chỉ', _style: { width: '15%' } },
-  { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
-  { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '15%' } },
-  { key: 'typeName', label: 'Loại khách hàng', _style: { width: '10%' } },
-  { key: 'department', label: 'Chi nhánh', _style: { width: '20%' } },
+  { key: 'tel', label: 'Điện thoại', _style: { width: '35%' } },
+  { key: 'saleName', label: 'Nhân viên quản lý', _style: { width: '35%' } },
+  { key: 'typeName', label: 'Loại khách hàng', _style: { width: '30%' },filter: false },
+  { key: 'department', label: 'Chi nhánh', _style: { width: '30%' }, filter: false },
   {
     key: 'show_details',
     label: '',
@@ -153,12 +153,14 @@ const Customer = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          tableFilter
-          cleaner
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [20, 50, 100, 200, 500] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 200, 500] }}
           itemsPerPage={size}
           hover
           sorter
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
           // loading
           // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
           onPageChange={val => console.log('new page:', val)}
