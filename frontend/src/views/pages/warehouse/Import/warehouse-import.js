@@ -55,7 +55,6 @@ const fields = [
   },
   { key: 'storeName', label: 'Tên kho nhập', _style: { width: '10%' } },
   { key: 'storeTransferName', label: 'Xuất từ kho', _style: { width: '10%' } },
-  { key: 'customerName', label: 'Khách hàng', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'approverName', label: 'Người duyệt', _style: { width: '10%' } },
@@ -86,7 +85,7 @@ const WarehouseImport = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.warehouseImport);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(10);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   const paramRef = useRef(null);
@@ -103,6 +102,8 @@ const WarehouseImport = props => {
     return items.map(item => {
       return {
         ...item,
+        approverName: item.approverName || '',
+        storeTransferName: item.storeTransferName || '',
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
@@ -125,19 +126,12 @@ const WarehouseImport = props => {
   const toCreateWarehouseImport = () => {
     history.push(`${props.match.url}/new`);
   };
-  const toCreateWarehouseReturn = () => {
-    history.push(`${props.match.url}/return/new`);
-  };
+
   const toEditWarehouseImport = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const toEditWarehouseReturn = userId => {
-    history.push(`${props.match.url}/return/${userId}/edit`);
-  };
-
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
+  const debouncedSearchColumn =  _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
           if (!value[key]) delete value[key];
@@ -145,9 +139,7 @@ const WarehouseImport = props => {
         paramRef.current = value;
         dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -190,7 +182,7 @@ const WarehouseImport = props => {
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs').length > 0) && (
               <CButton
                 onClick={() => {
-                  item.type === WarehouseImportType.NEW ? toEditWarehouseImport(item.id) : toEditWarehouseReturn(item.id);
+                   toEditWarehouseImport(item.id) 
                 }}
                 color="warning"
                 variant="outline"
@@ -288,11 +280,11 @@ const WarehouseImport = props => {
               <div style={{ minWidth: 200 }}>
                 <Select
                   onChange={item => {
-                    onFilterColumn({ status: item.value, ...paramRef.current });
+                   onFilterColumn({ ...paramRef.current, status: item?.value || ''  });
                   }}
                   maxMenuHeight="200"
                   placeholder="Chọn trạng thái"
-                  options={statusList.map(item => ({
+                  isClearable                  options={statusList.map(item => ({
                     value: item.value,
                     label: item.label
                   }))}
@@ -301,7 +293,7 @@ const WarehouseImport = props => {
             )
           }}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>

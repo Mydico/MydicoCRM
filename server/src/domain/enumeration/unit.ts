@@ -3,12 +3,12 @@
  */
 export enum UnitType {
     'Cái' = 'Cái',
-    "Hộp" = 'Hộp',
-    "Chai" = 'Chai',
-    "Túi" = 'Túi',
-    "Tuýp" = 'Tuýp',
-    "Hũ" = 'Hũ',
-    "Lọ" = 'Lọ',
-    "Cặp" = 'Cặp',
-    "Thùng" = "Thùng"
+    'Hộp' = 'Hộp',
+    'Chai' = 'Chai',
+    'Túi' = 'Túi',
+    'Tuýp' = 'Tuýp',
+    'Hũ' = 'Hũ',
+    'Lọ' = 'Lọ',
+    'Cặp' = 'Cặp',
+    'Thùng' = 'Thùng'
 }

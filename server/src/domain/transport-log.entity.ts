@@ -39,7 +39,6 @@ export default class TransportLog extends BaseEntity {
     status: number;
 
 
-
     @Column({ name: 'note', length: 255, nullable: true })
     @Index()
     note: string;
@@ -59,7 +58,6 @@ export default class TransportLog extends BaseEntity {
     @Column({ name: 'updated_by', length: 255, nullable: true })
     @Index()
     updatedBy: string;
-
 
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

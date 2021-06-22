@@ -24,8 +24,8 @@ import { fetching, globalizedCustomerSelectors } from '../customer.reducer';
 import { getDepartment } from '../../user/UserDepartment/department.api';
 import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
 import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
-import cities from '../../../../shared/utils/city'
-import district from '../../../../shared/utils/district.json'
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
@@ -33,7 +33,8 @@ const validationSchema = function() {
   return Yup.object().shape({
     contactName: Yup.string()
       .min(3, `Tên liên lạc phải lớn hơn 3 kí tự`)
-      .required('Tên liên lạc không để trống').nullable(),
+      .required('Tên liên lạc không để trống')
+      .nullable(),
     name: Yup.string()
       .min(3, `Tên phải lớn hơn 3 kí tự`)
       .required('Tên không để trống'),
@@ -42,7 +43,9 @@ const validationSchema = function() {
       .required('Số điện thoại không để trống'),
     type: Yup.object().required('Loại khách hàng không để trống'),
     department: Yup.object().required('Chi nhánh không để trống'),
-    city: Yup.string().required('Thành phố không để trống').nullable()
+    city: Yup.string()
+      .required('Thành phố không để trống')
+      .nullable()
   });
 };
 
@@ -58,7 +61,7 @@ const EditCustomer = props => {
     code: '',
     name: '',
     contactName: '',
-    email: '',
+    social: '',
     tel: '',
     dateOfBirth: '',
     address: '',
@@ -71,9 +74,7 @@ const EditCustomer = props => {
   const history = useHistory();
   const [selectedCity, setSelectedCity] = useState(null);
   const [initValues, setInitValues] = useState(null);
-  const [districts, setDistricts] = useState([])
-
-
+  const [districts, setDistricts] = useState([]);
 
   const departments = [account.department];
   const customer = useSelector(state => selectById(state, props.match.params.id));
@@ -87,13 +88,13 @@ const EditCustomer = props => {
   useEffect(() => {
     if (customer) {
       setInitValues(customer);
-      setSelectedCity(customer.city)
+      setSelectedCity(customer.city);
     }
   }, [customer]);
 
   useEffect(() => {
     if (selectedCity) {
-      setDistricts(district.filter(item => item.parent_code === selectedCity))
+      setDistricts(district.filter(item => item.parent_code === selectedCity));
     }
   }, [selectedCity]);
 
@@ -221,19 +222,16 @@ const EditCustomer = props => {
                     />
                   </CFormGroup>
                   <CFormGroup>
-                    <CLabel htmlFor="email">Email</CLabel>
+                    <CLabel htmlFor="social">Link mạng xã hội</CLabel>
                     <CInput
-                      type="email"
-                      name="email"
-                      id="email"
-                      placeholder="Email"
-                      autoComplete="email"
-                      invalid={errors.email}
+                      type="text"
+                      name="social"
+                      id="social"
+                      invalid={errors.social}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.email}
+                      value={values.social}
                     />
-                    <CInvalidFeedback>{errors.email}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>
                 <CCol lg="6">
@@ -246,7 +244,7 @@ const EditCustomer = props => {
                           placeholder="Chọn thành phố"
                           value={{
                             value: values.city,
-                            label: cities.filter(item => item.value === values?.city)[0]?.label || ""
+                            label: cities.filter(item => item.value === values?.city)[0]?.label || ''
                           }}
                           onChange={e => {
                             setFieldValue('city', e.value);
@@ -271,7 +269,7 @@ const EditCustomer = props => {
                           placeholder="Chọn Quận huyện"
                           value={{
                             value: values.district,
-                            label: districts.filter(item => item.value === values?.district)[0]?.label || ""
+                            label: districts.filter(item => item.value === values?.district)[0]?.label || ''
                           }}
                           options={districts.map(item => ({
                             value: item.value,
@@ -371,17 +369,6 @@ const EditCustomer = props => {
                       value={values.createdYear}
                     />
                     <CInvalidFeedback>{errors.createdYear}</CInvalidFeedback>
-                  </CFormGroup>
-                  <CFormGroup>
-                    <CLabel htmlFor="email">Ngày tham gia ObClub</CLabel>
-                    <CInput
-                      type="date"
-                      id="obclubJoinTime"
-                      name="obclubJoinTime"
-                      onChange={handleChange}
-                      placeholder="Ngày tháng năm sinh"
-                    />
-                    <CInvalidFeedback>{errors.obclubJoinTime}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>
               </CRow>

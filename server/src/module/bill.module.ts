@@ -6,9 +6,9 @@ import { BillService } from '../service/bill.service';
 import { DepartmentModule } from './department.module';
 
 @Module({
-  imports: [CacheModule.register(), TypeOrmModule.forFeature([BillRepository]), DepartmentModule],
-  controllers: [BillController],
-  providers: [BillService],
-  exports: [BillService]
+    imports: [CacheModule.register(), TypeOrmModule.forFeature([BillRepository]), DepartmentModule],
+    controllers: [BillController],
+    providers: [BillService],
+    exports: [BillService],
 })
 export class BillModule {}

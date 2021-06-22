@@ -13,19 +13,15 @@ import { AttributeValueDTO } from './attribute-value.dto';
  */
 export class AttributeMapDTO extends BaseDTO {
 
-            
+
+    siteId: number;
 
 
-            
-        siteId: number;
+    detail: ProductDetailsDTO;
 
 
-        
-        detail: ProductDetailsDTO;
+    value: AttributeValueDTO;
 
-        
-        value: AttributeValueDTO;
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
-
-    }
+}

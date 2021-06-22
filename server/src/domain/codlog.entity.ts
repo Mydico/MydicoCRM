@@ -24,6 +24,5 @@ export default class Codlog extends BaseEntity {
     orderId: number;
 
 
-
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

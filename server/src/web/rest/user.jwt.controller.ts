@@ -8,18 +8,18 @@ import { ApiResponse, ApiOperation } from '@nestjs/swagger';
 @Controller('api')
 @UseInterceptors(LoggingInterceptor)
 export class UserJWTController {
-  logger = new Logger('UserJWTController');
+    logger = new Logger('UserJWTController');
 
-  constructor(private readonly authService: AuthService) {}
+    constructor(private readonly authService: AuthService) {}
 
-  @Post('/authenticate')
-  @ApiResponse({
-    status: 201,
-    description: 'Authorized'
-  })
-  async authorize(@Req() req: Request, @Body() user: UserLoginDTO, @Res() res: Response): Promise<any> {
-    const jwt = await this.authService.login(user);
-    res.header('Authorization', 'Bearer ' + jwt.id_token);
-    return res.send(jwt);
-  }
+    @Post('/authenticate')
+    @ApiResponse({
+        status: 201,
+        description: 'Authorized',
+    })
+    async authorize(@Req() req: Request, @Body() user: UserLoginDTO, @Res() res: Response): Promise<any> {
+        const jwt = await this.authService.login(user);
+        res.header('Authorization', 'Bearer ' + jwt.id_token);
+        return res.send(jwt);
+    }
 }

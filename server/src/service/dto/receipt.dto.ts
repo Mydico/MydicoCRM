@@ -4,59 +4,57 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A Receipt DTO object.
  */
 export class ReceiptDTO extends BaseDTO {
 
-            @IsNotEmpty()
-            
-        customerId: number;
+    @IsNotEmpty()
 
-        /**
+    customerId: number;
+
+    /**
      * mã phiếu thu (số phiếu thu)
      */
-            @MaxLength(255)
-            
-        code: string;
+    @MaxLength(255)
 
-        /**
+    code: string;
+
+    /**
      * 0 :un active, 1 : active
      */
-            
-        status: number;
 
-            
-        isDel: boolean;
+    status: number;
 
-            @MaxLength(255)
-            
-        note: string;
 
-        /**
+    isDel: boolean;
+
+    @MaxLength(255)
+
+    note: string;
+
+    /**
      * Số tiền thu được của khách hàng
      */
-            
-        money: number;
 
-        /**
+    money: number;
+
+    /**
      * 0 - Thu từ công nợ, 1 - Trừ công nợ do trả hàng
      */
-            
-        type: number;
 
-        /**
+    type: number;
+
+    /**
      * đơn trả hàng
      */
-            
-        storeInputId: number;
 
-            
-        siteId: number;
+    storeInputId: number;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    siteId: number;
 
-    }
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

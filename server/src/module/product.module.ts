@@ -7,13 +7,13 @@ import { ProductQuantityModule } from './product-quantity.module';
 import { ProductSubscriber } from '../service/subscribers/product.subscriber';
 
 @Module({
-  imports: [
-    CacheModule.register(),
-    TypeOrmModule.forFeature([ProductRepository]),
-    ProductQuantityModule
-  ],
-  controllers: [ProductController],
-  providers: [ProductService, ProductSubscriber],
-  exports: [ProductService]
+    imports: [
+        CacheModule.register(),
+        TypeOrmModule.forFeature([ProductRepository]),
+        ProductQuantityModule,
+    ],
+    controllers: [ProductController],
+    providers: [ProductService, ProductSubscriber],
+    exports: [ProductService],
 })
 export class ProductModule {}

@@ -172,8 +172,7 @@ const Bill = props => {
   const csvContent = bills.map(item => Object.values(item).join(',')).join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
+  const debouncedSearchColumn =  _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
           if (!value[key]) delete value[key];
@@ -181,9 +180,7 @@ const Bill = props => {
         paramRef.current = value;
         dispatch(getBill({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -471,7 +468,7 @@ const Bill = props => {
               <div style={{minWidth: 200}}>
               <Select
                 onChange={item => {
-                  onFilterColumn({ status: item.value, ...paramRef.current });
+                 onFilterColumn({ ...paramRef.current, status: item?.value || ''  });
                 }}
                 maxMenuHeight="200"
                 placeholder="Chọn trạng thái"
@@ -533,7 +530,9 @@ const Bill = props => {
                         <div>
                           <strong> {item?.promotion?.name}</strong>
                         </div>
-                        <div>{item?.promotion?.description}</div>
+                        <div>{item?.promotion?.description.length > 30
+                            ? `${invoice?.promotion?.description.substring(0, 30)}`
+                            : invoice?.promotion?.description}</div>
                         <div>Loại khách hàng: {item?.promotion?.customerType?.name}</div>
                       </CCol>
                     </CRow>

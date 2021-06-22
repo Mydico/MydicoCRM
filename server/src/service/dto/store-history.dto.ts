@@ -12,19 +12,18 @@ import { StoreDTO } from './store.dto';
  */
 export class StoreHistoryDTO extends BaseDTO {
 
-            
-        quantity: number;
 
-            
-        note: string;
+    quantity: number;
 
 
-        
-        product: ProductDTO;
+    note: string;
 
-        
-        store: StoreDTO;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    product: ProductDTO;
 
-    }
+
+    store: StoreDTO;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

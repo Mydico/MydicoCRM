@@ -4,39 +4,34 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A CustomerCall DTO object.
  */
 export class CustomerCallDTO extends BaseDTO {
 
-        /**
+    /**
      * trạng thái (đã chốt đơn, chưa chốt yêu cầu)
      */
-            
-        statusId: number;
 
-        /**
+    statusId: number;
+
+    /**
      * ghi chú
      */
-            @MaxLength(255)
-            
-        comment: string;
+    @MaxLength(255)
 
-            
-        customerId: number;
-
-            
+    comment: string;
 
 
-            
-        isDel: boolean;
-
-            
-        siteId: number;
+    customerId: number;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    isDel: boolean;
 
-    }
+
+    siteId: number;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

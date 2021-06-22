@@ -4,95 +4,91 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A Order DTO object.
  */
 export class OrderDTO extends BaseDTO {
 
-        
 
-            
-        isDel: boolean;
+    isDel: boolean;
 
-            
-        customerId: number;
 
-            @MaxLength(255)
-            
-        customerName: string;
+    customerId: number;
 
-            @MaxLength(255)
-            
-        customerTel: string;
+    @MaxLength(255)
 
-            
-        cityId: number;
+    customerName: string;
 
-            
-        districtId: number;
+    @MaxLength(255)
 
-            
-        wardsId: number;
+    customerTel: string;
 
-            @MaxLength(255)
-            
-        address: string;
 
-            @MaxLength(255)
-            
-        codCode: string;
+    cityId: number;
 
-            
-        status: number;
 
-            
-        storeId: number;
+    districtId: number;
 
-            
-        transportId: number;
 
-        /**
+    wardsId: number;
+
+    @MaxLength(255)
+
+    address: string;
+
+    @MaxLength(255)
+
+    codCode: string;
+
+
+    status: number;
+
+
+    storeId: number;
+
+
+    transportId: number;
+
+    /**
      * tổng tiền
      */
-            
-        totalMoney: number;
 
-            @MaxLength(255)
-            
-        summary: string;
+    totalMoney: number;
 
-            
-        requestId: number;
+    @MaxLength(255)
 
-            @MaxLength(500)
-            
-        note: string;
-
-            @MaxLength(250)
-            
-        customerNote: string;
-
-            
-        pushStatus: boolean;
-
-            
-        promotionId: number;
-
-            
-        promotionItemId: number;
-
-            
-        realMoney: number;
-
-            
-        reduceMoney: number;
-
-            
-        siteId: number;
+    summary: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    requestId: number;
 
-    }
+    @MaxLength(500)
+
+    note: string;
+
+    @MaxLength(250)
+
+    customerNote: string;
+
+
+    pushStatus: boolean;
+
+
+    promotionId: number;
+
+
+    promotionItemId: number;
+
+
+    realMoney: number;
+
+
+    reduceMoney: number;
+
+
+    siteId: number;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

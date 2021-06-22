@@ -18,42 +18,42 @@ const mappingStatus = {
 };
 const { selectAll } = globalizedWarehouseSelectors;
 
-  // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên kho', _style: { width: '15%' } },
-    { key: 'address', label: 'Địa chỉ', _style: { width: '15%' } },
-    { key: 'tel', label: 'Số điện thoại', _style: { width: '15%' } },
-    { key: 'department', label: 'Chi nhánh', _style: { width: '15%' }, filter: false },
-    { key: 'status', label: 'Trạng thái', _style: { width: '15%' }, filter: false },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
-  ];
+// Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
+  { key: 'name', label: 'Tên kho', _style: { width: '15%' } },
+  { key: 'address', label: 'Địa chỉ', _style: { width: '15%' } },
+  { key: 'tel', label: 'Số điện thoại', _style: { width: '15%' } },
+  { key: 'department', label: 'Chi nhánh', _style: { width: '15%' }, filter: false },
+  { key: 'status', label: 'Trạng thái', _style: { width: '15%' }, filter: false },
+  {
+    key: 'show_details',
+    label: '',
+    _style: { width: '1%' },
+    filter: false
+  }
+];
 
-  const getBadge = status => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'DISABLED':
-        return 'danger';
-      case 'DELETED':
-        return 'warning';
-      case 'Banned':
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
+const getBadge = status => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'success';
+    case 'DISABLED':
+      return 'danger';
+    case 'DELETED':
+      return 'warning';
+    case 'Banned':
+      return 'danger';
+    default:
+      return 'primary';
+  }
+};
 
 const Warehouse = props => {
   const [details, setDetails] = useState([]);
@@ -107,18 +107,15 @@ const Warehouse = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
+  const debouncedSearchColumn =  _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
           if (!value[key]) delete value[key];
         });
-        paramRef.current = value
+        paramRef.current = value;
         dispatch(getWarehouse({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -142,23 +139,23 @@ const Warehouse = props => {
           items={computedItems(warehouses)}
           fields={fields}
           columnFilter
-          tableFilter
-          cleaner
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
           itemsPerPage={size}
           hover
           sorter
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
+          noItemsView={{
+            noResults: 'Không tìm thấy kết quả',
+            noItems: 'Không có dữ liệu'
+          }}
           loading={initialState.loading}
-          // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
           onPaginationChange={val => setSize(val)}
-          // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
-          // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>

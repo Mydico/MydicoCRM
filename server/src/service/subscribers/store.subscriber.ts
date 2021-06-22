@@ -3,20 +3,20 @@ import { Connection, EntitySubscriberInterface, EventSubscriber, InsertEvent, Up
 
 @EventSubscriber()
 export class StoreInputSubscriber implements EntitySubscriberInterface<StoreInput> {
-  constructor(connection: Connection) {
-    connection.subscribers.push(this);
-  }
+    constructor(connection: Connection) {
+        connection.subscribers.push(this);
+    }
 
-  listenTo() {
-    return StoreInput;
-  }
+    listenTo() {
+        return StoreInput;
+    }
 
-  async afterInsert(event: InsertEvent<StoreInput>): Promise<any> {
-    event.manager.connection.queryResultCache.remove(['get_StoreInputs']);
-    event.manager.connection.queryResultCache.remove(["cache_count"]);
-  }
+    async afterInsert(event: InsertEvent<StoreInput>): Promise<any> {
+        await event.manager.connection.queryResultCache.remove(['get_StoreInputs']);
+        await event.manager.connection.queryResultCache.remove(['cache_count']);
+    }
 
-  async afterUpdate(event: UpdateEvent<StoreInput>): Promise<any> {
-    event.manager.connection.queryResultCache.remove(['get_StoreInputs']);
-  }
+    async afterUpdate(event: UpdateEvent<StoreInput>): Promise<any> {
+        await event.manager.connection.queryResultCache.remove(['get_StoreInputs']);
+    }
 }

@@ -12,19 +12,16 @@ import { DistrictDTO } from './district.dto';
  */
 export class WardsDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        name: string;
+    @MaxLength(255)
 
-        
-
-            
-        isDel: boolean;
+    name: string;
 
 
-        
-        district: DistrictDTO;
+    isDel: boolean;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    }
+    district: DistrictDTO;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

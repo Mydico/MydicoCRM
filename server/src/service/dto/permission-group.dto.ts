@@ -6,33 +6,33 @@ import Permission from '../../domain/permission.entity';
 
 
 export class CreatePermissionGroupDTO {
-    
+
     @IsString()
     @MaxLength(150)
     readonly name: string;
 
-    
+
     @IsString()
     @IsOptional()
     @MaxLength(255)
     readonly note: string;
 
-    
+
     @IsString()
     @IsOptional()
     createdBy: string;
 
-    
+
     @IsEnum(PermissionGroupStatus)
     @IsOptional()
     readonly status: PermissionGroupStatus;
 
-    
+
     @IsOptional()
     @IsArray()
     readonly permissions: Permission[];
 
-    
+
     @IsOptional()
     @IsArray()
     readonly users?: User[];
@@ -42,36 +42,36 @@ export class CreatePermissionGroupDTO {
 
 export class UpdatePermissionGroupDTO {
 
-    
+
     @IsNumber()
     readonly id: string;
 
-    
+
     @IsOptional()
     @IsString()
     readonly name: string;
 
-    
+
     @IsOptional()
     @IsString()
     readonly note: string;
 
-    
+
     @IsString()
     @IsOptional()
     createdBy: string;
 
-    
+
     @IsEnum(PermissionGroupStatus)
     @IsOptional()
     readonly status: PermissionGroupStatus;
 
-    
+
     @IsOptional()
     @IsArray()
     readonly permissions?: Permission[];
 
-    
+
     @IsOptional()
     @IsArray()
     readonly users?: User[];

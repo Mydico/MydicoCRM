@@ -4,43 +4,41 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A PromotionItem DTO object.
  */
 export class PromotionItemDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        name: string;
+    @MaxLength(255)
 
-            
-        totalMoney: number;
-
-            
-        reducePercent: number;
-
-            @MaxLength(512)
-            
-        note: string;
-
-            
-        productGroupId: number;
-
-            
-        promotionId: number;
-
-            
-        createdAt: number;
-
-            
-        updatedAt: number;
-
-            
-        siteId: number;
+    name: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    totalMoney: number;
 
-    }
+
+    reducePercent: number;
+
+    @MaxLength(512)
+
+    note: string;
+
+
+    productGroupId: number;
+
+
+    promotionId: number;
+
+
+    createdAt: number;
+
+
+    updatedAt: number;
+
+
+    siteId: number;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

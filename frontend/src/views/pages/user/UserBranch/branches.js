@@ -114,8 +114,7 @@ const Branch = props => {
     history.push(`${props.match.url}/new`);
   };
 
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
+  const debouncedSearchColumn =  _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
           if(!value[key]) delete value[key]
@@ -123,18 +122,14 @@ const Branch = props => {
         paramRef.current = value
         dispatch(getProvider({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value)
   };
 
   const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
-    []
-  );
+    (items) => computedItems(items),[])
   const memoListed = React.useMemo(() => memoComputedItems(branchs), [branchs]);
 
   return (
@@ -173,7 +168,7 @@ const Branch = props => {
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>

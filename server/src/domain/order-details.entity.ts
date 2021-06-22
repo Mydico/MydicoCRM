@@ -43,7 +43,6 @@ export default class OrderDetails extends BaseEntity {
     priceReal: number;
 
 
-
     @ManyToOne(type => Order)
     order: Order;
 

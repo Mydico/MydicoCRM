@@ -4,34 +4,32 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A UserDeviceToken DTO object.
  */
 export class UserDeviceTokenDTO extends BaseDTO {
 
-        /**
+    /**
      * id user management
      */
-            @IsNotEmpty()
-            
-        userId: number;
+    @IsNotEmpty()
 
-        /**
+    userId: number;
+
+    /**
      * token nhận notify push theo từng device
      */
-            @MaxLength(255)
-            
-        deviceToken: string;
+    @MaxLength(255)
 
-            
-        createdAt: number;
-
-            
-        updatedAt: number;
+    deviceToken: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    createdAt: number;
 
-    }
+
+    updatedAt: number;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

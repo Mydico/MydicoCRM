@@ -17,7 +17,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingWarehouseImport } from '../Import/warehouse-import.api';
+import { creatingWarehouseImport, creatingWarehouseReturn } from '../Import/warehouse-import.api';
 import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { fetching } from '../Import/warehouse-import.reducer';
@@ -26,7 +26,7 @@ import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
-import { getProduct } from '../../product/ProductList/product.api';
+import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { getCustomer } from '../../customer/customer.api';
@@ -80,7 +80,7 @@ const CreateWarehouse = () => {
 
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, status: 'ACTIVE' }));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
@@ -95,22 +95,18 @@ const CreateWarehouse = () => {
     values.type = WarehouseImportType.RETURN;
     values.department = { id: account.department?.id || null };
     dispatch(fetching());
-    dispatch(creatingWarehouseImport(values));
+    dispatch(creatingWarehouseReturn(values));
   };
 
-  const debouncedSearchProduct = useCallback(
-    _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
-    }, 300),
-    []
-  );
+  const debouncedSearchProduct =  _.debounce(value => {
+      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+    }, 300)
 
   const onSearchProduct = value => {
     debouncedSearchProduct(value);
   };
 
-  const debouncedSearchCustomer = useCallback(
-    _.debounce(value => {
+  const debouncedSearchCustomer =  _.debounce(value => {
       dispatch(
         getCustomer({
           page: 0,
@@ -123,9 +119,7 @@ const CreateWarehouse = () => {
           dependency: true
         })
       );
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onSearchCustomer = value => {
     debouncedSearchCustomer(value);

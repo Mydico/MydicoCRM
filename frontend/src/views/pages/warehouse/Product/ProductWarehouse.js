@@ -90,8 +90,7 @@ const ProductWarehouse = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
+  const debouncedSearchColumn =  _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
           if (!value[key]) delete value[key];
@@ -99,9 +98,7 @@ const ProductWarehouse = props => {
         paramRef.current = value;
         dispatch(getProductWarehouse({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -141,7 +138,7 @@ const ProductWarehouse = props => {
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>

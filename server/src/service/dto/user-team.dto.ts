@@ -7,21 +7,21 @@ import { BaseDTO } from './base.dto';
  * A UserTeam DTO object.
  */
 export class UserTeamDTO extends BaseDTO {
-  @MaxLength(255)
-  
-  name: string;
+    @MaxLength(255)
 
-  /**
+    name: string;
+
+    /**
    * id user là leader
    */
-  
-  leaderId: number;
 
-  
-  isDel: boolean;
+    leaderId: number;
 
-  
-  siteId: number;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    isDel: boolean;
+
+
+    siteId: number;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

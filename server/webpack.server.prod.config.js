@@ -42,6 +42,26 @@ module.exports = {
   plugins: [
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'prod'
+    }),
+    new webpack.IgnorePlugin({
+      checkResource(resource) {
+        const lazyImports = [
+          '@nestjs/microservices',
+          '@nestjs/microservices/microservices-module',
+          '@nestjs/websockets',
+          '@nestjs/websockets/socket-module',
+          '@nestjs/platform-express',
+        ];
+        if (!lazyImports.includes(resource)) {
+          return false;
+        }
+        try {
+          require.resolve(resource);
+        } catch (err) {
+          return true;
+        }
+        return false;
+      }
     })
   ],
   externals: {

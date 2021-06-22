@@ -11,19 +11,18 @@ import { StoreInputDTO } from './store-input.dto';
  */
 export class ProviderDTO extends BaseDTO {
 
-            
-        name: string;
 
-            
-        address: string;
-
-            
-        phone: string;
+    name: string;
 
 
-        
-        storeInput: StoreInputDTO;
+    address: string;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    }
+    phone: string;
+
+
+    storeInput: StoreInputDTO;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

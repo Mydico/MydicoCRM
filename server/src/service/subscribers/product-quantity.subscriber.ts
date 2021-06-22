@@ -16,8 +16,8 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
     }
 
     async afterInsert(event: UpdateEvent<ProductQuantity>): Promise<any> {
-        event.manager.connection.queryResultCache.remove(["get_StoreHistories"]);
-        event.manager.connection.queryResultCache.remove(["cache_count_get_StoreHistories"]);
+        event.manager.connection.queryResultCache.remove(['get_StoreHistories']);
+        event.manager.connection.queryResultCache.remove(['cache_count_get_StoreHistories']);
         event.entity.lastModifiedDate = new Date();
         event.entity.lastModifiedBy = 'system';
         const history = new StoreHistory();
@@ -27,14 +27,14 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
         history.department = updateEntity.department;
         history.store = updateEntity.store;
         history.storeName = updateEntity.store.name;
-        history.productName = updateEntity.store.name;
+        history.productName = updateEntity.product.name;
         history.createdDate = new Date();
         if(old){
             history.type = updateEntity.quantity > old.quantity  ? StoreHistoryType.IMPORT : StoreHistoryType.EXPORT;
             history.quantity = updateEntity.quantity > old.quantity ? updateEntity.quantity - old.quantity : old.quantity - updateEntity.quantity;
         }else{
-            history.type = StoreHistoryType.IMPORT
-            history.quantity = updateEntity.quantity
+            history.type = StoreHistoryType.IMPORT;
+            history.quantity = updateEntity.quantity;
         }
         const historyRepository = event.manager.getRepository(StoreHistory);
         await historyRepository.save(history);
@@ -50,6 +50,9 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
         history.store = updateEntity.store;
         history.type = updateEntity.quantity > old.quantity ? StoreHistoryType.IMPORT : StoreHistoryType.EXPORT;
         history.quantity = updateEntity.quantity > old.quantity ? updateEntity.quantity - old.quantity : old.quantity - updateEntity.quantity;
+        history.department = updateEntity.department;
+        history.storeName = updateEntity.store.name;
+        history.productName = updateEntity.product.name;
         history.createdDate = new Date();
         const historyRepository = event.manager.getRepository(StoreHistory);
         await historyRepository.save(history);

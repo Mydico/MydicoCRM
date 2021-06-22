@@ -124,7 +124,7 @@ export default class Customer extends BaseEntity {
     @Column({ name: 'ward', length: 255, nullable: true })
     @Index()
     ward?: string;
-    
+
     @ManyToOne(type => CustomerStatus)
     status?: CustomerStatus;
 

@@ -4,22 +4,20 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A Migration DTO object.
  */
 export class MigrationDTO extends BaseDTO {
 
-            @IsNotEmpty()
+    @IsNotEmpty()
     @MaxLength(180)
-            
-        version: string;
 
-            
-        applyTime: number;
+    version: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    applyTime: number;
 
-    }
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

@@ -4,36 +4,34 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A Site DTO object.
  */
 export class SiteDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        name: string;
+    @MaxLength(255)
 
-            @MaxLength(255)
-            
-        address: string;
+    name: string;
 
-            
-        createdAt: number;
+    @MaxLength(255)
 
-            @MaxLength(255)
-            
-        createdBy: string;
-
-            
-        updatedAt: number;
-
-            @MaxLength(255)
-            
-        updatedBy: string;
+    address: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    createdAt: number;
 
-    }
+    @MaxLength(255)
+
+    createdBy: string;
+
+
+    updatedAt: number;
+
+    @MaxLength(255)
+
+    updatedBy: string;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

@@ -20,13 +20,13 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
-  { key: 'code', label: 'Mã', _style: { width: '10%' } },
-  { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '35%' } },
-  { key: 'address', label: 'Địa chỉ', _style: { width: '15%' } },
-  { key: 'tel', label: 'Điện thoại', _style: { width: '35%' } },
-  { key: 'saleName', label: 'Nhân viên quản lý', _style: { width: '35%' } },
-  { key: 'typeName', label: 'Loại khách hàng', _style: { width: '30%' },filter: false },
-  { key: 'department', label: 'Chi nhánh', _style: { width: '30%' }, filter: false },
+  { key: 'code', label: 'Mã' },
+  { key: 'name', label: 'Tên cửa hàng/đại lý' },
+  { key: 'address', label: 'Địa chỉ' },
+  { key: 'tel', label: 'Điện thoại' },
+  { key: 'saleName', label: 'Nhân viên quản lý' },
+  { key: 'typeName', label: 'Loại khách hàng', filter: false },
+  { key: 'department', label: 'Chi nhánh', filter: false },
   {
     key: 'show_details',
     label: '',
@@ -115,18 +115,15 @@ const Customer = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if (!value[key]) delete value[key];
-        });
-        paramRef.current = value;
-        dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300),
-    []
-  );
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -171,7 +168,7 @@ const Customer = props => {
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{item.status}</CBadge>

@@ -56,8 +56,7 @@ const EditReceipt = props => {
     }
   }, [receipt]);
 
-  const debouncedSearchCustomer = useCallback(
-    _.debounce(value => {
+  const debouncedSearchCustomer =  _.debounce(value => {
       dispatch(
         getCustomer({
           page: 0,
@@ -70,9 +69,7 @@ const EditReceipt = props => {
           dependency: true
         })
       );
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onSearchCustomer = value => {
     debouncedSearchCustomer(value);

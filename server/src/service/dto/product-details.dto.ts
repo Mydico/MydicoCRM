@@ -12,22 +12,20 @@ import { ProductDTO } from './product.dto';
  */
 export class ProductDetailsDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        barcode: string;
+    @MaxLength(255)
+
+    barcode: string;
 
 
-            
-        isDel: boolean;
+    isDel: boolean;
 
-            @MaxLength(250)
-            
-        name: string;
+    @MaxLength(250)
+
+    name: string;
 
 
-        
-        product: ProductDTO;
+    product: ProductDTO;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    }
+}

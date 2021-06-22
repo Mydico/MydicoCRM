@@ -59,11 +59,12 @@ const CreateCustomer = () => {
     code: '',
     name: '',
     contactName: '',
-    email: '',
+    social: '',
     tel: '',
     address: '',
     createdYear: '',
-    obclubJoinTime: ''
+    obclubJoinTime: '',
+    branch: account.branch || null
   };
 
   const dispatch = useDispatch();
@@ -200,19 +201,16 @@ const CreateCustomer = () => {
                     <CInvalidFeedback>{errors.dateOfBirth}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
-                    <CLabel htmlFor="email">Email</CLabel>
+                    <CLabel htmlFor="email">Link mạng xã hội</CLabel>
                     <CInput
-                      type="email"
-                      name="email"
-                      id="email"
-                      placeholder="Email"
-                      autoComplete="email"
-                      invalid={errors.email}
+                      type="text"
+                      name="social"
+                      id="social"
+                      invalid={errors.social}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.email}
+                      value={values.social}
                     />
-                    <CInvalidFeedback>{errors.email}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>
                 <CCol lg="6">
@@ -332,11 +330,6 @@ const CreateCustomer = () => {
                       <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
                     </CFormGroup>
                   )}
-                  <CFormGroup>
-                    <CLabel htmlFor="email">Ngày tham gia ObClub</CLabel>
-                    <CInput type="date" id="obclubJoinTime" name="obclubJoinTime" onChange={handleChange} />
-                    <CInvalidFeedback>{errors.obclubJoinTime}</CInvalidFeedback>
-                  </CFormGroup>
                 </CCol>
               </CRow>
               <CFormGroup className="d-flex justify-content-center">

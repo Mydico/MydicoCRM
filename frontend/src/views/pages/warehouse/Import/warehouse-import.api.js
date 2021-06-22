@@ -55,6 +55,22 @@ export const creatingWarehouseImport = createAsyncThunk('api/create/store-inputs
   }
 });
 
+export const creatingWarehouseExport = createAsyncThunk('api/create/store-inputs/export', async (body, thunkAPI) => {
+  try {
+    const result = await axios.post('api/store-inputs/export', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+export const creatingWarehouseReturn = createAsyncThunk('api/create/store-inputs/export', async (body, thunkAPI) => {
+  try {
+    const result = await axios.post('api/store-inputs/return', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
 export const updateWarehouseImport = createAsyncThunk('api/update/store-inputs', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/store-inputs', body);

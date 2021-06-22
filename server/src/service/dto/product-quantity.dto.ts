@@ -13,23 +13,19 @@ import { ProductDetailsDTO } from './product-details.dto';
  */
 export class ProductQuantityDTO extends BaseDTO {
 
-            @IsNotEmpty()
-            
-        quantity: number;
+    @IsNotEmpty()
 
-            
+    quantity: number;
 
 
-            
-        isDel: boolean;
+    isDel: boolean;
 
 
-        
-        store: StoreDTO;
+    store: StoreDTO;
 
-        
-        detail: ProductDetailsDTO;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    detail: ProductDetailsDTO;
 
-    }
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

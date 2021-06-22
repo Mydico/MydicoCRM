@@ -11,16 +11,16 @@ import { PermissionGroupStatus } from '../../domain/enumeration/permission-group
  */
 export class PermissionTypeDTO extends BaseDTO {
 
-            
-        description: string;
 
-            
-        name: string;
-
-            
-        status: PermissionGroupStatus;
+    description: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    name: string;
 
-    }
+
+    status: PermissionGroupStatus;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

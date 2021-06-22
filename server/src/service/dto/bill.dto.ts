@@ -4,55 +4,51 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A Bill DTO object.
  */
 export class BillDTO extends BaseDTO {
 
-            @IsNotEmpty()
-            
-        customerId: number;
+    @IsNotEmpty()
 
-            @IsNotEmpty()
-            
-        orderId: number;
+    customerId: number;
 
-            @IsNotEmpty()
-            
-        storeId: number;
+    @IsNotEmpty()
 
-        /**
+    orderId: number;
+
+    @IsNotEmpty()
+
+    storeId: number;
+
+    /**
      * 0 : khởi tạo chờ duyệt, -1 : hủy duyệt, 1: duyệt đơn và xuất kho, trừ số lượng trong kho (không hủy được nữa), 2 : đang vận chuyển , 3 : giao thành công (tạo công nợ cho khách), 4 : khách hủy đơn (phải tạo dơn nhập lại hàng vào kho)
      */
-            
-        status: number;
 
-            
-        isDel: boolean;
-
-            @MaxLength(255)
-            
-        note: string;
-
-            
+    status: number;
 
 
-        /**
+    isDel: boolean;
+
+    @MaxLength(255)
+
+    note: string;
+
+
+    /**
      * mã vận đơn
      */
-            @MaxLength(255)
-            
-        code: string;
+    @MaxLength(255)
 
-            
-        saleId: number;
-
-            
-        siteId: number;
+    code: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    saleId: number;
 
-    }
+
+    siteId: number;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

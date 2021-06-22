@@ -9,24 +9,28 @@ import { TransactionType } from './enumeration/transaction-type';
  */
 @Entity('income_dashboard')
 export default class IncomeDashboard extends BaseEntity {
-  @Column({ type: 'integer', name: 'user_id', nullable: true })
-  @Index()
-  userId: string;
+    @Column({ type: 'integer', name: 'user_id', nullable: true })
+    @Index()
+    userId: string;
 
-  @Column({ type: 'simple-enum', name: 'type', enum: DashboardType })
-  @Index()
-  type: DashboardType;
+    @Column({ type: 'simple-enum', name: 'type', enum: DashboardType })
+    @Index()
+    type: DashboardType;
 
-  @Column({ type: 'bigint', name: 'amount', nullable: true })
-  @Index()
-  amount: number;
+    @Column({ type: 'bigint', name: 'amount', nullable: true })
+    @Index()
+    amount: number;
 
-  @Column({  name: 'entityId', nullable: true })
-  @Index()
-  entityId: string;
+    @Column({  name: 'entityId', nullable: true })
+    @Index()
+    entityId: string;
 
-  @Column({ type: 'simple-enum', name: 'entity_type', enum: TransactionType, default: TransactionType.DEBIT })
-  @Index()
-  entityType?: TransactionType;
+    @Column({  name: 'departmentId', nullable: true })
+    @Index()
+    departmentId: string;
+
+    @Column({ type: 'simple-enum', name: 'entity_type', enum: TransactionType, default: TransactionType.DEBIT })
+    @Index()
+    entityType?: TransactionType;
 
 }

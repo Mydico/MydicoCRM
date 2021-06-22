@@ -4,40 +4,40 @@ import { BaseDTO } from './base.dto';
  * An User DTO object.
  */
 export class UserDTO extends BaseDTO {
-  @IsString()
-  login: string;
+    @IsString()
+    login: string;
 
-  firstName?: string;
+    firstName?: string;
 
-  lastName?: string;
+    lastName?: string;
 
-  @IsEmail()
-  email: string;
+    @IsEmail()
+    email: string;
 
-  activated?: boolean;
+    activated?: boolean;
 
-  langKey?: string;
+    langKey?: string;
 
-  authorities?: any[];
+    authorities?: any[];
 
-  password: string;
+    password: string;
 
-  imageUrl?: string;
+    imageUrl?: string;
 
-  activationKey?: string;
+    activationKey?: string;
 
-  resetKey?: string;
+    resetKey?: string;
 
-  resetDate?: Date;
+    resetDate?: Date;
 }
 
 export class ChangePasswordDTO {
-  @IsString()
-  login: string;
+    @IsString()
+    login: string;
 
-  @IsString()
-  password: string;
+    @IsString()
+    password: string;
 
-  @IsString()
-  newPassword: string;
+    @IsString()
+    newPassword: string;
 }

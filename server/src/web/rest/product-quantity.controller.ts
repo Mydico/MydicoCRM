@@ -93,30 +93,23 @@ export class ProductQuantityController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Response> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    let filter: any = [];
+    const filter: any = {};
     Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency' && item !== 'status') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        filter[item] = req.query[item];
       }
     });
-    let departmentVisible = [];
     const currentUser = req.user as User;
+    let departmentVisible = [];
     if (currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-      departmentVisible.push(currentUser.department.id);
+        departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        departmentVisible = departmentVisible.map(item => item.id);
+        departmentVisible.push(currentUser.department.id);
     }
-    const object = {
-    department: In(departmentVisible),
-      status: Like(`%${req.query['status'] || ''}%`)
-    };
-    if (req.query['store']) object['store'] = req.query['store'];
-    filter.push(object);
-    const [results, count] = await this.productQuantityService.findAndCount({
+    const [results, count] = await this.productQuantityService.findAndCount(filter, departmentVisible, {
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
-      order: pageRequest.sort.asOrder(),
-      where: filter
+      order: pageRequest.sort.asOrder()
     });
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);

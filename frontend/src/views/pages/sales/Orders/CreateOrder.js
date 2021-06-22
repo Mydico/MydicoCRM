@@ -113,15 +113,23 @@ const CreateOrder = props => {
     history.push({ pathname: `${props.match.url}/invoice`, state: data });
   };
 
-  const debouncedSearchCustomer = useCallback(
-    _.debounce(value => {
-      dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value, dependency: true }));
-    }, 300),
-    []
-  );
+  const debouncedSearchCustomer = _.debounce(value => {
+    dispatch(
+      getCustomer({
+        page: 0,
+        size: 20,
+        sort: 'createdDate,DESC',
+        code: value,
+        name: value,
+        address: value,
+        contactName: value,
+        dependency: true
+      })
+    );
+  }, 300);
 
   const onSearchCustomer = value => {
-    debouncedSearchCustomer(value)  
+    debouncedSearchCustomer(value);
   };
 
   const onSearchPromition = value => {
@@ -182,7 +190,16 @@ const CreateOrder = props => {
 
   useEffect(() => {
     if (selectedWarehouse?.id) {
-      dispatch(getProductWarehouse({ store: selectedWarehouse?.id, status: 'ACTIVE', page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+      dispatch(
+        getProductWarehouse({
+          store: selectedWarehouse?.id,
+          status: 'ACTIVE',
+          page: 0,
+          size: 20,
+          sort: 'createdDate,DESC',
+          dependency: true
+        })
+      );
     }
   }, [selectedWarehouse]);
 
@@ -195,25 +212,42 @@ const CreateOrder = props => {
     }
   };
 
-  const debouncedSearchProduct = useCallback(
-    _.debounce(value => {
-      dispatch(
-        getProductWarehouse({
-          store: selectedWarehouse?.id,
-          page: 0,
-          size: 20,
-          sort: 'createdDate,DESC',
-          name: value,
-          status: 'ACTIVE',
-          dependency: true
-        })
-      );
-    }, 300),
-    []
-  );
+  const debouncedSearchProduct = _.debounce(value => {
+    dispatch(
+      getProductWarehouse({
+        store: selectedWarehouse?.id,
+        page: 0,
+        size: 20,
+        sort: 'createdDate,DESC',
+        name: value,
+        status: 'ACTIVE',
+        dependency: true
+      })
+    );
+  }, 300);
 
   const onSearchProduct = value => {
     debouncedSearchProduct(value);
+  };
+
+  const debouncedSearchProductInStore = _.debounce((copyArr, index) => {
+    dispatch(
+      getProductInstore({
+        storeId: selectedWarehouse.id,
+        productId: copyArr[index].product.id
+      })
+    ).then(numberOfQuantityInStore => {
+      if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+        copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
+        setProductList(copyArr);
+      }
+    });
+  }, 1000);
+
+  const onSearchProductInstore = (copyArr, index) => {
+    if(!copyArr[index].quantityInStore){
+      debouncedSearchProductInStore(copyArr, index);
+    }
   };
 
   const onChangeQuantity = ({ target }, index) => {
@@ -246,17 +280,8 @@ const CreateOrder = props => {
       }
     }
     if (selectedWarehouse && copyArr[index].product) {
-      dispatch(
-        getProductInstore({
-          storeId: selectedWarehouse.id,
-          productId: copyArr[index].product.id
-        })
-      ).then(numberOfQuantityInStore => {
-        if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
-          copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
-          setProductList(copyArr);
-        }
-      });
+      setProductList(copyArr);
+      onSearchProductInstore(copyArr, index);
     }
   };
 

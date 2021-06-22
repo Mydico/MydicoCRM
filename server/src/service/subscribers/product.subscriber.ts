@@ -3,20 +3,20 @@ import Product from '../../domain/product.entity';
 
 @EventSubscriber()
 export class ProductSubscriber implements EntitySubscriberInterface<Product> {
-  constructor(connection: Connection) {
-    connection.subscribers.push(this);
-  }
+    constructor(connection: Connection) {
+        connection.subscribers.push(this);
+    }
 
-  listenTo() {
-    return Product;
-  }
+    listenTo() {
+        return Product;
+    }
 
-  async afterInsert(event: InsertEvent<Product>): Promise<any> {
-    event.manager.connection.queryResultCache.remove(["get_products"]);
-    event.manager.connection.queryResultCache.remove(["cache_count_get_products"]);
-  }
+    async afterInsert(event: InsertEvent<Product>): Promise<any> {
+        await event.manager.connection.queryResultCache.remove(['get_products']);
+        await event.manager.connection.queryResultCache.remove(['cache_count_get_products']);
+    }
 
-  async afterUpdate(event: InsertEvent<Product>): Promise<any> {
-    event.manager.connection.queryResultCache.remove(["get_products"]);
-  }
+    async afterUpdate(event: InsertEvent<Product>): Promise<any> {
+        await event.manager.connection.queryResultCache.remove(['get_products']);
+    }
 }

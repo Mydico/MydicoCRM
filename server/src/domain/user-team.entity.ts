@@ -20,8 +20,5 @@ export default class UserTeam extends BaseEntity {
     leaderId: number;
 
 
-
-
-
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

@@ -198,8 +198,7 @@ const EditOrder = props => {
     }
   };
 
-  const debouncedSearchProduct = useCallback(
-    _.debounce(value => {
+  const debouncedSearchProduct =  _.debounce(value => {
       dispatch(
         getProductWarehouse({
           store: selectedWarehouse?.id,
@@ -211,12 +210,30 @@ const EditOrder = props => {
           dependency: true
         })
       );
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onSearchProduct = value => {
     debouncedSearchProduct(value);
+  };
+
+  const debouncedSearchProductInStore = _.debounce((copyArr, index) => {
+    dispatch(
+      getProductInstore({
+        storeId: selectedWarehouse.id,
+        productId: copyArr[index].product.id
+      })
+    ).then(numberOfQuantityInStore => {
+      if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+        copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
+        setProductList(copyArr);
+      }
+    });
+  }, 1000);
+
+  const onSearchProductInstore = (copyArr, index) => {
+    if(!copyArr[index].quantityInStore){
+      debouncedSearchProductInStore(copyArr, index);
+    }
   };
 
   const onChangeQuantity = ({ target }, index) => {
@@ -248,17 +265,8 @@ const EditOrder = props => {
       }
     }
     if (selectedWarehouse && copyArr[index].product) {
-      dispatch(
-        getProductInstore({
-          storeId: selectedWarehouse.id,
-          productId: copyArr[index].product.id,
-          dependency: true
-        })
-      ).then(numberOfQuantityInStore => {
-        if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
-          copyArr[index].quantityInStore = numberOfQuantityInStore.payload[0].quantity;
-        }
-      });
+      setProductList(copyArr);
+      onSearchProductInstore(copyArr, index);
     }
     setProductList(copyArr);
   };

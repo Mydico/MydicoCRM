@@ -25,7 +25,7 @@ export default class Department extends BaseEntity {
 
     @TreeChildren()
     children?: Department[];
-  
+
     @TreeParent()
     parent?: Department;
 

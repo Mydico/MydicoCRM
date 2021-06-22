@@ -4,27 +4,25 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A UserRole DTO object.
  */
 export class UserRoleDTO extends BaseDTO {
 
-            @IsNotEmpty()
+    @IsNotEmpty()
     @MaxLength(255)
-            
-        name: string;
 
-            @IsNotEmpty()
+    name: string;
+
+    @IsNotEmpty()
     @MaxLength(255)
-            
-        permission: string;
 
-            
-        siteId: number;
+    permission: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    siteId: number;
 
-    }
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

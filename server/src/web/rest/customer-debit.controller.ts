@@ -34,6 +34,32 @@ export class CustomerDebitController {
 
   constructor(private readonly customerDebitService: CustomerDebitService, private readonly departmentService: DepartmentService) {}
 
+  @Get('/total-debit')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: CustomerDebit
+  })
+  async getTotalDebit(@Req() req: Request, @Res() res): Promise<CustomerDebit[]> {
+    const filter = {};
+    Object.keys(req.query).forEach(item => {
+      filter[item] = req.query[item];
+    });
+    let departmentVisible = [];
+    const currentUser = req.user as User;
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+    const allowToSeeAll = currentUser.roles.filter(item => item.allowViewAll).length > 0;
+
+    if (currentUser.department) {
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
+    }
+    const result = await this.customerDebitService.countDebit(filter, departmentVisible, isEmployee, allowToSeeAll, currentUser);
+    return res.send(result);
+  }
+
   @Get('/')
   @Roles(RoleType.USER)
   @ApiResponse({

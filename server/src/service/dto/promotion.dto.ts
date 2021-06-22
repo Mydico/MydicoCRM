@@ -4,42 +4,39 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A Promotion DTO object.
  */
 export class PromotionDTO extends BaseDTO {
 
-            
-        startTime: number;
 
-            
-        endTime: number;
-
-            @MaxLength(255)
-            
-        name: string;
-
-            @MaxLength(512)
-            
-        description: string;
-
-            
-        totalRevenue: number;
-
-            
-        customerTargetType: number;
+    startTime: number;
 
 
-            
-        siteId: number;
+    endTime: number;
 
-            @MaxLength(255)
-            
-        image: string;
+    @MaxLength(255)
+
+    name: string;
+
+    @MaxLength(512)
+
+    description: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    totalRevenue: number;
 
-    }
+
+    customerTargetType: number;
+
+
+    siteId: number;
+
+    @MaxLength(255)
+
+    image: string;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

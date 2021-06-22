@@ -60,7 +60,6 @@ const { selectAll: selectAllRole } = globalizedUserRoleSelectors;
 const { selectAll: selectAllBranch } = globalizedBranchSelectors;
 const EditUser = props => {
   const { initialState } = useSelector(state => state.user);
-  const {} = useSelector(state => state.customer);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -88,12 +87,13 @@ const EditUser = props => {
   const branches = useSelector(selectAllBranch);
 
   useEffect(() => {
-    setInitValues(user);
     if (user) {
+      console.log(user)
       setSelectedDepartment(user.departments);
       setSelectedGroupPermission(user.permissionGroups || []);
       setSelectedRoles(user.roles || []);
       setSelectedBranch(user.branch);
+      setInitValues(user);
     }
   }, [user]);
 

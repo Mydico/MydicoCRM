@@ -21,7 +21,7 @@ import { Field, Formik } from 'formik';
 import { FormFeedback, Input } from 'reactstrap';
 React.icons = { ...freeSet };
 import 'spinkit/spinkit.min.css';
-import { CSpinner } from '@coreui/react';
+import { CFormGroup, CInputCheckbox, CLabel, CSpinner } from '@coreui/react';
 
 const Login = props => {
   const dispatch = useDispatch();
@@ -46,7 +46,7 @@ const Login = props => {
               <CCard className="p-4">
                 <CCardBody>
                   <Formik
-                    initialValues={{ username: '', password: '' }}
+                    initialValues={{ username: '', password: '', rememberMe: false }}
                     validate={values => {
                       const errors = {};
                       if (!values.username) {
@@ -60,7 +60,8 @@ const Login = props => {
                   >
                     {({
                       errors,
-                      handleSubmit
+                      handleSubmit,
+                      handleChange
                       /* and other goodies */
                     }) => (
                       <CForm onSubmit={handleSubmit}>
@@ -84,6 +85,17 @@ const Login = props => {
                           <Input tag={Field} name="password" type="password" placeholder="mật khẩu" />
                           {errorMessage && <FormFeedback className="d-block">{errorMessage}</FormFeedback>}
                         </CInputGroup>
+                        <CFormGroup variant="custom-checkbox" className="pb-3">
+                          <CInputCheckbox
+                            custom={true}
+                            id="rememberMe"
+                            name="rememberMe"
+                            onChange={handleChange}
+                          />
+                          <CLabel variant="custom-checkbox" htmlFor="rememberMe">
+                            Nhớ mật khẩu
+                          </CLabel>
+                        </CFormGroup>
                         <CRow>
                           <CCol xs="6">
                             <CButton color="primary" className="px-4" type="submit" disabled={loading}>

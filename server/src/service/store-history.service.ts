@@ -28,54 +28,53 @@ export class StoreHistoryService {
         options: FindManyOptions<StoreHistory>,
         filter = {},
         departmentVisible = [],
-        currentUser: User
-      ): Promise<[StoreHistory[], number]> {
+    ): Promise<[StoreHistory[], number]> {
         let queryString = '';
         Object.keys(filter).forEach((item, index) => {
-          queryString += `StoreHistory.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+            queryString += `StoreHistory.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
         });
         let andQueryString = '';
-    
+
         if (departmentVisible.length > 0) {
-          andQueryString += `StoreHistory.department IN ${JSON.stringify(departmentVisible)
-            .replace('[', '(')
-            .replace(']', ')')}`;
-        }    
+            andQueryString += `StoreHistory.department IN ${JSON.stringify(departmentVisible)
+                .replace('[', '(')
+                .replace(']', ')')}`;
+        }
 
         const queryBuilder = this.storeHistoryRepository
-          .createQueryBuilder('StoreHistory')
-          .leftJoinAndSelect('StoreHistory.product', 'product')
-          .leftJoinAndSelect('StoreHistory.store', 'store')
-          .where(andQueryString)
-          .orderBy(`StoreHistory.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
-          .skip(options.skip)
-          .take(options.take);
-    
+            .createQueryBuilder('StoreHistory')
+            .leftJoinAndSelect('StoreHistory.product', 'product')
+            .leftJoinAndSelect('StoreHistory.store', 'store')
+            .where(andQueryString)
+            .orderBy(`StoreHistory.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+            .skip(options.skip)
+            .take(options.take);
+
         const count = this.storeHistoryRepository
-          .createQueryBuilder('StoreHistory')
-          .where(andQueryString)
-          .orderBy(`StoreHistory.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
-          .skip(options.skip)
-          .take(options.take);
+            .createQueryBuilder('StoreHistory')
+            .where(andQueryString)
+            .orderBy(`StoreHistory.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+            .skip(options.skip)
+            .take(options.take);
         if (queryString) {
-          queryBuilder.andWhere(
-            new Brackets(sqb => {
-              sqb.where(queryString);
-            })
-          );
-          count.andWhere(
-            new Brackets(sqb => {
-              sqb.where(queryString);
-            })
-          );
+            queryBuilder.andWhere(
+                new Brackets(sqb => {
+                    sqb.where(queryString);
+                })
+            );
+            count.andWhere(
+                new Brackets(sqb => {
+                    sqb.where(queryString);
+                })
+            );
         }
-    
+
         const result = await queryBuilder.getManyAndCount();
         result[1] = await count.getCount();
         return result;
-    
+
         // options.cache = 3600000
-      }
+    }
 
     async save(storeHistory: StoreHistory): Promise<StoreHistory | undefined> {
         return await this.storeHistoryRepository.save(storeHistory);

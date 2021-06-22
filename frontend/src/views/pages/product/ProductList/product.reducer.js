@@ -10,6 +10,7 @@ import {
 
 
   updateProduct,
+  filterProduct,
 } from './product.api';
 
 const initialState = {
@@ -67,6 +68,19 @@ const slice = createSlice({
     [getDetailProduct.fulfilled]: (state, action) => {
       productsAdapter.setAll(state, [action.payload]);
       state.initialState.loading = false;
+    },
+    [getDetailProduct.rejected]: (state, action) => {
+      state.initialState.loading = false;
+      state.loading = false;
+    },
+    [filterProduct.fulfilled]: (state, action) => {
+      productsAdapter.setAll(state, action.payload.data);
+      state.initialState.totalItem = action.payload.total;
+      state.initialState.loading = false;
+    },
+    [filterProduct.rejected]: (state ) => {
+      state.initialState.loading = false;
+      state.loading = false;
     },
     [getProduct.fulfilled]: (state, action) => {
       productsAdapter.setAll(state, action.payload.data);

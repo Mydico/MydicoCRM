@@ -4,22 +4,20 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A ProductBrand DTO object.
  */
 export class ProductBrandDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        name: string;
+    @MaxLength(255)
 
-            @MaxLength(512)
-            
-        description: string;
+    name: string;
+
+    @MaxLength(512)
+
+    description: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    }
+}

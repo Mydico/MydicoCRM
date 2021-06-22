@@ -30,7 +30,7 @@ import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
-import { getProduct } from '../../product/ProductList/product.api';
+import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { globalizedProviderSelectors } from '../Provider/provider.reducer';
 import { getProvider } from '../Provider/provider.api';
@@ -81,7 +81,7 @@ const CreateWarehouseExportProvider = () => {
 
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, status: 'ACTIVE' }));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getProvider({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
@@ -136,7 +136,7 @@ const CreateWarehouseExportProvider = () => {
   };
 
   const onSearchProduct = value => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
   };
 
   useEffect(() => {

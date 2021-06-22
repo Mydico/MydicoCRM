@@ -4,87 +4,83 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A Transaction DTO object.
  */
 export class TransactionDTO extends BaseDTO {
 
-            @IsNotEmpty()
-            
-        customerId: number;
+    @IsNotEmpty()
 
-            
-        orderId: number;
+    customerId: number;
 
-            
-        storeId: number;
 
-            
-        billId: number;
+    orderId: number;
 
-        /**
+
+    storeId: number;
+
+
+    billId: number;
+
+    /**
      * 0 : chưa thanh toán, 1 : đã thanh toán
      */
-            
-        status: number;
 
-            
-        isDel: boolean;
+    status: number;
 
-            @MaxLength(255)
-            
-        note: string;
 
-            
+    isDel: boolean;
 
-            
-        saleId: number;
+    @MaxLength(255)
 
-            
-        totalMoney: number;
+    note: string;
 
-        /**
+
+    saleId: number;
+
+
+    totalMoney: number;
+
+    /**
      * Số tiền hòa trả do trả hàng
      */
-            
-        refundMoney: number;
 
-        /**
+    refundMoney: number;
+
+    /**
      * 0 : ghi nợ, 1 : thu công nợ, 2 thu tiền mặt
      */
-            
-        type: number;
 
-        /**
+    type: number;
+
+    /**
      * công nợ đầu kỳ
      */
-            
-        earlyDebt: number;
 
-        /**
+    earlyDebt: number;
+
+    /**
      * ghi nợ
      */
-            
-        debit: number;
 
-        /**
+    debit: number;
+
+    /**
      * ghi có
      */
-            
-        debitYes: number;
 
-        /**
+    debitYes: number;
+
+    /**
      * id phiếu thu
      */
-            
-        receiptId: number;
 
-            
-        siteId: number;
+    receiptId: number;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    siteId: number;
 
-    }
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

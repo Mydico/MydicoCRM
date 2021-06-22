@@ -14,40 +14,37 @@ import { WardsDTO } from './wards.dto';
  */
 export class StoreDTO extends BaseDTO {
 
-            @IsNotEmpty()
+    @IsNotEmpty()
     @MaxLength(255)
-            
-        name: string;
 
-            @MaxLength(255)
-            
-        address: string;
+    name: string;
 
-            @MaxLength(100)
-            
-        tel: string;
+    @MaxLength(255)
 
-        
+    address: string;
 
-            
-        isDel: boolean;
+    @MaxLength(100)
 
-            
-        transportId: number;
-
-            
-        siteId: number;
+    tel: string;
 
 
-        
-        city: CityDTO;
+    isDel: boolean;
 
-        
-        district: DistrictDTO;
 
-        
-        wards: WardsDTO;
+    transportId: number;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    }
+    siteId: number;
+
+
+    city: CityDTO;
+
+
+    district: DistrictDTO;
+
+
+    wards: WardsDTO;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

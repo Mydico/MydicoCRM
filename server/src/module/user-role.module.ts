@@ -7,14 +7,14 @@ import { RoleModule } from './role.module';
 import { AuthorityRepository } from '../repository/authority.repository';
 
 @Module({
-  imports: [
-    CacheModule.register(),
-    TypeOrmModule.forFeature([UserRoleRepository]),
-    TypeOrmModule.forFeature([AuthorityRepository]),
-    RoleModule
-  ],
-  controllers: [UserRoleController],
-  providers: [UserRoleService],
-  exports: [UserRoleService]
+    imports: [
+        CacheModule.register(),
+        TypeOrmModule.forFeature([UserRoleRepository]),
+        TypeOrmModule.forFeature([AuthorityRepository]),
+        RoleModule,
+    ],
+    controllers: [UserRoleController],
+    providers: [UserRoleService],
+    exports: [UserRoleService],
 })
 export class UserRoleModule {}

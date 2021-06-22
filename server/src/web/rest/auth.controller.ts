@@ -16,7 +16,7 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Get('/authorities')
-   
+
     @ApiResponse({
         status: 200,
         description: 'List all user roles',

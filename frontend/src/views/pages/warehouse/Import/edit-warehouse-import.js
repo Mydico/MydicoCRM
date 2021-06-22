@@ -27,7 +27,7 @@ import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
-import { getProduct } from '../../product/ProductList/product.api';
+import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
@@ -77,7 +77,7 @@ const EditWarehouseImport = props => {
 
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, status: 'ACTIVE' }));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true}));
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
   }, []);
 
@@ -116,12 +116,9 @@ const EditWarehouseImport = props => {
     setProductList(copyArr);
   };
 
-  const debouncedSearchProduct = useCallback(
-    _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
-    }, 300),
-    []
-  );
+  const debouncedSearchProduct =  _.debounce(value => {
+      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+    }, 300)
 
   const onSearchProduct = value => {
     debouncedSearchProduct(value)

@@ -82,7 +82,7 @@ export class FileController {
     }
 
     @Put('/')
-   
+
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -94,7 +94,7 @@ export class FileController {
     }
 
     @Delete('/:id')
-   
+
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',
@@ -105,7 +105,7 @@ export class FileController {
         return await this.fileService.delete(toDelete);
     }
     @PostMethod('/')
-   
+
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     @UseInterceptors(
         FilesInterceptor('file', 20, {
@@ -158,7 +158,7 @@ export class FileController {
     }
 
     @PostMethod('/ck-editor/upload')
-   
+
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     @UseInterceptors(
         FileInterceptor('upload', {

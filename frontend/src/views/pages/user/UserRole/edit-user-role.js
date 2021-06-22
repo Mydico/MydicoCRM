@@ -22,6 +22,7 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { CInputCheckbox } from '@coreui/react';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -140,6 +141,12 @@ const EditUserRole = props => {
                   value={values.name}
                 />
                 <CInvalidFeedback>{errors.name}</CInvalidFeedback>
+              </CFormGroup>
+              <CFormGroup variant="custom-checkbox" className="pb-3">
+                <CInputCheckbox custom={true} id="allowViewAll" name="allowViewAll" checked={values.allowViewAll} onChange={handleChange} onBlur={handleBlur} />
+                <CLabel variant="custom-checkbox" htmlFor="allowViewAll">
+                  Cho phép xem công nợ của toàn chi nhánh
+                </CLabel>
               </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="authority">Vai trò</CLabel>

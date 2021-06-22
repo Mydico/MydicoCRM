@@ -49,7 +49,7 @@ export class PermissionGroupHistoryController {
 
     @PostMethod('/')
     @Roles(RoleType.USER)
-   
+
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
@@ -64,7 +64,7 @@ export class PermissionGroupHistoryController {
 
     @Put('/')
     @Roles(RoleType.USER)
-   
+
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
@@ -77,7 +77,7 @@ export class PermissionGroupHistoryController {
 
     @Delete('/:id')
     @Roles(RoleType.USER)
-   
+
     @ApiResponse({
         status: 204,
         description: 'The record has been successfully deleted.',

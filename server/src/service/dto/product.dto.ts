@@ -12,54 +12,50 @@ import { ProductBrandDTO } from './product-brand.dto';
  */
 export class ProductDTO extends BaseDTO {
 
-            @IsNotEmpty()
+    @IsNotEmpty()
     @MaxLength(255)
-            
-        name: string;
 
-            @MaxLength(255)
-            
-        image: string;
+    name: string;
 
-            @MaxLength(255)
-            
-        desc: string;
+    @MaxLength(255)
 
-            
+    image: string;
+
+    @MaxLength(255)
+
+    desc: string;
 
 
-            
-        isDel: boolean;
+    isDel: boolean;
 
-            @MaxLength(255)
-            
-        code: string;
+    @MaxLength(255)
 
-            
-        status: number;
+    code: string;
 
-        /**
+
+    status: number;
+
+    /**
      * Giá gốc của sản phẩm tính theo đơn vị của sản phẩm
      */
-            
-        price: number;
 
-        /**
+    price: number;
+
+    /**
      * Đơn vị của sản phẩm : 0 - Cái, 1 - Hộp, 2 - Chai , 3 - Túi , 4 - Tuýp , 5 - Hũ , 6 - Lọ, 7 - Cặp
      */
-            
-        unit: number;
 
-        /**
+    unit: number;
+
+    /**
      * Giá gốc của sản phẩm danh cho đại lý tính theo đơn vị của sản phẩm
      */
-            
-        agentPrice: number;
+
+    agentPrice: number;
 
 
-        
-        productBrand: ProductBrandDTO;
+    productBrand: ProductBrandDTO;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    }
+}

@@ -32,6 +32,5 @@ export default class PromotionCustomerLevel extends BaseEntity {
     createdAt: number;
 
 
-
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

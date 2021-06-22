@@ -66,8 +66,8 @@ const ViewOrder = props => {
                 <strong> {invoice?.promotion?.name}</strong>
               </div>
               <div>
-                {invoice?.promotion?.description.length > 200
-                  ? `${invoice?.promotion?.description.substring(0, 200)}`
+                {invoice?.promotion?.description.length > 30
+                  ? `${invoice?.promotion?.description.substring(0, 30)}`
                   : invoice?.promotion?.description}
               </div>
               <div>Loại khách hàng: {invoice?.promotion?.customerType?.name}</div>

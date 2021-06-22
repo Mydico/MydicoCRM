@@ -15,8 +15,6 @@ export default class ProductDetails extends BaseEntity {
     barcode: string;
 
 
-
-
     @Column({ name: 'name', length: 250, nullable: true })
     @Index()
     name: string;

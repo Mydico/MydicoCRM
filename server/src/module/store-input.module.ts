@@ -13,19 +13,19 @@ import { IncomeDashboardModule } from './income-dashboard.module';
 import { StoreInputSubscriber } from '../service/subscribers/store.subscriber';
 
 @Module({
-  imports: [
-    CacheModule.register(),
-    TypeOrmModule.forFeature([StoreInputRepository]),
-    ProductQuantityModule,
-    StoreHistoryModule,
-    StoreInputDetailsModule,
-    TransactionModule,
-    OrderModule,
-    DepartmentModule,
-    IncomeDashboardModule
-  ],
-  controllers: [StoreInputController],
-  providers: [StoreInputService,StoreInputSubscriber],
-  exports: [StoreInputService]
+    imports: [
+        CacheModule.register(),
+        TypeOrmModule.forFeature([StoreInputRepository]),
+        ProductQuantityModule,
+        StoreHistoryModule,
+        StoreInputDetailsModule,
+        TransactionModule,
+        OrderModule,
+        DepartmentModule,
+        IncomeDashboardModule,
+    ],
+    controllers: [StoreInputController],
+    providers: [StoreInputService,StoreInputSubscriber],
+    exports: [StoreInputService],
 })
 export class StoreInputModule {}

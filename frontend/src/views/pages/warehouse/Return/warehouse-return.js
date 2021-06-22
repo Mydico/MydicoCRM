@@ -87,7 +87,7 @@ const WarehouseImport = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.warehouseImport);
   const [activePage, setActivePage] = useState(1);
-  const [size, setSize] = useState(10);
+  const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
   const paramRef = useRef(null);
@@ -104,10 +104,9 @@ const WarehouseImport = props => {
     return items.map(item => {
       return {
         ...item,
-        store: item.store?.name || '',
-        customer: item.customer?.name || '',
-        approver: item.approver?.login || '',
-        export: item.storeTransfer?.name || '',
+        storeName: item.storeName || '',
+        customerName: item.customerName || '',
+        approverName: item.approverName || '',
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
@@ -138,8 +137,7 @@ const WarehouseImport = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
+  const debouncedSearchColumn =  _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
           if (!value[key]) delete value[key];
@@ -147,9 +145,7 @@ const WarehouseImport = props => {
         paramRef.current = value;
         dispatch(getWarehouseReturn({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -192,7 +188,7 @@ const WarehouseImport = props => {
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/return').length > 0) && (
               <CButton
                 onClick={() => {
-                  item.type === WarehouseImportType.NEW ? toEditWarehouseImport(item.id) : toEditWarehouseReturn(item.id);
+                  toEditWarehouseReturn(item.id);
                 }}
                 color="warning"
                 variant="outline"
@@ -292,11 +288,11 @@ const WarehouseImport = props => {
               <div style={{ minWidth: 200 }}>
                 <Select
                   onChange={item => {
-                    onFilterColumn({ status: item.value, ...paramRef.current });
+                   onFilterColumn({ ...paramRef.current, status: item?.value || ''  });
                   }}
                   maxMenuHeight="200"
                   placeholder="Chọn trạng thái"
-                  options={statusList.map(item => ({
+                  isClearable                  options={statusList.map(item => ({
                     value: item.value,
                     label: item.label
                   }))}
@@ -305,7 +301,7 @@ const WarehouseImport = props => {
             )
           }}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>

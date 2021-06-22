@@ -14,80 +14,80 @@ import Branch from './branch.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
-  @Column({ unique: true })
-  login: string;
+    @Column({ unique: true })
+    login: string;
 
-  @Column()
-  @Index()
-  code?: string;
+    @Column()
+    @Index()
+    code?: string;
 
-  @Column()
-  @Index()
-  firstName: string;
+    @Column()
+    @Index()
+    firstName: string;
 
-  @Column()
-  @Index()
-  lastName: string;
+    @Column()
+    @Index()
+    lastName: string;
 
-  @Column({ nullable: true })
-  @Index()
-  email?: string;
+    @Column({ nullable: true })
+    @Index()
+    email?: string;
 
-  @Column({ nullable: true })
-  @Index()
-  phone?: string;
+    @Column({ nullable: true })
+    @Index()
+    phone?: string;
 
-  @Column({ default: true })
-  @Index()
-  activated: boolean;
+    @Column({ default: true })
+    @Index()
+    activated: boolean;
 
-  @ManyToMany(type => Authority)
-  @JoinTable()
-  authorities?: any[];
+    @ManyToMany(type => Authority)
+    @JoinTable()
+    authorities?: any[];
 
-  @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
-  @Index()
-  status?: ProductStatus;
+    @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
+    @Index()
+    status?: ProductStatus;
 
-  @ManyToMany(type => UserRole, userRole => userRole.users)
-  @JoinTable({
-    name: 'user_roles_list',
-    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'user_role_id', referencedColumnName: 'id' },
-  })
-  roles?: UserRole[];
+    @ManyToMany(type => UserRole, userRole => userRole.users)
+    @JoinTable({
+        name: 'user_roles_list',
+        joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'user_role_id', referencedColumnName: 'id' },
+    })
+    roles?: UserRole[];
 
-  @ManyToOne(type => Department)
-  department?: Department;
+    @ManyToOne(type => Department)
+    department?: Department;
 
-  @ManyToOne(type => Branch)
-  branch?: Branch;
+    @ManyToOne(type => Branch)
+    branch?: Branch;
 
-  @OneToMany(type => Bill, other => other.transporter)
-  bill?: Bill[];
+    @OneToMany(type => Bill, other => other.transporter)
+    bill?: Bill[];
 
-  @OneToMany(type => StoreInput, other => other.approver)
-  storeInput?: StoreInput[];
+    @OneToMany(type => StoreInput, other => other.approver)
+    storeInput?: StoreInput[];
 
-  @ManyToMany(type => PermissionGroup, other => other.users)
-  permissionGroups?: PermissionGroup[];
+    @ManyToMany(type => PermissionGroup, other => other.users)
+    permissionGroups?: PermissionGroup[];
 
-  @Column({
-    type: 'varchar',
-    transformer: new EncryptionTransformer({
-      key: config.get('crypto.key'),
-      algorithm: 'aes-256-cbc',
-      ivLength: 16,
-      iv: config.get('crypto.iv')
-    }),
-    select: false
-  })
-  password: string;
+    @Column({
+        type: 'varchar',
+        transformer: new EncryptionTransformer({
+            key: config.get('crypto.key'),
+            algorithm: 'aes-256-cbc',
+            ivLength: 16,
+            iv: config.get('crypto.iv'),
+        }),
+        select: false,
+    })
+    password: string;
 
-  @Column({ nullable: true })
-  @Index()
-  imageUrl?: string;
-  @Column({ nullable: true })
-  @Index()
-  resetDate?: Date;
+    @Column({ nullable: true })
+    @Index()
+    imageUrl?: string;
+    @Column({ nullable: true })
+    @Index()
+    resetDate?: Date;
 }

@@ -3,22 +3,19 @@ import { User } from '../../domain/user.entity';
 
 @EventSubscriber()
 export class UserSubscriber implements EntitySubscriberInterface<User> {
-  constructor(connection: Connection) {
-    connection.subscribers.push(this);
-  }
+    constructor(connection: Connection) {
+        connection.subscribers.push(this);
+    }
 
-  listenTo() {
-    return User;
-  }
+    listenTo() {
+        return User;
+    }
 
-  async afterInsert(event: InsertEvent<User>): Promise<any> {
-    event.manager.connection.queryResultCache.remove(['get_users']);
-    event.manager.connection.queryResultCache.remove(["cache_count"]);
-  }
+    async afterInsert(event: InsertEvent<User>): Promise<any> {
+        await event.manager.connection.queryResultCache.remove(['get_users','cache_count']);
+    }
 
-  async afterUpdate(event: UpdateEvent<User>): Promise<any> {
-    console.log(event)
-    event.manager.connection.queryResultCache.remove([event.entity.login]);
-    event.manager.connection.queryResultCache.remove(['get_users']);
-  }
+    async afterUpdate(event: UpdateEvent<User>): Promise<any> {
+        await event.manager.connection.queryResultCache.remove([event.entity.login,'get_users']);
+    }
 }

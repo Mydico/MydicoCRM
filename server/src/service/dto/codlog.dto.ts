@@ -4,30 +4,28 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A Codlog DTO object.
  */
 export class CodlogDTO extends BaseDTO {
 
-            
-        transportId: number;
 
-            @MaxLength(255)
-            
-        content: string;
+    transportId: number;
 
-            
-        time: number;
+    @MaxLength(255)
 
-            
-        orderId: number;
-
-            
-        siteId: number;
+    content: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    time: number;
 
-    }
+
+    orderId: number;
+
+
+    siteId: number;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

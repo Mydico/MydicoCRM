@@ -91,7 +91,7 @@ const EditProduct = (props) => {
       const temp = {...product};
       temp.image = [];
       try {
-        temp.image = JSON.parse(product.image);
+        temp.image = JSON.parse(product.image || []);
       } catch (e) {}
       const arrRequest = temp.image?.map((image) => fetch(image));
       Promise.all(arrRequest).then((arrRes) => {
@@ -156,15 +156,10 @@ const EditProduct = (props) => {
           {({
             values,
             errors,
-
-
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue
-
-
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

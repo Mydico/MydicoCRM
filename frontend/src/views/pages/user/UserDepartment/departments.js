@@ -9,7 +9,7 @@ import { Tree, TreeNode } from 'react-organizational-chart';
 import styled from 'styled-components';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import _ from 'lodash'
+import _ from 'lodash';
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -27,38 +27,38 @@ const mappingStatus = {
   DELETED: 'ĐÃ XÓA'
 };
 const { selectAll } = globalizedDepartmentSelectors;
-  // Code	Tên nhà cung cấp	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại nhà cung cấp	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    {
-      key: 'order',
-      label: 'STT',
-      _style: { width: '1%' },
-      filter: false
-    },
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên chi nhánh', _style: { width: '15%' } },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
-  ];
+// Code	Tên nhà cung cấp	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại nhà cung cấp	Phân loại	Sửa	Tạo đơn
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
+  { key: 'name', label: 'Tên chi nhánh', _style: { width: '15%' } },
+  {
+    key: 'show_details',
+    label: '',
+    _style: { width: '1%' },
+    filter: false
+  }
+];
 
-  const getBadge = status => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'DISABLED':
-        return 'danger';
-      case 'DELETED':
-        return 'warning';
-      case 'Banned':
-        return 'danger';
-      default:
-        return 'primary';
-    }
-  };
+const getBadge = status => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'success';
+    case 'DISABLED':
+      return 'danger';
+    case 'DELETED':
+      return 'warning';
+    case 'Banned':
+      return 'danger';
+    default:
+      return 'primary';
+  }
+};
 const Department = props => {
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
@@ -75,7 +75,6 @@ const Department = props => {
     dispatch(reset());
     dispatch(getTreeDepartment());
   }, []);
-
 
   useEffect(() => {
     dispatch(getDepartment({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
@@ -102,7 +101,6 @@ const Department = props => {
     setDetails(newDetails);
   };
 
-
   const csvContent = computedItems(providers)
     .map(item => Object.values(item).join(','))
     .join('\n');
@@ -119,21 +117,18 @@ const Department = props => {
     history.push(`${props.match.url}/structure`);
   };
 
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
-        paramRef.current = value
-        dispatch(getDepartment({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300),
-    []
-  );
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getDepartment({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
 
   const renderChild = children => {
@@ -146,10 +141,7 @@ const Department = props => {
     }
   };
 
-  const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
-    []
-  );
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(departments), [departments]);
 
   return (
@@ -191,7 +183,7 @@ const Department = props => {
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>

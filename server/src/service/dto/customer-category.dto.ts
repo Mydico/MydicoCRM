@@ -4,31 +4,26 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A CustomerCategory DTO object.
  */
 export class CustomerCategoryDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        name: string;
+    @MaxLength(255)
 
-            @MaxLength(255)
-            
-        desc: string;
+    name: string;
 
-            
+    @MaxLength(255)
+
+    desc: string;
 
 
-            
-        isDel: boolean;
-
-            
-        siteId: number;
+    isDel: boolean;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    siteId: number;
 
-    }
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

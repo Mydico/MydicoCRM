@@ -90,12 +90,9 @@ const CreateReceipt = () => {
       ]
     });
   };
-  const debouncedSearchCustomer = useCallback(
-    _.debounce(value => {
+  const debouncedSearchCustomer =  _.debounce(value => {
       dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value, dependency: true }));
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onSearchCustomer = value => {
     debouncedSearchCustomer(value)  

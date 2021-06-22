@@ -15,25 +15,24 @@ import { ProductDetailsDTO } from './product-details.dto';
  */
 export class StoreInputDetailsDTO extends BaseDTO {
 
-            
-        quantity: number;
 
-            
-        isDel: boolean;
-
-            
-        price: number;
-
-            
-        siteId: number;
+    quantity: number;
 
 
-        
-        nhapkho: StoreInputDTO;
+    isDel: boolean;
 
-        
-        chitiet: ProductDetailsDTO;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    price: number;
 
-    }
+
+    siteId: number;
+
+
+    nhapkho: StoreInputDTO;
+
+
+    chitiet: ProductDetailsDTO;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

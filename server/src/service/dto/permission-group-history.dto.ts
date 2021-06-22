@@ -3,17 +3,15 @@ import { ApiHideProperty } from '@nestjs/swagger';
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A PermissionGroupHistory DTO object.
  */
 export class PermissionGroupHistoryDTO extends BaseDTO {
 
-            
-        description: string;
+
+    description: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    }
+}

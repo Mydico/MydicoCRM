@@ -64,7 +64,7 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDetailUser.fulfilled]: (state, action) => {
-      usersAdapter.addOne(state, action.payload);
+      usersAdapter.setAll(state, [action.payload]);
       state.initialState.loading = false;
     },
     [getUser.fulfilled]: (state, action) => {

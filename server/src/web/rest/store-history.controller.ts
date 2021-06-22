@@ -60,11 +60,9 @@ export class StoreHistoryController {
         skip: +pageRequest.page * pageRequest.size,
         take: +pageRequest.size,
         order: pageRequest.sort.asOrder(),
-        where: filter
       },
       filter,
       departmentVisible,
-      currentUser
     );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);

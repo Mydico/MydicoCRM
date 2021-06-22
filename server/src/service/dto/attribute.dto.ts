@@ -12,23 +12,19 @@ import { ProductDTO } from './product.dto';
  */
 export class AttributeDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        name: string;
+    @MaxLength(255)
 
-            
+    name: string;
 
 
-            
-        isDel: boolean;
-
-            
-        siteId: number;
+    isDel: boolean;
 
 
-        
-        product: ProductDTO;
+    siteId: number;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    }
+    product: ProductDTO;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

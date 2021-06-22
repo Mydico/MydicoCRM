@@ -20,90 +20,90 @@ import { UserDTO } from './user.dto';
  * A Customer DTO object.
  */
 export class CustomerDTO extends BaseDTO {
-  @MaxLength(255)
-  name: string;
+    @MaxLength(255)
+    name: string;
 
-  @MaxLength(100)
-  tel: string;
+    @MaxLength(100)
+    tel: string;
 
-  @MaxLength(255)
-  address: string;
+    @MaxLength(255)
+    address: string;
 
-  /**
+    /**
    * năm sinh
    */
 
-  yearOfBirth: number;
+    yearOfBirth: number;
 
-  obclubJoinTime: number;
+    obclubJoinTime: number;
 
-  /**
+    /**
    * chiều cao (cm)
    */
 
-  estimateRevenueMonth: number;
+    estimateRevenueMonth: number;
 
-  /**
+    /**
    * cân nặng(kg)
    */
 
-  capacity: number;
+    capacity: number;
 
-  /**
+    /**
    * tình trạng hôn nhân (đọc thân, đã kết hôn, đã ly hôn)
    */
 
-  marriage: boolean;
+    marriage: boolean;
 
-  isDel: boolean;
+    isDel: boolean;
 
-  activated: boolean;
+    activated: boolean;
 
-  @MaxLength(250)
-  email: string;
+    @MaxLength(250)
+    email: string;
 
-  level: number;
+    level: number;
 
-  @IsNotEmpty()
-  @MaxLength(256)
-  code: string;
+    @IsNotEmpty()
+    @MaxLength(256)
+    code: string;
 
-  @IsNotEmpty()
-  @MaxLength(256)
-  contactName: string;
+    @IsNotEmpty()
+    @MaxLength(256)
+    contactName: string;
 
-  @MaxLength(500)
-  note: string;
+    @MaxLength(500)
+    note: string;
 
-  contactYearOfBirth: number;
+    contactYearOfBirth: number;
 
-  totalDebt: number;
+    totalDebt: number;
 
-  earlyDebt: number;
+    earlyDebt: number;
 
-  siteId: number;
+    siteId: number;
 
-  city: CityDTO;
+    city: CityDTO;
 
-  branch: BranchDTO;
+    branch: BranchDTO;
 
-  district: DistrictDTO;
+    district: DistrictDTO;
 
-  ward: WardsDTO;
+    ward: WardsDTO;
 
-  fanpage: FanpageDTO;
+    fanpage: FanpageDTO;
 
-  skin: CustomerSkinDTO;
+    skin: CustomerSkinDTO;
 
-  category: CustomerCategoryDTO;
+    category: CustomerCategoryDTO;
 
-  status: CustomerStatusDTO;
+    status: CustomerStatusDTO;
 
-  type: CustomerTypeDTO;
+    type: CustomerTypeDTO;
 
-  request: CustomerRequestDTO;
+    request: CustomerRequestDTO;
 
-  users: UserDTO[];
+    users: UserDTO[];
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

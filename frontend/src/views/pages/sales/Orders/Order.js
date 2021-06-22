@@ -144,18 +144,15 @@ const Order = props => {
     history.push(`${props.match.url}/new`);
   };
 
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if (!value[key]) delete value[key];
-        });
-        paramRef.current = value;
-        dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300),
-    []
-  );
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -485,23 +482,23 @@ const Order = props => {
           onRowClick={val => toDetailOrder(val.id)}
           columnFilterSlot={{
             status: (
-              <div style={{minWidth: 200}}>
-
-              <Select
-                onChange={item => {
-                  onFilterColumn({ status: item.value, ...paramRef.current });
-                }}
-                placeholder="Chọn trạng thái"
-                options={statusList.map(item => ({
-                  value: item.value,
-                  label: item.label
-                }))}
-              />
+              <div style={{ minWidth: 200 }}>
+                <Select
+                  onChange={item => {
+                    onFilterColumn({ ...paramRef.current, status: item?.value || '' });
+                  }}
+                  isClearable
+                  placeholder="Chọn trạng thái"
+                  options={statusList.map(item => ({
+                    value: item.value,
+                    label: item.label
+                  }))}
+                />
               </div>
             )
           }}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
@@ -551,7 +548,11 @@ const Order = props => {
                         <div>
                           <strong> {item?.promotion?.name}</strong>
                         </div>
-                        <div>{item?.promotion?.description}</div>
+                        <div>
+                          {item?.promotion?.description.length > 30
+                            ? `${item?.promotion?.description.substring(0, 30)}`
+                            : item?.promotion?.description}
+                        </div>
                         <div>Loại khách hàng: {item?.promotion?.customerType?.name}</div>
                       </CCol>
                     </CRow>

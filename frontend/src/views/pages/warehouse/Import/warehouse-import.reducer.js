@@ -7,6 +7,8 @@ import {
   getWarehouseExport,
   updateWarehouseStatusImport,
   getWarehouseReturn,
+  creatingWarehouseExport,
+  creatingWarehouseReturn,
 } from './warehouse-import.api';
 
 const initialState = {
@@ -50,6 +52,22 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [creatingWarehouseImport.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
+    [creatingWarehouseExport.fulfilled]: (state ) => {
+      state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [creatingWarehouseExport.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
+    [creatingWarehouseReturn.fulfilled]: (state ) => {
+      state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [creatingWarehouseReturn.rejected]: (state ) => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },

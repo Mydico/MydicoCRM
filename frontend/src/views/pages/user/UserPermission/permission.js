@@ -7,7 +7,7 @@ import { fetching, globalizedPermissionGroupsSelectors, reset } from './permissi
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import _ from 'lodash'
+import _ from 'lodash';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -31,7 +31,7 @@ const PermissionGroups = props => {
   }, []);
 
   useEffect(() => {
-      dispatch(getPermissionGroups({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    dispatch(getPermissionGroups({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
   const groupPermisions = useSelector(selectAll);
@@ -39,7 +39,7 @@ const PermissionGroups = props => {
     return items.map(item => {
       return {
         ...item,
-        createdDate: moment(item.createdDate,'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY')
+        createdDate: moment(item.createdDate, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY')
       };
     });
   };
@@ -99,27 +99,21 @@ const PermissionGroups = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
-        paramRef.current = value
-        dispatch(getPermissionGroups({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300),
-    []
-  );
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getPermissionGroups({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
 
-  const memoComputedItems = React.useCallback(
-    (items) => computedItems(items),
-    []
-  );
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(groupPermisions), [groupPermisions]);
 
   return (
@@ -158,7 +152,7 @@ const PermissionGroups = props => {
           onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>

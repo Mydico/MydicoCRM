@@ -14,49 +14,46 @@ import { FanpageDTO } from './fanpage.dto';
  */
 export class CustomerRequestDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        name: string;
+    @MaxLength(255)
 
-            @MaxLength(100)
-            
-        tel: string;
+    name: string;
 
-            @MaxLength(255)
-            
-        node: string;
+    @MaxLength(100)
 
-            
-        isDel: boolean;
+    tel: string;
 
-        
+    @MaxLength(255)
 
-            
-        userId: number;
+    node: string;
 
-            @MaxLength(250)
-            
-        email: string;
 
-        /**
+    isDel: boolean;
+
+
+    userId: number;
+
+    @MaxLength(250)
+
+    email: string;
+
+    /**
      * trạng thái xử lý
      */
-            
-        status: boolean;
 
-            
-        siteId: number;
+    status: boolean;
 
 
-        
-        product: ProductDTO;
+    siteId: number;
 
-        
-        type: CustomerTypeDTO;
 
-        
-        fanpage: FanpageDTO;
+    product: ProductDTO;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    }
+    type: CustomerTypeDTO;
+
+
+    fanpage: FanpageDTO;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

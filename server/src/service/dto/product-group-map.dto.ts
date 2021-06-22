@@ -4,36 +4,34 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A ProductGroupMap DTO object.
  */
 export class ProductGroupMapDTO extends BaseDTO {
 
-            @IsNotEmpty()
-            
-        groupId: number;
+    @IsNotEmpty()
 
-            @IsNotEmpty()
-            
-        productId: number;
+    groupId: number;
 
-            
-        createdAt: number;
+    @IsNotEmpty()
 
-            @MaxLength(255)
-            
-        createdBy: string;
-
-            
-        updatedAt: number;
-
-            @MaxLength(255)
-            
-        updatedBy: string;
+    productId: number;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    createdAt: number;
 
-    }
+    @MaxLength(255)
+
+    createdBy: string;
+
+
+    updatedAt: number;
+
+    @MaxLength(255)
+
+    updatedBy: string;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

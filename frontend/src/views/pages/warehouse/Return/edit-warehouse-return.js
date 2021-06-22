@@ -27,7 +27,7 @@ import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
-import { getProduct } from '../../product/ProductList/product.api';
+import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { getCustomer } from '../../customer/customer.api';
@@ -87,7 +87,7 @@ const EditWarehouseReturn = props => {
   useEffect(() => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, status: 'ACTIVE' }));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
@@ -148,19 +148,15 @@ const EditWarehouseReturn = props => {
     setProductList([...productList, data]);
   };
 
-  const debouncedSearchProduct = useCallback(
-    _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
-    }, 300),
-    []
-  );
+  const debouncedSearchProduct =  _.debounce(value => {
+      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+    }, 300)
 
   const onSearchProduct = value => {
     debouncedSearchProduct(value);
   };
 
-  const debouncedSearchCustomer = useCallback(
-    _.debounce(value => {
+  const debouncedSearchCustomer =  _.debounce(value => {
       dispatch(
         getCustomer({
           page: 0,
@@ -173,9 +169,7 @@ const EditWarehouseReturn = props => {
           dependency: true
         })
       );
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onSearchCustomer = value => {
     debouncedSearchCustomer(value);

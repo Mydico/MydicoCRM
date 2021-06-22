@@ -28,7 +28,7 @@ import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
-import { getProduct } from '../../product/ProductList/product.api';
+import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
@@ -80,14 +80,14 @@ const EditWarehouseExport = props => {
   useEffect(() => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, status: 'ACTIVE' }));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true}));
   }, []);
 
   useEffect(() => {
     if (warehouseImport) {
       setInitValuesState(warehouseImport);
       setSelectedWarehouse(warehouseImport.store);
-      setProductList(Array.isArray(warehouseImport.storeInputDetails) ? warehouseImport.storeInputDetails : []);
+      setProductList(Array.isArray(warehouseImport.storeInputDetails) ? JSON.parse(JSON.stringify(warehouseImport.storeInputDetails)) : []);
     }
   }, [warehouseImport]);
 
@@ -119,12 +119,9 @@ const EditWarehouseExport = props => {
     setProductList(copyArr);
   };
 
-  const debouncedSearchProduct = useCallback(
-    _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
-    }, 300),
-    []
-  );
+  const debouncedSearchProduct =  _.debounce(value => {
+      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+    }, 300)
 
   const onSearchProduct = value => {
     debouncedSearchProduct(value);

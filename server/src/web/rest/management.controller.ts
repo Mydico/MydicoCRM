@@ -9,7 +9,7 @@ export class ManagementController {
 
     @ApiExcludeEndpoint()
     @Get('/info')
-   
+
     @ApiResponse({
         status: 200,
         description: 'Check if the microservice is up',

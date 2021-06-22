@@ -77,7 +77,7 @@ const Transaction = props => {
     dispatch(getTransaction({ customer: props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
 
-  const debouncedSearchColumn = useCallback(
+  const debouncedSearchColumn = 
     _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
@@ -86,9 +86,7 @@ const Transaction = props => {
         paramRef.current = value
         dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value)
@@ -187,7 +185,7 @@ const Transaction = props => {
             onTableFilterChange={val => console.log('new table filter:', val)}
             onColumnFilterChange={onFilterColumn}
             scopedSlots={{
-              order: (item, index) => <td>{index + 1}</td>,
+              order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
               previousDebt: item => (
                 <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.previousDebt)}</td>
               ),

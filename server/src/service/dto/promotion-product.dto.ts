@@ -12,19 +12,18 @@ import { PromotionDTO } from './promotion.dto';
  */
 export class PromotionProductDTO extends BaseDTO {
 
-            
-        buy: number;
 
-            
-        gift: number;
+    buy: number;
 
 
-        
-        product: ProductDTO;
+    gift: number;
 
-        
-        promotion: PromotionDTO;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    product: ProductDTO;
 
-    }
+
+    promotion: PromotionDTO;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

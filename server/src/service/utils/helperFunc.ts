@@ -15,10 +15,8 @@ export function flatNestedObject(entity: Entity, flattened: Entity[] = []): Enti
 }
 export const convertArrayToObject = (array, key) => {
     const initialValue = {};
-    return array.reduce((obj, item) => {
-      return {
+    return array.reduce((obj, item) => ({
         ...obj,
         [item[key]]: item,
-      };
-    }, initialValue);
-  };
+    }), initialValue);
+};

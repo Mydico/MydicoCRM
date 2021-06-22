@@ -28,7 +28,7 @@ import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
-import { getProduct } from '../../product/ProductList/product.api';
+import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
@@ -85,7 +85,7 @@ const EditWarehouseExportProvider = props => {
   useEffect(() => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, status: 'ACTIVE' }));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getProvider({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
@@ -119,7 +119,7 @@ const EditWarehouseExportProvider = props => {
   };
 
   const onSearchProduct = value => {
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
   };
 
   const onSelectedProduct = ({ value }, index) => {
@@ -321,7 +321,7 @@ const EditWarehouseExportProvider = props => {
                               />
                             }
                           </td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 300 }}>
                             {item.followIndex >= 0 ? (
                               item.quantity
                             ) : (

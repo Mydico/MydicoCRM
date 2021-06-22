@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions, In } from 'typeorm';
+import { Brackets, FindManyOptions, FindOneOptions, In } from 'typeorm';
 import ProductQuantity from '../domain/product-quantity.entity';
 import { ProductQuantityRepository } from '../repository/product-quantity.repository';
 import { Request, Response } from 'express';
@@ -18,9 +18,7 @@ relationshipNames.push('department');
 export class ProductQuantityService {
   logger = new Logger('ProductQuantityService');
 
-  constructor(
-    @InjectRepository(ProductQuantityRepository) private productQuantityRepository: ProductQuantityRepository,
-  ) {}
+  constructor(@InjectRepository(ProductQuantityRepository) private productQuantityRepository: ProductQuantityRepository) {}
 
   async findById(id: string): Promise<ProductQuantity | undefined> {
     const options = { relations: relationshipNames };
@@ -32,9 +30,34 @@ export class ProductQuantityService {
     return await this.productQuantityRepository.find(options);
   }
 
-  async findAndCount(options: FindManyOptions<ProductQuantity>): Promise<[ProductQuantity[], number]> {
-    options.relations = relationshipNames;
-    return await this.productQuantityRepository.findAndCount(options);
+  async findAndCount(filter = {}, departmentVisible = [], options: FindManyOptions<ProductQuantity>): Promise<[ProductQuantity[], number]> {
+    // options.relations = relationshipNames;
+    // return await this.productQuantityRepository.findAndCount(options);
+    let queryString = '1=1 ';
+    Object.keys(filter).forEach((item, index) => {
+      if (item === 'store') {
+        queryString += `AND ProductQuantity.store = ${filter[item]} `;
+      }else{
+        queryString += ` AND ProductQuantity.${item} like '%${filter[item]}%'`;
+      }
+    });
+    if (departmentVisible.length > 0) {
+        queryString += ` AND ProductQuantity.department IN ${JSON.stringify(departmentVisible)
+            .replace('[', '(')
+            .replace(']', ')')}`;
+    }
+    const queryBuilder = this.productQuantityRepository
+      .createQueryBuilder('ProductQuantity')
+      .leftJoinAndSelect('ProductQuantity.store', 'store')
+      .leftJoinAndSelect('ProductQuantity.product', 'product')
+      .leftJoinAndSelect('product.productBrand', 'productBrand')
+      .leftJoinAndSelect('ProductQuantity.department', 'department')
+      .where(queryString)
+      .orderBy(`ProductQuantity.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take);
+    const result = await queryBuilder.getManyAndCount();
+    return result;
   }
 
   async save(productQuantity: ProductQuantity): Promise<ProductQuantity | undefined> {

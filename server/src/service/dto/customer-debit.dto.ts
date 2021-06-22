@@ -12,16 +12,15 @@ import { UserDTO } from './user.dto';
  */
 export class CustomerDebitDTO extends BaseDTO {
 
-            
-        debt: number;
+
+    debt: number;
 
 
-        
-        customer: CustomerDTO;
+    customer: CustomerDTO;
 
-        
-        sale: UserDTO;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    sale: UserDTO;
 
-    }
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

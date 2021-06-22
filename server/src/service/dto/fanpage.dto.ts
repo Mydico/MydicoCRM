@@ -4,34 +4,30 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A Fanpage DTO object.
  */
 export class FanpageDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        name: string;
+    @MaxLength(255)
 
-            @MaxLength(255)
-            
-        link: string;
+    name: string;
 
-        
+    @MaxLength(255)
 
-            
-        isDel: boolean;
-
-            @MaxLength(255)
-            
-        code: string;
-
-            
-        siteId: number;
+    link: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    isDel: boolean;
 
-    }
+    @MaxLength(255)
+
+    code: string;
+
+
+    siteId: number;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

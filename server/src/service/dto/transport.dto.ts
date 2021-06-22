@@ -7,15 +7,15 @@ import { BaseDTO } from './base.dto';
  * A Transport DTO object.
  */
 export class TransportDTO extends BaseDTO {
-  @MaxLength(255)
-  name: string;
+    @MaxLength(255)
+    name: string;
 
-  @MaxLength(255)
-  desc: string;
+    @MaxLength(255)
+    desc: string;
 
-  isDel: boolean;
+    isDel: boolean;
 
-  siteId: number;
+    siteId: number;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

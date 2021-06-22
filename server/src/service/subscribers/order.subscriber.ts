@@ -3,19 +3,19 @@ import Order from '../../domain/order.entity';
 
 @EventSubscriber()
 export class OrderSubscriber implements EntitySubscriberInterface<Order> {
-  constructor(connection: Connection) {
-    connection.subscribers.push(this);
-  }
+    constructor(connection: Connection) {
+        connection.subscribers.push(this);
+    }
 
-  listenTo() {
-    return Order;
-  }
+    listenTo() {
+        return Order;
+    }
 
-  async afterInsert(event: InsertEvent<Order>): Promise<any> {
-    event.manager.connection.queryResultCache.remove(["cache_count_get_orders"]);
-  }
+    async afterInsert(event: InsertEvent<Order>): Promise<any> {
+        await event.manager.connection.queryResultCache.remove(['cache_count_get_orders']);
+    }
 
-  async afterUpdate(event: InsertEvent<Order>): Promise<any> {
+    async afterUpdate(event: InsertEvent<Order>): Promise<any> {
     // event.manager.connection.queryResultCache.remove(["get_orders"]);
-  }
+    }
 }

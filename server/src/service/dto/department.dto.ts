@@ -11,13 +11,13 @@ import { DepartmentStatus } from '../../domain/enumeration/department-status';
  */
 export class DepartmentDTO extends BaseDTO {
 
-            
-        name: string;
 
-            
-        status: DepartmentStatus;
+    name: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    status: DepartmentStatus;
 
-    }
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

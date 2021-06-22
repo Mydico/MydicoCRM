@@ -64,11 +64,11 @@ import { RedisQueryResultCache } from './service/query/custom-query.cache';
         TypeOrmModule.forRoot({...ormconfig, cache: {
             provider(connection) {
                 return new RedisQueryResultCache(connection, 'ioredis');
-            }
+            },
         }}),
         ServeStaticModule.forRoot({
-            rootPath: join(__dirname, './', 'classes/static')
-          }),
+            rootPath: join(__dirname, './', 'classes/static'),
+        }),
         RoleModule.forRootAsync(roleBDConfig, path.join(__dirname, '/acl-model.conf')),
         AuthModule,
         CustomerTokenModule,
@@ -117,7 +117,7 @@ import { RedisQueryResultCache } from './service/query/custom-query.cache';
         CustomerDebitModule,
         IncomeDashboardModule,
         DebtDashboardModule,
-        BranchModule
+        BranchModule,
     // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
     ],
     controllers: [

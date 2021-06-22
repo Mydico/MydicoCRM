@@ -4,53 +4,51 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A OrderPush DTO object.
  */
 export class OrderPushDTO extends BaseDTO {
 
-            
-        orderId: number;
 
-            
-        transportId: number;
+    orderId: number;
 
-            @MaxLength(255)
-            
-        repon: string;
 
-            
-        isDel: boolean;
+    transportId: number;
 
-            
-        createdAt: number;
+    @MaxLength(255)
 
-            
-        updatedAt: number;
+    repon: string;
 
-        /**
+
+    isDel: boolean;
+
+
+    createdAt: number;
+
+
+    updatedAt: number;
+
+    /**
      * mã đơn hàng + random (để 1 đơn hàng push dc nhiều lần)
      */
-            @MaxLength(100)
-            
-        code: string;
+    @MaxLength(100)
 
-        /**
+    code: string;
+
+    /**
      * ghi chú nội dung cho tiện theo dõi
      */
-            @MaxLength(255)
-            
-        note: string;
+    @MaxLength(255)
 
-            
-        status: number;
-
-            
-        siteId: number;
+    note: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    status: number;
 
-    }
+
+    siteId: number;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

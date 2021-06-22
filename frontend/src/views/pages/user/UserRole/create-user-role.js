@@ -14,7 +14,7 @@ import { globalizedPermissionGroupsSelectors } from '../UserPermission/permissio
 import { getPermissionGroups } from '../UserPermission/permission.api';
 import { getAuthorities } from './user-roles.api.js';
 import { validate } from '../../../../shared/utils/normalize';
-import { CInvalidFeedback } from '@coreui/react';
+import { CInputCheckbox, CInvalidFeedback } from '@coreui/react';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -118,6 +118,12 @@ const CreateRole = () => {
                   value={values.name}
                 />
                 <CInvalidFeedback>{errors.name}</CInvalidFeedback>
+              </CFormGroup>
+              <CFormGroup variant="custom-checkbox" className="pb-3">
+                <CInputCheckbox custom={true} id="allowViewAll" name="allowViewAll" checked={values.allowViewAll} onChange={handleChange} onBlur={handleBlur} />
+                <CLabel variant="custom-checkbox" htmlFor="allowViewAll">
+                  Cho phép xem công nợ của toàn chi nhánh
+                </CLabel>
               </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="authority">Vai trò</CLabel>

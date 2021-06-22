@@ -17,7 +17,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingWarehouseImport } from '../Import/warehouse-import.api';
+import { creatingWarehouseExport, creatingWarehouseImport } from '../Import/warehouse-import.api';
 import { currencyMask } from '../../../components/currency-input/currency-input';
 import MaskedInput from 'react-text-mask';
 import _ from 'lodash';
@@ -28,7 +28,7 @@ import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getAllWarehouse, getWarehouse } from '../Warehouse/warehouse.api';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import { getProduct } from '../../product/ProductList/product.api';
+import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { getProductInstore, getProductWarehouse } from '../Product/product-warehouse.api';
 import { confirmAlert } from 'react-confirm-alert'; // Import
@@ -95,7 +95,7 @@ const CreateReceipt = () => {
     values.type = WarehouseImportType.EXPORT;
     values.department = { id: account.department?.id || null};
     dispatch(fetching());
-    dispatch(creatingWarehouseImport(values));
+    dispatch(creatingWarehouseExport(values));
   };
 
   useEffect(() => {
@@ -161,12 +161,10 @@ const CreateReceipt = () => {
     setProductList([...productList, data]);
   };
 
-  const debouncedSearchProduct = useCallback(
-    _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
-    }, 300),
-    []
-  );
+  const debouncedSearchProduct =  _.debounce(value => {
+      dispatch(filterProduct
+        ({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
+    }, 300)
 
   const onSearchProduct = value => {
     debouncedSearchProduct(value);
@@ -336,7 +334,7 @@ const CreateReceipt = () => {
                               : {}
                           }
                         >
-                          <td style={{ width: 300 }}>
+                          <td style={{ minWidth: 300 }}>
                             <Select
                               value={{
                                 value: item.product,
@@ -353,7 +351,7 @@ const CreateReceipt = () => {
                           </td>
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
-                          <td style={{ width: 300 }}>
+                          <td style={{ minWidth: 300 }}>
                             <CInput
                               type="number"
                               min={1}
@@ -367,7 +365,7 @@ const CreateReceipt = () => {
                               <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
                             )}
                           </td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 300 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}

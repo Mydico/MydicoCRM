@@ -4,48 +4,46 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A ReportCustomerCategoryDate DTO object.
  */
 export class ReportCustomerCategoryDateDTO extends BaseDTO {
 
-        /**
+    /**
      * báo cáo ngày
      */
-            @IsNotEmpty()
-            
-        date: number;
+    @IsNotEmpty()
 
-        /**
+    date: number;
+
+    /**
      * nhóm khách hàng
      */
-            
-        categoryId: number;
 
-        /**
+    categoryId: number;
+
+    /**
      * chi nhánh
      */
-            
-        siteId: number;
 
-            
-        totalMoney: number;
-
-            
-        realMoney: number;
-
-            
-        reduceMoney: number;
-
-            
-        createdAt: number;
-
-            
-        updatedAt: number;
+    siteId: number;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    totalMoney: number;
 
-    }
+
+    realMoney: number;
+
+
+    reduceMoney: number;
+
+
+    createdAt: number;
+
+
+    updatedAt: number;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

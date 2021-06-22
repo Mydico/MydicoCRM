@@ -7,14 +7,14 @@ import { BaseDTO } from './base.dto';
  * A UserType DTO object.
  */
 export class UserTypeDTO extends BaseDTO {
-  @MaxLength(255)
-  name: string;
+    @MaxLength(255)
+    name: string;
 
-  percent: number;
+    percent: number;
 
-  isDel: boolean;
+    isDel: boolean;
 
-  siteId: number;
+    siteId: number;
 
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

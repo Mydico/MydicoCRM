@@ -1,16 +1,16 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Logger,
-  Param,
-  Post as PostMethod,
-  Put,
-  UseGuards,
-  Req,
-  UseInterceptors,
-  Res
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Logger,
+    Param,
+    Post as PostMethod,
+    Put,
+    UseGuards,
+    Req,
+    UseInterceptors,
+    Res,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -27,93 +27,93 @@ import { Like } from 'typeorm';
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class UserRoleController {
-  logger = new Logger('UserRoleController');
+    logger = new Logger('UserRoleController');
 
-  constructor(private readonly userRoleService: UserRoleService) {}
+    constructor(private readonly userRoleService: UserRoleService) {}
 
-  @Get('/authorities')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 200,
-    description: 'List all records',
-    type: UserRole
-  })
-  async getAuthorities(@Req() req: Request, @Res() res): Promise<UserRole[]> {
-    const [results, count] = await this.userRoleService.findAuthorities();
-    return res.send(results);
-  }
+    @Get('/authorities')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'List all records',
+        type: UserRole,
+    })
+    async getAuthorities(@Req() req: Request, @Res() res): Promise<UserRole[]> {
+        const [results, count] = await this.userRoleService.findAuthorities();
+        return res.send(results);
+    }
 
-  @Get('/')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 200,
-    description: 'List all records',
-    type: UserRole
-  })
-  async getAll(@Req() req: Request, @Res() res): Promise<UserRole[]> {
-    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const filter = [];
-    Object.keys(req.query).forEach(item => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter.push({ [item]: Like(`%${req.query[item]}%`) });
-      }
-    });
-    const [results, count] = await this.userRoleService.findAndCount({
-      skip: +pageRequest.page * pageRequest.size,
-      take: +pageRequest.size,
-      order: pageRequest.sort.asOrder()
-    });
-    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
-    return res.send(results);
-  }
+    @Get('/')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'List all records',
+        type: UserRole,
+    })
+    async getAll(@Req() req: Request, @Res() res): Promise<UserRole[]> {
+        const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+        const filter = [];
+        Object.keys(req.query).forEach(item => {
+            if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+                filter.push({ [item]: Like(`%${req.query[item]}%`) });
+            }
+        });
+        const [results, count] = await this.userRoleService.findAndCount({
+            skip: +pageRequest.page * pageRequest.size,
+            take: +pageRequest.size,
+            order: pageRequest.sort.asOrder(),
+        });
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+        return res.send(results);
+    }
 
 
-  @Get('/:id')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 200,
-    description: 'The found record',
-    type: UserRole
-  })
-  async getOne(@Param('id') id: string, @Res() res: Response): Promise<Response> {
-    return res.send(await this.userRoleService.findById(id));
-  }
+    @Get('/:id')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'The found record',
+        type: UserRole,
+    })
+    async getOne(@Param('id') id: string, @Res() res: Response): Promise<Response> {
+        return res.send(await this.userRoleService.findById(id));
+    }
 
-  @PostMethod('/')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 201,
-    description: 'The record has been successfully created.',
-    type: UserRole
-  })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async post(@Res() res: Response, @Body() userRole: UserRole): Promise<Response> {
-    const created = await this.userRoleService.save(userRole);
-    HeaderUtil.addEntityCreatedHeaders(res, 'UserRole', created.id);
-    return res.send(created);
-  }
+    @PostMethod('/')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 201,
+        description: 'The record has been successfully created.',
+        type: UserRole,
+    })
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    async post(@Res() res: Response, @Body() userRole: UserRole): Promise<Response> {
+        const created = await this.userRoleService.save(userRole);
+        HeaderUtil.addEntityCreatedHeaders(res, 'UserRole', created.id);
+        return res.send(created);
+    }
 
-  @Put('/')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 200,
-    description: 'The record has been successfully updated.',
-    type: UserRole
-  })
-  async put(@Res() res: Response, @Body() userRole: UserRole): Promise<Response> {
-    HeaderUtil.addEntityCreatedHeaders(res, 'UserRole', userRole.id);
-    return res.send(await this.userRoleService.update(userRole));
-  }
+    @Put('/')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'The record has been successfully updated.',
+        type: UserRole,
+    })
+    async put(@Res() res: Response, @Body() userRole: UserRole): Promise<Response> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'UserRole', userRole.id);
+        return res.send(await this.userRoleService.update(userRole));
+    }
 
-  @Delete('/:id')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 204,
-    description: 'The record has been successfully deleted.'
-  })
-  async remove(@Res() res: Response, @Param('id') id: string): Promise<UserRole> {
-    HeaderUtil.addEntityDeletedHeaders(res, 'UserRole', id);
-    const toDelete = await this.userRoleService.findById(id);
-    return await this.userRoleService.delete(toDelete);
-  }
+    @Delete('/:id')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 204,
+        description: 'The record has been successfully deleted.',
+    })
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<UserRole> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'UserRole', id);
+        const toDelete = await this.userRoleService.findById(id);
+        return await this.userRoleService.delete(toDelete);
+    }
 }

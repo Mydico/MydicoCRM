@@ -29,7 +29,7 @@ import { fetching, globalizedPromotionSelectors } from './promotion.reducer';
 import { getCustomerType } from '../../customer/CustomerType/customer-type.api';
 import { globalizedcustomerTypeSelectors } from '../../customer/CustomerType/customer-type.reducer';
 import Select from 'react-select';
-import { getProduct } from '../../product/ProductList/product.api';
+import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 
 const validationSchema = function() {
@@ -67,7 +67,7 @@ const EditPromotion = props => {
 
   useEffect(() => {
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', status: 'ACTIVE', dependency: true }));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailPromotion({ id: props.match.params.id, dependency: true }));
   }, []);
 
@@ -97,12 +97,9 @@ const EditPromotion = props => {
     setProductList(copyArr);
   };
 
-  const debouncedSearchProduct = useCallback(
-    _.debounce(value => {
-      dispatch(getProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
-    }, 300),
-    []
-  );
+  const debouncedSearchProduct =  _.debounce(value => {
+      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+    }, 300)
 
   const onSearchProduct = value => {
     debouncedSearchProduct(value);

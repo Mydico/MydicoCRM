@@ -4,35 +4,33 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A SiteMapDomain DTO object.
  */
 export class SiteMapDomainDTO extends BaseDTO {
 
-            
-        siteId: number;
 
-            @MaxLength(255)
-            
-        domain: string;
+    siteId: number;
 
-            
-        createdAt: number;
+    @MaxLength(255)
 
-            @MaxLength(255)
-            
-        createdBy: string;
-
-            
-        updatedAt: number;
-
-            @MaxLength(255)
-            
-        updatedBy: string;
+    domain: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    createdAt: number;
 
-    }
+    @MaxLength(255)
+
+    createdBy: string;
+
+
+    updatedAt: number;
+
+    @MaxLength(255)
+
+    updatedBy: string;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

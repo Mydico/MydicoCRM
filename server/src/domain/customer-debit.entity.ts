@@ -37,7 +37,7 @@ export default class CustomerDebit extends BaseEntity {
 
     @ManyToOne(type => Branch)
     branch? : Branch;
-    
+
     @ManyToOne(type => Department)
     department? : Department;
 

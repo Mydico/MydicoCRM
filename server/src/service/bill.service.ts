@@ -17,60 +17,60 @@ relationshipNames.push('store');
 
 @Injectable()
 export class BillService {
-  logger = new Logger('BillService');
+    logger = new Logger('BillService');
 
-  constructor(
-    @InjectRepository(BillRepository) private billRepository: BillRepository,
-    private readonly departmentService: DepartmentService
-  ) {}
+    constructor(
+        @InjectRepository(BillRepository) private billRepository: BillRepository,
+        private readonly departmentService: DepartmentService
+    ) {}
 
-  async findById(id: string): Promise<Bill | undefined> {
-    const options = { relations: relationshipNames };
-    return await this.billRepository.findOne(id, options);
-  }
-
-  async findByfields(options: FindOneOptions<Bill>): Promise<Bill | undefined> {
-    return await this.billRepository.findOne(options);
-  }
-
-  async findAndCount(pageRequest: PageRequest, req: Request, currentUser: User): Promise<[Bill[], number]> {
-    let departmentVisible = [];
-    if (currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible.push(currentUser.department);
+    async findById(id: string): Promise<Bill | undefined> {
+        const options = { relations: relationshipNames };
+        return await this.billRepository.findOne(id, options);
     }
-    let queryString = "Bill.status <> 'DELETED'";
-    Object.keys(req.query).forEach((item, index) => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        queryString += `Bill.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'OR '}`;
-      }
-    });
-    if (departmentVisible.length > 0) {
-        queryString += ` AND Bill.department IN ${JSON.stringify(departmentVisible.map(item => item.id))
-          .replace('[', '(')
-          .replace(']', ')')}`;
-      }
-    return await this.billRepository
-      .createQueryBuilder('Bill')
-      .leftJoinAndSelect('Bill.order', 'order')
-      .leftJoinAndSelect('order.orderDetails', 'orderDetails')
-      .leftJoinAndSelect('orderDetails.product', 'product')
-      .where(queryString)
-      .orderBy('Bill.createdDate')
-      .skip(pageRequest.page * pageRequest.size)
-      .take(pageRequest.size)
-      .getManyAndCount();
-  }
 
-  async save(bill: Bill): Promise<Bill | undefined> {
-    return await this.billRepository.save(bill);
-  }
+    async findByfields(options: FindOneOptions<Bill>): Promise<Bill | undefined> {
+        return await this.billRepository.findOne(options);
+    }
 
-  async update(bill: Bill): Promise<Bill | undefined> {
-    return await this.save(bill);
-  }
+    async findAndCount(pageRequest: PageRequest, req: Request, currentUser: User): Promise<[Bill[], number]> {
+        let departmentVisible = [];
+        if (currentUser.department) {
+            departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+            departmentVisible.push(currentUser.department);
+        }
+        let queryString = 'Bill.status <> \'DELETED\'';
+        Object.keys(req.query).forEach((item, index) => {
+            if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+                queryString += `Bill.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'OR '}`;
+            }
+        });
+        if (departmentVisible.length > 0) {
+            queryString += ` AND Bill.department IN ${JSON.stringify(departmentVisible.map(item => item.id))
+                .replace('[', '(')
+                .replace(']', ')')}`;
+        }
+        return await this.billRepository
+            .createQueryBuilder('Bill')
+            .leftJoinAndSelect('Bill.order', 'order')
+            .leftJoinAndSelect('order.orderDetails', 'orderDetails')
+            .leftJoinAndSelect('orderDetails.product', 'product')
+            .where(queryString)
+            .orderBy('Bill.createdDate')
+            .skip(pageRequest.page * pageRequest.size)
+            .take(pageRequest.size)
+            .getManyAndCount();
+    }
 
-  async delete(bill: Bill): Promise<Bill | undefined> {
-    return await this.billRepository.remove(bill);
-  }
+    async save(bill: Bill): Promise<Bill | undefined> {
+        return await this.billRepository.save(bill);
+    }
+
+    async update(bill: Bill): Promise<Bill | undefined> {
+        return await this.save(bill);
+    }
+
+    async delete(bill: Bill): Promise<Bill | undefined> {
+        return await this.billRepository.remove(bill);
+    }
 }

@@ -4,38 +4,36 @@ import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'cla
 import { BaseDTO } from './base.dto';
 
 
-
-
 /**
  * A CustomerToken DTO object.
  */
 export class CustomerTokenDTO extends BaseDTO {
 
-            
-        type: boolean;
 
-            @MaxLength(255)
-            
-        token: string;
+    type: boolean;
 
-            @MaxLength(255)
-            
-        tokenHash: string;
+    @MaxLength(255)
 
-            
-        expiredAt: number;
+    token: string;
 
-            
-        createdAt: number;
+    @MaxLength(255)
 
-            
-        updatedAt: number;
-
-            @IsNotEmpty()
-            
-        customerId: number;
+    tokenHash: string;
 
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    expiredAt: number;
 
-    }
+
+    createdAt: number;
+
+
+    updatedAt: number;
+
+    @IsNotEmpty()
+
+    customerId: number;
+
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

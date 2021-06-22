@@ -66,16 +66,19 @@ const User = props => {
   const [primary, setPrimary] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [value, setValue] = useState(null)
   const paramRef = useRef(null);
   const users = useSelector(selectAll);
-  const branches = useSelector(selectAllBranch)
-  const departments = useSelector(selectAllDepartment)
+  const branches = useSelector(selectAllBranch);
+  const departments = useSelector(selectAllDepartment);
 
   useEffect(() => {
     dispatch(reset());
     dispatch(getBranch({ page: 0, size: 100, sort: 'createdDate,DESC' }));
     dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC' }));
-
+    return () => {
+      paramRef.current = {};
+    };
   }, []);
 
   useEffect(() => {
@@ -88,7 +91,6 @@ const User = props => {
     }
     dispatch(getUser(params));
   }, [activePage, size]);
-
 
   const computedItems = items => {
     return items.map(item => {
@@ -127,18 +129,15 @@ const User = props => {
     localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/${userId}/edit`);
   };
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if (!value[key]) delete value[key];
-        });
-        paramRef.current = value;
-        dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300),
-    []
-  );
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -184,48 +183,42 @@ const User = props => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-          // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
           onPaginationChange={val => setSize(val)}
-          // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
-          // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           columnFilterSlot={{
             department: (
-              <div style={{minWidth: 200}}>
-
-              <Select
-                onChange={item => {
-                  onFilterColumn({ departmentId: item.value, ...paramRef.current });
-                }}
-                placeholder="chọn chi nhánh"
-                options={departments.map(item => ({
-                  value: item.id,
-                  label: item.name
-                }))}
-              />
+              <div style={{ minWidth: 200 }}>
+                <Select
+                  onChange={item => {
+                    onFilterColumn({ ...paramRef.current, departmentId: item?.value || '' });
+                  }}
+                  isClearable
+                  placeholder="chọn chi nhánh"
+                  options={departments.map(item => ({
+                    value: item.id,
+                    label: item.name
+                  }))}
+                />
               </div>
             ),
             branch: (
-              <div style={{minWidth: 200}}>
-
-              <Select
-                onChange={item => {
-                  onFilterColumn({ branchId: item.value, ...paramRef.current });
-                }}
-                placeholder="Chọn phòng ban"
-                options={branches.map(item => ({
-                  value: item.id,
-                  label: item.name
-                }))}
-              />
+              <div style={{ minWidth: 200 }}>
+                <Select
+                  onChange={item => {
+                    onFilterColumn({ ...paramRef.current, branchId: item?.value || '' });
+                  }}
+                  isClearable
+                  placeholder="Chọn phòng ban"
+                  options={branches.map(item => ({
+                    value: item.id,
+                    label: item.name
+                  }))}
+                />
               </div>
-            ),
+            )
           }}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             activated: item => (
               <td>
                 <CBadge color={getBadge(item.activated)}>{item.activated ? 'Đang hoạt động' : 'Không hoạt động'}</CBadge>

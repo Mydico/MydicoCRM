@@ -6,9 +6,9 @@ import { CustomerDebitService } from '../service/customer-debit.service';
 import { DepartmentModule } from './department.module';
 
 @Module({
-  imports: [CacheModule.register(), TypeOrmModule.forFeature([CustomerDebitRepository]), DepartmentModule],
-  controllers: [CustomerDebitController],
-  providers: [CustomerDebitService],
-  exports: [CustomerDebitService]
+    imports: [CacheModule.register(), TypeOrmModule.forFeature([CustomerDebitRepository]), DepartmentModule],
+    controllers: [CustomerDebitController],
+    providers: [CustomerDebitService],
+    exports: [CustomerDebitService],
 })
 export class CustomerDebitModule {}

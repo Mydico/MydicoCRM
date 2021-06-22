@@ -12,27 +12,23 @@ import { CityDTO } from './city.dto';
  */
 export class DistrictDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        name: string;
+    @MaxLength(255)
 
-            
+    name: string;
 
 
-            
-        isDel: boolean;
-
-            
-        storeId: number;
-
-            @MaxLength(250)
-            
-        codIds: string;
+    isDel: boolean;
 
 
-        
-        city: CityDTO;
+    storeId: number;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    @MaxLength(250)
 
-    }
+    codIds: string;
+
+
+    city: CityDTO;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+}

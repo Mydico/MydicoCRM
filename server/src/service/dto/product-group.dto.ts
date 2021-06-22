@@ -12,18 +12,17 @@ import { ProductBrandDTO } from './product-brand.dto';
  */
 export class ProductGroupDTO extends BaseDTO {
 
-            @MaxLength(255)
-            
-        name: string;
+    @MaxLength(255)
 
-            @MaxLength(512)
-            
-        description: string;
+    name: string;
+
+    @MaxLength(512)
+
+    description: string;
 
 
-        
-        productBrand: ProductBrandDTO;
+    productBrand: ProductBrandDTO;
 
-        // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    }
+}

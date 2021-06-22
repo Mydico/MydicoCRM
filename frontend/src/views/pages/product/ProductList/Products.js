@@ -135,8 +135,7 @@ const Product = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const debouncedSearchColumn = useCallback(
-    _.debounce(value => {
+  const debouncedSearchColumn =  _.debounce(value => {
       if (Object.keys(value).length > 0) {
         Object.keys(value).forEach(key => {
           if (!value[key]) delete value[key];
@@ -144,9 +143,7 @@ const Product = props => {
         paramRef.current = value;
         dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
-    }, 300),
-    []
-  );
+    }, 300)
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -196,9 +193,10 @@ const Product = props => {
               <div style={{ minWidth: 200 }}>
                 <Select
                   onChange={item => {
-                    onFilterColumn({ status: item.value, ...paramRef.current });
+                    onFilterColumn({ ...paramRef.current, status: item?.value || ''  });
                   }}
                   placeholder="Chọn trạng thái"
+                  isClearable                  isClearable
                   options={statusList.map(item => ({
                     value: item.value,
                     label: item.label
@@ -209,7 +207,7 @@ const Product = props => {
 
           }}
           scopedSlots={{
-            order: (item, index) => <td>{index + 1}</td>,
+            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>

@@ -16,6 +16,8 @@ const relationshipNames = [];
 relationshipNames.push('customer');
 relationshipNames.push('customer.sale');
 relationshipNames.push('approver');
+relationshipNames.push('department');
+
 @Injectable()
 export class ReceiptService {
     logger = new Logger('ReceiptService');
@@ -36,28 +38,28 @@ export class ReceiptService {
     }
 
     async findAndCount(options: FindManyOptions<Receipt>, filter = [],
-        departmentVisible = [],
-        isEmployee: boolean,
-        currentUser: User): Promise<[Receipt[], number]> {
+                       departmentVisible = [],
+                       isEmployee: boolean,
+                       currentUser: User): Promise<[Receipt[], number]> {
         let queryString = '';
         Object.keys(filter).forEach((item, index) => {
             queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
         });
-        let andQueryString = '';
+        let andQueryString = '1=1 ';
 
         if (departmentVisible.length > 0) {
-            andQueryString += `Receipt.department IN ${JSON.stringify(departmentVisible)
+            andQueryString += ` AND Receipt.department IN ${JSON.stringify(departmentVisible)
                 .replace('[', '(')
                 .replace(']', ')')}`;
         }
-        if (isEmployee) andQueryString += ` AND Receipt.sale = ${currentUser.id}`;
+        if (isEmployee) {andQueryString += ` AND Receipt.sale = ${currentUser.id}`;}
         if (currentUser.branch) {
             if (!currentUser.branch.seeAll) {
-              andQueryString += ` AND Receipt.branch = ${currentUser.branch.id}`;
+                andQueryString += ` AND Receipt.branch = ${currentUser.branch.id}`;
             }
-          }else{
-            andQueryString += ` AND Receipt.branch is NULL `;
-          }
+        }else{
+            andQueryString += ' AND Receipt.branch is NULL ';
+        }
 
         const queryBuilder = this.receiptRepository
             .createQueryBuilder('Receipt')
@@ -68,13 +70,13 @@ export class ReceiptService {
 
             .orderBy(`Receipt.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
-            .take(options.take)
+            .take(options.take);
         if (queryString) {
             queryBuilder.andWhere(
                 new Brackets(sqb => {
                     sqb.where(queryString);
                 })
-            )
+            );
         }
         return await queryBuilder.getManyAndCount();
 
@@ -110,6 +112,7 @@ export class ReceiptService {
             await this.transactionService.save(transaction);
             const incomeItem = new IncomeDashboard();
             incomeItem.amount = entity.money;
+            incomeItem.departmentId = entity.department.id;
             incomeItem.type = DashboardType.DEBT;
             incomeItem.userId = entity.customer.sale.id;
             await this.incomeDashboardService.save(incomeItem);
