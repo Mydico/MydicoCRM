@@ -33,3 +33,4 @@ function createPreserveQueryHistory(createHistory, queryParameters) {
 }
 
 export const history = createPreserveQueryHistory(createBrowserHistory, ['locale', 'token', 'returnTo'])();
+export const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();

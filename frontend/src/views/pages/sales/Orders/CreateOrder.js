@@ -50,6 +50,7 @@ const validationSchema = function() {
 
 import { validate } from '../../../../shared/utils/normalize';
 import { ProductStatus } from '../../product/ProductList/contants';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 const mappingType = {
   SHORTTERM: 'Ngắn hạn',
@@ -89,7 +90,6 @@ const CreateOrder = props => {
   const [showProductPromotion, setShowProductPromotion] = useState(false);
   useEffect(() => {
     dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getPromotion({ isLock: 0, page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     const existOrder = localStorage.getItem('order');
     try {
@@ -99,6 +99,14 @@ const CreateOrder = props => {
       }
     } catch (e) {}
   }, []);
+
+  useEffect(() => {
+    if (selectedCustomer) {
+      dispatch(
+        getPromotion({ isLock: 0, page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, customerType: selectedCustomer?.type?.id })
+      );
+    }
+  }, [selectedCustomer]);
 
   useEffect(() => {
     if (initFormState) {
@@ -220,6 +228,7 @@ const CreateOrder = props => {
         size: 20,
         sort: 'createdDate,DESC',
         name: value,
+        code: value,
         status: 'ACTIVE',
         dependency: true
       })
@@ -242,12 +251,10 @@ const CreateOrder = props => {
         setProductList(copyArr);
       }
     });
-  }, 1000);
+  }, 300);
 
   const onSearchProductInstore = (copyArr, index) => {
-    if(!copyArr[index].quantityInStore){
-      debouncedSearchProductInStore(copyArr, index);
-    }
+    debouncedSearchProductInStore(copyArr, index);
   };
 
   const onChangeQuantity = ({ target }, index) => {
@@ -561,9 +568,8 @@ const CreateOrder = props => {
                           <td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
-                              min={1}
-                              name="code"
-                              id="code"
+                              min="0"
+                              onKeyDown={blockInvalidChar}
                               onChange={event => onChangeQuantity(event, index)}
                               onBlur={handleBlur}
                               value={item.quantity}
@@ -600,6 +606,7 @@ const CreateOrder = props => {
                               type="number"
                               min={0}
                               max={100}
+                              onKeyDown={blockInvalidChar}
                               onChange={event => onChangeReducePercent(event, index)}
                               onBlur={handleBlur}
                               value={item.reducePercent}

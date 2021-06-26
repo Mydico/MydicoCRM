@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { creatingOrder, getOrderDetail, updateStatusOrder } from './order.api';
+import { creatingOrder, editSelfOrder, getOrderDetail, updateStatusOrder } from './order.api';
 import { getOrder, getDetailOrder, updateOrder } from './order.api';
 
 const initialState = {
@@ -73,6 +73,14 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
     },
     [updateOrder.rejected]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = false;
+    },
+    [editSelfOrder.fulfilled]: state => {
+      state.initialState.loading = false;
+      state.initialState.updatingSuccess = true;
+    },
+    [editSelfOrder.rejected]: state => {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = false;
     }

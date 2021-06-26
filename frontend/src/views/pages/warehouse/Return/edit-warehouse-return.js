@@ -17,7 +17,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDetailWarehouseImport, updateWarehouseImport } from '../Import/warehouse-import.api';
+import { getDetailWarehouseImport, updateWarehouseImport, updateWarehouseReturn } from '../Import/warehouse-import.api';
 import { currencyMask } from '../../../components/currency-input/currency-input';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
@@ -45,6 +45,7 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -111,7 +112,7 @@ const EditWarehouseReturn = props => {
     values.reduceMoney = productList.reduce((sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100, 0);
     values.type = WarehouseImportType.RETURN;
     dispatch(fetching());
-    dispatch(updateWarehouseImport(values));
+    dispatch(updateWarehouseReturn(values));
   };
 
   const onChangeQuantity = ({ target }, index) => {
@@ -392,6 +393,7 @@ const EditWarehouseReturn = props => {
                               min={1}
                               name="code"
                               id="code"
+                              onKeyDown={blockInvalidChar}
                               onChange={event => onChangeQuantity(event, index)}
                               onBlur={handleBlur}
                               value={item.quantity}
@@ -412,6 +414,7 @@ const EditWarehouseReturn = props => {
                               type="number"
                               min={0}
                               max={100}
+                              onKeyDown={blockInvalidChar}
                               onChange={event => onChangeReducePercent(event, index)}
                               value={item.reducePercent}
                             />

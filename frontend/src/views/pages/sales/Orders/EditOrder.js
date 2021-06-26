@@ -50,6 +50,7 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 const mappingType = {
   SHORTTERM: 'Ngắn hạn',
@@ -577,6 +578,7 @@ const EditOrder = props => {
                               min={1}
                               name="code"
                               id="code"
+                              onKeyDown={blockInvalidChar}
                               onChange={event => onChangeQuantity(event, index)}
                               onBlur={handleBlur}
                               value={item.quantity}
@@ -614,6 +616,7 @@ const EditOrder = props => {
                               type="number"
                               min={0}
                               max={100}
+                              onKeyDown={blockInvalidChar}
                               onChange={event => onChangeReducePercent(event, index)}
                               onBlur={handleBlur}
                               value={item.reducePercent}

@@ -51,7 +51,7 @@ const ViewOrder = props => {
             <CCol sm="4">
               <h6 className="mb-3">Tới:</h6>
               <div>
-                <strong>{invoice?.customer.contactName}</strong>
+                <strong>{invoice?.customer?.name || ''}</strong>
               </div>
               <div>{invoice?.address}</div>
               <div>{`${district.filter(dist => dist.value === invoice?.customer?.district)[0]?.label || ''}, ${cities.filter(

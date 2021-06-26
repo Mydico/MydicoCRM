@@ -73,7 +73,7 @@ const Department = props => {
 
   useEffect(() => {
     dispatch(reset());
-    dispatch(getTreeDepartment());
+    // dispatch(getTreeDepartment());
   }, []);
 
   useEffect(() => {
@@ -234,6 +234,10 @@ const Department = props => {
                         <dl className="row">
                           <dt className="col-sm-3">Tên chi nhánh:</dt>
                           <dd className="col-sm-9">{item.name}</dd>
+                        </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Tên chi nhánh cha:</dt>
+                          <dd className="col-sm-9">{item.parent?.name || ''}</dd>
                         </dl>
                       </CCol>
                     </CRow>

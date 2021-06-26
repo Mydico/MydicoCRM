@@ -531,12 +531,12 @@ const Order = props => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
-                    <h5>Thông tin đơn hàngg</h5>
+                    <h5>Thông tin đơn hàng</h5>
                     <CRow className="mb-4">
                       <CCol sm="4">
                         <h6 className="mb-3">Tới:</h6>
                         <div>
-                          <strong>{item?.customer.contactName}</strong>
+                          <strong>{item?.customer.name}</strong>
                         </div>
                         <div>{item?.address}</div>
                         {/* <div>{`${item?.customer?.district?.name}, ${item?.customer?.city?.name}`}</div> */}

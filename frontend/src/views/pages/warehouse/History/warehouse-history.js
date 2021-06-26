@@ -70,7 +70,7 @@ const StoreHistory = () => {
           if(!value[key]) delete value[key]
         })
         paramRef.current = value
-        dispatch(getStoreHistory({page: 0, size: size, sort: 'createdDate,DESC', ...value}));
+        dispatch(getStoreHistory({page: 0, size: size, sort: 'lastModifiedDate,DESC', ...value}));
       }
     }, 300)
 

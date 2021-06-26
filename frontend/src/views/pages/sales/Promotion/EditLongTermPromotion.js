@@ -44,6 +44,7 @@ const validationSchema = function() {
 };
 
 import {validate} from '../../../../shared/utils/normalize';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 const {selectAll} = globalizedcustomerTypeSelectors;
 const {selectAll: selectAllProductGroup} = globalizedproductGroupsSelectors;
 const {selectById} = globalizedPromotionSelectors;
@@ -278,6 +279,7 @@ const EditPromotion = (props) => {
                               name="totalMoney"
                               id="totalMoney"
                               min={0}
+                              onKeyDown={blockInvalidChar}
                               placeholder="Mức doanh thu"
                               autoComplete="totalMoney"
                               onChange={(event) => onChangeProductPromotion(event.target.value, index, 'totalMoney')}
@@ -299,6 +301,7 @@ const EditPromotion = (props) => {
                               min={0}
                               placeholder="Chiết khấu"
                               autoComplete="reducePercent"
+                              onKeyDown={blockInvalidChar}
                               onChange={(event) => onChangeProductPromotion(event.target.value, index, 'reducePercent')}
                               invalid={promotionItemList[index].reducePercent < 0}
                               valid={promotionItemList[index].reducePercent}

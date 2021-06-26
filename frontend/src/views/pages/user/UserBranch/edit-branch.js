@@ -155,17 +155,17 @@ const EditBranch = props => {
                   </CLabel>
                 </CFormGroup>
                 <CFormGroup variant="custom-checkbox" className="pb-3">
-                <CInputCheckbox
-                  custom={true}
-                  id="seeAll"
-                  name="seeAll"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <CLabel variant="custom-checkbox" htmlFor="seeAll">
-                  Cho phép xem dữ liệu của phòng ban khác
-                </CLabel>
-              </CFormGroup>
+                  <CInputCheckbox custom={true} id="allowToTransport" checked={values.allowToTransport} name="allowToTransport" onChange={handleChange} onBlur={handleBlur} />
+                  <CLabel variant="custom-checkbox" htmlFor="allowToTransport">
+                    Cho phép vận chuyển
+                  </CLabel>
+                </CFormGroup>
+                <CFormGroup variant="custom-checkbox" className="pb-3">
+                  <CInputCheckbox custom={true} id="seeAll" name="seeAll" checked={values.seeAll} onChange={handleChange} onBlur={handleBlur} />
+                  <CLabel variant="custom-checkbox" htmlFor="seeAll">
+                    Cho phép xem dữ liệu của phòng ban khác
+                  </CLabel>
+                </CFormGroup>
                 <CFormGroup>
                   <CLabel htmlFor="userName">Nhóm quyền</CLabel>
                   <Select

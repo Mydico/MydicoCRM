@@ -40,6 +40,7 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -116,22 +117,44 @@ const CreateReceipt = () => {
     }
   }, [selectedWarehouse]);
 
+  // dispatch(
+  //   getProductInstore({
+  //     storeId: selectedWarehouse.id,
+  //     productId: copyArr[index].product.id
+  //   })
+  // ).then(numberOfQuantityInStore => {
+  //   if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+  //     copyArr[index].quantity = Number(quantity);
+  //     copyArr[index].quantityInStore = numberOfQuantityInStore.payload[0].quantity;
+  //     setProductList(copyArr);
+  //   }
+  // });
+
+  const debouncedSearchProductInStore = _.debounce((copyArr, index) => {
+    dispatch(
+      getProductInstore({
+        storeId: selectedWarehouse.id,
+        productId: copyArr[index].product.id
+      })
+    ).then(numberOfQuantityInStore => {
+      if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+        copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
+        setProductList(copyArr);
+      }
+    });
+  }, 300);
+
+  const onSearchProductInstore = (copyArr, index) => {
+    debouncedSearchProductInStore(copyArr, index);
+  };
+
   const onChangeQuantity = ({ target }, index) => {
     const quantity = target.value;
     const copyArr = [...productList];
+    copyArr[index].quantity = Number(quantity);
     if (selectedWarehouse && copyArr[index].product) {
-      dispatch(
-        getProductInstore({
-          storeId: selectedWarehouse.id,
-          productId: copyArr[index].product.id
-        })
-      ).then(numberOfQuantityInStore => {
-        if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
-          copyArr[index].quantity = Number(quantity);
-          copyArr[index].quantityInStore = numberOfQuantityInStore.payload[0].quantity;
-          setProductList(copyArr);
-        }
-      });
+      setProductList(copyArr);
+      onSearchProductInstore(copyArr, index);
     }
   };
   useEffect(() => {
@@ -357,6 +380,7 @@ const CreateReceipt = () => {
                               min={1}
                               name="code"
                               id="code"
+                              onKeyDown={blockInvalidChar}
                               onChange={event => onChangeQuantity(event, index)}
                               onBlur={handleBlur}
                               value={item.quantity}

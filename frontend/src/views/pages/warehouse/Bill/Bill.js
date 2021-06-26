@@ -43,34 +43,34 @@ const mappingStatus = {
 };
 const statusList = [
   {
-    value:'CREATED',
-    label:'CHỜ DUYỆT'
+    value: 'CREATED',
+    label: 'CHỜ DUYỆT'
   },
   {
-    value:'APPROVED',
-    label:'ĐÃ DUYỆT'
+    value: 'APPROVED',
+    label: 'ĐÃ DUYỆT'
   },
   {
-    value:'CANCEL',
-    label:'KHÁCH HỦY'
+    value: 'CANCEL',
+    label: 'KHÁCH HỦY'
   },
   {
-    value:'REJECTED',
-    label:'KHÔNG DUYỆT'
+    value: 'REJECTED',
+    label: 'KHÔNG DUYỆT'
   },
   {
-    value:'SUPPLY_WAITING',
-    label:'ĐỢI XUẤT KHO'
+    value: 'SUPPLY_WAITING',
+    label: 'ĐỢI XUẤT KHO'
   },
   {
-    value:'SHIPPING',
-    label:'ĐANG VẬN CHUYỂN'
+    value: 'SHIPPING',
+    label: 'ĐANG VẬN CHUYỂN'
   },
   {
-    value:'SUCCESS',
-    label:'GIAO THÀNH CÔNG'
-  },
-]
+    value: 'SUCCESS',
+    label: 'GIAO THÀNH CÔNG'
+  }
+];
 const { selectAll } = globalizedBillsSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
 // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	vận đơng	Phân loại	Sửa	Tạo đơn
@@ -90,7 +90,7 @@ const fields = [
   { key: 'code', label: 'Mã vận đơn', _style: { width: '10%' } },
   { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
   { key: 'transporterName', label: 'Người vận chuyển', _style: { width: '10%' } },
-  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '5%' }, filter: false},
+  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '5%' }, filter: false },
   { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false },
@@ -135,8 +135,13 @@ const Bill = props => {
   const history = useHistory();
   useEffect(() => {
     dispatch(reset());
-    dispatch(getTranporter({ dependency: true }));
   }, []);
+
+  useEffect(() => {
+    if (modal) {
+      dispatch(getTranporter({ dependency: true }));
+    }
+  }, [modal]);
 
   const bills = useSelector(selectAll);
   const users = useSelector(selectUserAll);
@@ -149,10 +154,10 @@ const Bill = props => {
       return {
         ...item,
         tel: item.customer?.tel,
-        quantity: item.order.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
-        total: item.order.orderDetails
+        quantity: item.order?.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0) || 0,
+        total: item.order?.orderDetails
           ?.reduce((sum, current) => sum + current.priceTotal, 0)
-          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }),
+          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || 0,
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
@@ -172,15 +177,15 @@ const Bill = props => {
   const csvContent = bills.map(item => Object.values(item).join(',')).join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
-  const debouncedSearchColumn =  _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if (!value[key]) delete value[key];
-        });
-        paramRef.current = value;
-        dispatch(getBill({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300)
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getBill({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -430,6 +435,24 @@ const Bill = props => {
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(bills), [bills]);
 
+  const debouncedSearchUser = _.debounce(value => {
+    dispatch(
+      getTranporter({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        login: value,
+        firstName: value,
+        lastName: value,
+        dependency: true
+      })
+    );
+  }, 300);
+
+  const onSearchUser = value => {
+    debouncedSearchUser(value);
+  };
+
   return (
     <CCard>
       <CCardHeader>
@@ -465,18 +488,18 @@ const Bill = props => {
           onColumnFilterChange={onFilterColumn}
           columnFilterSlot={{
             status: (
-              <div style={{minWidth: 200}}>
-              <Select
-                onChange={item => {
-                 onFilterColumn({ ...paramRef.current, status: item?.value || ''  });
-                }}
-                maxMenuHeight="200"
-                placeholder="Chọn trạng thái"
-                options={statusList.map(item => ({
-                  value: item.value,
-                  label: item.label
-                }))}
-              />
+              <div style={{ minWidth: 200 }}>
+                <Select
+                  onChange={item => {
+                    onFilterColumn({ ...paramRef.current, status: item?.value || '' });
+                  }}
+                  maxMenuHeight="200"
+                  placeholder="Chọn trạng thái"
+                  options={statusList.map(item => ({
+                    value: item.value,
+                    label: item.label
+                  }))}
+                />
               </div>
             )
           }}
@@ -518,21 +541,23 @@ const Bill = props => {
                       <CCol sm="4">
                         <h6 className="mb-3">Tới:</h6>
                         <div>
-                          <strong>{item?.customer?.name}</strong>
+                          <strong>{item?.customer?.name || ''}</strong>
                         </div>
-                        <div>{item?.address}</div>
-                        <div>{`${item?.customer?.district}, ${item?.customer?.city}`}</div>
-                        <div>Email: {item?.customer?.email}</div>
-                        <div>Phone: {item?.customer?.tel}</div>
+                        <div>{item?.address || ''}</div>
+                        <div>{`${item?.customer?.district || ''}, ${item?.customer?.city || ''}`}</div>
+                        <div>Email: {item?.customer?.email || ''}</div>
+                        <div>Phone: {item?.customer?.tel || ''}</div>
                       </CCol>
                       <CCol sm="4">
                         <h6 className="mb-3">Chương trình bán hàng:</h6>
                         <div>
-                          <strong> {item?.promotion?.name}</strong>
+                          <strong> {item?.promotion?.name || ''}</strong>
                         </div>
-                        <div>{item?.promotion?.description.length > 30
-                            ? `${invoice?.promotion?.description.substring(0, 30)}`
-                            : invoice?.promotion?.description}</div>
+                        <div>
+                          {item?.promotion?.description.length > 30
+                            ? `${item?.promotion?.description.substring(0, 30)}`
+                            : item?.promotion?.description}
+                        </div>
                         <div>Loại khách hàng: {item?.promotion?.customerType?.name}</div>
                       </CCol>
                     </CRow>
@@ -541,20 +566,21 @@ const Bill = props => {
                         <tr>
                           <th className="center">#</th>
                           <th>Tên sản phẩm</th>
-                          <th>Mô tả</th>
+                          <th>Dung tích</th>
                           <th className="center">Số lượng</th>
                           <th className="right">Đơn giá</th>
                           <th className="right">Chiết khấu(%)</th>
                           <th className="right">Tổng</th>
+                          <th className="right">Thanh toán</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {item?.order.orderDetails.map((item, index) => {
+                        {item?.order?.orderDetails.map((item, index) => {
                           return (
                             <tr key={index}>
                               <td>{index + 1}</td>
                               <td>{item.product?.name}</td>
-                              <td>{item.product?.description}</td>
+                              <td>{item.product?.volume}</td>
                               <td>{item.quantity}</td>
 
                               <td>{item.product?.price}</td>
@@ -589,7 +615,7 @@ const Bill = props => {
                                 <strong>Tổng tiền</strong>
                               </td>
                               <td className="right">
-                                {item?.order.orderDetails
+                                {item?.order?.orderDetails
                                   .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
                                   .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                               </td>
@@ -599,7 +625,7 @@ const Bill = props => {
                                 <strong>Chiết khấu</strong>
                               </td>
                               <td className="right">
-                                {item?.order.orderDetails
+                                {item?.order?.orderDetails
                                   .reduce(
                                     (sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100,
                                     0
@@ -613,7 +639,7 @@ const Bill = props => {
                               </td>
                               <td className="right">
                                 <strong>
-                                  {item?.order.orderDetails
+                                  {item?.order?.orderDetails
                                     .reduce(
                                       (sum, current) =>
                                         sum +
@@ -652,10 +678,11 @@ const Bill = props => {
             onChange={e => {
               selectedTransporter.current = e.value;
             }}
+            onInputChange={onSearchUser}
             placeholder="Chọn người vận chuyển"
             options={users.map(item => ({
               value: item,
-              label: `${item.login}-${item.firstName}-${item.lastName}-${item.phone}`
+              label: `${item.login}-${item.firstName}-${item.lastName}-${item.phone || 'Không có sdt'}`
             }))}
           />
         </CModalBody>

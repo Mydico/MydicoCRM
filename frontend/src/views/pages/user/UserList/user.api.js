@@ -15,7 +15,7 @@ export const getTranporter = createAsyncThunk(
   async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
     try {
       const result = await axios.get('api/users/transporter', { params: params });
-      return { data: result.data, total: result.headers['x-total-count'] };
+      return { data: result.data };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
     }

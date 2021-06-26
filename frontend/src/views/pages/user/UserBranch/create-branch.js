@@ -47,7 +47,8 @@ const CreateBranch = () => {
   const initialValues = {
     name: '',
     code: '',
-    allow: false
+    allow: false,
+    allowToTransport: false
   };
 
   useEffect(() => {
@@ -119,27 +120,21 @@ const CreateBranch = () => {
                 <CInvalidFeedback>{errors.name}</CInvalidFeedback>
               </CFormGroup>
               <CFormGroup variant="custom-checkbox" className="pb-3">
-                <CInputCheckbox
-                  custom={true}
-                  id="allow"
-                  name="allow"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
+                <CInputCheckbox custom={true} id="allow" name="allow" onChange={handleChange} onBlur={handleBlur} />
                 <CLabel variant="custom-checkbox" htmlFor="allow">
                   Cho phép chỉnh sửa và hủy đơn hàng sau khi duyệt
                 </CLabel>
               </CFormGroup>
               <CFormGroup variant="custom-checkbox" className="pb-3">
-                <CInputCheckbox
-                  custom={true}
-                  id="seeAll"
-                  name="seeAll"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
+                <CInputCheckbox custom={true} id="seeAll" name="seeAll" onChange={handleChange} onBlur={handleBlur} />
                 <CLabel variant="custom-checkbox" htmlFor="seeAll">
                   Cho phép xem dữ liệu của phòng ban khác
+                </CLabel>
+              </CFormGroup>
+              <CFormGroup variant="custom-checkbox" className="pb-3">
+                <CInputCheckbox custom={true} id="allowToTransport" name="allowToTransport" onChange={handleChange} onBlur={handleBlur} />
+                <CLabel variant="custom-checkbox" htmlFor="allowToTransport">
+                  Cho phép vận chuyển
                 </CLabel>
               </CFormGroup>
               <CFormGroup>

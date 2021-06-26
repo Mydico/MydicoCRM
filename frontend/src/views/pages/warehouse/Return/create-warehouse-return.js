@@ -38,6 +38,7 @@ import { validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 const validationSchema = function(values) {
   return Yup.object().shape({
@@ -365,6 +366,7 @@ const CreateWarehouse = () => {
                               min={1}
                               name="code"
                               id="code"
+                              onKeyDown={blockInvalidChar}
                               onChange={event => onChangeQuantity(event, index)}
                               onBlur={handleBlur}
                               value={item.quantity}
@@ -391,6 +393,7 @@ const CreateWarehouse = () => {
                               type="number"
                               min={0}
                               max={100}
+                              onKeyDown={blockInvalidChar}
                               onChange={event => onChangeReducePercent(event, index)}
                               value={item.reducePercent}
                             />

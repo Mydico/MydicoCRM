@@ -17,7 +17,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDetailWarehouseImport, updateWarehouseImport } from '../Import/warehouse-import.api';
+import { getDetailWarehouseImport, updateWarehouseExport, updateWarehouseImport } from '../Import/warehouse-import.api';
 import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
@@ -96,7 +96,7 @@ const EditWarehouseExport = props => {
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
     values.totalMoney = Number(values.totalMoney.replace(/\D/g, ''))
-    dispatch(updateWarehouseImport(values));
+    dispatch(updateWarehouseExport(values));
   };
 
   const onChangeQuantity = ({ target }, index) => {
