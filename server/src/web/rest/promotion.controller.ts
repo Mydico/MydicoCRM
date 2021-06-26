@@ -40,10 +40,10 @@ export class PromotionController {
     })
     async getAll(@Req() req: Request, @Res() res): Promise<Promotion[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-        const filter = [];
+        const filter = {};
         Object.keys(req.query).forEach(item => {
             if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-                filter.push({ [item]: Like(`%${req.query[item]}%`) });
+                filter[item] = Like(`%${req.query[item]}%`);
             }
         });
         const [results, count] = await this.promotionService.findAndCount({

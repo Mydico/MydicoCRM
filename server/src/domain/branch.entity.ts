@@ -27,6 +27,10 @@ export default class Branch extends BaseEntity {
     @Index()
     seeAll: boolean;
 
+    @Column({ name: 'allow_transport', nullable: true, default: false})
+    @Index()
+    allowToTransport: boolean;
+
     @ManyToMany(type => PermissionGroup, other => other.branches)
     permissionGroups?: PermissionGroup[];
 

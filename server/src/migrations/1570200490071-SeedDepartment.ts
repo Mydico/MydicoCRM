@@ -84,12 +84,7 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
     }
     public async up(queryRunner: QueryRunner): Promise<any> {
         const conn = queryRunner.connection;
-        const resultDepartment = await conn
-            .createQueryBuilder()
-            .insert()
-            .into(Department)
-            .values(departments)
-            .execute();
+        const resultDepartment = await conn.getRepository(Department).save(departments);
         const resultCustomerType = await conn
             .createQueryBuilder()
             .insert()
@@ -109,7 +104,7 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
                     name: item.nameStore,
                     address: '',
                     tel: '',
-                    department: resultDepartment.identifiers[departments.findIndex(branch => branch.code === item.code)],
+                    department: resultDepartment[departments.findIndex(branch => branch.code === item.code)],
                 }))
             )
             .execute();
@@ -132,7 +127,7 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
             old_id: item.id.toString(),
             activated: true,
             branch: resultBranch.identifiers[branches.findIndex(branch => branch.code === item['Phòng Ban'])],
-            department: resultDepartment.identifiers[departments.findIndex(branch => branch.code === item['Chi nhánh'])],
+            department: resultDepartment[departments.findIndex(branch => branch.code === item['Chi nhánh'])],
             roles: resultPosition.filter(item => item.code === 'NV'),
         }));
         for (let index = 0; index < users.length - 1; index++) {
@@ -150,7 +145,7 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
                 newGroupingRules.push({ ptype: 'g', v0: branches[resultBranch.identifiers.findIndex(id => id === result.branch)].code, v1: result.login });
             }
             if (result.department) {
-                newGroupingRules.push({ ptype: 'g', v0: departments[resultDepartment.identifiers.findIndex(id => id === result.department)].code, v1: result.login });
+                newGroupingRules.push({ ptype: 'g', v0: departments[resultDepartment.findIndex(id => id === result.department)].code, v1: result.login });
             }
         });
         await conn.createQueryBuilder().insert().into('casbin_rule', ['ptype', 'v0', 'v1']).values(newGroupingRules).execute();
@@ -168,7 +163,7 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
             address: item.address,
             tel: item.tel.toString(),
             code: `${item['Chi nhánh']}_${item.type}_${getCodeByCustomer(item.name)}`,
-            department: resultDepartment.identifiers[departments.findIndex(branch => branch.code === item['Chi nhánh'])],
+            department: resultDepartment[departments.findIndex(branch => branch.code === item['Chi nhánh'])],
             departmentString: item['Chi nhánh'],
             type: resultCustomerType.identifiers[customerType.findIndex(type => type.code === item.type)],
             typeString: item.type,

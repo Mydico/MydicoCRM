@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StoreImportStatus } from '../domain/enumeration/store-import-status';
 import { Brackets, FindManyOptions, FindOneOptions, In, Not } from 'typeorm';
@@ -43,7 +43,7 @@ export class StoreInputService {
         private readonly transactionService: TransactionService,
         private readonly orderService: OrderService,
         private readonly incomeDashboardService: IncomeDashboardService
-    ) {}
+    ) { }
 
     async findById(id: string): Promise<StoreInput | undefined> {
         if (!relationshipNames.includes('storeInputDetails') && !relationshipNames.includes('storeInputDetails.product')) {
@@ -118,7 +118,7 @@ export class StoreInputService {
             andQueryString += ` AND StoreInput.type like '%${type}%' `;
         }
         const cacheKeyBuilder = `get_StoreInputs_department_${departmentVisible.join(',')}_type_${type}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_StoreInput.${Object.keys(options.order)[0] ||
-      'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+            'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
         const queryBuilder = this.storeInputRepository
             .createQueryBuilder('StoreInput')
             .leftJoinAndSelect('StoreInput.approver', 'approver')
@@ -184,13 +184,17 @@ export class StoreInputService {
         if (Array.isArray(storeInput.storeInputDetails)) {
             await this.storeInputDetailsService.saveMany(storeInput.storeInputDetails);
         }
-        storeInput.sale =  storeInput.customer?.sale || null;
+        storeInput.sale = storeInput.customer?.sale || null;
         return await this.storeInputRepository.save(storeInput);
     }
 
     async update(storeInput: StoreInput): Promise<StoreInput | undefined> {
+        const entity = await this.findById(storeInput.id);
+
+        if (entity.status === StoreImportStatus.APPROVED && storeInput.status === StoreImportStatus.APPROVED) {
+            throw new HttpException('Phiếu này đã được duyệt', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         if (storeInput.status === StoreImportStatus.APPROVED) {
-            const entity = await this.findById(storeInput.id);
             const arrProduct = entity.storeInputDetails.map(item => item.product.id);
             const founded = await this.productQuantityService.findByfields({
                 where: {
@@ -236,9 +240,11 @@ export class StoreInputService {
     async exportStore(founded: ProductQuantity[], entity: StoreInput): Promise<void> {
         const productInStore = founded.map(item => {
             const itemFounded = entity.storeInputDetails.filter(origin => origin.product.id === item.product.id);
+            const totalProduct = itemFounded.reduce((prev, current) => prev + current.quantity, 0);
+
             return {
                 ...item,
-                quantity: item.quantity - itemFounded[0].quantity > 0 ? item.quantity - itemFounded[0].quantity : 0,
+                quantity: item.quantity - totalProduct > 0 ? item.quantity - totalProduct : 0,
             };
         });
         await this.productQuantityService.saveMany(productInStore);
@@ -274,7 +280,7 @@ export class StoreInputService {
             }));
         const productInStore = founded.map(item => {
             const itemFounded = entity.storeInputDetails.filter(origin => origin.product.id === item.product.id);
-            const totalProduct = itemFounded.reduce((prev, current) => prev + current.quantity,0);
+            const totalProduct = itemFounded.reduce((prev, current) => prev + current.quantity, 0);
             return {
                 ...item,
                 department: entity.store.department,

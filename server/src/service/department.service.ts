@@ -40,8 +40,16 @@ export class DepartmentService {
     }
 
     async findAndCount(options: FindManyOptions<Department>): Promise<[Department[], number]> {
-        options.relations = relationshipNames;
-        return await this.departmentRepository.findAndCount(options);
+        // options.relations = relationshipNames;
+        const queryBuilder = this.departmentRepository
+        .createQueryBuilder('Department')
+        .leftJoinAndSelect('Department.parent', 'parent')
+        // .where(andQueryString)
+        .orderBy(`Department.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+        .skip(options.skip)
+        .take(options.take)
+        // .cache(cacheKeyBuilder, 3600000);
+        return await queryBuilder.getManyAndCount();
     }
 
     async save(department: Department): Promise<Department | undefined> {
