@@ -208,9 +208,10 @@ export class OrderService {
     const count = await this.orderRepository
       .createQueryBuilder('order')
       .select('DISTINCT()')
+      .where(`order.code like '%${currentUser.department.code}%'`)
       .getCount();
     if (!order.id) {
-      order.code = `${count + 1}`;
+      order.code = `${currentUser.department.code}-${count + 1}`;
     }
     return await this.orderRepository.save(order);
   }

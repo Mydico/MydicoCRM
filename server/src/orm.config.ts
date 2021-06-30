@@ -65,7 +65,6 @@ if (process.env.NODE_ENV === 'dev') {
         password: 'Dunghd@123',
         logging: true,
         synchronize: true,
-        autoLoadEntities: true,
         entities: commonConf.ENTITIES,
         migrations: commonConf.MIGRATIONS,
         cli: commonConf.CLI,

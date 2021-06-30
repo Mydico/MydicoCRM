@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
+import { Brackets, FindManyOptions, FindOneOptions } from 'typeorm';
 import Bill from '../domain/bill.entity';
 import { BillRepository } from '../repository/bill.repository';
 import { Request, Response } from 'express';
@@ -39,10 +39,11 @@ export class BillService {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible.push(currentUser.department);
         }
-        let queryString = 'Bill.status <> \'DELETED\'';
+        let queryString = 'Bill.status <> \'DELETED\' ';
+        let filterString = ""
         Object.keys(req.query).forEach((item, index) => {
             if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-                queryString += `Bill.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'OR '}`;
+                filterString += `Bill.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'AND '}`;
             }
         });
         if (departmentVisible.length > 0) {
@@ -56,6 +57,11 @@ export class BillService {
             .leftJoinAndSelect('order.orderDetails', 'orderDetails')
             .leftJoinAndSelect('orderDetails.product', 'product')
             .where(queryString)
+            .andWhere(
+                new Brackets(sqb => {
+                  sqb.where(filterString);
+                })
+              )
             .orderBy('Bill.createdDate')
             .skip(pageRequest.page * pageRequest.size)
             .take(pageRequest.size)

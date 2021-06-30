@@ -61,7 +61,7 @@ const CreateWarehouse = () => {
 
   const warehouses = useSelector(selectAllWarehouse);
   const products = useSelector(selectAllProduct);
-
+  console.log(products)
   const [productList, setProductList] = useState([]);
 
   const initialValues = {
@@ -109,7 +109,6 @@ const CreateWarehouse = () => {
     const data = { product: {}, quantity: 1 };
     setProductList([...productList, data]);
   };
-  console.log(products)
   const debouncedSearchProduct =  _.debounce(value => {
       dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
     }, 300)
@@ -233,7 +232,7 @@ const CreateWarehouse = () => {
                               menuPortalTarget={document.body}
                               options={products.map(item => ({
                                 value: item,
-                                label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`
+                                label: `${item?.productBrand?.name}${item?.code}-${item?.name}-${item?.volume}`
                               }))}
                             />
                           </td>

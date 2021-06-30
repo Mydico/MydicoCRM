@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -14,42 +14,41 @@ import {
   CSelect,
   CCardTitle,
   CTextarea,
-  CInputCheckbox,
+  CInputCheckbox
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {creatingPromotion} from './promotion.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { creatingPromotion } from './promotion.api';
 import _ from 'lodash';
 
+import { useHistory } from 'react-router-dom';
+import { fetching } from './promotion.reducer';
+import { PromotionStatus } from './contants';
 
-import {useHistory} from 'react-router-dom';
-import {fetching} from './promotion.reducer';
-import {PromotionStatus} from './contants';
-
-import {getCustomerType} from '../../customer/CustomerType/customer-type.api';
-import {globalizedcustomerTypeSelectors} from '../../customer/CustomerType/customer-type.reducer';
+import { getCustomerType } from '../../customer/CustomerType/customer-type.api';
+import { globalizedcustomerTypeSelectors } from '../../customer/CustomerType/customer-type.reducer';
 import Select from 'react-select';
-import {filterProduct, getProduct} from '../../product/ProductList/product.api';
-import {globalizedProductSelectors} from '../../product/ProductList/product.reducer';
+import { filterProduct, getProduct } from '../../product/ProductList/product.api';
+import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5, `Tên phải lớn hơn 5 kí tự`)
-        .required('Tên không để trống'),
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống'),
+    endTime: Yup.string().required('Ngày kết thúc không để trống')
   });
 };
 
-import {validate} from '../../../../shared/utils/normalize';
-const {selectAll} = globalizedcustomerTypeSelectors;
-const {selectAll: selectAllProduct} = globalizedProductSelectors;
+import { validate } from '../../../../shared/utils/normalize';
+const { selectAll } = globalizedcustomerTypeSelectors;
+const { selectAll: selectAllProduct } = globalizedProductSelectors;
 
 const CreatePromotion = () => {
-  const {initialState} = useSelector((state) => state.promotion);
+  const { initialState } = useSelector(state => state.promotion);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -59,9 +58,8 @@ const CreatePromotion = () => {
     startTime: new Date(),
     startTime: new Date(),
     isLock: false,
-    status: PromotionStatus[0].value,
+    status: PromotionStatus[0].value
   });
-
 
   const customerType = useSelector(selectAll);
   const products = useSelector(selectAllProduct);
@@ -71,9 +69,9 @@ const CreatePromotion = () => {
   }, []);
 
   const [productList, setProductList] = useState([]);
-  const debouncedSearchProduct =  _.debounce(value => {
-      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
-    }, 300)
+  const debouncedSearchProduct = _.debounce(value => {
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+  }, 300);
 
   const onSearchProduct = value => {
     debouncedSearchProduct(value);
@@ -85,17 +83,17 @@ const CreatePromotion = () => {
   }, [customerType]);
 
   const onAddProduct = () => {
-    const data = {product: {id: ''}, buy: 0, gift: 0};
+    const data = { product: { id: '' }, buy: 0, gift: 0 };
     setProductList([...productList, data]);
   };
 
   const onSelectedProduct = (item, index) => {
     const copyArr = [...productList];
-    const foundedIndex = copyArr.findIndex((product) => product.product.id === item.value);
+    const foundedIndex = copyArr.findIndex(product => product.product.id === item.value);
     if (foundedIndex >= 0) {
       copyArr.splice(index, 1);
     } else {
-      copyArr[index].product = {id: item.value};
+      copyArr[index].product = { id: item.value };
     }
     setProductList(copyArr);
   };
@@ -106,9 +104,9 @@ const CreatePromotion = () => {
     setProductList(copyArr);
   };
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
-    values.customerType = values.current?.customerType;
+    values.customerType = values.customerType ? initialValues.current.customerType : values.customerType;
     values.promotionProduct = productList;
     values.type = 'SHORTTERM';
     dispatch(creatingPromotion(values));
@@ -120,7 +118,7 @@ const CreatePromotion = () => {
     }
   }, [initialState.updatingSuccess]);
 
-  const onRemoveProduct = (index) => {
+  const onRemoveProduct = index => {
     const copyArr = [...productList];
     copyArr.splice(index, 1);
     setProductList(copyArr);
@@ -138,15 +136,12 @@ const CreatePromotion = () => {
             errors,
             touched,
 
-
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
 
-
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -191,12 +186,12 @@ const CreatePromotion = () => {
                       name="customerType"
                       id="customerType"
                       value={values.customerType}
-                      onChange={(e) => {
+                      onChange={e => {
                         setFieldValue('customerType', e.target.value);
                       }}
                     >
                       {customerType &&
-                        customerType.map((item) => (
+                        customerType.map(item => (
                           <option key={item.id} value={item.id}>
                             {item.name}
                           </option>
@@ -218,13 +213,7 @@ const CreatePromotion = () => {
                     <CInvalidFeedback className="d-block">{errors.endTime}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup variant="custom-checkbox" className="pb-3">
-                    <CInputCheckbox
-                      custom
-                      id="isLock"
-                      name="isLock"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
+                    <CInputCheckbox custom id="isLock" name="isLock" onChange={handleChange} onBlur={handleBlur} />
                     <CLabel variant="custom-checkbox" htmlFor="isLock">
                       Khóa chương trình
                     </CLabel>
@@ -236,11 +225,11 @@ const CreatePromotion = () => {
                       name="status"
                       id="status"
                       value={values.status}
-                      onChange={(e) => {
+                      onChange={e => {
                         setFieldValue('status', e.target.value);
                       }}
                     >
-                      {PromotionStatus.map((item) => (
+                      {PromotionStatus.map(item => (
                         <option key={item.value} value={item.value}>
                           {item.title}
                         </option>
@@ -260,11 +249,11 @@ const CreatePromotion = () => {
                           <CLabel htmlFor="password">Sản phẩm</CLabel>
                           <Select
                             defaultValue={productList[index]?.id}
-                            onChange={(event) => onSelectedProduct(event, index)}
+                            onChange={event => onSelectedProduct(event, index)}
                             onInputChange={onSearchProduct}
-                            options={products.map((item) => ({
+                            options={products.map(item => ({
                               value: item.id,
-                              label: `${item.code}-${item.name}`,
+                              label: `${item.code}-${item.name}`
                             }))}
                           />
                         </CCol>
@@ -276,7 +265,7 @@ const CreatePromotion = () => {
                             id="buy"
                             placeholder="Dung tích"
                             autoComplete="buy"
-                            onChange={(event) => onChangeProductPromotion(event.target.value, index, 'buy')}
+                            onChange={event => onChangeProductPromotion(event.target.value, index, 'buy')}
                             invalid={!productList[index].buy}
                             valid={productList[index].buy}
                             onBlur={handleBlur}
@@ -292,7 +281,7 @@ const CreatePromotion = () => {
                             id="gift"
                             placeholder="Dung tích"
                             autoComplete="gift"
-                            onChange={(event) => onChangeProductPromotion(event.target.value, index, 'gift')}
+                            onChange={event => onChangeProductPromotion(event.target.value, index, 'gift')}
                             invalid={!productList[index].gift}
                             valid={productList[index].gift}
                             onBlur={handleBlur}

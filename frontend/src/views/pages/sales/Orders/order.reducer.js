@@ -5,7 +5,8 @@ import { getOrder, getDetailOrder, updateOrder } from './order.api';
 const initialState = {
   loading: false,
   updatingSuccess: false,
-  orderDetails: []
+  orderDetails: [],
+  totalItem: 0
 };
 
 export const orderAdapter = createEntityAdapter({

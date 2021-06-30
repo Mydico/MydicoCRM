@@ -120,12 +120,15 @@ const EditDepartment = props => {
                   <Select
                     name="department"
                     onChange={e => {
-                      setFieldValue('parent', e.value);
+                      setFieldValue('parent', e?.value || null);
                     }}
+                    isClearable={true}
+                    openMenuOnClick={false} 
                     value={{
                       value: values.parent,
                       label: values.parent?.name
                     }}
+                    
                     placeholder="Chọn chi nhánh"
                     options={departments.map(item => ({
                       value: item,

@@ -247,8 +247,10 @@ const EditUser = props => {
                 <Select
                   name="department"
                   onChange={e => {
-                    setFieldValue('department', e.value);
+                    setFieldValue('department', e?.value || '');
                   }}
+                  isClearable={true}
+                  openMenuOnClick={false}
                   placeholder="Chọn chi nhánh"
                   value={{
                     value: values.department,

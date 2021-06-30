@@ -22,7 +22,6 @@ const fields = [
   },
   { key: 'code', label: 'Mã' },
   { key: 'name', label: 'Tên cửa hàng/đại lý' },
-  { key: 'address', label: 'Địa chỉ' },
   { key: 'tel', label: 'Điện thoại' },
   { key: 'saleName', label: 'Nhân viên quản lý' },
   { key: 'typeName', label: 'Loại khách hàng', filter: false },
@@ -79,8 +78,8 @@ const Customer = props => {
     return items.map(item => {
       return {
         ...item,
-        typeName: item.type?.name,
-        department: item.department?.name || '',
+        typeName: item.type?.code,
+        department: item.department?.code || '',
         createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
         sale: item.sale?.code || ''
       };

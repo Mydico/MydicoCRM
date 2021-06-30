@@ -5,6 +5,7 @@ import {
   getDetailProductWarehouse,
   updateProductWarehouse,
   getProductInstore,
+  filterProductInStore,
 } from './product-warehouse.api';
 
 const initialState = {
@@ -55,9 +56,20 @@ const slice = createSlice({
       productWarehousesAdapter.addOne(state, action.payload);
       state.initialState.loading = false;
     },
+    [filterProductInStore.fulfilled]: (state, action) => {
+      productWarehousesAdapter.setAll(state, action.payload.data);
+      state.initialState.totalItem = action.payload.total;
+      state.initialState.loading = false;
+    },
+    [filterProductInStore.rejected]: (state, action) => {
+      state.initialState.loading = false;
+    },
     [getProductWarehouse.fulfilled]: (state, action) => {
       productWarehousesAdapter.setAll(state, action.payload.data);
       state.initialState.totalItem = action.payload.total;
+      state.initialState.loading = false;
+    },
+    [getProductWarehouse.rejected]: (state, action) => {
       state.initialState.loading = false;
     },
     [getProductInstore.fulfilled]: (state, action) => {

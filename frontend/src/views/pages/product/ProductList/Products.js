@@ -45,6 +45,7 @@ const fields = [
   },
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'name', label: 'Tên sản phẩm', _style: { width: '10%' } },
+  { key: 'volume', label: 'Dung tích', _style: { width: '10%' }, filter: false },
   { key: 'price', label: 'Giá salon', _style: { width: '15%' }, filter: false },
   { key: 'agentPrice', label: 'Giá đại lý', _style: { width: '10%' }, filter: false },
   { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
@@ -104,6 +105,7 @@ const Product = props => {
       return {
         ...item,
         productGroup: item.productGroup?.name,
+        volume: item.volume,
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });

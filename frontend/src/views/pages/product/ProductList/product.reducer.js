@@ -1,17 +1,5 @@
-import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
-import {
-  creatingProduct,
-
-
-  getProduct,
-
-
-  getDetailProduct,
-
-
-  updateProduct,
-  filterProduct,
-} from './product.api';
+import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { creatingProduct, getProduct, getDetailProduct, updateProduct, filterProduct } from './product.api';
 
 const initialState = {
   loading: false,
@@ -22,19 +10,19 @@ const initialState = {
   wards: [],
   type: [],
   branch: [],
-  status: [],
+  status: []
 };
 
 export const productsAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: (product) => product.id,
+  selectId: product => product.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.name.localeCompare(b.name),
+  sortComparer: (a, b) => a.name.localeCompare(b.name)
 });
 
 const slice = createSlice({
   name: 'product',
-  initialState: productsAdapter.getInitialState({initialState}),
+  initialState: productsAdapter.getInitialState({ initialState }),
   reducers: {
     fetching(state) {
       state.initialState.loading = true;
@@ -46,10 +34,10 @@ const slice = createSlice({
     productsAddOne: productsAdapter.addOne,
     productsAddMany: productsAdapter.addMany,
     productUpdate: productsAdapter.updateOne,
-    productRemove: productsAdapter.removeOne,
+    productRemove: productsAdapter.removeOne
   },
   extraReducers: {
-    [creatingProduct.fulfilled]: (state ) => {
+    [creatingProduct.fulfilled]: state => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
@@ -57,7 +45,7 @@ const slice = createSlice({
       state.initialState.loading = false;
       state.initialState.updatingSuccess = true;
     },
-    [updateProduct.fulfilled]: (state ) => {
+    [updateProduct.fulfilled]: state => {
       state.initialState.updatingSuccess = true;
       state.initialState.loading = false;
     },
@@ -78,7 +66,7 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [filterProduct.rejected]: (state ) => {
+    [filterProduct.rejected]: state => {
       state.initialState.loading = false;
       state.loading = false;
     },
@@ -87,14 +75,14 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [getProduct.rejected]: (state ) => {
+    [getProduct.rejected]: state => {
       state.initialState.loading = false;
       state.loading = false;
-    },
-  },
+    }
+  }
 });
 
 export default slice.reducer;
-export const {fetching, reset} = slice.actions;
+export const { fetching, reset } = slice.actions;
 
-export const globalizedProductSelectors = productsAdapter.getSelectors((state) => state.product);
+export const globalizedProductSelectors = productsAdapter.getSelectors(state => state.product);

@@ -23,6 +23,7 @@ const fields = [
   },
   { key: 'code', label: 'Mã sản phẩm', _style: { width: '10%' } },
   { key: 'name', label: 'Tên sản phẩm', _style: { width: '15%' } },
+  { key: 'volume', label: 'Dung tích', _style: { width: '15%' }, filter: false },
   { key: 'storeName', label: 'Tên kho', _style: { width: '15%' } },
   { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false }
 ];
@@ -65,6 +66,7 @@ const ProductWarehouse = props => {
         ...item,
         code: item.product?.code,
         name: item.product?.name,
+        volume: item.product?.volume,
         store: item.store?.name,
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };

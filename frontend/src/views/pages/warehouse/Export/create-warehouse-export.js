@@ -30,7 +30,7 @@ import { getAllWarehouse, getWarehouse } from '../Warehouse/warehouse.api';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
-import { getProductInstore, getProductWarehouse } from '../Product/product-warehouse.api';
+import { filterProductInStore, getProductInstore, getProductWarehouse } from '../Product/product-warehouse.api';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 const validationSchema = function() {
@@ -106,8 +106,9 @@ const CreateReceipt = () => {
       copyArr.splice(founedIndex, 1);
       setImportWarehouses(copyArr);
       dispatch(
-        getProductWarehouse({
-          store: selectedWarehouse.id
+        filterProductInStore({
+          store: selectedWarehouse.id,
+          dependency: true
         })
       ).then(resp => {
         if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {

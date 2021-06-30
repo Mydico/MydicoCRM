@@ -244,7 +244,7 @@ export class OrderController {
         const currentUser = req.user as User;
         order.lastModifiedBy = currentUser.login;
         const isAdmin = currentUser.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
-        if(currentUser.branch && currentUser.branch.allow){
+        if((currentUser.branch && currentUser.branch.allow) || isAdmin || currentUser.login === order.createdBy){
             let departmentVisible = [];
             const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
             if (currentUser.department) {
@@ -253,7 +253,7 @@ export class OrderController {
                 departmentVisible.push(currentUser.department.id);
             }
             return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
-        } else if (!isAdmin && currentUser.login !== order.createdBy && (currentUser.branch && !currentUser.branch.allow)) {
+        } else if (!isAdmin && currentUser.login !== order.createdBy) {
             throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }

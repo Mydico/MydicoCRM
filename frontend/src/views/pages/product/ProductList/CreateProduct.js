@@ -109,7 +109,7 @@ const CreateProduct = () => {
     const code = `${ref.current.values.productGroup?.productBrand?.code || ''}_${ref.current.values.productGroup?.code || ''}_${codeName}_${
       ref.current.values.volume
     }`;
-    ref.current.setFieldValue('code', `${code}`);
+    ref.current.setFieldValue('code', `${code}`.toUpperCase());
   };
 
   return (

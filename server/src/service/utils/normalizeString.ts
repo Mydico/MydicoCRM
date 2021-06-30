@@ -60,7 +60,7 @@ export const getProductCode = (name, brand, group, volume) => {
         .replace(/Đ/g, 'D')
         .toUpperCase();
 
-    return `${brand}_${group}_${normalName}${!volume ? '' : '_' + volume}`;
+    return `${brand}_${group}_${normalName}${!volume ? '' : '_' + volume}`.toUpperCase();
 };
 export const checkCodeContext = (entity, foundedEntity) => {
     if (foundedEntity.length > 0) {

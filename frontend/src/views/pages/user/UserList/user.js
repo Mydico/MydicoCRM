@@ -62,11 +62,11 @@ const User = props => {
   const { initialState } = useSelector(state => state.user);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const selectedPro = useRef({ id: null, activated: true });
+  const selectedPro = useRef({ id: null, activated: true, login: "" });
   const [primary, setPrimary] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
-  const [value, setValue] = useState(null)
+  const [value, setValue] = useState(null);
   const paramRef = useRef(null);
   const users = useSelector(selectAll);
   const branches = useSelector(selectAllBranch);
@@ -144,11 +144,11 @@ const User = props => {
   };
 
   const lockUser = () => {
-    dispatch(updateUser({ id: selectedPro.current.id, activated: !selectedPro.current.activated }));
+    dispatch(updateUser({ id: selectedPro.current.id, activated: !selectedPro.current.activated, login: selectedPro.current.login }));
     setPrimary(false);
   };
 
-  const memoComputedItems = React.useCallback(items => computedItems(items), []);
+  const memoComputedItems = React.useCallback(items => computedItems(items), [users]);
   const memoListed = React.useMemo(() => memoComputedItems(users), [users]);
   useEffect(() => {
     if (initialState.updatingSuccess) {
@@ -267,7 +267,7 @@ const User = props => {
                     shape="square"
                     size="sm"
                     onClick={() => {
-                      selectedPro.current = { id: item.id, activated: item.activated };
+                      selectedPro.current = { id: item.id, activated: item.activated, login: item.login };
                       setPrimary(!primary);
                     }}
                   >

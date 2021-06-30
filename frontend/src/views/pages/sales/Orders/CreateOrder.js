@@ -31,7 +31,7 @@ import { globalizedWarehouseSelectors } from '../../warehouse/Warehouse/warehous
 import { getWarehouse } from '../../warehouse/Warehouse/warehouse.api';
 import { getDetailProductPromotion } from '../Promotion/promotion.api';
 import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
-import { getProductInstore, getProductWarehouse } from '../../warehouse/Product/product-warehouse.api';
+import { filterProductInStore, getProductInstore, getProductWarehouse } from '../../warehouse/Product/product-warehouse.api';
 import { FormFeedback, Table } from 'reactstrap';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
@@ -140,8 +140,22 @@ const CreateOrder = props => {
     debouncedSearchCustomer(value);
   };
 
+  const debouncedSearchPromotion = _.debounce(value => {
+    dispatch(
+      getPromotion({
+        isLock: 0,
+        page: 0,
+        size: 20,
+        name: value,
+        sort: 'createdDate,DESC',
+        dependency: true,
+        customerType: selectedCustomer?.type?.id
+      })
+    );
+  }, 300);
+
   const onSearchPromition = value => {
-    dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,DESC', name: value, dependency: true }));
+    debouncedSearchPromotion(value);
   };
 
   const onSubmit = (values, {}) => {
@@ -199,9 +213,8 @@ const CreateOrder = props => {
   useEffect(() => {
     if (selectedWarehouse?.id) {
       dispatch(
-        getProductWarehouse({
+        filterProductInStore({
           store: selectedWarehouse?.id,
-          status: 'ACTIVE',
           page: 0,
           size: 20,
           sort: 'createdDate,DESC',
@@ -222,14 +235,13 @@ const CreateOrder = props => {
 
   const debouncedSearchProduct = _.debounce(value => {
     dispatch(
-      getProductWarehouse({
+      filterProductInStore({
         store: selectedWarehouse?.id,
         page: 0,
         size: 20,
         sort: 'createdDate,DESC',
         name: value,
         code: value,
-        status: 'ACTIVE',
         dependency: true
       })
     );
@@ -515,10 +527,6 @@ const CreateOrder = props => {
               </CCardBody>
             </CCard>
 
-            <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
-              <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-              Thêm sản phẩm
-            </CButton>
             <CCard>
               <CCardBody>
                 <Table responsive striped>
@@ -559,7 +567,7 @@ const CreateOrder = props => {
                               menuPortalTarget={document.body}
                               options={productInWarehouses.map(item => ({
                                 value: item.product,
-                                label: `${item.product.productBrand?.code}-${item.product.name}-${item.product.volume}`
+                                label: `${item.product.productBrand?.code}-[${item.product?.code}]-${item.product.name}-${item.product.volume}`
                               }))}
                             />
                           </td>
@@ -638,6 +646,11 @@ const CreateOrder = props => {
                     })}
                   </tbody>
                 </Table>
+
+                <CButton color="primary" variant="outline" shape="square" size="sm" className="mb-3" onClick={onAddProduct}>
+                  <CIcon name={'cilArrowCircleRight'} className="mr-2" />
+                  Thêm sản phẩm
+                </CButton>
               </CCardBody>
             </CCard>
             <CCard>

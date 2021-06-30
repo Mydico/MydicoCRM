@@ -32,10 +32,13 @@ export class CustomerTypeService {
     }
 
     async save(customerType: CustomerType): Promise<CustomerType | undefined> {
-        const foundedDepartment = await this.customerTypeRepository.find({
-            code: Like(`%${customerType.code}%`),
-        });
-        const newDepartment = checkCodeContext(customerType, foundedDepartment);
+        let newDepartment = customerType
+        if(!customerType.id) {
+            const foundedDepartment = await this.customerTypeRepository.find({
+                code: Like(`%${customerType.code}%`),
+            });
+            newDepartment = checkCodeContext(customerType, foundedDepartment);
+        }
         return await this.customerTypeRepository.save(newDepartment);
     }
 

@@ -13,6 +13,18 @@ export const getProductWarehouse = createAsyncThunk(
   }
 );
 
+export const filterProductInStore = createAsyncThunk(
+  'api/product-quantities',
+  async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
+    try {
+      const result = await axios.get('api/product-quantities/find', { params: params });
+      return { data: result.data, total: result.headers['x-total-count'] };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const getProductWarehouseByField = createAsyncThunk(
   'api/product-quantities/field',
   async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {

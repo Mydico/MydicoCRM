@@ -84,6 +84,30 @@ export class ProductQuantityController {
     return res.send(results);
   }
 
+  @Get('/find')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: ProductQuantity
+  })
+  async find(@Req() req: Request, @Res() res): Promise<Response> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter: any = {};
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        filter[item] = req.query[item];
+      }
+    });
+    const [results, count] = await this.productQuantityService.filter(filter, {
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder()
+    });
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
+  }
+
   @Get('/')
   @Roles(RoleType.USER)
   @ApiResponse({
@@ -115,16 +139,6 @@ export class ProductQuantityController {
     return res.send(results);
   }
 
-  @Get('/:id')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 200,
-    description: 'The found record',
-    type: ProductQuantity
-  })
-  async getOne(@Param('id') id: string, @Res() res: Response): Promise<Response> {
-    return res.send(await this.productQuantityService.findById(id));
-  }
 
   @PostMethod('/')
   @Roles(RoleType.USER)

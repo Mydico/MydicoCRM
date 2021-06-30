@@ -23,9 +23,7 @@ export class DepartmentService {
     }
 
     async findAllFlatChild(department: Department): Promise<Department[]> {
-        return await this.departmentRepository.find({
-            parent: department,
-        });
+        return await this.departmentRepository.findDescendants(department);
     }
 
     async findById(id: string): Promise<Department | undefined> {

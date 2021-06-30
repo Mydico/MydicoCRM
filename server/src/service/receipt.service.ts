@@ -15,6 +15,8 @@ import { User } from '../domain/user.entity';
 const relationshipNames = [];
 relationshipNames.push('customer');
 relationshipNames.push('customer.sale');
+relationshipNames.push('customer.department');
+relationshipNames.push('customer.type');
 relationshipNames.push('approver');
 relationshipNames.push('department');
 
@@ -89,13 +91,14 @@ export class ReceiptService {
     // return await this.receiptRepository.findAndCount(options);
   }
 
-  async save(receipt: Receipt): Promise<Receipt | undefined> {
+  async save(receipt: Receipt, currentUser: User): Promise<Receipt | undefined> {
     const count = await this.receiptRepository
       .createQueryBuilder('receipt')
       .select('DISTINCT()')
+      .where(`receipt.code like '%${currentUser.department.code}%'`)
       .getCount();
     if (!receipt.id) {
-      receipt.code = `PT${count + 1}`;
+      receipt.code = `PT-${currentUser.department.code}-${count + 1}`;
     }
     return await this.receiptRepository.save(receipt);
   }
@@ -126,7 +129,7 @@ export class ReceiptService {
       incomeItem.userId = entity.customer.sale.id;
       await this.incomeDashboardService.save(incomeItem);
     }
-    return await this.save(receipt);
+    return await this.receiptRepository.save(receipt);
   }
 
   async delete(receipt: Receipt): Promise<Receipt | undefined> {

@@ -30,7 +30,11 @@ import { getDetailProductPromotion, getPromotion } from '../Promotion/promotion.
 import { globalizedWarehouseSelectors } from '../../warehouse/Warehouse/warehouse.reducer';
 import { getWarehouse } from '../../warehouse/Warehouse/warehouse.api';
 import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
-import { getProductInstore, getProductWarehouse, getProductWarehouseByField } from '../../warehouse/Product/product-warehouse.api';
+import {
+  filterProductInStore,
+  getProductInstore,
+  getProductWarehouseByField
+} from '../../warehouse/Product/product-warehouse.api';
 import { FormFeedback, Table } from 'reactstrap';
 import { OrderStatus } from './order-status';
 import { confirmAlert } from 'react-confirm-alert'; // Import
@@ -186,7 +190,15 @@ const EditOrder = props => {
 
   useEffect(() => {
     if (selectedWarehouse?.id) {
-      dispatch(getProductWarehouse({ store: selectedWarehouse?.id, dependency: true }));
+      dispatch(
+        filterProductInStore({
+          store: selectedWarehouse?.id,
+          page: 0,
+          size: 20,
+          sort: 'createdDate,DESC',
+          dependency: true
+        })
+      );
     }
   }, [selectedWarehouse]);
 
@@ -199,19 +211,18 @@ const EditOrder = props => {
     }
   };
 
-  const debouncedSearchProduct =  _.debounce(value => {
-      dispatch(
-        getProductWarehouse({
-          store: selectedWarehouse?.id,
-          page: 0,
-          size: 20,
-          sort: 'createdDate,DESC',
-          name: value,
-          status: 'ACTIVE',
-          dependency: true
-        })
-      );
-    }, 300)
+  const debouncedSearchProduct = _.debounce(value => {
+    dispatch(
+      filterProductInStore({
+        store: selectedWarehouse?.id,
+        page: 0,
+        size: 20,
+        sort: 'createdDate,DESC',
+        name: value,
+        dependency: true
+      })
+    );
+  }, 300);
 
   const onSearchProduct = value => {
     debouncedSearchProduct(value);
@@ -232,7 +243,7 @@ const EditOrder = props => {
   }, 1000);
 
   const onSearchProductInstore = (copyArr, index) => {
-    if(!copyArr[index].quantityInStore){
+    if (!copyArr[index].quantityInStore) {
       debouncedSearchProductInStore(copyArr, index);
     }
   };

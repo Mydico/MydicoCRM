@@ -95,7 +95,6 @@ const CreateUser = () => {
 
   const onSubmit = (values, {}) => {
     values.roles = selectedRoles;
-    values.departments = selectedDepartment;
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(creatingUser(values));
@@ -263,8 +262,10 @@ const CreateUser = () => {
                 <Select
                   name="department"
                   onChange={e => {
-                    onSelectDepartment(e);
+                    setFieldValue('department', e?.value || '');
                   }}
+                  isClearable={true}
+                  openMenuOnClick={false}
                   placeholder="Chọn chi nhánh"
                   options={departments.map(item => ({
                     value: item,

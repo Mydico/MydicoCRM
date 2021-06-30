@@ -30,21 +30,45 @@ export class ProductQuantityService {
     return await this.productQuantityRepository.find(options);
   }
 
+  async filter(filter = {}, options: FindManyOptions<ProductQuantity>): Promise<[ProductQuantity[], number]> {
+    let queryString = '';
+    Object.keys(filter).forEach((item, index) => {
+      if (item !== 'store')
+        queryString += `product.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '} `;
+    });
+    const queryBuilder = this.productQuantityRepository
+      .createQueryBuilder('ProductQuantity')
+      .leftJoinAndSelect('ProductQuantity.product', 'product')
+      .leftJoinAndSelect('product.productBrand', 'productBrand')
+      .where(`ProductQuantity.store = ${filter['store']} AND ProductQuantity.status = 'ACTIVE'`)
+      .orderBy(`ProductQuantity.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take);
+    if (filter['store'] && queryString) {
+      queryBuilder.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
+    }
+
+    const result = await queryBuilder.getManyAndCount();
+    return result;
+  }
+
   async findAndCount(filter = {}, departmentVisible = [], options: FindManyOptions<ProductQuantity>): Promise<[ProductQuantity[], number]> {
-    // options.relations = relationshipNames;
-    // return await this.productQuantityRepository.findAndCount(options);
     let queryString = '1=1 ';
     Object.keys(filter).forEach((item, index) => {
       if (item === 'store') {
         queryString += `AND ProductQuantity.store = ${filter[item]} `;
-      }else{
+      } else {
         queryString += ` AND product.${item} like '%${filter[item]}%'`;
       }
     });
     if (departmentVisible.length > 0) {
-        queryString += ` AND ProductQuantity.department IN ${JSON.stringify(departmentVisible)
-            .replace('[', '(')
-            .replace(']', ')')}`;
+      queryString += ` AND ProductQuantity.department IN ${JSON.stringify(departmentVisible)
+        .replace('[', '(')
+        .replace(']', ')')}`;
     }
     const queryBuilder = this.productQuantityRepository
       .createQueryBuilder('ProductQuantity')
