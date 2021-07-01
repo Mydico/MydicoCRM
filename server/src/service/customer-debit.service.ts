@@ -13,7 +13,7 @@ relationshipNames.push('sale');
 export class CustomerDebitService {
   logger = new Logger('CustomerDebitService');
 
-  constructor(@InjectRepository(CustomerDebitRepository) private customerDebitRepository: CustomerDebitRepository) {}
+  constructor(@InjectRepository(CustomerDebitRepository) private customerDebitRepository: CustomerDebitRepository) { }
 
   async findById(id: string): Promise<CustomerDebit | undefined> {
     const options = { relations: relationshipNames };
@@ -65,11 +65,13 @@ export class CustomerDebitService {
     filter = [],
     departmentVisible = [],
     isEmployee: boolean,
+    allowToSeeAll: boolean,
     currentUser: User
   ): Promise<[CustomerDebit[], number]> {
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
-      queryString += `CustomerDebit.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+      if (item === 'endDate' || item === 'startDate') return;
+      queryString += `CustomerDebit.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
     });
     let andQueryString = '1=1 ';
 
@@ -78,14 +80,27 @@ export class CustomerDebitService {
         .replace('[', '(')
         .replace(']', ')')}`;
     }
-    if (isEmployee) {
-      andQueryString += ` AND CustomerDebit.sale = ${currentUser.id}`;
+    if (filter['endDate'] && filter['startDate']) {
+      andQueryString += ` AND CustomerDebit.createdDate  BETWEEN '${filter['startDate']}' AND '${filter['endDate']}'`;
     }
-    if (currentUser.branch && !isEmployee) {
-      if (!currentUser.branch.seeAll) {
-        andQueryString += ` AND CustomerDebit.branch = ${currentUser.branch.id}`;
+    if (!allowToSeeAll) {
+      if (isEmployee) {
+        queryString += ` AND CustomerDebit.sale = ${currentUser.id}`;
+      }
+      if (currentUser.branch) {
+        if (currentUser.branch.seeAll) {
+          queryString += ` AND CustomerDebit.branch = ${currentUser.branch.id}`;
+        }
       }
     }
+    // if (isEmployee) {
+    //   andQueryString += ` AND CustomerDebit.sale = ${currentUser.id}`;
+    // }
+    // if (currentUser.branch && !isEmployee) {
+    //   if (!currentUser.branch.seeAll) {
+    //     andQueryString += ` AND CustomerDebit.branch = ${currentUser.branch.id}`;
+    //   }
+    // }
     const queryBuilder = this.customerDebitRepository
       .createQueryBuilder('CustomerDebit')
       .leftJoinAndSelect('CustomerDebit.customer', 'customer')

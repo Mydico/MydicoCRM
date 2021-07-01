@@ -13,6 +13,7 @@ import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import Select from 'react-select';
+import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 
 const getBadge = status => {
   switch (status) {
@@ -77,6 +78,14 @@ const Receipt = props => {
   const paramRef = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+
+  useEffect(() => {
+    if (date.endDate && date.startDate) {
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      dispatch(getReceipt(params));
+    }
+  }, [date]);
   useEffect(() => {
     dispatch(reset());
   }, []);
@@ -113,15 +122,15 @@ const Receipt = props => {
     .join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
-  const debouncedSearchColumn =  _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if (!value[key]) delete value[key];
-        });
-        paramRef.current = value;
-        dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300)
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
@@ -246,6 +255,46 @@ const Receipt = props => {
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
           Tải excel (.csv)
         </CButton>
+        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+          <CFormGroup row>
+            <CCol>
+              <CLabel htmlFor="date-input">Từ ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    startDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+          <CFormGroup row className="ml-3">
+            <CCol>
+              <CLabel htmlFor="date-input">Đến ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    endDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+        </CFormGroup>
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -259,13 +308,7 @@ const Receipt = props => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-          // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
           onPaginationChange={val => setSize(val)}
-          // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
-          // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           onRowClick={val => toDetailReceipt(val.id)}
           columnFilterSlot={{
@@ -273,10 +316,11 @@ const Receipt = props => {
               <div style={{ minWidth: 200, fontSize: '0.765625rem' }}>
                 <Select
                   onChange={item => {
-                   onFilterColumn({ ...paramRef.current, status: item?.value || ''  });
+                    onFilterColumn({ ...paramRef.current, status: item?.value || '' });
                   }}
                   placeholder="Chọn trạng thái"
-                  isClearable                  options={statusList.map(item => ({
+                  isClearable
+                  options={statusList.map(item => ({
                     value: item.value,
                     label: item.label
                   }))}

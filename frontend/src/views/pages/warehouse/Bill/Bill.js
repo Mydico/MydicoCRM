@@ -32,6 +32,7 @@ import { globalizedUserSelectors } from '../../user/UserList/user.reducer';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer';
 import _ from 'lodash';
+import { CFormGroup, CInput } from '@coreui/react';
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -106,6 +107,7 @@ const fields = [
 const getBadge = status => {
   switch (status) {
     case BillStatus.APPROVED:
+      return 'primary';
     case BillStatus.SUCCESS:
       return 'success';
     case BillStatus.SHIPPING:
@@ -133,6 +135,14 @@ const Bill = props => {
   const paramRef = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+
+  useEffect(() => {
+    if(date.endDate && date.startDate){
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      dispatch(getBill(params));
+    }
+  }, [date])
   useEffect(() => {
     dispatch(reset());
   }, []);
@@ -468,6 +478,46 @@ const Bill = props => {
         <CButton color="primary" className="mb-2" href={csvCode} download="customertypes.csv" target="_blank">
           Tải excel (.csv)
         </CButton>
+        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+          <CFormGroup row>
+            <CCol>
+              <CLabel htmlFor="date-input">Từ ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    startDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+          <CFormGroup row className="ml-3">
+            <CCol>
+              <CLabel htmlFor="date-input">Đến ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    endDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+        </CFormGroup>
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -481,10 +531,10 @@ const Bill = props => {
             noItems: 'Không có dữ liệu'
           }}
           // loading
-          // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
+
           onPaginationChange={val => setSize(val)}
-          // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
-          // onSorterValueChange={(val) => console.log('new sorter value:', val)}
+
+
           onColumnFilterChange={onFilterColumn}
           columnFilterSlot={{
             status: (

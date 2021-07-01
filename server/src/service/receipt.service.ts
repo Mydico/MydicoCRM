@@ -48,6 +48,7 @@ export class ReceiptService {
   ): Promise<[Receipt[], number]> {
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
+      if (item === 'endDate' || item === 'startDate') return;
       queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
     });
     let andQueryString = '1=1 ';
@@ -56,6 +57,9 @@ export class ReceiptService {
       andQueryString += ` AND Receipt.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
+    }
+    if (filter['endDate'] && filter['startDate']) {
+      andQueryString += ` AND Receipt.createdDate  BETWEEN '${filter['startDate']}' AND '${filter['endDate']}'`;
     }
     if (isEmployee) {
       andQueryString += ` AND Receipt.sale = ${currentUser.id}`;

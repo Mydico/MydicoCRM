@@ -19,7 +19,8 @@ export class DepartmentService {
     ) {}
 
     async findAllTree(): Promise<Department[]> {
-        return await this.departmentRepository.findTrees();
+        const result = await this.departmentRepository.findTrees();
+        return result.filter(item => item.activated);
     }
 
     async findAllFlatChild(department: Department): Promise<Department[]> {

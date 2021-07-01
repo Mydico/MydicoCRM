@@ -105,6 +105,7 @@ export class StoreInputService {
     ): Promise<[StoreInput[], number]> {
         let queryString = '';
         Object.keys(filter).forEach((item, index) => {
+            if (item === 'endDate' || item === 'startDate') return;
             queryString += `StoreInput.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
         });
         let andQueryString = '1=1 ';
@@ -113,6 +114,9 @@ export class StoreInputService {
             andQueryString += `AND StoreInput.department IN ${JSON.stringify(departmentVisible)
                 .replace('[', '(')
                 .replace(']', ')')}`;
+        }
+        if (filter['endDate'] && filter['startDate']) {
+            andQueryString += ` AND StoreInput.createdDate  BETWEEN '${filter['startDate']}' AND '${filter['endDate']}'`;
         }
         if (type.length > 0) {
             andQueryString += ` AND StoreInput.type like '%${type}%' `;

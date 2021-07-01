@@ -77,11 +77,19 @@ export class UserController {
   async getAllUsers(@Req() req: Request, @Res() res): Promise<User[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
+    const currentUser = req.user as User;
+
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         filter[item] = req.query[item];
       }
     });
+    let departmentVisible = [];
+    if (currentUser.department) {
+        departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        departmentVisible = departmentVisible.map(item => item.id);
+        departmentVisible.push(currentUser.department.id);
+    }
     const [results, count] = await this.userService.findAndCount(
       {
         skip: +pageRequest.page * pageRequest.size,
@@ -89,7 +97,7 @@ export class UserController {
         order: pageRequest.sort.asOrder()
       },
       filter,
-      [],
+      departmentVisible,
       []
     );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));

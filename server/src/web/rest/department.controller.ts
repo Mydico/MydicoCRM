@@ -101,7 +101,7 @@ export class DepartmentController {
         type: Department,
     })
     async put(@Res() res: Response, @Body() department: Department): Promise<Response> {
-        HeaderUtil.addEntityCreatedHeaders(res, 'Department', department.id);
+        HeaderUtil.addEntityUpdatedHeaders(res, 'Department', department.id);
         return res.send(await this.departmentService.update(department));
     }
 

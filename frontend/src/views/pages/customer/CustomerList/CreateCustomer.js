@@ -47,7 +47,8 @@ const validationSchema = function() {
     dateOfBirth: Yup.date().required('Ngày tháng năm sinh không để trống'),
     department: Yup.object().required('Chi nhánh không để trống'),
     branch: Yup.object().required('Bạn chưa chọn hoặc chưa có phòng ban. Liên hệ quản trị viên để cài đặt'),
-    city: Yup.string().required('Thành phố không để trống')
+    city: Yup.string().required('Thành phố không để trống'),
+    social: Yup.string().required('Link mạng xã hội không để trống')
   });
 };
 
@@ -72,7 +73,7 @@ const CreateCustomer = () => {
   const [selectedCity, setSelectedCity] = useState(null);
   const [districts, setDistricts] = useState([]);
   const departments = [account.department];
-  const branches = account.branch ? [account.branch]:[];
+  const branches = account.branch ? [account.branch] : [];
   useEffect(() => {
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
@@ -211,6 +212,7 @@ const CreateCustomer = () => {
                       onBlur={handleBlur}
                       value={values.social}
                     />
+                    <CInvalidFeedback>{errors.social}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>
                 <CCol lg="6">

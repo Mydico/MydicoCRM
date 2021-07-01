@@ -9,12 +9,16 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
-import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
+import { CFormGroup, CInput, CLabel, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import { globalizedBranchSelectors } from '../UserBranch/branch.reducer.js';
 import { globalizedDepartmentSelectors } from '../UserDepartment/department.reducer.js';
 import { getDepartment } from '../UserDepartment/department.api.js';
 import Select from 'react-select';
 import { getBranch } from '../UserBranch/branch.api.js';
+import 'react-dates/initialize';
+import { DateRangePicker } from 'react-dates';
+import 'react-dates/lib/css/_datepicker.css';
+moment.locale('vi'); // Polish
 
 const { selectAll } = globalizedUserSelectors;
 // Code	Tên người dùng	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại người dùng	Phân loại	Sửa	Tạo đơn
@@ -62,20 +66,27 @@ const User = props => {
   const { initialState } = useSelector(state => state.user);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const selectedPro = useRef({ id: null, activated: true, login: "" });
+  const selectedPro = useRef({ id: null, activated: true, login: '' });
   const [primary, setPrimary] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
-  const [value, setValue] = useState(null);
   const paramRef = useRef(null);
   const users = useSelector(selectAll);
   const branches = useSelector(selectAllBranch);
   const departments = useSelector(selectAllDepartment);
+  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+
+  useEffect(() => {
+    if(date.endDate && date.startDate){
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      dispatch(getUser(params));
+    }
+  }, [date])
 
   useEffect(() => {
     dispatch(reset());
-    dispatch(getBranch({ page: 0, size: 100, sort: 'createdDate,DESC' }));
-    dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC' }));
+    dispatch(getBranch({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       paramRef.current = {};
     };
@@ -148,6 +159,8 @@ const User = props => {
     setPrimary(false);
   };
 
+
+
   const memoComputedItems = React.useCallback(items => computedItems(items), [users]);
   const memoListed = React.useMemo(() => memoComputedItems(users), [users]);
   useEffect(() => {
@@ -170,6 +183,47 @@ const User = props => {
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
           Tải excel (.csv)
         </CButton>
+        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+          <CFormGroup row>
+            <CCol>
+              <CLabel htmlFor="date-input">Từ ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    startDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+          <CFormGroup row className="ml-3">
+            <CCol>
+              <CLabel htmlFor="date-input">Đến ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    endDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+        </CFormGroup>
+
         <CDataTable
           items={memoListed}
           fields={fields}

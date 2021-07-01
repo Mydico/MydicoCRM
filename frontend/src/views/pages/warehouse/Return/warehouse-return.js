@@ -11,7 +11,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import moment from 'moment';
 import { Table } from 'reactstrap';
-import { CCol } from '@coreui/react';
+import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import Select from 'react-select';
@@ -91,6 +91,14 @@ const WarehouseImport = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const paramRef = useRef(null);
+  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+
+  useEffect(() => {
+    if(date.endDate && date.startDate){
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      dispatch(getWarehouseReturn(params));
+    }
+  }, [date])
   useEffect(() => {
     dispatch(reset());
   }, []);
@@ -262,6 +270,46 @@ const WarehouseImport = props => {
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
           Tải excel (.csv)
         </CButton>
+        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+          <CFormGroup row>
+            <CCol>
+              <CLabel htmlFor="date-input">Từ ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    startDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+          <CFormGroup row className="ml-3">
+            <CCol>
+              <CLabel htmlFor="date-input">Đến ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    endDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+        </CFormGroup>
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -275,13 +323,13 @@ const WarehouseImport = props => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-          // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
+
+
+
           onPaginationChange={val => setSize(val)}
-          // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
-          // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
+
+
+
           onColumnFilterChange={onFilterColumn}
           columnFilterSlot={{
             status: (

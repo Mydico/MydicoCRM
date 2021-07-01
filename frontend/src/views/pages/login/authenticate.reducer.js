@@ -39,7 +39,6 @@ export const login = createAsyncThunk('api/authenticate', async ({ username, pas
 
 export const getSession = createAsyncThunk('api/account', async (args, thunkAPI) => {
   try {
-    console.log(Storage.session.get(AUTH_TOKEN_KEY))
     const accountResponse = await axios.get('api/account',{headers: {
       Authorization: `Bearer ${Storage.session.get(AUTH_TOKEN_KEY)}`
     }});

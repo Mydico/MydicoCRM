@@ -63,6 +63,7 @@ export class UserService {
         // options.cache = 36000000
         let queryString = '';
         Object.keys(filter).forEach((item, index) => {
+            if (item === 'endDate' || item === 'startDate') return;
             if (item === 'name') {
                 queryString += `User.firstName like '%${filter[item]}%' OR  User.lastName like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
             } else if (item === 'departmentId') {
@@ -73,15 +74,22 @@ export class UserService {
                 queryString += `User.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
             }
         });
-        const andQueryString = '';
-
+        let andQueryString = '';
+        if (departmentVisible.length > 0) {
+            andQueryString += `User.department IN ${JSON.stringify(departmentVisible)
+                .replace('[', '(')
+                .replace(']', ')')}`;
+        }
+        if (filter['endDate'] && filter['startDate']) {
+            andQueryString += ` AND User.createdDate  BETWEEN '${filter['startDate']}' AND '${filter['endDate']}'`
+        }
         const queryBuilder = this.userRepository
             .createQueryBuilder('User')
             .leftJoinAndSelect('User.roles', 'roles')
             .leftJoinAndSelect('User.department', 'department')
             .leftJoinAndSelect('User.branch', 'branch')
             .where(andQueryString)
-            .cache(`get_users_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}`, 3600000)
+            .cache(`get_users_department_${departmentVisible.join(',')}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}`, 3600000)
             .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
             .take(options.take);
@@ -92,7 +100,7 @@ export class UserService {
             .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
             .take(options.take)
-            .cache(`cache_count_get_users_filter_${JSON.stringify(filter)}`);
+            .cache(`cache_count_get_users_department_${departmentVisible.join(',')}_filter_${JSON.stringify(filter)}`);
         if (queryString) {
             queryBuilder.andWhere(
                 new Brackets(sqb => {

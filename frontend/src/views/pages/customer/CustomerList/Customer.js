@@ -11,6 +11,7 @@ import district from '../../../../shared/utils/district.json';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
+import { CLabel } from '@coreui/react';
 const { selectAll } = globalizedCustomerSelectors;
 // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
 const fields = [
@@ -145,6 +146,10 @@ const Customer = props => {
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
           Tải excel (.csv)
         </CButton>
+        <CRow className="ml-0 mt-4">
+          <CLabel>Tổng :</CLabel>
+          <strong>{`\u00a0\u00a0${initialState.totalItem}`}</strong>
+        </CRow>
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -158,13 +163,8 @@ const Customer = props => {
             noItems: 'Không có dữ liệu'
           }}
           // loading
-          // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
+
           onPaginationChange={val => setSize(val)}
-          // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
-          // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,

@@ -45,8 +45,6 @@ const mappingStatus = {
 const { selectById } = globalizedReceiptsSelectors;
 const DetailReceipt = props => {
   const formikRef = useRef();
-  const {} = useSelector(state => state.receipt);
-
   const dispatch = useDispatch();
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);

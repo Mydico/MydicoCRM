@@ -88,7 +88,7 @@ const EditUser = props => {
 
   useEffect(() => {
     if (user) {
-      console.log(user)
+
       setSelectedDepartment(user.departments);
       setSelectedGroupPermission(user.permissionGroups || []);
       setSelectedRoles(user.roles || []);
@@ -268,12 +268,14 @@ const EditUser = props => {
                 <Select
                   name="branch"
                   onChange={e => {
-                    setFieldValue('branch', e.value);
+                    setFieldValue('branch', e?.value || null);
                   }}
                   value={{
                     value: values.branch,
                     label: values.branch?.name
                   }}
+                  isClearable={true}
+                  openMenuOnClick={false}
                   placeholder="Chọn Phòng ban"
                   options={branches.map(item => ({
                     value: item,

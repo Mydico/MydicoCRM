@@ -23,6 +23,10 @@ export default class Department extends BaseEntity {
     @Index()
     name: string;
 
+    @Column({ type: 'boolean', name: 'activated', nullable: true, default: true })
+    @Index()
+    activated?: boolean;
+
     @TreeChildren()
     children?: Department[];
 

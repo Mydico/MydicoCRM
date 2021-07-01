@@ -10,7 +10,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { globalizedDebtsSelectors, reset } from './debt.reducer.js';
 import moment from 'moment';
 import _ from 'lodash';
-import { CLabel } from '@coreui/react';
+import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 const { selectAll } = globalizedDebtsSelectors;
 
 // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
@@ -41,7 +41,14 @@ const Debt = props => {
   const history = useHistory();
   const [total, setTotal] = useState(0);
   const paramRef = useRef({});
+  const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
+  useEffect(() => {
+    if(date.endDate && date.startDate){
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      dispatch(getCustomerDebts(params));
+    }
+  }, [date])
   useEffect(() => {
     dispatch(reset());
     dispatch(getCustomerDebtsTotalDebit(paramRef.current)).then(resp => {
@@ -106,6 +113,46 @@ const Debt = props => {
           <CLabel>Tổng nợ:</CLabel>
           <strong>{`\u00a0\u00a0${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}`}</strong>
         </CRow>
+        <CFormGroup row xs="12" md="12" lg="12" className="ml-1 mt-3">
+          <CFormGroup row>
+            <CCol>
+              <CLabel htmlFor="date-input">Từ ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    startDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+          <CFormGroup row className="ml-3">
+            <CCol>
+              <CLabel htmlFor="date-input">Đến ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    endDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+        </CFormGroup>
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -119,13 +166,7 @@ const Debt = props => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-          // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
           onPaginationChange={val => setSize(val)}
-          // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
-          // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,

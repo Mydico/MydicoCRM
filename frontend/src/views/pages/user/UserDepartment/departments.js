@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CDataTable, CPagination, CRow, CCol } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDepartment, getTreeDepartment } from './department.api.js';
+import { getDepartment, getTreeDepartment, updateDepartment } from './department.api.js';
 import { globalizedDepartmentSelectors, reset } from './department.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { Tree, TreeNode } from 'react-organizational-chart';
@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
+import { CBadge, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -37,6 +38,7 @@ const fields = [
   },
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'name', label: 'Tên chi nhánh', _style: { width: '15%' } },
+  { key: 'activated', label: 'Trạng thái', _style: { width: '15%' } },
   {
     key: 'show_details',
     label: '',
@@ -47,13 +49,9 @@ const fields = [
 
 const getBadge = status => {
   switch (status) {
-    case 'ACTIVE':
+    case true:
       return 'success';
-    case 'DISABLED':
-      return 'danger';
-    case 'DELETED':
-      return 'warning';
-    case 'Banned':
+    case false:
       return 'danger';
     default:
       return 'primary';
@@ -66,10 +64,12 @@ const Department = props => {
   const history = useHistory();
   const departments = useSelector(selectAll);
   const [details, setDetails] = useState([]);
-  const { initialState } = useSelector(state => state.provider);
+  const { initialState } = useSelector(state => state.department);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
+  const [show, setShow] = useState(false);
   const paramRef = useRef(null);
+  const selectedDepartment = useRef({ id: null, activated: true });
 
   useEffect(() => {
     dispatch(reset());
@@ -79,6 +79,13 @@ const Department = props => {
   useEffect(() => {
     dispatch(getDepartment({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
   }, [activePage, size]);
+
+  useEffect(() => {
+    if (initialState.updatingSuccess) {
+      dispatch(getDepartment({ page: 0, size: size, sort: 'createdDate,DESC' }));
+      dispatch(reset());
+    }
+  }, [initialState.updatingSuccess]);
 
   const providers = useSelector(selectAll);
   const computedItems = items => {
@@ -141,6 +148,11 @@ const Department = props => {
     }
   };
 
+  const lockUser = () => {
+    dispatch(updateDepartment({ id: selectedDepartment.current.id, activated: !selectedDepartment.current.activated }));
+    setShow(false);
+  };
+
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(departments), [departments]);
 
@@ -174,19 +186,19 @@ const Department = props => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-          // onRowClick={(item,index,col,e) => console.log(item,index,col,e)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
+
+
+
           onPaginationChange={val => setSize(val)}
-          // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
-          // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
+
+
+
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
-            status: item => (
+            activated: item => (
               <td>
-                <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
+                <CBadge color={getBadge(item.activated)}>{item.activated ? 'Hoạt động' : 'Không hoạt động'}</CBadge>
               </td>
             ),
             show_details: item => {
@@ -211,11 +223,24 @@ const Department = props => {
                     variant="outline"
                     shape="square"
                     size="sm"
+                    className="mr-3"
                     onClick={() => {
                       toggleDetails(item.id);
                     }}
                   >
                     <CIcon name="cilZoom" />
+                  </CButton>
+                  <CButton
+                    color="primary"
+                    variant="outline"
+                    shape="square"
+                    size="sm"
+                    onClick={() => {
+                      selectedDepartment.current = { id: item.id, activated: item.activated };
+                      setShow(!show);
+                    }}
+                  >
+                    <CIcon name={!item.activated ? 'cilLockLocked' : 'cilLockUnlocked'} />
                   </CButton>
                 </td>
               );
@@ -253,6 +278,20 @@ const Department = props => {
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
+      <CModal show={show} onClose={() => setShow(!show)} color="primary">
+        <CModalHeader closeButton>
+          <CModalTitle>Khóa phòng ban</CModalTitle>
+        </CModalHeader>
+        <CModalBody>{`Bạn có chắc chắn muốn ${!selectedDepartment.current.activated ? 'mở khóa' : 'khóa'} phòng ban này không?`}</CModalBody>
+        <CModalFooter>
+          <CButton color="primary" onClick={lockUser}>
+            Đồng ý
+          </CButton>
+          <CButton color="secondary" onClick={() => setShow(!show)}>
+            Hủy
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </CCard>
   );
 };

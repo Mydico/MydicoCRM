@@ -168,7 +168,8 @@ const CreateUser = () => {
             handleChange,
             handleBlur,
             handleSubmit,
-            handleReset
+            handleReset,
+            setFieldValue
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -262,7 +263,7 @@ const CreateUser = () => {
                 <Select
                   name="department"
                   onChange={e => {
-                    setFieldValue('department', e?.value || '');
+                    setFieldValue('department', e?.value || null);
                   }}
                   isClearable={true}
                   openMenuOnClick={false}
@@ -279,8 +280,10 @@ const CreateUser = () => {
                 <Select
                   name="branch"
                   onChange={e => {
-                    onSelectBranch(e);
+                    setFieldValue('branch', e?.value || null);
                   }}
+                  isClearable={true}
+                  openMenuOnClick={false}
                   placeholder="Chọn Phòng ban"
                   options={branches.map(item => ({
                     value: item,

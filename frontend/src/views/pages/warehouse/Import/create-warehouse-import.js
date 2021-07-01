@@ -61,7 +61,7 @@ const CreateWarehouse = () => {
 
   const warehouses = useSelector(selectAllWarehouse);
   const products = useSelector(selectAllProduct);
-  console.log(products)
+
   const [productList, setProductList] = useState([]);
 
   const initialValues = {

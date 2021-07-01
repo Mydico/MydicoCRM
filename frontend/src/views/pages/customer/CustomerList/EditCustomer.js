@@ -45,7 +45,8 @@ const validationSchema = function() {
     department: Yup.object().required('Chi nhánh không để trống'),
     city: Yup.string()
       .required('Thành phố không để trống')
-      .nullable()
+      .nullable(),
+    social: Yup.string().required('Link mạng xã hội không để trống')
   });
 };
 
@@ -232,6 +233,7 @@ const EditCustomer = props => {
                       onBlur={handleBlur}
                       value={values.social}
                     />
+                    <CInvalidFeedback>{errors.social}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>
                 <CCol lg="6">

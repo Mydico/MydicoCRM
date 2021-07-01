@@ -99,7 +99,7 @@ export class RedisQueryResultCache implements QueryResultCache {
    */
     getFromCache(options: QueryResultCacheOptions, queryRunner?: QueryRunner): Promise<QueryResultCacheOptions | undefined> {
         return new Promise<QueryResultCacheOptions | undefined>((ok, fail) => {
-            console.log(options.identifier);
+
             if (options.identifier) {
                 this.client.get(options.identifier, (err: any, result: any) => {
                     if (err) {return fail(err);}
@@ -172,7 +172,7 @@ export class RedisQueryResultCache implements QueryResultCache {
                     }
                     if (localKeys.length > 100) {
                         pipeline.exec(() => {
-                            console.log('one batch delete complete');
+
                         });
                         localKeys = [];
                         pipeline = this.client.pipeline();
@@ -180,11 +180,11 @@ export class RedisQueryResultCache implements QueryResultCache {
                 });
                 stream.on('end', () => {
                     pipeline.exec(() => {
-                        console.log('final batch delete complete');
+
                     });
                 });
                 stream.on('error', (err) => {
-                    console.log('error', err);
+
                 });
             });
         }

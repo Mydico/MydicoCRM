@@ -22,7 +22,7 @@ export class BillService {
     constructor(
         @InjectRepository(BillRepository) private billRepository: BillRepository,
         private readonly departmentService: DepartmentService
-    ) {}
+    ) { }
 
     async findById(id: string): Promise<Bill | undefined> {
         const options = { relations: relationshipNames };
@@ -39,10 +39,10 @@ export class BillService {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible.push(currentUser.department);
         }
-        let queryString = 'Bill.status <> \'DELETED\' ';
-        let filterString = ""
+        let queryString = "Bill.status <> 'DELETED' ";
+        let filterString = '';
         Object.keys(req.query).forEach((item, index) => {
-            if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+            if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency' && item !== 'endDate' && item !== 'startDate') {
                 filterString += `Bill.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'AND '}`;
             }
         });
@@ -51,21 +51,27 @@ export class BillService {
                 .replace('[', '(')
                 .replace(']', ')')}`;
         }
-        return await this.billRepository
+        if (req.query['endDate'] && req.query['startDate']) {
+            queryString += ` AND Bill.createdDate  BETWEEN '${req.query['startDate']}' AND '${req.query['endDate']}'`;
+        }
+        const queryBuilder = this.billRepository
             .createQueryBuilder('Bill')
             .leftJoinAndSelect('Bill.order', 'order')
             .leftJoinAndSelect('order.orderDetails', 'orderDetails')
             .leftJoinAndSelect('orderDetails.product', 'product')
             .where(queryString)
-            .andWhere(
-                new Brackets(sqb => {
-                  sqb.where(filterString);
-                })
-              )
+
             .orderBy('Bill.createdDate')
             .skip(pageRequest.page * pageRequest.size)
-            .take(pageRequest.size)
-            .getManyAndCount();
+            .take(pageRequest.size);
+        if (filterString) {
+            queryBuilder.andWhere(
+                new Brackets(sqb => {
+                    sqb.where(filterString);
+                })
+            );
+        }
+        return await queryBuilder.getManyAndCount();
     }
 
     async save(bill: Bill): Promise<Bill | undefined> {

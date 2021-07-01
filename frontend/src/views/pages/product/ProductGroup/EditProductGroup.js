@@ -44,7 +44,7 @@ const validate = (getValidationSchema) => {
     const validationSchema = getValidationSchema(values);
     try {
       validationSchema.validateSync(values, {abortEarly: false});
-      console.log(values);
+
       return {};
     } catch (error) {
       return getErrorsFromValidationError(error);

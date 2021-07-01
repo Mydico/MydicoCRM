@@ -77,6 +77,7 @@ export class CustomerDebitController {
     });
     let departmentVisible = [];
     const currentUser = req.user as User;
+    const allowToSeeAll = currentUser.roles.filter(item => item.allowViewAll).length > 0;
     const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
     if (currentUser.department) {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
@@ -93,6 +94,7 @@ export class CustomerDebitController {
       filter,
       departmentVisible,
       isEmployee,
+      allowToSeeAll,
       currentUser
     );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));

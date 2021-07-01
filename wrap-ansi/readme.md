@@ -19,7 +19,7 @@ const wrapAnsi = require('wrap-ansi');
 const input = 'The quick brown ' + chalk.red('fox jumped over ') +
 	'the lazy ' + chalk.green('dog and then ran away with the unicorn.');
 
-console.log(wrapAnsi(input, 20));
+
 ```
 
 <img width="331" src="screenshot.png">

@@ -12,7 +12,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { userSafeSelector, addPermission } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
-import { CTextarea } from '@coreui/react';
+import { CFormGroup, CInput, CLabel, CTextarea } from '@coreui/react';
 import Select from 'react-select';
 
 const mappingStatus = {
@@ -95,11 +95,20 @@ const Order = props => {
   const paramRef = useRef(null);
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const orders = useSelector(selectAll);
+
+  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+
+  useEffect(() => {
+    if(date.endDate && date.startDate){
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      dispatch(getOrder(params));
+    }
+  }, [date])
   useEffect(() => {
     dispatch(reset());
     localStorage.setItem('order', JSON.stringify({}));
   }, []);
-  const orders = useSelector(selectAll);
 
   useEffect(() => {
     const localParams = localStorage.getItem('params');
@@ -459,6 +468,50 @@ const Order = props => {
         <CButton color="primary" className="mb-2" href={csvCode} download="customertypes.csv" target="_blank">
           Tải excel (.csv)
         </CButton>
+        <CRow className="ml-0 mt-4">
+          <CLabel>Tổng :</CLabel>
+          <strong>{`\u00a0\u00a0${initialState.totalItem}`}</strong>
+        </CRow>
+        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+          <CFormGroup row>
+            <CCol>
+              <CLabel htmlFor="date-input">Từ ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    startDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+          <CFormGroup row className="ml-3">
+            <CCol>
+              <CLabel htmlFor="date-input">Đến ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    endDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+        </CFormGroup>
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -473,11 +526,11 @@ const Order = props => {
           }}
           // loading
           onPaginationChange={val => setSize(val)}
-          onPageChange={val => console.log('new page:', val)}
-          onPagesChange={val => console.log('new pages:', val)}
-          // onFilteredItemsChange={(val) => console.log('new filtered items:', val)}
-          // onSorterValueChange={(val) => console.log('new sorter value:', val)}
-          onTableFilterChange={val => console.log('new table filter:', val)}
+
+
+
+
+
           onColumnFilterChange={onFilterColumn}
           onRowClick={val => toDetailOrder(val.id)}
           columnFilterSlot={{

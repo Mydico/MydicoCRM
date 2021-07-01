@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateTables1570200270102 implements MigrationInterface {
+export class CreateTables1570200270103 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<any> {
         if (process.env.NODE_ENV === 'prod') {
             if (queryRunner.isTransactionActive) {
