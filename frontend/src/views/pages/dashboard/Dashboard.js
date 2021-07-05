@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getDebtDashboard, getIncomeDashboard } from './dashboard.api.js';
 import { getStyle, hexToRgba } from '@coreui/utils';
 import { userSafeSelector } from '../login/authenticate.reducer.js';
+import { CFormGroup, CInput, CLabel } from '@coreui/react';
 
 const WidgetsDropdown = lazy(() => import('../../components/widgets/WidgetsDropdown.js'));
 const brandSuccess = getStyle('success') || '#4dbd74';
@@ -36,7 +37,7 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [debt, setDebt] = useState(0);
-  const [total, setTotal] = useState(0);
+  const [order, setOrder] = useState(0);
   const { account } = useSelector(userSafeSelector);
   const [mode, setMode] = useState('week');
   const transformData = data => {
@@ -107,11 +108,51 @@ const Dashboard = () => {
   }, [mode]);
 
   const memoIncomeTotal = React.useMemo(() => incomeTotal, [incomeTotal]);
-  const memoTotal = React.useMemo(() => total, [total]);
+  // const memoTotal = React.useMemo(() => total, [total]);
   const memoDebt = React.useMemo(() => debt, [debt]);
 
   return (
     <>
+            <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+          <CFormGroup row>
+            <CCol>
+              <CLabel htmlFor="date-input">Từ ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    startDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+          <CFormGroup row className="ml-3">
+            <CCol>
+              <CLabel htmlFor="date-input">Đến ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    endDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+        </CFormGroup>
       <WidgetsDropdown />
       <CCard>
         <CCardBody>
@@ -146,7 +187,7 @@ const Dashboard = () => {
             </CCol>
           </CRow>
           <MainChart data={memoIncomeTotal} name="Doanh thu thuần" color={brandSuccess} style={{ height: '300px', marginTop: '40px' }} />
-          <MainChart data={memoTotal} name="Doanh thu" color={brandInfo} style={{ height: '300px', marginTop: '40px' }} />
+          {/* <MainChart data={memoTotal} name="Doanh thu" color={brandInfo} style={{ height: '300px', marginTop: '40px' }} /> */}
           <MainChart data={memoDebt} name="Công nợ" color={brandDanger} style={{ height: '300px', marginTop: '40px' }} />
         </CCardBody>
       </CCard>

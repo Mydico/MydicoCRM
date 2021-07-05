@@ -37,7 +37,7 @@ const CreateDepartment = () => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-
+  const [external, setExternal] = useState([])
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const departments = useSelector(selectAllDepartments);
 
@@ -56,8 +56,10 @@ const CreateDepartment = () => {
     };
   }, []);
 
+
   const onSubmit = (values, { resetForm }) => {
     values.permissionGroups = selectedGroupPermission;
+    values.externalChild = JSON.stringify(external.map(item => item.value))
     dispatch(fetching());
     dispatch(creatingDepartment(values));
   };
@@ -141,6 +143,21 @@ const CreateDepartment = () => {
                 />
                 <CInvalidFeedback>{errors.name}</CInvalidFeedback>
               </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="login">Chi nhánh ngoài</CLabel>
+                <Select
+                  name="department"
+                  onChange={setExternal}
+                  isMulti
+                  value={external}
+                  placeholder="Chọn chi nhánh"
+                  options={departments.map(item => ({
+                    value: item.id,
+                    label: item.name
+                  }))}
+                />
+              </CFormGroup>
+              {/* <Select name="form-field-name2" value={value} options={states} onChange={setValue} isMulti /> */}
               <CFormGroup>
                 <CLabel htmlFor="userName">Nhóm quyền</CLabel>
                 <Select

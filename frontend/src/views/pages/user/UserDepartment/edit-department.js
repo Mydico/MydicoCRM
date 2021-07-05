@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CButton, CCard, CCardHeader, CCardBody, CForm, CInvalidFeedback, CFormGroup, CLabel, CInput, CCardTitle } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -32,7 +32,8 @@ export const mappingStatus = {
   DELETED: 'ĐÃ XÓA'
 };
 const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
-const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
+const { selectAll: selectAllDepartment, selectById } = globalizedDepartmentSelectors;
+
 const EditDepartment = props => {
   const { initialState } = useSelector(state => state.department);
 
@@ -42,31 +43,51 @@ const EditDepartment = props => {
   const initialValues = useRef({
     name: ''
   });
-
-
-  const department = initialState.detail;
+  // const department = useSelector(state => selectById(state, props.match.params.id));
 
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const departments = useSelector(selectAllDepartment);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
   const [initValues, setInitValues] = useState(null);
+  const [external, setExternal] = useState([]);
 
   useEffect(() => {
-    setInitValues(department);
-    if (department) {
-      setSelectedGroupPermission(department.permissionGroups);
+    if (initialState.detail) {
+      setSelectedGroupPermission(initialState.detail.permissionGroups);
+      setInitValues(initialState.detail);
     }
-  }, [department]);
+  }, [initialState.detail]);
+
+  useEffect(() => {
+    if (departments && departments.length > 0) {
+      try {
+        const arr = JSON.parse(initialState.detail.externalChild);
+        const arrWithLabel = arr.map(item => ({
+          value: item,
+          label: departments.filter(depart => depart.id === item)[0]?.name || ''
+        }));
+        setExternal(arrWithLabel);
+      } catch {
+        setExternal([]);
+      }
+    }
+  }, [departments]);
 
   useEffect(() => {
     dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailDepartment({ id: props.match.params.id, dependency: true }));
     dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    return () => {
+      setSelectedGroupPermission([]);
+      setInitValues(null);
+      setExternal([]);
+    };
   }, []);
 
   const onSubmit = (values, { resetForm }) => {
     values = JSON.parse(JSON.stringify(values));
     values.permissionGroups = selectedGroupPermission;
+    values.externalChild = external ? JSON.stringify(external.map(item => item.value)) : '[]';
     dispatch(fetching());
     dispatch(updateDepartment(values));
   };
@@ -120,20 +141,22 @@ const EditDepartment = props => {
                   <Select
                     name="department"
                     onChange={e => {
+                      if (e?.value && e?.value.id === props.match.params.id) return;
                       setFieldValue('parent', e?.value || null);
                     }}
                     isClearable={true}
-                    openMenuOnClick={false} 
+                    openMenuOnClick={false}
                     value={{
                       value: values.parent,
                       label: values.parent?.name
                     }}
-                    
                     placeholder="Chọn chi nhánh"
-                    options={departments.map(item => ({
-                      value: item,
-                      label: item.name
-                    }))}
+                    options={departments
+                      .map(item => ({
+                        value: item,
+                        label: item.name
+                      }))
+                      .filter(depart => depart.value.id != props.match.params.id)}
                   />
                 </CFormGroup>
                 <CFormGroup>
@@ -163,6 +186,20 @@ const EditDepartment = props => {
                     value={values.name}
                   />
                   <CInvalidFeedback>{errors.name}</CInvalidFeedback>
+                </CFormGroup>
+                <CFormGroup>
+                  <CLabel htmlFor="login">Chi nhánh ngoài</CLabel>
+                  <Select
+                    name="department"
+                    onChange={setExternal}
+                    isMulti
+                    value={external}
+                    placeholder="Chọn chi nhánh"
+                    options={departments.map(item => ({
+                      value: item.id,
+                      label: item.name
+                    }))}
+                  />
                 </CFormGroup>
                 <CFormGroup>
                   <CLabel htmlFor="userName">Nhóm quyền</CLabel>

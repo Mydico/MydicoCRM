@@ -31,6 +31,7 @@ export class StoreHistoryService {
     ): Promise<[StoreHistory[], number]> {
         let queryString = '';
         Object.keys(filter).forEach((item, index) => {
+            if (item === 'endDate' || item === 'startDate') return;
             queryString += `StoreHistory.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
         });
         let andQueryString = '';
@@ -40,7 +41,9 @@ export class StoreHistoryService {
                 .replace('[', '(')
                 .replace(']', ')')}`;
         }
-
+        if (filter['endDate'] && filter['startDate']) {
+            andQueryString += ` AND StoreHistory.createdDate  >= '${filter['startDate']}' AND  StoreHistory.createdDate <= '${filter['endDate']}'`;
+        }
         const queryBuilder = this.storeHistoryRepository
             .createQueryBuilder('StoreHistory')
             .leftJoinAndSelect('StoreHistory.product', 'product')

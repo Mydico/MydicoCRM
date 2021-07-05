@@ -41,12 +41,10 @@ const ViewOrder = props => {
             <CCol sm="4">
               <h6 className="mb-3">Từ:</h6>
               <div>
-                <strong>Công ty cổ phẩn Mydico</strong>
+                <strong>Công ty TNHH Thương mại và Dịch vụ Mỹ Đình</strong>
               </div>
-              <div>Linh Đàm</div>
-              <div>hà nội</div>
-              <div>Email: info@mydico.com</div>
-              <div>Phone: +48 123 456 789</div>
+              <div>Địa chỉ: P301, Nhà CT5, KĐT Mỹ Đình, Mễ Trì, Phường Mỹ Đình 1, Quận Nam Từ Liêm, Hà Nội.</div>
+              <div>Phone: 0243 86 89 205</div>
             </CCol>
             <CCol sm="4">
               <h6 className="mb-3">Tới:</h6>
@@ -57,7 +55,6 @@ const ViewOrder = props => {
               <div>{`${district.filter(dist => dist.value === invoice?.customer?.district)[0]?.label || ''}, ${cities.filter(
                 city => city.value === invoice?.customer?.city
               )[0]?.label || ''}`}</div>
-              <div>Email: {invoice?.customer?.email || ''}</div>
               <div>Phone: {invoice?.customer?.tel || ''}</div>
             </CCol>
             <CCol sm="4">
@@ -83,7 +80,6 @@ const ViewOrder = props => {
                 <th className="right">Đơn giá</th>
                 <th className="right">Chiết khấu(%)</th>
                 <th className="right">Tổng</th>
-                <th className="right">Giảm trừ</th>
                 <th className="right">Thanh toán</th>
               </tr>
             </thead>
@@ -98,12 +94,6 @@ const ViewOrder = props => {
                     <td>{Number(item.priceReal).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                     <td>{item.reducePercent}%</td>
                     <td>{(item.priceReal * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
-                    <td>
-                      {((item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString('it-IT', {
-                        style: 'currency',
-                        currency: 'VND'
-                      }) || ''}
-                    </td>
                     <td>
                       {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
                         'it-IT',

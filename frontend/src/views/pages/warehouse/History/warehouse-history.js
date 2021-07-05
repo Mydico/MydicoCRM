@@ -7,6 +7,7 @@ import { getStoreHistory } from './warehouse-history.api.js';
 import { globalizedStoreHistorySelectors, reset } from './warehouse-history.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
   IMPORT: 'NHẬP KHO'
@@ -46,6 +47,16 @@ const StoreHistory = () => {
   const storeHistorys = useSelector(selectAll);
 
   const paramRef = useRef(null);
+
+  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+
+  useEffect(() => {
+    if (date.endDate && date.startDate) {
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      dispatch(getStoreHistory(params));
+    }
+  }, [date]);
+
   useEffect(() => {
     dispatch(reset());
   }, []);
@@ -84,6 +95,46 @@ const StoreHistory = () => {
         <CIcon name="cil-grid" /> Danh sách lịch sử xuất nhập kho
       </CCardHeader>
       <CCardBody>
+        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+          <CFormGroup row>
+            <CCol>
+              <CLabel htmlFor="date-input">Từ ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    startDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+          <CFormGroup row className="ml-3">
+            <CCol>
+              <CLabel htmlFor="date-input">Đến ngày</CLabel>
+            </CCol>
+            <CCol xs="12" md="9" lg="12">
+              <CInput
+                type="date"
+                id="date-input"
+                onChange={e =>
+                  setDate({
+                    ...date,
+                    endDate: e.target.value
+                  })
+                }
+                name="date-input"
+                placeholder="date"
+              />
+            </CCol>
+          </CFormGroup>
+        </CFormGroup>
         <CDataTable
           items={computedItems(storeHistorys)}
           fields={fields}
@@ -97,13 +148,7 @@ const StoreHistory = () => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-
-
-
           onPaginationChange={val => setSize(val)}
-
-
-
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,

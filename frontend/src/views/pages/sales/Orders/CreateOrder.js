@@ -24,7 +24,7 @@ import { currencyMask } from '../../../components/currency-input/currency-input'
 import MaskedInput from 'react-text-mask';
 import Select from 'react-select';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
-import { getCustomer } from '../../customer/customer.api';
+import { filterCustomer, getCustomer } from '../../customer/customer.api';
 import { globalizedPromotionSelectors } from '../Promotion/promotion.reducer';
 import { getPromotion } from '../Promotion/promotion.api';
 import { globalizedWarehouseSelectors } from '../../warehouse/Warehouse/warehouse.reducer';
@@ -123,7 +123,7 @@ const CreateOrder = props => {
 
   const debouncedSearchCustomer = _.debounce(value => {
     dispatch(
-      getCustomer({
+      filterCustomer({
         page: 0,
         size: 20,
         sort: 'createdDate,DESC',
@@ -131,7 +131,8 @@ const CreateOrder = props => {
         name: value,
         address: value,
         contactName: value,
-        dependency: true
+        dependency: true,
+        sale: account.id
       })
     );
   }, 300);

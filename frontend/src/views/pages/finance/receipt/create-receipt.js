@@ -9,8 +9,8 @@ import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { FormFeedback } from 'reactstrap';
-import { getCustomer } from '../../customer/customer.api';
-import _ from 'lodash'
+import { filterCustomer, getCustomer } from '../../customer/customer.api';
+import _ from 'lodash';
 import CurrencyInput from '../../../components/currency-input/currency-input';
 import { creatingReceipt } from './receipt.api';
 import { fetching } from './receipt.reducer';
@@ -54,7 +54,7 @@ const CreateReceipt = () => {
   const onSubmit = (values, { resetForm }) => () => {
     dispatch(fetching());
     values.money = Number(values.money.replace(/\D/g, ''));
-    values.department = { id: account.department?.id || null};
+    values.department = { id: account.department?.id || null };
     dispatch(creatingReceipt(values));
   };
 
@@ -90,12 +90,23 @@ const CreateReceipt = () => {
       ]
     });
   };
-  const debouncedSearchCustomer =  _.debounce(value => {
-      dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, address: value, contactName: value, dependency: true }));
-    }, 300)
+  const debouncedSearchCustomer = _.debounce(value => {
+    dispatch(
+      filterCustomer({
+        page: 0,
+        size: 20,
+        sort: 'createdDate,DESC',
+        code: value,
+        name: value,
+        address: value,
+        contactName: value,
+        dependency: true,
+      })
+    );
+  }, 300);
 
   const onSearchCustomer = value => {
-    debouncedSearchCustomer(value)  
+    debouncedSearchCustomer(value);
   };
 
   return (

@@ -98,6 +98,7 @@ const WarehouseImport = props => {
       dispatch(getWarehouseImport(params));
     }
   }, [date])
+
   useEffect(() => {
     dispatch(reset());
   }, []);

@@ -5,9 +5,7 @@ import OrderDetails from '../domain/order-details.entity';
 import { OrderDetailsRepository } from '../repository/order-details.repository';
 
 const relationshipNames = [];
-relationshipNames.push('order');
 relationshipNames.push('product');
-relationshipNames.push('store');
 
 @Injectable()
 export class OrderDetailsService {

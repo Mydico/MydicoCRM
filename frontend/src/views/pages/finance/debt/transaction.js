@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import { getTransaction } from './debt.api';
-import _ from 'lodash'
+import _ from 'lodash';
 const getBadge = status => {
   switch (status) {
     case 'PAYMENT':
@@ -65,33 +65,31 @@ const Transaction = props => {
       });
   };
 
-
   useEffect(() => {
     if (props.location.state?.customer) {
       setDebt(props.location.state?.customer);
     }
   }, [props.location.state?.customer]);
 
-
   useEffect(() => {
-    dispatch(getTransaction({ customer: props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    dispatch(
+      getTransaction({ customer: props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current })
+    );
   }, [activePage, size]);
 
-  const debouncedSearchColumn = 
-    _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if(!value[key]) delete value[key]
-        })
-        paramRef.current = value
-        dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300)
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value)
+    debouncedSearchColumn(value);
   };
-
 
   const renderLink = item => {
     let link = '';
@@ -167,22 +165,16 @@ const Transaction = props => {
             items={memoListed}
             fields={fields}
             columnFilter
-                itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+            itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
             itemsPerPage={size}
             hover
             sorter
-          noItemsView={{
-            noResults: 'Không tìm thấy kết quả',
-            noItems: 'Không có dữ liệu'
-          }}
+            noItemsView={{
+              noResults: 'Không tìm thấy kết quả',
+              noItems: 'Không có dữ liệu'
+            }}
             loading={initialState.loading}
-
-
-
             onPaginationChange={val => setSize(val)}
-
-
-
             onColumnFilterChange={onFilterColumn}
             scopedSlots={{
               order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,

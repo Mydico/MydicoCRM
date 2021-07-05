@@ -81,7 +81,7 @@ export class UserService {
                 .replace(']', ')')}`;
         }
         if (filter['endDate'] && filter['startDate']) {
-            andQueryString += ` AND User.createdDate  BETWEEN '${filter['startDate']}' AND '${filter['endDate']}'`
+            andQueryString += ` AND User.createdDate  >= '${filter['startDate']}' AND User.createdDate <= '${filter['endDate']}'`
         }
         const queryBuilder = this.userRepository
             .createQueryBuilder('User')

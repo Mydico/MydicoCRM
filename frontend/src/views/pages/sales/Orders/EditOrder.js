@@ -118,7 +118,7 @@ const EditOrder = props => {
         setSelectedWarehouse(initialState.orderDetails[0].store);
         dispatch(
           getProductWarehouseByField({
-            store: initialState.orderDetails[0].store.id,
+            store: order.store.id,
             product: JSON.stringify(initialState.orderDetails.map(item => item.product.id)),
             dependency: true
           })
@@ -225,7 +225,9 @@ const EditOrder = props => {
   }, 300);
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value);
+    if(Object.keys(value).length > 0){
+      debouncedSearchProduct(value);
+    }
   };
 
   const debouncedSearchProductInStore = _.debounce((copyArr, index) => {

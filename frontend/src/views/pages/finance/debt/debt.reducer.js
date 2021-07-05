@@ -1,24 +1,23 @@
-import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
-import {getCustomerDebts, getDetailTransaction, getTransaction} from './debt.api';
-
+import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { getCustomerDebts, getDetailTransaction, getTransaction } from './debt.api';
 
 const initialState = {
   loading: false,
   updatingSuccess: false,
   debtDetails: [],
-  transactions: [],
+  transactions: []
 };
 
 export const debtAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
-  selectId: (debt) => debt.id,
+  selectId: debt => debt.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => b.createdDate.localeCompare(a.createdDate),
+  sortComparer: (a, b) => b.createdDate.localeCompare(a.createdDate)
 });
 
 const slice = createSlice({
   name: 'debt',
-  initialState: debtAdapter.getInitialState({initialState}),
+  initialState: debtAdapter.getInitialState({ initialState }),
   reducers: {
     fetching(state) {
       state.initialState.loading = true;
@@ -30,7 +29,7 @@ const slice = createSlice({
     debtAddOne: debtAdapter.addOne,
     debtAddMany: debtAdapter.addMany,
     debtUpdate: debtAdapter.updateOne,
-    debtRemove: debtAdapter.removeOne,
+    debtRemove: debtAdapter.removeOne
   },
   extraReducers: {
     [getCustomerDebts.fulfilled]: (state, action) => {
@@ -38,7 +37,7 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [getCustomerDebts.rejected]: (state ) => {
+    [getCustomerDebts.rejected]: state => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
@@ -46,23 +45,26 @@ const slice = createSlice({
       debtAdapter.addOne(state, action.payload);
       state.initialState.loading = false;
     },
-    [getDetailTransaction.rejected]: (state ) => {
+    [getDetailTransaction.rejected]: state => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
     [getTransaction.fulfilled]: (state, action) => {
-      state.initialState.transactions = action.payload.data;
+      state.initialState.transactions = action.payload.data.sort((a, b) => {
+        if (b.createdDate && a.createdDate) return b.createdDate.localeCompare(a.createdDate);
+        return 1;
+      });
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-    [getTransaction.rejected]: (state ) => {
+    [getTransaction.rejected]: state => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
-    },
-  },
+    }
+  }
 });
 
 export default slice.reducer;
-export const {fetching, reset} = slice.actions;
+export const { fetching, reset } = slice.actions;
 
-export const globalizedDebtsSelectors = debtAdapter.getSelectors((state) => state.debt);
+export const globalizedDebtsSelectors = debtAdapter.getSelectors(state => state.debt);

@@ -33,6 +33,7 @@ export class CustomerDebitService {
   ): Promise<[CustomerDebit[], number]> {
     let queryString = '1=1 ';
     Object.keys(filter).forEach((item, index) => {
+      if (item === 'endDate' || item === 'startDate') return;
       const specialCharacter = filter[item].includes('_') ? filter[item].replace('_', '\\_') : filter[item];
       queryString += `AND CustomerDebit.${item} like '%${specialCharacter}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
     });
@@ -41,6 +42,9 @@ export class CustomerDebitService {
       queryString += ` AND CustomerDebit.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
+    }
+    if (filter['endDate'] && filter['startDate']) {
+      queryString += ` AND CustomerDebit.lastModifiedDate  >= '${filter['startDate']}' AND CustomerDebit.lastModifiedDate <='${filter['endDate']}'`;
     }
     if (!allowToSeeAll) {
       if (isEmployee) {
@@ -81,15 +85,15 @@ export class CustomerDebitService {
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` AND CustomerDebit.createdDate  BETWEEN '${filter['startDate']}' AND '${filter['endDate']}'`;
+      andQueryString += ` AND CustomerDebit.lastModifiedDate  >= '${filter['startDate']}' AND CustomerDebit.lastModifiedDate <= '${filter['endDate']}'`;
     }
     if (!allowToSeeAll) {
       if (isEmployee) {
-        queryString += ` AND CustomerDebit.sale = ${currentUser.id}`;
+        andQueryString += ` AND CustomerDebit.sale = ${currentUser.id}`;
       }
       if (currentUser.branch) {
         if (currentUser.branch.seeAll) {
-          queryString += ` AND CustomerDebit.branch = ${currentUser.branch.id}`;
+          andQueryString += ` AND CustomerDebit.branch = ${currentUser.branch.id}`;
         }
       }
     }

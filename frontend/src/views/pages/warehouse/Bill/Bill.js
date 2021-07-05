@@ -33,6 +33,8 @@ import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer';
 import _ from 'lodash';
 import { CFormGroup, CInput } from '@coreui/react';
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -93,7 +95,7 @@ const fields = [
   { key: 'transporterName', label: 'Người vận chuyển', _style: { width: '10%' } },
   { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '5%' }, filter: false },
   { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' }, filter: false },
-  { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
+  { key: 'createdBy', label: 'Nhân viên quản lý', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false },
   { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
   {
@@ -138,11 +140,12 @@ const Bill = props => {
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
-    if(date.endDate && date.startDate){
+    if (date.endDate && date.startDate) {
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getBill(params));
     }
-  }, [date])
+  }, [date]);
+
   useEffect(() => {
     dispatch(reset());
   }, []);
@@ -165,9 +168,10 @@ const Bill = props => {
         ...item,
         tel: item.customer?.tel,
         quantity: item.order?.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0) || 0,
-        total: item.order?.orderDetails
-          ?.reduce((sum, current) => sum + current.priceTotal, 0)
-          .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || 0,
+        total:
+          item.order?.orderDetails
+            ?.reduce((sum, current) => sum + current.priceTotal, 0)
+            .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || 0,
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
@@ -207,19 +211,19 @@ const Bill = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(getBill());
+      dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
       setModal(false);
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
 
   const approveBill = bill => () => {
-    const data = { id: bill.id, status: BillStatus.APPROVED, action: 'approve' };
+    const data = { id: bill.id, status: BillStatus.APPROVED, action: 'approve', order: bill.order };
     dispatch(updateBill(data));
   };
 
   const rejectBill = bill => () => {
-    const data = { id: bill.id, status: BillStatus.REJECTED, action: 'cancel' };
+    const data = { id: bill.id, status: BillStatus.REJECTED, action: 'cancel', order: bill.order };
     dispatch(updateBill(data));
   };
 
@@ -228,7 +232,8 @@ const Bill = props => {
       updateBill({
         id: bill.id,
         status: BillStatus.SHIPPING,
-        action: 'shipping'
+        action: 'shipping',
+        order: bill.order
       })
     );
   };
@@ -238,7 +243,8 @@ const Bill = props => {
       updateBill({
         id: bill.id,
         status: BillStatus.SUCCESS,
-        action: 'complete'
+        action: 'complete',
+        order: bill.order
       })
     );
   };
@@ -249,7 +255,7 @@ const Bill = props => {
   };
 
   const deleteBill = bill => () => {
-    const data = { id: bill.id, status: BillStatus.DELETED, action: 'delete' };
+    const data = { id: bill.id, status: BillStatus.DELETED, action: 'delete', order: bill.order };
     dispatch(updateBill(data));
   };
 
@@ -436,6 +442,7 @@ const Bill = props => {
       const copyObject = {
         id: selectedBill.current.id,
         transporter: selectedTransporter.current,
+        order: selectedBill.current.order,
         status: BillStatus.SUPPLY_WAITING
       };
       dispatch(updateTransporterBill(copyObject));
@@ -533,8 +540,6 @@ const Bill = props => {
           // loading
 
           onPaginationChange={val => setSize(val)}
-
-
           onColumnFilterChange={onFilterColumn}
           columnFilterSlot={{
             status: (
@@ -544,6 +549,7 @@ const Bill = props => {
                     onFilterColumn({ ...paramRef.current, status: item?.value || '' });
                   }}
                   maxMenuHeight="200"
+                  isClearable
                   placeholder="Chọn trạng thái"
                   options={statusList.map(item => ({
                     value: item.value,
@@ -589,26 +595,16 @@ const Bill = props => {
                     <h5>Thông tin vận đơn</h5>
                     <CRow className="mb-4">
                       <CCol sm="4">
-                        <h6 className="mb-3">Tới:</h6>
+                      <h6 className="mb-1">Tới:</h6>
                         <div>
                           <strong>{item?.customer?.name || ''}</strong>
                         </div>
-                        <div>{item?.address || ''}</div>
-                        <div>{`${item?.customer?.district || ''}, ${item?.customer?.city || ''}`}</div>
-                        <div>Email: {item?.customer?.email || ''}</div>
+                        <div>{item?.customer?.address || ''}</div>
+                        <div>{`${district.filter(dist => dist.value === item?.customer?.district)[0]?.label || ''}, ${cities.filter(
+                          city => city.value === item?.customer?.city
+                        )[0]?.label || ''}`}</div>
+                        <div>Địa chỉ: {item?.customer?.tel || ''}</div>
                         <div>Phone: {item?.customer?.tel || ''}</div>
-                      </CCol>
-                      <CCol sm="4">
-                        <h6 className="mb-3">Chương trình bán hàng:</h6>
-                        <div>
-                          <strong> {item?.promotion?.name || ''}</strong>
-                        </div>
-                        <div>
-                          {item?.promotion?.description.length > 30
-                            ? `${item?.promotion?.description.substring(0, 30)}`
-                            : item?.promotion?.description}
-                        </div>
-                        <div>Loại khách hàng: {item?.promotion?.customerType?.name}</div>
                       </CCol>
                     </CRow>
                     <Table striped responsive>

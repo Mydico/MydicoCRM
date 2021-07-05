@@ -40,9 +40,6 @@ export class OrderDetailsController {
     async getByOrderId(@Req() req: Request, @Res() res): Promise<OrderDetails[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const [results, count] = await this.orderDetailsService.findAndCountByOrderId({
-            skip: +pageRequest.page * pageRequest.size,
-            take: +pageRequest.size,
-            order: pageRequest.sort.asOrder(),
             where: {
                 order: req.query.orderId,
             },

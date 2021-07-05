@@ -10,7 +10,7 @@ import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { FormFeedback } from 'reactstrap';
-import { getCustomer } from '../../customer/customer.api';
+import { filterCustomer, getCustomer } from '../../customer/customer.api';
 import _ from 'lodash';
 import CurrencyInput from '../../../components/currency-input/currency-input';
 import { getDetailReceipt, updateReceipt } from './receipt.api';
@@ -58,7 +58,7 @@ const EditReceipt = props => {
 
   const debouncedSearchCustomer =  _.debounce(value => {
       dispatch(
-        getCustomer({
+        filterCustomer({
           page: 0,
           size: 20,
           sort: 'createdDate,DESC',
@@ -66,7 +66,7 @@ const EditReceipt = props => {
           name: value,
           address: value,
           contactName: value,
-          dependency: true
+          dependency: true,
         })
       );
     }, 300)

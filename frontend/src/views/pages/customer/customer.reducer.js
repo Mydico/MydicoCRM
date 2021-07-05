@@ -3,6 +3,7 @@ import {
   creatingCustomer,
   creatingCustomerStatus,
   creatingCustomerType,
+  filterCustomer,
   getBranches,
   getCity,
   getCustomer,
@@ -82,6 +83,17 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
+    [getCustomer.rejected]: (state ) => {
+      state.loading = false;
+    },
+    [filterCustomer.fulfilled]: (state, action) => {
+      customersAdapter.setAll(state, action.payload.data);
+      state.initialState.totalItem = action.payload.total;
+      state.initialState.loading = false;
+    },
+    [filterCustomer.rejected]: (state ) => {
+      state.loading = false;
+    },
     [getCustomerBirthday.fulfilled]: (state, action) => {
       customersAdapter.setAll(state, action.payload.data);
       state.initialState.totalItem = action.payload.total;
@@ -110,9 +122,6 @@ const slice = createSlice({
     [getBranches.fulfilled]: (state, action) => {
       state.initialState.branch = action.payload;
       state.initialState.loading = false;
-    },
-    [getCustomer.rejected]: (state ) => {
-      state.loading = false;
     },
   },
 });

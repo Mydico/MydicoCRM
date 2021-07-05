@@ -43,12 +43,14 @@ export class TransactionSubscriber implements EntitySubscriberInterface<Transact
         let exist = await customerDebitRepo.findOne({ where: { customer: event.entity.customer } });
         if (exist) {
             exist.debt = event.entity.earlyDebt;
+            exist.lastModifiedDate = new Date();
             exist.branch = foundedCustomer.branch;
         } else {
             exist = new CustomerDebit();
             exist.debt = event.entity.earlyDebt;
             exist.customer = event.entity.customer;
             exist.department = foundedCustomer.department;
+            exist.lastModifiedDate = new Date();
             exist.branch = foundedCustomer.branch;
             exist.customerName = foundedCustomer.name;
             exist.customerCode = foundedCustomer.code;

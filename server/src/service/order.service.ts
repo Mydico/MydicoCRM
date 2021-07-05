@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, FindManyOptions, FindOneOptions, In } from 'typeorm';
 import Order from '../domain/order.entity';
@@ -35,10 +35,10 @@ export class OrderService {
 
   constructor(
     @InjectRepository(OrderRepository) private orderRepository: OrderRepository,
+    @Inject(forwardRef(() => BillService))
     private readonly billService: BillService,
     private readonly productQuantityService: ProductQuantityService,
     private readonly transactionService: TransactionService,
-    private readonly customerService: CustomerService,
     private readonly incomeDashboardService: IncomeDashboardService
   ) {}
 
@@ -68,25 +68,25 @@ export class OrderService {
       if (item === 'endDate' || item === 'startDate') return;
       queryString += `Order.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
     });
-    let andQueryString = '1=1 ';
+    let andQueryString = '';
 
     if (departmentVisible.length > 0) {
-      andQueryString += `AND Order.department IN ${JSON.stringify(departmentVisible)
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "} Order.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` AND Order.createdDate  BETWEEN '${filter['startDate']}' AND '${filter['endDate']}'`;
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Order.createdDate  >= '${filter['startDate']}' AND  Order.createdDate <= '${filter['endDate']}'`;
     }
     if (isEmployee) {
-      andQueryString += ` AND Order.sale = ${currentUser.id}`;
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Order.sale = ${currentUser.id}`;
     }
     if (currentUser.branch) {
       if (!currentUser.branch.seeAll) {
-        andQueryString += ` AND Order.branch = ${currentUser.branch.id}`;
+        andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Order.branch = ${currentUser.branch.id}`;
       }
     } else {
-      andQueryString += ' AND Order.branch is NULL ';
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "} Order.branch is NULL `;
     }
     const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_branch_${
       currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
@@ -217,6 +217,10 @@ export class OrderService {
     if (!order.id) {
       order.code = `${currentUser.department.code}-${count + 1}`;
     }
+    return await this.orderRepository.save(order);
+  }
+
+  async updateStatus(order: Order): Promise<Order | undefined> {
     return await this.orderRepository.save(order);
   }
 

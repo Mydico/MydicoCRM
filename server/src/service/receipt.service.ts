@@ -51,25 +51,25 @@ export class ReceiptService {
       if (item === 'endDate' || item === 'startDate') return;
       queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
     });
-    let andQueryString = '1=1 ';
+    let andQueryString = '';
 
     if (departmentVisible.length > 0) {
-      andQueryString += ` AND Receipt.department IN ${JSON.stringify(departmentVisible)
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` AND Receipt.createdDate  BETWEEN '${filter['startDate']}' AND '${filter['endDate']}'`;
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.createdDate  >= '${filter['startDate']}' AND Receipt.createdDate <= '${filter['endDate']}'`;
     }
     if (isEmployee) {
-      andQueryString += ` AND Receipt.sale = ${currentUser.id}`;
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.sale = ${currentUser.id}`;
     }
     if (currentUser.branch) {
       if (!currentUser.branch.seeAll) {
-        andQueryString += ` AND Receipt.branch = ${currentUser.branch.id}`;
+        andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.branch = ${currentUser.branch.id}`;
       }
     } else {
-      andQueryString += ' AND Receipt.branch is NULL ';
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  AND Receipt.branch is NULL `;
     }
 
     const queryBuilder = this.receiptRepository

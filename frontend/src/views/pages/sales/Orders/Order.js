@@ -14,12 +14,19 @@ import { userSafeSelector, addPermission } from '../../login/authenticate.reduce
 import _ from 'lodash';
 import { CFormGroup, CInput, CLabel, CTextarea } from '@coreui/react';
 import Select from 'react-select';
-
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district.json';
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
   CREATE_COD: 'ĐÃ TẠO VẬN ĐƠN',
-  CANCEL: 'ĐÃ HỦY'
+  CANCEL: 'ĐÃ HỦY',
+  COD_APPROVED: 'ĐÃ DUYỆT VẬN ĐƠN',
+  REJECTED: 'TỪ CHỐI VẬN ĐƠN',
+  SUPPLY_WAITING: 'ĐỢI XUẤT KHO',
+  SHIPPING: 'ĐANG VẬN CHUYỂN',
+  SUCCESS: 'GIAO THÀNH CÔNG',
+  COD_CANCEL: 'HỦY VẬN ĐƠN'
 };
 
 const statusList = [
@@ -38,6 +45,30 @@ const statusList = [
   {
     value: 'CANCEL',
     label: 'ĐÃ HỦY'
+  },
+  {
+    value: 'COD_APPROVED',
+    label: 'ĐÃ DUYỆT VẬN ĐƠN'
+  },
+  {
+    value: 'REJECTED',
+    label: 'TỪ CHỐI VẬN ĐƠN'
+  },
+  {
+    value: 'SUPPLY_WAITING',
+    label: 'ĐỢI XUẤT KHO'
+  },
+  {
+    value: 'SHIPPING',
+    label: 'ĐANG VẬN CHUYỂN'
+  },
+  {
+    value: 'SUCCESS',
+    label: 'GIAO THÀNH CÔNG'
+  },
+  {
+    value: 'COD_CANCEL',
+    label: 'HỦY VẬN ĐƠN'
   }
 ];
 const { selectAll } = globalizedOrdersSelectors;
@@ -100,11 +131,11 @@ const Order = props => {
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
-    if(date.endDate && date.startDate){
+    if (date.endDate && date.startDate) {
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getOrder(params));
     }
-  }, [date])
+  }, [date]);
   useEffect(() => {
     dispatch(reset());
     localStorage.setItem('order', JSON.stringify({}));
@@ -526,11 +557,6 @@ const Order = props => {
           }}
           // loading
           onPaginationChange={val => setSize(val)}
-
-
-
-
-
           onColumnFilterChange={onFilterColumn}
           onRowClick={val => toDetailOrder(val.id)}
           columnFilterSlot={{
@@ -592,8 +618,9 @@ const Order = props => {
                           <strong>{item?.customer.name}</strong>
                         </div>
                         <div>{item?.address}</div>
-                        {/* <div>{`${item?.customer?.district?.name}, ${item?.customer?.city?.name}`}</div> */}
-                        <div>Email: {item?.customer.email}</div>
+                        <div>{`${district.filter(dist => dist.value === item?.customer?.district)[0]?.label || ''}, ${cities.filter(
+                          city => city.value === item?.customer?.city
+                        )[0]?.label || ''}`}</div>{' '}
                         <div>Phone: {item?.customer.tel}</div>
                       </CCol>
                       <CCol sm="4">

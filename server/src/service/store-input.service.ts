@@ -108,20 +108,20 @@ export class StoreInputService {
             if (item === 'endDate' || item === 'startDate') return;
             queryString += `StoreInput.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
         });
-        let andQueryString = '1=1 ';
+        let andQueryString = '';
 
         if (departmentVisible.length > 0) {
-            andQueryString += `AND StoreInput.department IN ${JSON.stringify(departmentVisible)
+            andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.department IN ${JSON.stringify(departmentVisible)
                 .replace('[', '(')
                 .replace(']', ')')}`;
         }
         if (filter['endDate'] && filter['startDate']) {
-            andQueryString += ` AND StoreInput.createdDate  BETWEEN '${filter['startDate']}' AND '${filter['endDate']}'`;
+            andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.createdDate  >= '${filter['startDate']}' AND StoreInput.createdDate <= '${filter['endDate']}'`;
         }
         if (type.length > 0) {
-            andQueryString += ` AND StoreInput.type like '%${type}%' `;
+            andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.type like '%${type}%' `;
         }
-        const cacheKeyBuilder = `get_StoreInputs_department_${departmentVisible.join(',')}_type_${type}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_StoreInput.${Object.keys(options.order)[0] ||
+        const cacheKeyBuilder = `get_StoreInputs_department_${departmentVisible.join(',')}_endDate_${filter['endDate'] || ''}startDate${filter['startDate'] || ''}_type_${type}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_StoreInput.${Object.keys(options.order)[0] ||
             'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
         const queryBuilder = this.storeInputRepository
             .createQueryBuilder('StoreInput')

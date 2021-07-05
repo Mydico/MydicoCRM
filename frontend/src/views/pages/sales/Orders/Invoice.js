@@ -8,6 +8,8 @@ import { reset, fetching } from './order.reducer';
 
 import { CButton, CCard, CCardHeader, CCardBody, CCol, CRow } from '@coreui/react/lib';
 import { CSpinner } from '@coreui/react';
+import cities from '../../../../shared/utils/city';
+import district from '../../../../shared/utils/district';
 const Invoice = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -32,7 +34,7 @@ const Invoice = () => {
         (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100,
         0
       );
-      dispatch(fetching())
+      dispatch(fetching());
       dispatch(creatingOrder(invoice));
     }
   };
@@ -58,12 +60,10 @@ const Invoice = () => {
             <CCol sm="4">
               <h6 className="mb-3">Từ:</h6>
               <div>
-                <strong>Công ty cổ phẩn Mydico</strong>
+                <strong>Công ty TNHH Thương mại và Dịch vụ Mỹ Đình</strong>
               </div>
-              <div>Linh Đàm</div>
-              <div>hà nội</div>
-              <div>Email: info@mydico.com</div>
-              <div>Phone: +48 123 456 789</div>
+              <div>Địa chỉ: P301, Nhà CT5, KĐT Mỹ Đình, Mễ Trì, Phường Mỹ Đình 1, Quận Nam Từ Liêm, Hà Nội.</div>
+              <div>Phone: 0243 86 89 205</div>
             </CCol>
             <CCol sm="4">
               <h6 className="mb-3">Tới:</h6>
@@ -71,8 +71,9 @@ const Invoice = () => {
                 <strong>{invoice?.customer.name || ''}</strong>
               </div>
               <div>{invoice?.address || ''}</div>
-              <div>{`${invoice?.customer?.district?.name || ''}, ${invoice?.customer?.city?.name || ''}`}</div>
-              <div>Email: {invoice?.customer.email || ''}</div>
+              <div>{`${district.filter(dist => dist.value === invoice?.customer?.district)[0]?.label || ''}, ${cities.filter(
+                city => city.value === invoice?.customer?.city
+              )[0]?.label || ''}`}</div>{' '}
               <div>Phone: {invoice?.customer.tel || ''}</div>
             </CCol>
             <CCol sm="4">

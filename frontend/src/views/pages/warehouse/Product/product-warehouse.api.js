@@ -14,7 +14,7 @@ export const getProductWarehouse = createAsyncThunk(
 );
 
 export const filterProductInStore = createAsyncThunk(
-  'api/product-quantities',
+  'api/product-quantities/find',
   async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
     try {
       const result = await axios.get('api/product-quantities/find', { params: params });

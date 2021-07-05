@@ -30,7 +30,7 @@ import { globalizedProductSelectors } from '../../product/ProductList/product.re
 import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
-import { getCustomer } from '../../customer/customer.api';
+import { filterCustomer, getCustomer } from '../../customer/customer.api';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import cities from '../../../../shared/utils/city';
@@ -159,7 +159,7 @@ const EditWarehouseReturn = props => {
 
   const debouncedSearchCustomer =  _.debounce(value => {
       dispatch(
-        getCustomer({
+        filterCustomer({
           page: 0,
           size: 20,
           sort: 'createdDate,DESC',
@@ -167,7 +167,7 @@ const EditWarehouseReturn = props => {
           name: value,
           address: value,
           contactName: value,
-          dependency: true
+          dependency: true,
         })
       );
     }, 300)

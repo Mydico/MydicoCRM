@@ -79,6 +79,45 @@ export class CustomerController {
         return null;
     }
 
+    @Get('/find')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'List all records',
+        type: Customer,
+    })
+    async find(@Req() req: Request, @Res() res): Promise<Customer[]> {
+        const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+        const filter: any = {};
+        Object.keys(req.query).forEach(item => {
+            if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency') {
+                filter[item] = req.query[item];
+            }
+        });
+        let departmentVisible: any = [];
+
+        const currentUser = req.user as User;
+        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+        if (currentUser.department) {
+            departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+            departmentVisible = departmentVisible.map(item => item.id);
+            departmentVisible.push(currentUser.department.id);
+        }
+        const [results, count] = await this.customerService.filter(
+            {
+                skip: +pageRequest.page * pageRequest.size,
+                take: +pageRequest.size,
+                order: pageRequest.sort.asOrder(),
+            },
+            filter,
+            departmentVisible,
+            isEmployee,
+            currentUser
+        );
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+        return res.send(results);
+    }
+
     @Get('/')
     @Roles(RoleType.USER)
     @ApiResponse({

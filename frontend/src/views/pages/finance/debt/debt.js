@@ -47,11 +47,15 @@ const Debt = props => {
     if(date.endDate && date.startDate){
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getCustomerDebts(params));
+      dispatch(getCustomerDebtsTotalDebit({...paramRef.current, ...date})).then(resp => {
+        setTotal(Number(resp.payload.data.sum));
+      });
     }
   }, [date])
+
   useEffect(() => {
     dispatch(reset());
-    dispatch(getCustomerDebtsTotalDebit(paramRef.current)).then(resp => {
+    dispatch(getCustomerDebtsTotalDebit({...paramRef.current, ...date})).then(resp => {
       setTotal(Number(resp.payload.data.sum));
     });
   }, []);
