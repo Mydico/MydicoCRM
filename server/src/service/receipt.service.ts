@@ -59,7 +59,7 @@ export class ReceiptService {
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.createdDate  >= '${filter['startDate']}' AND Receipt.createdDate <= '${filter['endDate']}'`;
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.createdDate  >= '${filter['startDate']}' AND Receipt.createdDate <= '${filter['endDate']} 24:00:00'`;
     }
     if (isEmployee) {
       andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.sale = ${currentUser.id}`;

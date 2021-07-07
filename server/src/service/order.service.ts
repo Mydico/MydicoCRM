@@ -76,7 +76,7 @@ export class OrderService {
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Order.createdDate  >= '${filter['startDate']}' AND  Order.createdDate <= '${filter['endDate']}'`;
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Order.createdDate  >= '${filter['startDate']}' AND  Order.createdDate <= '${filter['endDate']} 24:00:00'`;
     }
     if (isEmployee) {
       andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Order.sale = ${currentUser.id}`;

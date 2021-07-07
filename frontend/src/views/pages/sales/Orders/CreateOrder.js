@@ -90,7 +90,7 @@ const CreateOrder = props => {
   const [showProductPromotion, setShowProductPromotion] = useState(false);
   useEffect(() => {
     dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
+    dispatch(getWarehouse({ dependency: true }));
     const existOrder = localStorage.getItem('order');
     try {
       const data = JSON.parse(existOrder);
@@ -142,17 +142,19 @@ const CreateOrder = props => {
   };
 
   const debouncedSearchPromotion = _.debounce(value => {
-    dispatch(
-      getPromotion({
-        isLock: 0,
-        page: 0,
-        size: 20,
-        name: value,
-        sort: 'createdDate,DESC',
-        dependency: true,
-        customerType: selectedCustomer?.type?.id
-      })
-    );
+    if (selectedCustomer) {
+      dispatch(
+        getPromotion({
+          isLock: 0,
+          page: 0,
+          size: 20,
+          name: value,
+          sort: 'createdDate,DESC',
+          dependency: true,
+          customerType: selectedCustomer?.type?.id
+        })
+      );
+    }
   }, 300);
 
   const onSearchPromition = value => {

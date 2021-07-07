@@ -61,6 +61,9 @@ const slice = createSlice({
       state.initialState.warehouses = action.payload.data;
       state.initialState.loading = false;
     },
+    [getAllWarehouse.rejected]: (state, action) => {
+      state.initialState.loading = false;
+    },
     [getWarehouse.rejected]: (state ) => {
       state.loading = false;
     },

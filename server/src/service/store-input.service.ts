@@ -116,7 +116,7 @@ export class StoreInputService {
                 .replace(']', ')')}`;
         }
         if (filter['endDate'] && filter['startDate']) {
-            andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.createdDate  >= '${filter['startDate']}' AND StoreInput.createdDate <= '${filter['endDate']}'`;
+            andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.createdDate  >= '${filter['startDate']}' AND StoreInput.createdDate <= '${filter['endDate']} 24:00:00'`;
         }
         if (type.length > 0) {
             andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.type like '%${type}%' `;

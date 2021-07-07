@@ -42,7 +42,7 @@ export class StoreHistoryService {
                 .replace(']', ')')}`;
         }
         if (filter['endDate'] && filter['startDate']) {
-            andQueryString += ` AND StoreHistory.createdDate  >= '${filter['startDate']}' AND  StoreHistory.createdDate <= '${filter['endDate']}'`;
+            andQueryString += ` AND StoreHistory.createdDate  >= '${filter['startDate']}' AND  StoreHistory.createdDate <= '${filter['endDate']} 24:00:00'`;
         }
         const queryBuilder = this.storeHistoryRepository
             .createQueryBuilder('StoreHistory')
