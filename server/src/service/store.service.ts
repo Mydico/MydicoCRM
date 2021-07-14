@@ -23,50 +23,54 @@ export class StoreService {
     return await this.storeRepository.findOne(options);
   }
 
+  async findAll(options: FindManyOptions<Store>): Promise<[Store[], number]> {
+    return this.storeRepository.findAndCount(options);
+  }
+
   async findAndCount(options: FindManyOptions<Store>, filter = {}, departmentVisible = []): Promise<[Store[], number]> {
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
-        queryString += `Store.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
-    });    
+      if (item === 'department') return;
+      queryString += `Store.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+    });
     let andQueryString = '';
     if (departmentVisible.length > 0) {
-        andQueryString += ` ${andQueryString.length === 0? "":" AND "} Store.department IN ${JSON.stringify(departmentVisible)
-            .replace('[', '(')
-            .replace(']', ')')}`;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '} Store.department IN ${JSON.stringify(departmentVisible)
+        .replace('[', '(')
+        .replace(']', ')')}`;
     }
-    const cacheKeyBuilder = `get_Stores_department_${departmentVisible.join(',')}_endDate_${filter['endDate'] || ''}startDate${filter['startDate'] || ''}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Store.${Object.keys(options.order)[0] ||
-        'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+    const cacheKeyBuilder = `get_Stores_department_${departmentVisible.join(',')}_endDate_${filter['endDate'] || ''}startDate${filter[
+      'startDate'
+    ] || ''}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Store.${Object.keys(options.order)[0] ||
+      'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
     const queryBuilder = this.storeRepository
-        .createQueryBuilder('Store')
-        .leftJoinAndSelect('Store.department', 'department')
-        .cache(cacheKeyBuilder, 604800)
-        .where(andQueryString)
-        .orderBy(`Store.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
-        .skip(options.skip)
-        .take(options.take);
+      .createQueryBuilder('Store')
+      .leftJoinAndSelect('Store.department', 'department')
+      .cache(cacheKeyBuilder, 604800)
+      .where(andQueryString)
+      .orderBy(`Store.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take);
 
     const count = this.storeRepository
-        .createQueryBuilder('Store')
-        .where(andQueryString)
-        .orderBy(`Store.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
-        .skip(options.skip)
-        .take(options.take)
-        .cache(
-            `cache_count_get_Stores_department_${JSON.stringify(departmentVisible)}_filter_${JSON.stringify(filter)}`
-        );
+      .createQueryBuilder('Store')
+      .where(andQueryString)
+      .orderBy(`Store.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take)
+      .cache(`cache_count_get_Stores_department_${JSON.stringify(departmentVisible)}_filter_${JSON.stringify(filter)}`);
     if (queryString) {
-        queryBuilder.andWhere(
-            new Brackets(sqb => {
-                sqb.where(queryString);
-            })
-        );
-        count.andWhere(
-            new Brackets(sqb => {
-                sqb.where(queryString);
-            })
-        );
+      queryBuilder.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
+      count.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
     }
-
     const result = await queryBuilder.getManyAndCount();
     result[1] = await count.getCount();
     return result;

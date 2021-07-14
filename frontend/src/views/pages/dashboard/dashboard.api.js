@@ -17,3 +17,11 @@ export const getDebtDashboard = createAsyncThunk('api/debt-dashboards', async (p
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+export const getOrderSale = createAsyncThunk('api/report-sale-order', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/sale-report', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

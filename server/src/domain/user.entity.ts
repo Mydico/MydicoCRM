@@ -41,6 +41,9 @@ export class User extends BaseEntity {
     @Index()
     activated: boolean;
 
+    @ManyToOne(type => Department)
+    mainDepartment?: Department;
+
     @ManyToMany(type => Authority)
     @JoinTable()
     authorities?: any[];

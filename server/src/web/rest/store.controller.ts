@@ -33,6 +33,34 @@ export class StoreController {
 
   constructor(private readonly storeService: StoreService, private readonly departmentService: DepartmentService) {}
 
+
+  @Get('/all')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: Store
+  })
+  async getAllWithoutDepartment(@Req() req: Request, @Res() res): Promise<Store[]> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter = [];
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        filter[item] = Like(`%${filter[item]}%`)
+      }
+    });
+    const options = {
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder(),
+      where: filter
+    };
+    const [results, count] = await this.storeService.findAll(options);
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
+  }
+
+
   @Get('/')
   @Roles(RoleType.USER)
   @ApiResponse({
@@ -55,6 +83,7 @@ export class StoreController {
       departmentVisible = departmentVisible.map(item => item.id);
       departmentVisible.push(currentUser.department.id);
     }
+    departmentVisible = [...new Set([...departmentVisible])];
     const options = {
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,

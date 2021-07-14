@@ -28,6 +28,7 @@ relationshipNames.push('promotion.customerType');
 relationshipNames.push('store');
 relationshipNames.push('sale');
 relationshipNames.push('department');
+relationshipNames.push('branch');
 
 @Injectable()
 export class OrderService {
@@ -248,6 +249,12 @@ export class OrderService {
         });
         const transaction = new Transaction();
         transaction.customer = foundedOrder.customer;
+        transaction.customerCode = foundedOrder.customer.code;
+        transaction.customerName = foundedOrder.customer.name;
+        transaction.sale = foundedOrder.sale;
+        transaction.saleName = foundedOrder.sale.code;
+        transaction.branch= foundedOrder.branch;
+        transaction.department = foundedOrder.department;
         transaction.order = foundedOrder;
         transaction.bill = createdBill;
         transaction.totalMoney = foundedOrder.realMoney;

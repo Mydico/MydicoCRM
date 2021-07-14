@@ -31,10 +31,9 @@ export class DepartmentService {
       try {
         const ids = JSON.parse(foundedDepartment.externalChild);
         const externalTree = await this.departmentRepository.findByIds(ids);
-        arrTree = [...flatTree, ...externalTree];
+        arrTree = [...new Set([...flatTree, ...externalTree])];
       } catch (error) {}
     }
-
     return arrTree;
   }
 

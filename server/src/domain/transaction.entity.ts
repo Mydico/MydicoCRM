@@ -10,6 +10,8 @@ import Order from './order.entity';
 import Customer from './customer.entity';
 import { TransactionType } from './enumeration/transaction-type';
 import StoreInput from './store-input.entity';
+import Branch from './branch.entity';
+import Department from './department.entity';
 
 /**
  * A Transaction.
@@ -31,34 +33,52 @@ export default class Transaction extends BaseEntity {
     @ManyToOne(type => Bill)
     bill?: Bill;
 
+    @Column({ name: 'sale_name', length: 500, nullable: true })
+    @Index()
+    saleName?: string;
+
+    @Column({ name: 'customer_code', length: 500, nullable: true })
+    @Index()
+    customerCode?: string;
+
+    @Column({ name: 'customer_name', length: 500, nullable: true })
+    @Index()
+    customerName?: string;
+
+    @ManyToOne(type => Branch)
+    branch? : Branch;
+
+    @ManyToOne(type => Department)
+    department? : Department;
+
     /**
    * 0 : chưa thanh toán, 1 : đã thanh toán
    */
     @Column({ type: 'integer', name: 'status', nullable: true })
     @Index()
-    status: number;
+    status?: number;
 
     @Column({ name: 'note', length: 255, nullable: true })
     @Index()
-    note: string;
+    note?: string;
 
     @ManyToOne(type => User)
     sale?: User;
 
     @Column({ type: 'bigint', name: 'total_money', nullable: true, default: 0 })
     @Index()
-    totalMoney: number;
+    totalMoney?: number;
 
     /**
    * Số tiền hòa trả do trả hàng
    */
     @Column({ type: 'bigint', name: 'refund_money', nullable: true, default: 0 })
     @Index()
-    refundMoney: number;
+    refundMoney?: number;
 
     @Column({ type: 'bigint', name: 'collect_money', nullable: true, default: 0 })
     @Index()
-    collectMoney: number;
+    collectMoney?: number;
 
     @Column({ type: 'simple-enum', name: 'type', enum: TransactionType, default: TransactionType.DEBIT })
     @Index()
@@ -66,11 +86,11 @@ export default class Transaction extends BaseEntity {
 
     @Column({ type: 'bigint', name: 'pre_debt', nullable: true, default: 0 })
     @Index()
-    previousDebt: number;
+    previousDebt?: number;
 
     @Column({ type: 'bigint', name: 'early_debt', nullable: true, default: 0 })
     @Index()
-    earlyDebt: number;
+    earlyDebt?: number;
 
     /**
    * id phiếu thu

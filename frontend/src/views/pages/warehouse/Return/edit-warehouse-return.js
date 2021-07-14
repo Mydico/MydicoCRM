@@ -117,7 +117,7 @@ const EditWarehouseReturn = props => {
 
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
-    copyArr[index].quantity = target.value;
+    copyArr[index].quantity = Number(target.value).toString();
     setProductList(copyArr);
   };
 
@@ -178,7 +178,7 @@ const EditWarehouseReturn = props => {
 
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
-    copyArr[index].reducePercent = target.value;
+    copyArr[index].reducePercent = Number(target.value).toString();
     copyArr[index].priceTotal =
       copyArr[index].price * copyArr[index].quantity -
       (copyArr[index].price * copyArr[index].quantity * copyArr[index].reducePercent) / 100;

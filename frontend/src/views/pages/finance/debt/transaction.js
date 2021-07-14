@@ -5,8 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
-import { getTransaction } from './debt.api';
+import { getCustomerTotalDebit, getTransaction, getTransactionListDetail } from './debt.api';
 import _ from 'lodash';
+import { getDetailCustomer } from '../../customer/customer.api';
+import { reset } from './debt.reducer';
 const getBadge = status => {
   switch (status) {
     case 'PAYMENT':
@@ -44,7 +46,8 @@ const Transaction = props => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const [debt, setDebt] = useState(null);
+  const [debt, setDebt] = useState(0);
+  const [customer, setCustomer] = useState(null)
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const paramRef = useRef(null);
@@ -66,6 +69,11 @@ const Transaction = props => {
   };
 
   useEffect(() => {
+    return () => {
+      dispatch(reset())
+    }
+  }, [])
+  useEffect(() => {
     if (props.location.state?.customer) {
       setDebt(props.location.state?.customer);
     }
@@ -73,8 +81,19 @@ const Transaction = props => {
 
   useEffect(() => {
     dispatch(
-      getTransaction({ customer: props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current })
+      getTransactionListDetail({ customer: props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current })
     );
+    dispatch(getDetailCustomer({ id: props.match.params.id, dependency: true  })).then(resp => {
+      if(resp && resp.payload){
+        setCustomer(resp.payload);
+      }
+    });
+    dispatch(getCustomerTotalDebit({ id: props.match.params.id, dependency: true })).then(resp => {
+      if(resp && resp.payload){
+        console.log(resp.payload)
+        setDebt(resp.payload.sum);
+      }
+    })
   }, [activePage, size]);
 
   const debouncedSearchColumn = _.debounce(value => {
@@ -134,23 +153,23 @@ const Transaction = props => {
             <CCol lg="12">
               <dl className="row">
                 <dt className="col-sm-3">Mã khách hàng:</dt>
-                <dd className="col-sm-9">{debt?.customer.code}</dd>
+                <dd className="col-sm-9">{customer?.code}</dd>
               </dl>
               <dl className="row">
                 <dt className="col-sm-3">Họ tên:</dt>
-                <dd className="col-sm-9">{debt?.customer.name}</dd>
+                <dd className="col-sm-9">{customer?.name}</dd>
               </dl>
               <dl className="row">
                 <dt className="col-sm-3">Địa chỉ:</dt>
-                <dd className="col-sm-9">{debt?.customer.address}</dd>
+                <dd className="col-sm-9">{customer?.address}</dd>
               </dl>
               <dl className="row">
                 <dt className="col-sm-3">Số điện thoại:</dt>
-                <dd className="col-sm-9">{debt?.customer.tel}</dd>
+                <dd className="col-sm-9">{customer?.tel}</dd>
               </dl>
               <dl className="row">
                 <dt className="col-sm-3">Nợ hiện tại</dt>
-                <dd className="col-sm-9">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(debt?.debt)}</dd>
+                <dd className="col-sm-9">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(debt)}</dd>
               </dl>
             </CCol>
           </CRow>

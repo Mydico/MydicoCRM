@@ -74,7 +74,7 @@ const EditDepartment = props => {
   }, [departments]);
 
   useEffect(() => {
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 200, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailDepartment({ id: props.match.params.id, dependency: true }));
     dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {

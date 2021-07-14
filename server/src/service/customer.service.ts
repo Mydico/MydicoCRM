@@ -119,10 +119,13 @@ export class CustomerService {
     options.cache = 3600000;
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
+      if(item === 'findBirthday') return
       queryString += `Customer.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
     });
     let andQueryString = '1=1 ';
-
+    if( filter['findBirthday']){
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Customer.dateOfBirth  >= '${new Date().toISOString().split('T')[0]}' AND  Customer.dateOfBirth <= '${ new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]} 24:00:00'`;
+    }
     if (departmentVisible.length > 0) {
       andQueryString += `AND Customer.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')

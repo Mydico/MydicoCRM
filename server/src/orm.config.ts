@@ -59,7 +59,7 @@ if (process.env.NODE_ENV === 'dev') {
     ormconfig = {
         type: 'mysql',
         database: 'MydicoCRM',
-        host: 'localhost',
+        host: '103.121.91.142',
         port: 3306,
         username: 'root',
         password: 'Dunghd@123',

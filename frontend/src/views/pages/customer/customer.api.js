@@ -10,6 +10,7 @@ export const getCustomer = createAsyncThunk('api/customers', async (params = {pa
   }
 });
 
+
 export const filterCustomer = createAsyncThunk('api/customers', async (params = {page: 0, size: 50, sort: 'createdDate,DESC'}, thunkAPI) => {
   try {
     const result = await axios.get('api/customers/find', {params: params});

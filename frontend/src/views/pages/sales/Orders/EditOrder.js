@@ -252,7 +252,8 @@ const EditOrder = props => {
 
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
-    copyArr[index].quantity = Number(target.value);
+    console.log(target.value)
+    copyArr[index].quantity = Number(target.value).toString();
     copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
     if (Array.isArray(promotionState.promotionProducts) && copyArr[index].attachTo === null) {
       const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
@@ -294,7 +295,7 @@ const EditOrder = props => {
 
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = [...productList];
-    copyArr[index].reducePercent = target.value > 100 ? 100 : target.value;
+    copyArr[index].reducePercent = target.value > 100 ? 100 :  Number(target.value).toString();
     copyArr[index].priceTotal =
       copyArr[index].priceReal * copyArr[index].quantity -
       (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent) / 100;

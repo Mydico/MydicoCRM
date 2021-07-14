@@ -43,27 +43,19 @@ export class CustomerController {
     })
     async getBirthdayAll(@Req() req: Request, @Res() res): Promise<Customer[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-        const filter = [];
+        const filter = {};
         Object.keys(req.query).forEach(item => {
             if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-                filter.push({ [item]: Like(`%${req.query[item]}%`) });
+                filter[item] = req.query[item]
             }
         });
-
+        filter['findBirthday'] = true
         let departmentVisible = [];
         const currentUser = req.user as User;
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
-        // if (filter.length === 0) {
-        //   filter['department'] = In(departmentVisible);
-        //   filter['dateOfBirth'] = Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7)));
-        // } else {
-        //   filter[0]['department'] = In(departmentVisible);
-        //   filter[0]['dateOfBirth'] = Between(new Date(), new Date(new Date().setDate(new Date().getDate() + 7)));
-        // }
         const [results, count] = await this.customerService.findAndCount(
             {
                 skip: +pageRequest.page * pageRequest.size,
@@ -73,10 +65,10 @@ export class CustomerController {
             filter,
             departmentVisible,
             false,
-            null
+            currentUser
         );
         HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
-        return null;
+        return res.send(results);
     }
 
     @Get('/find')
@@ -101,7 +93,6 @@ export class CustomerController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         const [results, count] = await this.customerService.filter(
             {
@@ -140,7 +131,6 @@ export class CustomerController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         const [results, count] = await this.customerService.findAndCount(
             {
@@ -178,7 +168,7 @@ export class CustomerController {
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     async post(@Req() req: Request, @Res() res: Response, @Body() customer: Customer): Promise<Response> {
         const currentUser = req.user as User;
-        customer.department = currentUser.department;
+        customer.department = currentUser.mainDepartment ||  currentUser.department;
         customer.branch = currentUser.branch;
         customer.sale = currentUser;
         customer.saleName = currentUser.login;
@@ -187,7 +177,6 @@ export class CustomerController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         const created = await this.customerService.save(customer, departmentVisible, isEmployee, currentUser);
         HeaderUtil.addEntityCreatedHeaders(res, 'Customer', created.id);
@@ -203,14 +192,13 @@ export class CustomerController {
     })
     async put(@Req() req: Request, @Res() res: Response, @Body() customer: Customer): Promise<Response> {
         const currentUser = req.user as User;
-        customer.department = currentUser.department;
+        customer.department = currentUser.mainDepartment ||  currentUser.department;
         customer.sale = currentUser;
         let departmentVisible: any = [];
         const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         HeaderUtil.addEntityUpdatedHeaders(res, 'Customer', customer.id);
         return res.send(await this.customerService.update(customer, departmentVisible, isEmployee, currentUser));

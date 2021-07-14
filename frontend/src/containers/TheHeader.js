@@ -1,5 +1,5 @@
 import React from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   CHeader,
   CToggler,
@@ -9,21 +9,24 @@ import {
   CHeaderNavLink,
   CSubheader,
   CBreadcrumbRouter,
-  CLink,
+  CLink
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 
 // routes config
 import routes from '../routes';
 
-import {TheHeaderDropdown, TheHeaderDropdownMssg, TheHeaderDropdownNotif, TheHeaderDropdownTasks} from './index';
-import {setAsideShow, setSidebarShow, setDarkMode} from '../App.reducer';
+import { TheHeaderDropdown, TheHeaderDropdownMssg, TheHeaderDropdownNotif, TheHeaderDropdownTasks } from './index';
+import { setAsideShow, setSidebarShow, setDarkMode } from '../App.reducer';
+import { userSafeSelector } from '../views/pages/login/authenticate.reducer';
+import { CLabel } from '@coreui/react';
 
 const TheHeader = () => {
   const dispatch = useDispatch();
-  const asideShow = useSelector((state) => state.app.asideShow);
-  const darkMode = useSelector((state) => state.app.darkMode);
-  const sidebarShow = useSelector((state) => state.app.sidebarShow);
+  const asideShow = useSelector(state => state.app.asideShow);
+  const darkMode = useSelector(state => state.app.darkMode);
+  const sidebarShow = useSelector(state => state.app.sidebarShow);
+  const { account } = useSelector(userSafeSelector);
 
   const toggleSidebar = () => {
     const val = [true, 'responsive'].includes(sidebarShow) ? false : 'responsive';
@@ -56,13 +59,18 @@ const TheHeader = () => {
       </CHeaderNav>
 
       <CHeaderNav className="px-3">
-        <CToggler inHeader className="ml-3 d-md-down-none" onClick={() => dispatch(setDarkMode(!darkMode))} title="Toggle Light/Dark Mode">
+        {/* <CToggler inHeader className="ml-3 d-md-down-none" onClick={() => dispatch(setDarkMode(!darkMode))} title="Toggle Light/Dark Mode">
           <CIcon name="cil-moon" className="c-d-dark-none" alt="CoreUI Icons Moon" />
           <CIcon name="cil-sun" className="c-d-default-none" alt="CoreUI Icons Sun" />
-        </CToggler>
+        </CToggler> */}
         {/* <TheHeaderDropdownNotif />
         <TheHeaderDropdownTasks />
         <TheHeaderDropdownMssg /> */}
+        {/* <CLabel>
+            <strong>
+              {account.lastName} {account.firstName}
+            </strong>
+          </CLabel> */}
         <TheHeaderDropdown />
         <CToggler inHeader className="d-md-down-none" onClick={() => dispatch(setAsideShow(!asideShow))}>
           <CIcon className="mr-2" size="lg" name="cil-applications-settings" />

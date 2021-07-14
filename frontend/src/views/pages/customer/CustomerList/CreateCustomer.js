@@ -22,7 +22,7 @@ import { creatingCustomer, getCity, getCustomerStatus, getCustomerType, getDistr
 import Select from 'react-select';
 import { useHistory } from 'react-router-dom';
 import { fetching } from '../customer.reducer';
-import { getDepartment } from '../../user/UserDepartment/department.api';
+import { getChildTreeDepartment, getDepartment } from '../../user/UserDepartment/department.api';
 import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
 import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city';
@@ -56,6 +56,8 @@ const CreateCustomer = () => {
   const ref = useRef(null);
   const { account } = useSelector(userSafeSelector);
   const { initialState } = useSelector(state => state.customer);
+  const { initialState: initialDepartmentState } = useSelector(state => state.department);
+
   const initialValues = {
     code: '',
     name: '',
@@ -72,13 +74,16 @@ const CreateCustomer = () => {
   const history = useHistory();
   const [selectedCity, setSelectedCity] = useState(null);
   const [districts, setDistricts] = useState([]);
-  const departments = [account.department];
+  const departments = initialDepartmentState.allChild;
   const branches = account.branch ? [account.branch] : [];
   useEffect(() => {
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getChildTreeDepartment({ id: account.department.id }));
   }, []);
-
+  useEffect(() => {
+    console.log(initialDepartmentState.allChild)
+  }, [initialDepartmentState.allChild])
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
     dispatch(creatingCustomer(values));

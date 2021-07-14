@@ -113,46 +113,46 @@ const Dashboard = () => {
 
   return (
     <>
-            <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
-          <CFormGroup row>
-            <CCol>
-              <CLabel htmlFor="date-input">Từ ngày</CLabel>
-            </CCol>
-            <CCol xs="12" md="9" lg="12">
-              <CInput
-                type="date"
-                id="date-input"
-                onChange={e =>
-                  setDate({
-                    ...date,
-                    startDate: e.target.value
-                  })
-                }
-                name="date-input"
-                placeholder="date"
-              />
-            </CCol>
-          </CFormGroup>
-          <CFormGroup row className="ml-3">
-            <CCol>
-              <CLabel htmlFor="date-input">Đến ngày</CLabel>
-            </CCol>
-            <CCol xs="12" md="9" lg="12">
-              <CInput
-                type="date"
-                id="date-input"
-                onChange={e =>
-                  setDate({
-                    ...date,
-                    endDate: e.target.value
-                  })
-                }
-                name="date-input"
-                placeholder="date"
-              />
-            </CCol>
-          </CFormGroup>
+      <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+        <CFormGroup row>
+          <CCol>
+            <CLabel htmlFor="date-input">Từ ngày</CLabel>
+          </CCol>
+          <CCol xs="12" md="9" lg="12">
+            <CInput
+              type="date"
+              id="date-input"
+              onChange={e =>
+                setDate({
+                  ...date,
+                  startDate: e.target.value
+                })
+              }
+              name="date-input"
+              placeholder="date"
+            />
+          </CCol>
         </CFormGroup>
+        <CFormGroup row className="ml-3">
+          <CCol>
+            <CLabel htmlFor="date-input">Đến ngày</CLabel>
+          </CCol>
+          <CCol xs="12" md="9" lg="12">
+            <CInput
+              type="date"
+              id="date-input"
+              onChange={e =>
+                setDate({
+                  ...date,
+                  endDate: e.target.value
+                })
+              }
+              name="date-input"
+              placeholder="date"
+            />
+          </CCol>
+        </CFormGroup>
+      </CFormGroup>
       <WidgetsDropdown />
       <CCard>
         <CCardBody>

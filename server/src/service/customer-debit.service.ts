@@ -66,7 +66,7 @@ export class CustomerDebitService {
 
   async findAndCount(
     options: FindManyOptions<CustomerDebit>,
-    filter = [],
+    filter = {},
     departmentVisible = [],
     isEmployee: boolean,
     allowViewAll: boolean,

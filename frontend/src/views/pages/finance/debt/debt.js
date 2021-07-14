@@ -23,7 +23,7 @@ const fields = [
   },
   { key: 'customerCode', label: 'Mã khách hàng', _style: { width: '20%' } },
   { key: 'customerName', label: 'Tên khách hàng', _style: { width: '15%' } },
-  { key: 'tel', label: 'Số điện thoại', _style: { width: '15%' }, filter: false },
+  // { key: 'tel', label: 'Số điện thoại', _style: { width: '15%' }, filter: false },
   { key: 'debt', label: 'Tổng nợ', _style: { width: '10%' }, filter: false },
   { key: 'saleName', label: 'Nhân viên quản lý', _style: { width: '15%' } },
   {
@@ -69,7 +69,7 @@ const Debt = props => {
     return items.map(item => {
       return {
         ...item,
-        tel: item.customer?.tel || '',
+        // tel: item.customer?.tel || '',
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
@@ -98,7 +98,7 @@ const Debt = props => {
   };
 
   const toDetail = item => {
-    history.push({ pathname: `${props.match.url}/${item.customer.id}/detail`, state: { customer: item } });
+    history.push({ pathname: `${props.match.url}/${item.customerId}/detail`});
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);

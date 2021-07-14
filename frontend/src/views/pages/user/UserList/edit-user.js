@@ -13,7 +13,7 @@ import {
   CRow,
   CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -71,8 +71,6 @@ const EditUser = props => {
     tel: ''
   });
 
-
-
   const user = useSelector(state => selectById(state, props.match.params.id));
 
   const [initValues, setInitValues] = useState(null);
@@ -88,7 +86,6 @@ const EditUser = props => {
 
   useEffect(() => {
     if (user) {
-
       setSelectedDepartment(user.departments);
       setSelectedGroupPermission(user.permissionGroups || []);
       setSelectedRoles(user.roles || []);
@@ -111,7 +108,7 @@ const EditUser = props => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       dispatch(reset());
-      dispatch(getSession())
+      dispatch(getSession());
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -262,6 +259,26 @@ const EditUser = props => {
                   }))}
                 />
                 <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="userName">Chi nhánh chính</CLabel>
+                <Select
+                  name="department"
+                  onChange={e => {
+                    setFieldValue('mainDepartment', e?.value || null);
+                  }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  value={{
+                    value: values.mainDepartment,
+                    label: values.mainDepartment?.name
+                  }}
+                  placeholder="Chọn chi nhánh"
+                  options={departments.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
               </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="userName">Phòng ban</CLabel>

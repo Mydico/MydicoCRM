@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CWidgetDropdown, CRow, CCol } from '@coreui/react/lib';
 import ChartLineSimple from '../charts/ChartLineSimple';
-import { getDebtDashboard, getIncomeDashboard } from '../../pages/dashboard/dashboard.api';
+import { getDebtDashboard, getIncomeDashboard, getOrderSale } from '../../pages/dashboard/dashboard.api';
 import { useDispatch, useSelector } from 'react-redux';
 import { userSafeSelector } from '../../../views/pages/login/authenticate.reducer';
 import { DashboardType } from '../../pages/dashboard/Dashboard';
@@ -27,14 +27,20 @@ const WidgetsDropdown = () => {
         setIncomeTotal(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sum));
       }
     });
-    dispatch(getIncomeDashboard({ userId: account.id, type: 'ORDER' })).then(data => {
-      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        const sum = data.payload.reduce((curr, prev) => {
-          return curr + Number(prev.amount);
-        }, 0);
-        setTotal(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sum));
+    dispatch(getOrderSale({userId:account.id })).then(data => {
+      if (data && data.payload ) {
+        
+        setTotal(data.payload.count);
       }
     });
+    // dispatch(getIncomeDashboard({ userId: account.id, type: 'ORDER' })).then(data => {
+    //   if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+    //     const sum = data.payload.reduce((curr, prev) => {
+    //       return curr + Number(prev.amount);
+    //     }, 0);
+    //     setTotal(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sum));
+    //   }
+    // });
     dispatch(getDebtDashboard({ userId: account.id })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         const sum = data.payload.reduce((curr, prev) => {
@@ -75,20 +81,19 @@ const WidgetsDropdown = () => {
         <CWidgetDropdown
           color="gradient-info"
           header={total}
-          text="Doanh thu"
+          text="Số lượng đơn hàng"
           footerSlot={
             <ChartLineSimple
               pointed
-              className="mt-3 mx-3"
+              className="c-chart-wrapper mt-3 mx-3"
               style={{ height: '70px' }}
-              dataPoints={[1, 18, 9, 17, 34, 22, 11]}
-              pointHoverBackgroundColor="info"
-              options={{ elements: { line: { tension: 0.00001 } } }}
+              dataPoints={[65, 59, 84, 84, 51, 55, 40]}
+              pointHoverBackgroundColor="primary"
               label="Members"
               labels="months"
             />
           }
-        ></CWidgetDropdown>
+        />
       </CCol>
 
       <CCol sm="6" lg="4">
@@ -98,17 +103,16 @@ const WidgetsDropdown = () => {
           text="Công nợ"
           footerSlot={
             <ChartLineSimple
-              className="mt-3"
+              pointed
+              className="c-chart-wrapper mt-3 mx-3"
               style={{ height: '70px' }}
-              backgroundColor="rgba(255,255,255,.2)"
-              dataPoints={[78, 81, 80, 45, 34, 12, 40]}
-              options={{ elements: { line: { borderWidth: 2.5 } } }}
-              pointHoverBackgroundColor="warning"
+              dataPoints={[65, 59, 84, 84, 51, 55, 40]}
+              pointHoverBackgroundColor="primary"
               label="Members"
               labels="months"
             />
           }
-        ></CWidgetDropdown>
+        />
       </CCol>
     </CRow>
   );

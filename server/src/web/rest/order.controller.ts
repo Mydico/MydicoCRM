@@ -58,7 +58,6 @@ export class OrderController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         const [results, count] = await this.orderService.findAndCount(
             {
@@ -99,7 +98,7 @@ export class OrderController {
         const currentUser = req.user as User;
         order.createdBy = currentUser.login;
         order.sale = currentUser;
-        order.department = currentUser.department;
+        order.department = currentUser.mainDepartment ||  currentUser.department;
         order.branch = currentUser.branch;
         order.customerName = order.customer.name;
         let departmentVisible = [];
@@ -107,7 +106,6 @@ export class OrderController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         const created = await this.orderService.save(order, departmentVisible, isEmployee, currentUser);
         HeaderUtil.addEntityCreatedHeaders(res, 'Order', created.id);
@@ -130,7 +128,6 @@ export class OrderController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
     }
@@ -151,7 +148,6 @@ export class OrderController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
     }
@@ -172,7 +168,6 @@ export class OrderController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
     }
@@ -193,7 +188,6 @@ export class OrderController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         if (order.status === OrderStatus.CREATE_COD) {
             const canExport = await this.orderService.canExportStore(order);
@@ -220,7 +214,6 @@ export class OrderController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         if (order.status === OrderStatus.CREATE_COD) {
             const canExport = await this.orderService.canExportStore(order);
@@ -250,8 +243,7 @@ export class OrderController {
             if (currentUser.department) {
                 departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
                 departmentVisible = departmentVisible.map(item => item.id);
-                departmentVisible.push(currentUser.department.id);
-            }
+                }
             return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
         } else if (!isAdmin && currentUser.login !== order.createdBy) {
             throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
@@ -274,7 +266,6 @@ export class OrderController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
     }

@@ -4,6 +4,7 @@ const ChangePassword = loadable(() => import('./views/pages/user/UserList/change
 const EditUserProfile = loadable(() => import('./views/pages/user/UserList/edit-user-profile'));
 
 const Invoice = loadable(() => import('./views/pages/Invoicing/Invoice'));
+const PrintBill = loadable(() => import('./views/pages/warehouse/Bill/PrintBill'));
 
 const Dashboard = loadable(() => import('./views/pages/dashboard/Dashboard'));
 const Customer = loadable(() => import('./views/pages/customer/CustomerList/Customer'));
@@ -105,6 +106,7 @@ const routes = [
   {path: '/edit-profile', exact: true, name: 'Đổi thông tin cá nhân', component: EditUserProfile},
   {path: '/dashboard', name: 'Thống kê', component: Dashboard},
   {path: '/invoice/', name: 'Thống kê', component: Invoice},
+  {path: '/print/', name: 'Hoa don', component: PrintBill},
   {path: '/customer-debits', name: 'Công nợ', component: Debts, exact: true},
   {path: '/customer-debits/:id/detail/order/:orderId', name: 'Chi tiết đơn hàng', component: ViewOrder},
   {path: '/customer-debits/:id/detail/receipt/:receiptId', name: 'Chi tiết phiếu thu', component: ViewReceipt},
@@ -139,6 +141,7 @@ const routes = [
   {path: '/promotions/:id/longterm', name: 'Chỉnh sửa', component: EditLongTermPromotion},
   {path: '/promotions/new/', name: 'Thêm mới', component: CreatePromotion},
   {path: '/orders/', name: 'Đơn hàng', component: Order, exact: true},
+  {path: '/orders/print', name: 'Xem vận đơn', component: PrintBill, exact: true},
   {path: '/orders/:id/edit/', name: 'Chỉnh sửa Đơn hàng', component: EditOrder},
   {path: '/orders/:orderId/detail', name: 'Xem Đơn hàng', component: ViewOrder},
   {path: '/orders/new/invoice/', name: 'Xác nhận', component: OrderInvoice},

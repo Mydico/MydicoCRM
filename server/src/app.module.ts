@@ -54,6 +54,7 @@ import { IncomeDashboardModule } from './module/income-dashboard.module';
 import { DebtDashboardModule } from './module/debt-dashboard.module';
 import { BranchModule } from './module/branch.module';
 import { RedisQueryResultCache } from './service/query/custom-query.cache';
+import { ReportModule } from './module/report.module';
 
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
@@ -74,6 +75,7 @@ import { RedisQueryResultCache } from './service/query/custom-query.cache';
         CustomerTokenModule,
         PromotionModule,
         OrderModule,
+        ReportModule,
         BillModule,
         FileModule,
         CodlogModule,

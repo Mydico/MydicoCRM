@@ -54,7 +54,6 @@ const CreateReceipt = () => {
   const { initialState } = useSelector(state => state.warehouseImport);
   const { initialState: initialStateWarehouse } = useSelector(state => state.warehouse);
 
-  const {} = useSelector(state => state.customer);
   const { account } = useSelector(userSafeSelector);
 
 
@@ -98,6 +97,8 @@ const CreateReceipt = () => {
     dispatch(fetching());
     dispatch(creatingWarehouseExport(values));
   };
+
+
 
   useEffect(() => {
     if (selectedWarehouse) {
@@ -152,7 +153,7 @@ const CreateReceipt = () => {
   const onChangeQuantity = ({ target }, index) => {
     const quantity = target.value;
     const copyArr = [...productList];
-    copyArr[index].quantity = Number(quantity);
+    copyArr[index].quantity = Number(quantity).toString();
     if (selectedWarehouse && copyArr[index].product) {
       setProductList(copyArr);
       onSearchProductInstore(copyArr, index);
@@ -181,7 +182,7 @@ const CreateReceipt = () => {
   };
 
   const onAddProduct = () => {
-    const data = { product: {}, quantity: 1, quantityInStore: 1 };
+    const data = { product: {}, quantity: 1 };
     setProductList([...productList, data]);
   };
 
@@ -351,7 +352,8 @@ const CreateReceipt = () => {
                         <tr
                           key={index}
                           style={
-                            item.quantity > item.quantityInStore
+                            item.quantityInStore !== undefined &&
+                            Number(item.quantity) > item.quantityInStore
                               ? {
                                   boxShadow: '0px 0px 6px 5px red'
                                 }

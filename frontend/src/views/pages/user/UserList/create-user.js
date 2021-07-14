@@ -13,7 +13,7 @@ import {
   CRow,
   CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +22,7 @@ import { creatingUser } from './user.api';
 import { useHistory } from 'react-router-dom';
 import { fetching, reset } from './user.reducer';
 
-import { getDepartment } from '../UserDepartment/department.api';
+import { getDepartment, getChildTreeDepartment } from '../UserDepartment/department.api';
 import { globalizedDepartmentSelectors } from '../UserDepartment/department.reducer';
 import { globalizedUserRoleSelectors } from '../UserRole/user-roles.reducer';
 import { getUserRole } from '../UserRole/user-roles.api';
@@ -63,11 +63,10 @@ const { selectAll: selectAllRole } = globalizedUserRoleSelectors;
 const { selectAll: selectAllBranch } = globalizedBranchSelectors;
 const CreateUser = () => {
   const { initialState } = useSelector(state => state.user);
-  const {} = useSelector(state => state.department);
+  const { initialState: initialDepartmentState } = useSelector(state => state.department);
 
   const dispatch = useDispatch();
   const history = useHistory();
-
 
   const departments = useSelector(selectAllDepartment);
   const roles = useSelector(selectAllRole);
@@ -161,16 +160,7 @@ const CreateUser = () => {
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={onSubmit}>
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            handleReset,
-            setFieldValue
-          }) => (
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, handleReset, setFieldValue }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
                 <CCol lg="6">
@@ -274,6 +264,22 @@ const CreateUser = () => {
                   }))}
                 />
                 <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="userName">Chi nhánh chính</CLabel>
+                <Select
+                  name="department"
+                  onChange={e => {
+                    setFieldValue('mainDepartment', e?.value || null);
+                  }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  placeholder="Chọn chi nhánh"
+                  options={departments.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
               </CFormGroup>
               <CFormGroup>
                 <CLabel htmlFor="userName">Phòng ban</CLabel>

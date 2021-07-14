@@ -56,7 +56,6 @@ export class ReceiptController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         // if (filter.length === 0) {
         //   filter['department'] = In(departmentVisible);
@@ -106,7 +105,7 @@ export class ReceiptController {
         receipt.createdBy = currentUser.login;
         receipt.sale = receipt.customer.sale;
         receipt.branch = currentUser.branch;
-        receipt.department = currentUser.department;
+        receipt.department = currentUser.mainDepartment ||  currentUser.department;
         receipt.customerName = receipt.customer.name;
         const created = await this.receiptService.save(receipt, currentUser);
         HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', created.id);

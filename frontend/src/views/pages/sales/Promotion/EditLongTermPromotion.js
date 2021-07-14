@@ -104,7 +104,7 @@ const EditPromotion = (props) => {
 
   const onChangeProductPromotion = (value, index, type) => {
     const copyArr = JSON.parse(JSON.stringify(promotionItemList));
-    copyArr[index][type] = value;
+    copyArr[index][type] = Number(value).toString();
     setPromotionItemList(copyArr);
   };
 

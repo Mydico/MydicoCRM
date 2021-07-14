@@ -15,6 +15,7 @@ import { User } from '../domain/user.entity';
 const relationshipNames = [];
 relationshipNames.push('customer');
 relationshipNames.push('customer.sale');
+relationshipNames.push('sale');
 relationshipNames.push('customer.department');
 relationshipNames.push('customer.type');
 relationshipNames.push('approver');
@@ -78,7 +79,6 @@ export class ReceiptService {
       .leftJoinAndSelect('Receipt.sale', 'sale')
       .leftJoinAndSelect('Receipt.approver', 'approver')
       .where(andQueryString)
-
       .orderBy(`Receipt.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);
@@ -120,6 +120,12 @@ export class ReceiptService {
       });
       const transaction = new Transaction();
       transaction.customer = entity.customer;
+      transaction.customerCode = entity.customer.code;
+      transaction.customerName = entity.customer.name;
+      transaction.sale = entity.sale;
+      transaction.saleName = entity.sale.code;
+      transaction.branch= entity.branch;
+      transaction.department = entity.department;
       transaction.receipt = entity;
       transaction.collectMoney = entity.money;
       transaction.type = TransactionType.PAYMENT;

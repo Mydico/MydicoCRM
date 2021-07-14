@@ -204,6 +204,15 @@ const Order = props => {
     history.push(`${props.match.url}/${typeId}/edit`);
   };
 
+  const toSeeBill = item => {
+    history.push({
+      pathname: `${props.match.url}/print`,
+      state: {
+        item
+      }
+    });
+  };
+
   useEffect(() => {
     if (initialState.updatingSuccess) {
       dispatch(getOrder());
@@ -437,7 +446,16 @@ const Order = props => {
         );
       case OrderStatus.CREATE_COD:
         return (
-          <CButton color="info" variant="outline" shape="square" size="sm">
+          <CButton
+            color="info"
+            variant="outline"
+            shape="square"
+            size="sm"
+            onClick={event => {
+              event.stopPropagation();
+              toSeeBill(item);
+            }}
+          >
             XEM VẬN ĐƠN
           </CButton>
         );

@@ -9,6 +9,7 @@ import { checkCodeContext } from './utils/normalizeString';
 const relationshipNames = [];
 relationshipNames.push('roles');
 relationshipNames.push('department');
+relationshipNames.push('mainDepartment');
 relationshipNames.push('branch');
 relationshipNames.push('authorities');
 relationshipNames.push('permissionGroups');

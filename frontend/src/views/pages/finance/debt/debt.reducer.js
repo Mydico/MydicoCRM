@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { getCustomerDebts, getDetailTransaction, getTransaction } from './debt.api';
+import { getCustomerDebts, getDetailTransaction, getTransaction, getTransactionListDetail } from './debt.api';
 
 const initialState = {
   loading: false,
@@ -25,6 +25,8 @@ const slice = createSlice({
     reset(state) {
       state.initialState.loading = false;
       state.initialState.updatingSuccess = false;
+      state.initialState.transactions = [];
+      debtAdapter.setAll(state, []);
     },
     debtAddOne: debtAdapter.addOne,
     debtAddMany: debtAdapter.addMany,
@@ -58,6 +60,18 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getTransaction.rejected]: state => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
+    [getTransactionListDetail.fulfilled]: (state, action) => {
+      state.initialState.transactions = action.payload.data.sort((a, b) => {
+        if (b.createdDate && a.createdDate) return b.createdDate.localeCompare(a.createdDate);
+        return 1;
+      });
+      state.initialState.totalItem = action.payload.total;
+      state.initialState.loading = false;
+    },
+    [getTransactionListDetail.rejected]: state => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     }

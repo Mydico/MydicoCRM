@@ -46,7 +46,7 @@ export class StoreInputController {
     })
     async getAllExport(@Req() req: Request, @Res() res): Promise<StoreInput[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-        const filter = [];
+        const filter = {};
         Object.keys(req.query).forEach(item => {
             if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
                 filter[item] = req.query[item];
@@ -57,7 +57,6 @@ export class StoreInputController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         const type = StoreImportType.EXPORT;
         const [results, count] = await this.storeInputService.findAndCount(
@@ -94,7 +93,6 @@ export class StoreInputController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         const type = StoreImportType.RETURN;
         const [results, count] = await this.storeInputService.findAndCount(
@@ -131,7 +129,6 @@ export class StoreInputController {
         if (currentUser.department) {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
-            departmentVisible.push(currentUser.department.id);
         }
         const type = StoreImportType.NEW;
         const [results, count] = await this.storeInputService.findAndCount(
@@ -181,7 +178,7 @@ export class StoreInputController {
     async postExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
         const currentUser = req.user as User;
         storeInput.createdBy = currentUser.login;
-        storeInput.department = currentUser.department;
+        storeInput.department = currentUser.mainDepartment ||  currentUser.department;
         storeInput.storeName = storeInput.store.name;
         storeInput.storeTransferName = storeInput.storeTransfer.name;
         const created = await this.storeInputService.save(storeInput);
@@ -200,7 +197,7 @@ export class StoreInputController {
     async postReturn(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
         const currentUser = req.user as User;
         storeInput.createdBy = currentUser.login;
-        storeInput.department = currentUser.department;
+        storeInput.department = currentUser.mainDepartment ||  currentUser.department;
         storeInput.customerName = storeInput.customer.name;
         storeInput.storeName = storeInput.store.name;
         const created = await this.storeInputService.save(storeInput);
@@ -219,7 +216,7 @@ export class StoreInputController {
     async post(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
         const currentUser = req.user as User;
         storeInput.createdBy = currentUser.login;
-        storeInput.department = currentUser.department;
+        storeInput.department = currentUser.mainDepartment ||  currentUser.department;
         storeInput.storeName = storeInput.store.name;
         const created = await this.storeInputService.save(storeInput);
         HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);

@@ -24,6 +24,7 @@ relationshipNames.push('approver');
 relationshipNames.push('store');
 relationshipNames.push('customer');
 relationshipNames.push('customer.sale');
+relationshipNames.push('customer.branch');
 relationshipNames.push('customer.department');
 relationshipNames.push('customer.type');
 relationshipNames.push('storeTransfer');
@@ -209,7 +210,7 @@ export class StoreInputService {
             if (entity.type !== StoreImportType.EXPORT && entity.type !== StoreImportType.EXPORT_TO_PROVIDER) {
                 await this.importStore(founded, entity);
                 if (entity.type === StoreImportType.RETURN) {
-                    this.createDebit(entity);
+                    await this.createDebit(entity);
                     const incomeItem = new IncomeDashboard();
                     incomeItem.amount = entity.realMoney;
                     incomeItem.departmentId = entity.department.id;
@@ -231,6 +232,12 @@ export class StoreInputService {
         });
         const transaction = new Transaction();
         transaction.customer = entity.customer;
+        transaction.customerCode = entity.customer.code;
+        transaction.customerName = entity.customer.name;
+        transaction.sale = entity.customer.sale || null;
+        transaction.saleName = entity.customer.sale?.code || null;
+        transaction.branch= entity.customer.branch;
+        transaction.department = entity.department;
         transaction.storeInput = entity;
         transaction.refundMoney = entity.realMoney;
         transaction.type = TransactionType.RETURN;

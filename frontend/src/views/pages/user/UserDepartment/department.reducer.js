@@ -1,11 +1,12 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { creatingDepartment, getDepartment, getDetailDepartment, getTreeDepartment, updateDepartment } from './department.api';
+import { creatingDepartment, getChildTreeDepartment, getDepartment, getDetailDepartment, getTreeDepartment, updateDepartment } from './department.api';
 
 const initialState = {
   loading: false,
   updatingSuccess: false,
   totalItem: 0,
   treeDepartments: [],
+  allChild: [],
   detail: null
 };
 
@@ -63,6 +64,13 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getDepartment.rejected]: state => {
+      state.loading = false;
+    },
+    [getChildTreeDepartment.fulfilled]: (state, action) => {
+      state.initialState.allChild = action.payload.data;
+      state.initialState.loading = false;
+    },
+    [getChildTreeDepartment.rejected]: state => {
       state.loading = false;
     }
   }
