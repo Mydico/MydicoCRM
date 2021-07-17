@@ -5,6 +5,7 @@ import { Brackets, FindManyOptions, FindOneOptions, In, Like } from 'typeorm';
 import Customer from '../domain/customer.entity';
 import { CustomerRepository } from '../repository/customer.repository';
 import { DepartmentService } from './department.service';
+import { getDates } from './utils/helperFunc';
 import { checkCodeContext } from './utils/normalizeString';
 
 const relationshipNames = [];
@@ -124,7 +125,16 @@ export class CustomerService {
     });
     let andQueryString = '1=1 ';
     if( filter['findBirthday']){
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Customer.dateOfBirth  >= '${new Date().toISOString().split('T')[0]}' AND  Customer.dateOfBirth <= '${ new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]} 24:00:00'`;
+      const startDate = new Date()
+      const endDate = new Date(new Date().setDate(new Date().getDate() + 7))
+      const listDate = getDates(startDate,endDate)
+      const listMonth = listDate.map(item => item.getMonth()+1);
+      const listDay = listDate.map(item => item.getDate());
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  MONTH(Customer.dateOfBirth) in ${JSON.stringify(listMonth)
+        .replace('[', '(')
+        .replace(']', ')')} AND  DAY(Customer.dateOfBirth) IN ${JSON.stringify(listDay)
+          .replace('[', '(')
+          .replace(']', ')')} `;
     }
     if (departmentVisible.length > 0) {
       andQueryString += `AND Customer.department IN ${JSON.stringify(departmentVisible)
@@ -135,7 +145,7 @@ export class CustomerService {
       andQueryString += ` AND Customer.sale = ${currentUser.id}`;
     }
 
-    const cacheKeyBuilder = `get_customers_department_${JSON.stringify(departmentVisible)}_branch_${
+    const cacheKeyBuilder = `get_customers_department_${andQueryString}_${JSON.stringify(departmentVisible)}_branch_${
       currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
     }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Customer.${Object.keys(
       options.order

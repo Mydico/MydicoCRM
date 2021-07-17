@@ -101,6 +101,7 @@ const User = props => {
       localStorage.removeItem('params');
     }
     dispatch(getUser(params));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const computedItems = items => {

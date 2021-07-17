@@ -34,24 +34,26 @@ class PrintBill extends Component {
             <h2 className="text-center">HOÁ ĐƠN BÁN HÀNG</h2>
             <div className="d-flex mb-4">
               <Col sm="8">
-                <div>Tên khách hàng: &nbsp;&nbsp;&nbsp;{item.customer.name || ''}</div>
-                <div>Địa chỉ: &nbsp;&nbsp;&nbsp;{item.customer.address || ''}</div>
-                <div>Mã số thuế : </div>
-                <div>Số điện thoại: &nbsp;&nbsp;&nbsp;{item.customer.tel || ''}</div>
+                <div style={{fontSize: '1rem'}}>Tên khách hàng: &nbsp;&nbsp;&nbsp;{item.customer.name || ''}</div>
+                <div style={{fontSize: '1rem'}}>Địa chỉ: &nbsp;&nbsp;&nbsp;{item.customer.address || ''}</div>
+                <div style={{fontSize: '1rem'}}>Mã số thuế : </div>
+                <div style={{fontSize: '1rem'}}>Số điện thoại: &nbsp;&nbsp;&nbsp;{item.customer.tel || ''}</div>
               </Col>
               <Col sm="4">
-                <div>Ngày:&nbsp;&nbsp;&nbsp;{item.createdDate || ''} </div>
-                <div>Số: &nbsp;&nbsp;&nbsp;{item.code || ''} </div>
-                <div>Loại tiền: &nbsp;&nbsp;&nbsp;VND</div>
-                <div>Nhân viên: &nbsp;&nbsp;&nbsp;{item.sale.code || ''} </div>
+                <div style={{fontSize: '1rem'}}>Ngày:&nbsp;&nbsp;&nbsp;{item.createdDate || ''} </div>
+                <div style={{fontSize: '1rem'}}>Số: &nbsp;&nbsp;&nbsp;{item.code || ''} </div>
+                <div style={{fontSize: '1rem'}}>Loại tiền: &nbsp;&nbsp;&nbsp;VND</div>
+                <div style={{fontSize: '1rem'}}>Nhân viên: &nbsp;&nbsp;&nbsp;{item.sale.code || ''} </div>
               </Col>
             </div>
+            <div className="mr-3 ml-3">
             <Table bordered responsive>
               <thead>
                 <tr>
                   <th className="center">STT</th>
                   <th className="center">Mã hàng</th>
                   <th className="center">Diễn giải</th>
+                  <th className="center">Dung tích</th>
                   <th className="center">Đơn vị</th>
                   <th className="center">Số luợng</th>
                   <th className="center">Đơn giá</th>
@@ -63,30 +65,20 @@ class PrintBill extends Component {
                 {item?.orderDetails?.map((item, index) => {
                   return (
                     <tr key={index}>
-                      <td>{index + 1}</td>
+                      <td> {index + 1}</td>
                       <td>{item.product?.code}</td>
                       <td>{item.product?.name}</td>
+                      <td>{item.product?.volume}</td>
                       <td>{item.product?.unit}</td>
                       <td>{item.quantity}</td>
-
                       <td>{Number(item.product?.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                       <td>{(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                       <td>{item.reducePercent}%</td>
-                      {/* 
-                      <td>
-                        {(
-                          item.product?.price * item.quantity -
-                          (item.product?.price * item.quantity * item.reducePercent) / 100
-                        ).toLocaleString('it-IT', {
-                          style: 'currency',
-                          currency: 'VND'
-                        }) || ''}
-                      </td> */}
                     </tr>
                   );
                 })}
                 <tr>
-                  <td className="center" colspan="4">
+                  <td className="center" colspan="5">
                     <strong>Tổng cộng</strong>
                   </td>
                   <td className="center"> {item?.orderDetails?.reduce((prev, current) => prev + current.quantity, 0)}</td>
@@ -97,26 +89,32 @@ class PrintBill extends Component {
                 <tr>
                   <td colspan="7">Số tiền chiết khấu</td>
                   <td>{Number(item.reduceMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
+                  <td className="right"></td>
                 </tr>
                 <tr>
                   <td colspan="7">Cộng tiền hàng( Đã trừ chiết khấu)</td>
                   <td>{Number(item.realMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
+                  <td className="right"></td>
                 </tr>
                 <tr>
                   <td colspan="7">Tiền thuế GTGT</td>
                   <td></td>
+                  <td className="right"></td>
                 </tr>
                 <tr>
                   <td colspan="7">Tổng tiền thanh toán</td>
                   <td>{Number(item.realMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
+                  <td className="right"></td>
                 </tr>
                 <tr>
                   <td colspan="8">
                     <strong>Số tiền viết bằng chữ:&nbsp;&nbsp;&nbsp; {docTien.doc(Number(item.realMoney))}</strong>
                   </td>
+                  <td className="right"></td>
                 </tr>
               </tbody>
             </Table>
+            </div>
             <div className="d-flex mb-4">
               <Col sm="2" className="d-flex flex-column align-items-center">
                 <div>

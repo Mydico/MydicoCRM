@@ -26,6 +26,7 @@ const CustomerStatus = props => {
 
   useEffect(() => {
     dispatch(getCustomerStatus({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const toggleDetails = index => {

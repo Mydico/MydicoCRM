@@ -94,13 +94,14 @@ const Invoice = () => {
                 <th className="right">Đơn giá</th>
                 <th className="right">Chiết khấu(%)</th>
                 <th className="right">Tổng</th>
+                <th className="right">Thanh toán</th>
               </tr>
             </thead>
             <tbody>
               {invoice?.orderDetails.map((item, index) => {
                 return (
                   <tr key={index}>
-                    <td>{index + 1}</td>
+                    <td> {index + 1}</td>
                     <td>{item.product?.name}</td>
                     <td>{item.product?.volume}</td>
                     <td>{item.quantity}</td>
@@ -170,10 +171,8 @@ const Invoice = () => {
               </Table>
             </CCol>
           </CRow>
-          <CRow className="d-flex justify-content-between mr-5">
-            <CButton size="lg" className="btn btn-secondary ml-3" onClick={() => history.goBack()}>
-              Quay lại
-            </CButton>
+          <CRow className="d-flex justify-content-center mr-5">
+
             <CButton type="submit" size="lg" className="btn btn-success mr-5" disabled={initialState.loading} onClick={onCreateOrder}>
               {initialState.loading ? <CSpinner size="sm" /> : ' Tạo đơn hàng'}
             </CButton>

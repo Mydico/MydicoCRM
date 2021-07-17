@@ -8,10 +8,13 @@ import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
+import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import { CLabel } from '@coreui/react';
+import AdvancedTable from '../../../components/table/AdvancedTable';
 const { selectAll } = globalizedCustomerSelectors;
 // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
 const fields = [
@@ -29,7 +32,7 @@ const fields = [
   { key: 'department', label: 'Chi nhánh', filter: false },
   {
     key: 'show_details',
-    label: '',
+    label: 'Thao tác',
     _style: { width: '1%' },
     filter: false
   }
@@ -72,13 +75,15 @@ const Customer = props => {
       localStorage.removeItem('params');
     }
     dispatch(getCustomer(params));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const customers = useSelector(selectAll);
   const computedItems = items => {
-    return items.map(item => {
+    return items.map((item, index) => {
       return {
         ...item,
+        order: (activePage - 1) * size + index + 1,
         typeName: item.type?.code,
         department: item.department?.code || '',
         createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
@@ -131,7 +136,6 @@ const Customer = props => {
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(customers), [customers]);
-
   return (
     <CCard>
       <CCardHeader>
@@ -150,7 +154,7 @@ const Customer = props => {
           <CLabel>Tổng :</CLabel>
           <strong>{`\u00a0\u00a0${initialState.totalItem}`}</strong>
         </CRow>
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter
@@ -167,15 +171,15 @@ const Customer = props => {
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
-            order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+            order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
             status: item => (
-              <td>
+              <Td>
                 <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
-              </td>
+              </Td>
             ),
             show_details: item => {
               return (
-                <td className="d-flex py-2">
+                <Td className="d-flex py-2">
                   {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/customers').length > 0) && (
                     <CButton
                       color="primary"
@@ -201,7 +205,7 @@ const Customer = props => {
                   >
                     <CIcon name="cil-user" />
                   </CButton>
-                </td>
+                </Td>
               );
             },
             details: item => {

@@ -32,9 +32,6 @@ const ViewOrder = props => {
       <CCard>
         <CCardHeader>
           Đơn hàng <strong>#{invoice?.code}</strong>
-          <a href="#" className="btn btn-sm btn-secondary mr-1 float-right">
-            <i className="fa fa-print"></i> In
-          </a>
         </CCardHeader>
         <CCardBody>
           <CRow className="mb-4">
@@ -87,7 +84,7 @@ const ViewOrder = props => {
               {invoice?.orderDetails.map((item, index) => {
                 return (
                   <tr key={index}>
-                    <td>{index + 1}</td>
+                    <td> {index + 1}</td>
                     <td>{item.product?.name}</td>
                     <td>{item.product?.volume}</td>
                     <td>{item.quantity}</td>

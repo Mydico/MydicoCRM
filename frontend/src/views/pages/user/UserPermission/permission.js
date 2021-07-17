@@ -32,6 +32,7 @@ const PermissionGroups = props => {
 
   useEffect(() => {
     dispatch(getPermissionGroups({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const groupPermisions = useSelector(selectAll);

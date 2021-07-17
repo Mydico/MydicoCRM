@@ -25,6 +25,7 @@ const ProductGroup = props => {
   const productGroups = useSelector(selectAll);
   useEffect(() => {
     dispatch(getProductGroup({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const toggleDetails = index => {

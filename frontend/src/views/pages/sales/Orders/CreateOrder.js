@@ -32,12 +32,13 @@ import { getWarehouse } from '../../warehouse/Warehouse/warehouse.api';
 import { getDetailProductPromotion } from '../Promotion/promotion.api';
 import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
 import { filterProductInStore, getProductInstore, getProductWarehouse } from '../../warehouse/Product/product-warehouse.api';
-import { FormFeedback, Table } from 'reactstrap';
+import { FormFeedback } from 'reactstrap';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-
-const validationSchema = function() {
+import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
+import '../../../components/table/ResponsiveTable.css'
+const validationSchema = function () {
   return Yup.object().shape({
     customer: Yup.object()
       .required('Khách hàng  không để trống')
@@ -49,7 +50,7 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
-import { ProductStatus } from '../../product/ProductList/contants';
+import { useMediaQuery } from 'react-responsive'
 import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 const mappingType = {
@@ -80,6 +81,7 @@ const CreateOrder = props => {
   const promotions = useSelector(selectAllPromotion);
   const warehouses = useSelector(selectAllWarehouse);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
+  const isMobile = useMediaQuery({ maxWidth: '50em' })
 
   const [initFormState, setInitFormState] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -97,7 +99,7 @@ const CreateOrder = props => {
       if (Object.keys(data).length > 0) {
         setInitFormState(data);
       }
-    } catch (e) {}
+    } catch (e) { }
   }, []);
 
   useEffect(() => {
@@ -161,7 +163,7 @@ const CreateOrder = props => {
     debouncedSearchPromotion(value);
   };
 
-  const onSubmit = (values, {}) => {
+  const onSubmit = (values, { }) => {
     let isValidProduct = true;
     productList.forEach(element => {
       if (element.quantity > element.quantityInStore) {
@@ -532,34 +534,34 @@ const CreateOrder = props => {
 
             <CCard>
               <CCardBody>
-                <Table responsive striped>
-                  <thead>
-                    <tr>
-                      <th>Sản phẩm</th>
-                      <th>Đơn vị</th>
-                      <th>Dung tích</th>
-                      <th>Số lượng</th>
-                      <th>Đơn giá</th>
-                      <th>Thành tiền</th>
-                      <th>Chiết khấu</th>
-                      <th>Thanh toán</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                <Table responsive striped className="table-responsive table table-striped">
+                  <Thead>
+                    <Tr>
+                      <Th>Sản phẩm</Th>
+                      <Th>Đơn vị</Th>
+                      <Th>Dung tích</Th>
+                      <Th>Số lượng</Th>
+                      <Th>Đơn giá</Th>
+                      <Th>Thành tiền</Th>
+                      <Th>Chiết khấu</Th>
+                      <Th>Thanh toán</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
                     {productList.map((item, index) => {
                       return (
-                        <tr
+                        <Tr
                           key={index}
                           style={
                             item.quantityInStore !== undefined &&
-                            Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
+                              Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
                               ? {
-                                  boxShadow: '0px 0px 6px 5px red'
-                                }
+                                boxShadow: '0px 0px 6px 5px red'
+                              }
                               : {}
                           }
                         >
-                          <td style={{ minWidth: 300 }}>
+                          <Td style={{ minWidth: 300 }}>
                             <Select
                               value={{
                                 value: item.product,
@@ -573,10 +575,10 @@ const CreateOrder = props => {
                                 label: `${item.product.productBrand?.code}-[${item.product?.code}]-${item.product.name}-${item.product.volume}`
                               }))}
                             />
-                          </td>
-                          <td>{item.product?.unit}</td>
-                          <td>{item.product?.volume}</td>
-                          <td style={{ minWidth: 100 }}>
+                          </Td>
+                          <Td>{item.product?.unit}</Td>
+                          <Td>{item.product?.volume}</Td>
+                          <Td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
                               min="0"
@@ -590,8 +592,8 @@ const CreateOrder = props => {
                               Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore && (
                                 <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
                               )}
-                          </td>
-                          <td style={{ minWidth: 200 }}>
+                          </Td>
+                          <Td style={{ minWidth: 200 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}
@@ -604,15 +606,15 @@ const CreateOrder = props => {
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
-                          </td>
-                          <td>
+                          </Td>
+                          <Td>
                             {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                               style: 'currency',
                               currency: 'VND'
                             }) || ''}
-                          </td>
+                          </Td>
 
-                          <td style={{ minWidth: 100 }}>
+                          <Td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
                               min={0}
@@ -622,8 +624,8 @@ const CreateOrder = props => {
                               onBlur={handleBlur}
                               value={item.reducePercent}
                             />
-                          </td>
-                          <td>
+                          </Td>
+                          <Td>
                             {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
                               'it-IT',
                               {
@@ -631,8 +633,8 @@ const CreateOrder = props => {
                                 currency: 'VND'
                               }
                             ) || ''}
-                          </td>
-                          <td style={{ minWidth: 100 }}>
+                          </Td>
+                          <Td style={{ minWidth: 100 }}>
                             <CButton
                               color="danger"
                               variant="outline"
@@ -643,11 +645,11 @@ const CreateOrder = props => {
                             >
                               <CIcon name="cilXCircle" />
                             </CButton>
-                          </td>
-                        </tr>
+                          </Td>
+                        </Tr>
                       );
                     })}
-                  </tbody>
+                  </Tbody>
                 </Table>
 
                 <CButton color="primary" variant="outline" shape="square" size="sm" className="mb-3" onClick={onAddProduct}>
@@ -693,7 +695,7 @@ const CreateOrder = props => {
                     </CFormGroup>
                   </CCol>
                   <CCol lg="4" sm="5" className="ml-auto">
-                    <Table className="table-clear">
+                    {!isMobile ? <Table className="table-clear">
                       <tbody>
                         <tr>
                           <td className="left">
@@ -741,7 +743,55 @@ const CreateOrder = props => {
                         </tr>
                       </tbody>
                     </Table>
-                    <CFormGroup className="d-flex justify-content-center">
+                      :
+                      <Table className="table-clear">
+                        <Thead>
+                          <Tr>
+                            <Th>Tổng số lượng</Th>
+                            <Th>Tổng tiền</Th>
+                            <Th>Chiết khấu</Th>
+                            <Th>Tiền Thanh toán</Th>
+                          </Tr>
+                        </Thead>
+                        <Tbody>
+                          <Tr>
+                            <Td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</Td>
+                          </Tr>
+                          <Tr>
+                            <Td className="right">
+                              {productList
+                                .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
+                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                            </Td>
+                          </Tr>
+                          <Tr>
+
+                            <Td className="right">
+                              {productList
+                                .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
+                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                            </Td>
+                          </Tr>
+                          <Tr>
+
+                            <Td className="right">
+                              <strong>
+                                {productList
+                                  .reduce(
+                                    (sum, current) =>
+                                      sum +
+                                      (current.priceReal * current.quantity -
+                                        (current.priceReal * current.quantity * current.reducePercent) / 100),
+                                    0
+                                  )
+                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                              </strong>
+                            </Td>
+                          </Tr>
+                        </Tbody>
+                      </Table>
+                    }
+                    <CFormGroup className="d-flex justify-content-center mt-5">
                       <CButton type="submit" size="lg" className="btn btn-success">
                         {'Tiếp tục'} <CIcon name="cilArrowRight" />
                       </CButton>

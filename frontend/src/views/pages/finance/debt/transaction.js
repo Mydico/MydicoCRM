@@ -94,6 +94,7 @@ const Transaction = props => {
         setDebt(resp.payload.sum);
       }
     })
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const debouncedSearchColumn = _.debounce(value => {

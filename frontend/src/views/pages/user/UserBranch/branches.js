@@ -77,6 +77,7 @@ const Branch = props => {
 
   useEffect(() => {
     dispatch(getBranch({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const computedItems = items => {

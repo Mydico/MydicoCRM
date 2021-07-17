@@ -41,7 +41,7 @@ export class OrderService {
     private readonly productQuantityService: ProductQuantityService,
     private readonly transactionService: TransactionService,
     private readonly incomeDashboardService: IncomeDashboardService
-  ) {}
+  ) { }
 
   async findById(id: string): Promise<Order | undefined> {
     if (!relationshipNames.includes('customer.department') && !relationshipNames.includes('customer.type')) {
@@ -72,28 +72,27 @@ export class OrderService {
     let andQueryString = '';
 
     if (departmentVisible.length > 0) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "} Order.department IN ${JSON.stringify(departmentVisible)
+      andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} Order.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Order.createdDate  >= '${filter['startDate']}' AND  Order.createdDate <= '${filter['endDate']} 24:00:00'`;
+      andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "}  Order.createdDate  >= '${filter['startDate']}' AND  Order.createdDate <= '${filter['endDate']} 24:00:00'`;
     }
     if (isEmployee) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Order.sale = ${currentUser.id}`;
+      andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "}  Order.sale = ${currentUser.id}`;
     }
     if (currentUser.branch) {
       if (!currentUser.branch.seeAll) {
-        andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Order.branch = ${currentUser.branch.id}`;
+        andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "}  Order.branch = ${currentUser.branch.id}`;
       }
     } else {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "} Order.branch is NULL `;
+      andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} Order.branch is NULL `;
     }
-    const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_branch_${
-      currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
-    }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Order.${Object.keys(
-      options.order
-    )[0] || 'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+    const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_branch_${currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
+      }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Order.${Object.keys(
+        options.order
+      )[0] || 'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .leftJoinAndSelect('Order.customer', 'customer')
@@ -117,8 +116,7 @@ export class OrderService {
       .skip(options.skip)
       .take(options.take)
       .cache(
-        `cache_count_get_orders_department_${JSON.stringify(departmentVisible)}_branch_${
-          currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
+        `cache_count_get_orders_department_${JSON.stringify(departmentVisible)}_branch_${currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
         }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}`
       );
     if (queryString) {
@@ -216,7 +214,7 @@ export class OrderService {
       .where(`order.code like '%${currentUser.department.code}%'`)
       .getCount();
     if (!order.id) {
-      order.code = `${currentUser.department.code}-${count + 1}`;
+      order.code = `${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}-${count + 1}`;
     }
     return await this.orderRepository.save(order);
   }
@@ -253,7 +251,7 @@ export class OrderService {
         transaction.customerName = foundedOrder.customer.name;
         transaction.sale = foundedOrder.sale;
         transaction.saleName = foundedOrder.sale.code;
-        transaction.branch= foundedOrder.branch;
+        transaction.branch = foundedOrder.branch;
         transaction.department = foundedOrder.department;
         transaction.order = foundedOrder;
         transaction.bill = createdBill;

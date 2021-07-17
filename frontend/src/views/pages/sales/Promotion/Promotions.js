@@ -88,6 +88,7 @@ const Promotion = props => {
 
   useEffect(() => {
     dispatch(getPromotion({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const Promotions = useSelector(selectAll);
@@ -297,7 +298,7 @@ const Promotion = props => {
         />
         <CPagination
           activePage={activePage}
-          pages={Math.floor(initialState.totalItem / 20) + 1}
+          pages={Math.floor(initialState.totalItem / size) + 1}
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>

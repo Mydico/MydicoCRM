@@ -24,6 +24,7 @@ const ProductBrand = props => {
   const productBrandss = useSelector(selectAll);
   useEffect(() => {
     dispatch(getProductBrand({ page: activePage - 1, size: size, sort: 'createdDate,DESC' }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const toggleDetails = index => {

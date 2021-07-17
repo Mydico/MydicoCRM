@@ -62,6 +62,7 @@ const Debt = props => {
 
   useEffect(() => {
     dispatch(getCustomerDebts({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const debts = useSelector(selectAll);

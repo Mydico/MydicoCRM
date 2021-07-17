@@ -5,12 +5,6 @@ const initialState = {
   loading: false,
   updatingSuccess: false,
   totalItem: 0,
-  cities: [],
-  districts: [],
-  wards: [],
-  type: [],
-  branch: [],
-  status: [],
 };
 
 export const storeHistorysAdapter = createEntityAdapter({

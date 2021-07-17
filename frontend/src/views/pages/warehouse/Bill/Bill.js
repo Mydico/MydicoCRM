@@ -160,6 +160,7 @@ const Bill = props => {
   const users = useSelector(selectUserAll);
   useEffect(() => {
     dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const computedItems = items => {
@@ -560,7 +561,8 @@ const Bill = props => {
             )
           }}
           scopedSlots={{
-            bill: (item, index) => <td>{index + 1}</td>,
+           
+            bill: (item, index) => <td> {(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
@@ -624,7 +626,7 @@ const Bill = props => {
                         {item?.order?.orderDetails.map((item, index) => {
                           return (
                             <tr key={index}>
-                              <td>{index + 1}</td>
+                              <td> {(activePage - 1) * size + index + 1}</td>
                               <td>{item.product?.name}</td>
                               <td>{item.product?.volume}</td>
                               <td>{item.quantity}</td>
@@ -709,7 +711,7 @@ const Bill = props => {
         />
         <CPagination
           activePage={activePage}
-          pages={Math.floor(initialState.totalItem / 20) + 1}
+          pages={Math.floor(initialState.totalItem / size) + 1}
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>

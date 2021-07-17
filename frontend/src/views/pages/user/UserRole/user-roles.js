@@ -31,6 +31,7 @@ const UserRole = props => {
 
   useEffect(() => {
     dispatch(getUserRole({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.value }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const { selectAll } = globalizedUserRoleSelectors;

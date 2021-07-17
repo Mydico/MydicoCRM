@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CDataTable, CCard, CCardHeader, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CCard, CCardHeader, CPagination, CCol, CDataTable, CFormGroup, CInput, CLabel } from '@coreui/react/lib';
 import _ from 'lodash';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,7 +7,6 @@ import { getStoreHistory } from './warehouse-history.api.js';
 import { globalizedStoreHistorySelectors, reset } from './warehouse-history.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
-import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
   IMPORT: 'NHẬP KHO'
@@ -39,7 +38,6 @@ const fields = [
   { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false }
 ];
 const StoreHistory = () => {
-  const [] = useState([]);
   const { initialState } = useSelector(state => state.storeHistory);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
@@ -63,6 +61,7 @@ const StoreHistory = () => {
 
   useEffect(() => {
     dispatch(getStoreHistory({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const computedItems = items => {
@@ -75,19 +74,28 @@ const StoreHistory = () => {
     });
   };
 
+  const memoComputedItems = React.useCallback((items) => computedItems(items), []);
+  const memoListed = React.useMemo(() => memoComputedItems(storeHistorys), [storeHistorys]);
+
+  useEffect(() => {
+    console.log(storeHistorys)
+  }, [storeHistorys])
+
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getStoreHistory({ page: 0, size: size, sort: 'lastModifiedDate,DESC', ...value }));
+      dispatch(getStoreHistory({ page: 0, size, sort: 'lastModifiedDate,DESC', ...value }));
     }
   }, 300);
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
   };
+
+  
 
   return (
     <CCard>
@@ -136,19 +144,18 @@ const StoreHistory = () => {
           </CFormGroup>
         </CFormGroup>
         <CDataTable
-          items={computedItems(storeHistorys)}
+          items={memoListed}
           fields={fields}
           columnFilter
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
-          itemsPerPage={size}
+          itemsPerPage={100}
           hover
           sorter
           noItemsView={{
             noResults: 'Không tìm thấy kết quả',
             noItems: 'Không có dữ liệu'
           }}
-          loading={initialState.loading}
-          onPaginationChange={val => setSize(val)}
+          onPaginationChange={setSize}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,

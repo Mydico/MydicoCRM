@@ -105,6 +105,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     dispatch(getWarehouseReturn({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const warehouses = useSelector(selectAll);
@@ -400,7 +401,7 @@ const WarehouseImport = props => {
                           {JSON.parse(JSON.stringify(item.storeInputDetails || [])).map((detail, index) => {
                             return (
                               <tr key={index}>
-                                <td>{index + 1}</td>
+                                <td> {(activePage - 1) * size + index + 1}</td>
                                 <td>{detail.product?.name}</td>
                                 <td>{detail.product?.volume}</td>
                                 <td>{detail.quantity}</td>
@@ -454,7 +455,7 @@ const WarehouseImport = props => {
                           {JSON.parse(JSON.stringify(item.storeInputDetails || [])).map((detail, index) => {
                             return (
                               <tr key={index}>
-                                <td>{index + 1}</td>
+                                <td> {(activePage - 1) * size + index + 1}</td>
                                 <td>{detail.product?.name}</td>
                                 <td>{detail.product?.volume}</td>
                                 <td>{detail.quantity}</td>

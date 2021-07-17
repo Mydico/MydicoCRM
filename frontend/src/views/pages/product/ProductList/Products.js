@@ -98,6 +98,7 @@ const Product = props => {
       localStorage.removeItem('params');
     }
     dispatch(getProduct(params));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const computedItems = items => {

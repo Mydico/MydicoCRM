@@ -32,7 +32,7 @@ import { userSafeSelector } from '../../login/authenticate.reducer';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 const { selectAll } = globalizedDepartmentSelectors;
 
-const validationSchema = function() {
+const validationSchema = function () {
   return Yup.object().shape({
     contactName: Yup.string()
       .min(3, `Họ và tên khách hàng phải lớn hơn 3 kí tự`)

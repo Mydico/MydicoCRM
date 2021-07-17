@@ -1,17 +1,26 @@
-import React, {Suspense} from 'react';
-import {Route, Switch} from 'react-router-dom';
-import {CContainer, CFade} from '@coreui/react/lib';
+import React, { Suspense } from 'react';
+import { Route, Switch, useHistory } from 'react-router-dom';
+import { CContainer, CFade } from '@coreui/react/lib';
 
 // routes config
 import routes from '../routes';
+import { CButton } from '@coreui/react';
+import CIcon from '@coreui/icons-react';
 
 const loading = (
   <div className="pt-3 text-center">
     <div className="sk-spinner sk-spinner-pulse"></div>
   </div>
 );
-
+const arrToShowBackButton = [
+  'new',
+  'edit',
+  'detail',
+  'print'
+]
 const TheContent = () => {
+  const history = useHistory();
+
   return (
     <main className="c-main">
       <CContainer fluid>
@@ -27,6 +36,11 @@ const TheContent = () => {
                     name={route.name}
                     render={(props) => (
                       <CFade>
+                        {new RegExp(arrToShowBackButton.join("|")).test(route.path) && <CButton size="sm" className="btn btn-info mb-3" onClick={history.goBack}>
+                          <CIcon name="cilArrowLeft" className="mr-3" size={'xl'} />
+                          {'Quay lại'}
+                        </CButton>
+                        }
                         <route.component {...props} />
                       </CFade>
                     )}

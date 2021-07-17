@@ -9,6 +9,21 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment'
 const { selectAll } = globalizedCustomerSelectors;
 
+  // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
+  const fields = [
+    { key: 'code', label: 'Mã', _style: { width: '10%' } },
+    { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
+    { key: 'contactName', label: 'Người liên lạc', _style: { width: '15%' } },
+    { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
+    { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '15%' } },
+    { key: 'dateOfBirth', label: 'Ngày sinh', _style: { width: '10%' } },
+    {
+      key: 'show_details',
+      label: '',
+      _style: { width: '1%' },
+      filter: false
+    }
+  ];
 const Customer = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.customer);
@@ -22,6 +37,7 @@ const Customer = props => {
 
   useEffect(() => {
     dispatch(getCustomerBirthday({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const customers = useSelector(selectAll);
@@ -30,6 +46,7 @@ const Customer = props => {
       return {
         ...item,
         typeName: item.type?.name,
+        sale: item.sale?.code,
         createdDate: moment(item.createdDate).format("DD-MM-YYYY")
       };
     });
@@ -45,21 +62,7 @@ const Customer = props => {
     setDetails(newDetails);
   };
 
-  // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
-    { key: 'contactName', label: 'Người liên lạc', _style: { width: '15%' } },
-    { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
-    { key: 'users', label: 'Nhân viên quản lý', _style: { width: '15%' } },
-    { key: 'dateOfBirth', label: 'Ngày sinh', _style: { width: '10%' } },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
-  ];
+
 
   const getBadge = status => {
     switch (status) {
@@ -109,13 +112,7 @@ const Customer = props => {
             noItems: 'Không có dữ liệu'
           }}
           // loading
-
-
-
           onPaginationChange={val => setSize(val)}
-
-
-
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             status: item => (

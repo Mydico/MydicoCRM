@@ -56,6 +56,7 @@ export class CustomerController {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
         }
+        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
         const [results, count] = await this.customerService.findAndCount(
             {
                 skip: +pageRequest.page * pageRequest.size,
@@ -64,7 +65,7 @@ export class CustomerController {
             },
             filter,
             departmentVisible,
-            false,
+            isEmployee,
             currentUser
         );
         HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));

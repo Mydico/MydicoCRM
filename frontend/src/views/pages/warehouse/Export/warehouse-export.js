@@ -110,6 +110,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     dispatch(getWarehouseExport({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const { selectAll } = globalizedWarehouseImportSelectors;
@@ -401,7 +402,7 @@ const WarehouseImport = props => {
                       itemsPerPage={5}
                       pagination
                       scopedSlots={{
-                        order: (item, index) => <td>{index + 1}</td>
+                        order: (item, index) => <td> {(activePage - 1) * size + index + 1}</td>
                       }}
                     />
                   </CCardBody>

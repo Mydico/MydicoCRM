@@ -31,6 +31,7 @@ const Provider = props => {
 
   useEffect(() => {
     dispatch(getProvider({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const providers = useSelector(selectAll);

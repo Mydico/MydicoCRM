@@ -35,14 +35,18 @@ import {
   getProductInstore,
   getProductWarehouseByField
 } from '../../warehouse/Product/product-warehouse.api';
-import { FormFeedback, Table } from 'reactstrap';
+import { FormFeedback } from 'reactstrap';
 import { OrderStatus } from './order-status';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { userSafeSelector, removePermission } from '../../login/authenticate.reducer.js';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
-const validationSchema = function() {
+import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
+import '../../../components/table/ResponsiveTable.css'
+import { useMediaQuery } from 'react-responsive'
+
+const validationSchema = function () {
   return Yup.object().shape({
     customer: Yup.object()
       .required('Khách hàng  không để trống')
@@ -81,6 +85,7 @@ const EditOrder = props => {
 
   const dispatch = useDispatch();
   const history = useHistory();
+  const isMobile = useMediaQuery({ maxWidth: '50em' })
 
   const promotions = useSelector(selectAllPromotion);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
@@ -115,7 +120,6 @@ const EditOrder = props => {
       const productArr = JSON.parse(JSON.stringify(initialState.orderDetails));
 
       if (initialState.orderDetails.length > 0) {
-        setSelectedWarehouse(initialState.orderDetails[0].store);
         dispatch(
           getProductWarehouseByField({
             store: order.store.id,
@@ -137,7 +141,7 @@ const EditOrder = props => {
     }
   }, [initialState.orderDetails]);
 
-  const onSubmit = (values, {}) => () => {
+  const onSubmit = (values, { }) => () => {
     values = JSON.parse(JSON.stringify(values));
     if (!values.address) values.address = selectedCustomer.address;
     if (selectedPromotion) {
@@ -202,14 +206,14 @@ const EditOrder = props => {
     }
   }, [selectedWarehouse]);
 
-  const onAddProduct = () => {
+  const onAddProduct = useCallback(() => {
     if (selectedWarehouse?.id) {
       const data = { product: {}, quantity: 1, quantityAndGift: 0, reducePercent: 0, store: { id: selectedWarehouse.id } };
       setProductList([...productList, data]);
     } else {
       setIsSelectedWarehouse(false);
     }
-  };
+  });
 
   const debouncedSearchProduct = _.debounce(value => {
     dispatch(
@@ -225,7 +229,7 @@ const EditOrder = props => {
   }, 300);
 
   const onSearchProduct = value => {
-    if(Object.keys(value).length > 0){
+    if (Object.keys(value).length > 0) {
       debouncedSearchProduct(value);
     }
   };
@@ -295,7 +299,7 @@ const EditOrder = props => {
 
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = [...productList];
-    copyArr[index].reducePercent = target.value > 100 ? 100 :  Number(target.value).toString();
+    copyArr[index].reducePercent = target.value > 100 ? 100 : Number(target.value).toString();
     copyArr[index].priceTotal =
       copyArr[index].priceReal * copyArr[index].quantity -
       (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
@@ -535,41 +539,36 @@ const EditOrder = props => {
                 </CCardBody>
               </CCard>
             )}
-
-            <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
-              <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-              Thêm sản phẩm
-            </CButton>
             <CCard>
-              <CCardBody>
-                <Table responsive striped>
-                  <thead>
-                    <tr>
-                      <th>Sản phẩm</th>
-                      <th>Đơn vị</th>
-                      <th>Dung tích</th>
-                      <th>Số lượng</th>
-                      <th>Đơn giá</th>
-                      <th>Thành tiền</th>
-                      <th>Chiết khấu</th>
-                      <th>Thanh toán</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              <CCardBody className="table-responsive">
+                <Table responsive striped className="table table-striped">
+                  <Thead>
+                    <Tr>
+                      <Th>Sản phẩm</Th>
+                      <Th>Đơn vị</Th>
+                      <Th>Dung tích</Th>
+                      <Th>Số lượng</Th>
+                      <Th>Đơn giá</Th>
+                      <Th>Thành tiền</Th>
+                      <Th>Chiết khấu</Th>
+                      <Th>Thanh toán</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
                     {productList.map((item, index) => {
                       return (
-                        <tr
+                        <Tr
                           key={index}
                           style={
                             item.quantityInStore !== undefined &&
-                            Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
+                              Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
                               ? {
-                                  boxShadow: '0px 0px 6px 5px red'
-                                }
+                                boxShadow: '0px 0px 6px 5px red'
+                              }
                               : {}
                           }
                         >
-                          <td style={{ minWidth: 300 }}>
+                          <Td style={{ minWidth: 300 }}>
                             <Select
                               value={{
                                 value: item.product?.id,
@@ -583,10 +582,10 @@ const EditOrder = props => {
                                 label: `${item.product.productBrand?.code}-${item.product.name}-${item.product.volume}`
                               }))}
                             />
-                          </td>
-                          <td>{item.product?.unit}</td>
-                          <td>{item.product?.volume}</td>
-                          <td style={{ minWidth: 100 }}>
+                          </Td>
+                          <Td>{item.product?.unit}</Td>
+                          <Td>{item.product?.volume}</Td>
+                          <Td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
                               min={1}
@@ -601,8 +600,8 @@ const EditOrder = props => {
                               Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore && (
                                 <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
                               )}
-                          </td>
-                          <td style={{ minWidth: 250 }}>
+                          </Td>
+                          <Td style={{ minWidth: 250 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}
@@ -610,22 +609,22 @@ const EditOrder = props => {
                                 value={
                                   typeof productList[index].priceReal !== 'number'
                                     ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                                        productList[index].priceReal
-                                      )
+                                      productList[index].priceReal
+                                    )
                                     : productList[index].priceReal
                                 }
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
-                          </td>
-                          <td>
+                          </Td>
+                          <Td>
                             {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                               style: 'currency',
                               currency: 'VND'
                             }) || ''}
-                          </td>
+                          </Td>
 
-                          <td style={{ minWidth: 100 }}>
+                          <Td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
                               min={0}
@@ -635,8 +634,8 @@ const EditOrder = props => {
                               onBlur={handleBlur}
                               value={item.reducePercent}
                             />
-                          </td>
-                          <td>
+                          </Td>
+                          <Td>
                             {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
                               'it-IT',
                               {
@@ -644,8 +643,8 @@ const EditOrder = props => {
                                 currency: 'VND'
                               }
                             ) || ''}
-                          </td>
-                          <td style={{ minWidth: 100 }}>
+                          </Td>
+                          <Td style={{ minWidth: 100 }}>
                             <CButton
                               color="danger"
                               variant="outline"
@@ -656,12 +655,16 @@ const EditOrder = props => {
                             >
                               <CIcon name="cilXCircle" />
                             </CButton>
-                          </td>
-                        </tr>
+                          </Td>
+                        </Tr>
                       );
                     })}
-                  </tbody>
+                  </Tbody>
                 </Table>
+                <CButton color="primary" variant="outline" shape="square" size="sm" className="mb-3 mt-3" onClick={onAddProduct}>
+                  <CIcon name={'cilArrowCircleRight'} className="mr-2" />
+                  Thêm sản phẩm
+                </CButton>
               </CCardBody>
             </CCard>
             <CCard>
@@ -716,7 +719,7 @@ const EditOrder = props => {
                     )}
                   </CCol>
                   <CCol lg="4" sm="5" className="ml-auto">
-                    <Table className="table-clear">
+                    {!isMobile ? <Table className="table table-striped">
                       <tbody>
                         <tr>
                           <td className="left">
@@ -764,6 +767,52 @@ const EditOrder = props => {
                         </tr>
                       </tbody>
                     </Table>
+                      :
+                      <Table className="table-clear">
+                        <Thead>
+                          <Tr>
+                            <Th>Tổng số lượng</Th>
+                            <Th>Tổng tiền</Th>
+                            <Th>Chiết khấu</Th>
+                            <Th>Tiền Thanh toán</Th>
+                          </Tr>
+                        </Thead>
+                        <Tbody>
+                          <Tr>
+                            <Td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</Td>
+                          </Tr>
+                          <Tr>
+                            <Td className="right">
+                              {productList
+                                .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
+                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td className="right">
+                              {productList
+                                .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
+                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td className="right">
+                              <strong>
+                                {productList
+                                  .reduce(
+                                    (sum, current) =>
+                                      sum +
+                                      (current.priceReal * current.quantity -
+                                        (current.priceReal * current.quantity * current.reducePercent) / 100),
+                                    0
+                                  )
+                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                              </strong>
+                            </Td>
+                          </Tr>
+                        </Tbody>
+                      </Table>
+                    }
                     <CFormGroup className="d-flex justify-content-center">
                       <CButton type="submit" size="lg" className="btn btn-success">
                         {'Lưu lại'} <CIcon name="cil-save" />

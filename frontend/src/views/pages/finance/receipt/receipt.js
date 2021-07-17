@@ -92,6 +92,7 @@ const Receipt = props => {
 
   useEffect(() => {
     dispatch(getReceipt({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const warehouses = useSelector(selectAll);

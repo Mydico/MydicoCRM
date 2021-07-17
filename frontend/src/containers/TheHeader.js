@@ -47,37 +47,26 @@ const TheHeader = () => {
       </CHeaderBrand>
 
       <CHeaderNav className="d-md-down-none mr-auto">
-        <CHeaderNavItem className="px-3">
+        {/* <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/dashboard">Tổng quan</CHeaderNavLink>
         </CHeaderNavItem>
         <CHeaderNavItem className="px-3">
           <CHeaderNavLink to="/users">Tài khoản</CHeaderNavLink>
-        </CHeaderNavItem>
+        </CHeaderNavItem> */}
         {/* <CHeaderNavItem className="px-3">
           <CHeaderNavLink>Cài đặt</CHeaderNavLink>
         </CHeaderNavItem> */}
       </CHeaderNav>
 
       <CHeaderNav className="px-3">
-        {/* <CToggler inHeader className="ml-3 d-md-down-none" onClick={() => dispatch(setDarkMode(!darkMode))} title="Toggle Light/Dark Mode">
-          <CIcon name="cil-moon" className="c-d-dark-none" alt="CoreUI Icons Moon" />
-          <CIcon name="cil-sun" className="c-d-default-none" alt="CoreUI Icons Sun" />
-        </CToggler> */}
-        {/* <TheHeaderDropdownNotif />
-        <TheHeaderDropdownTasks />
-        <TheHeaderDropdownMssg /> */}
-        {/* <CLabel>
-            <strong>
-              {account.lastName} {account.firstName}
-            </strong>
-          </CLabel> */}
+
         <TheHeaderDropdown />
         <CToggler inHeader className="d-md-down-none" onClick={() => dispatch(setAsideShow(!asideShow))}>
           <CIcon className="mr-2" size="lg" name="cil-applications-settings" />
         </CToggler>
       </CHeaderNav>
 
-      <CSubheader className="px-3 justify-content-between">
+      {/* <CSubheader className="px-3 justify-content-between">
         <CBreadcrumbRouter className="border-0 c-subheader-nav m-0 px-0 px-md-3" routes={routes} />
         <div className="d-md-down-none mfe-2 c-subheader-nav">
           <CLink className="c-subheader-nav-link" href="#">
@@ -87,12 +76,9 @@ const TheHeader = () => {
             <CIcon name="cil-graph" alt="Dashboard" />
             &nbsp;Thống kê
           </CLink>
-          {/* <CLink className="c-subheader-nav-link" href="#">
-            <CIcon name="cil-settings" alt="Settings" />
-            &nbsp;Settings
-          </CLink> */}
+
         </div>
-      </CSubheader>
+      </CSubheader> */}
     </CHeader>
   );
 };
