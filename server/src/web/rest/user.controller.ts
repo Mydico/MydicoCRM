@@ -24,7 +24,7 @@ import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UserService } from '../../service/user.service';
 import { In, Like } from 'typeorm';
 import { BranchService } from '../../service/branch.service';
-import { ChangePasswordDTO } from '../../service/dto/user.dto';
+import { ChangePasswordDTO, ResetPasswordDTO } from '../../service/dto/user.dto';
 import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/users')
@@ -132,6 +132,23 @@ export class UserController {
     }
     HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.login);
     return res.send(await this.userService.changePassword(user));
+  }
+
+  @Put('/reset-password')
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: User
+  })
+  async resetPassword(@Req() req: Request, @Res() res: Response, @Body() user: ResetPasswordDTO): Promise<Response> {
+    const currentUser = req.user as User;
+    const isAdmin = currentUser.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+
+    if (!isAdmin) {
+      throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.login);
+    return res.send(await this.userService.resetPassword(user));
   }
 
   @Put('/')

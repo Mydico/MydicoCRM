@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState, useCallback} from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   CButton,
   CCard,
@@ -14,43 +14,42 @@ import {
   CSelect,
   CCardTitle,
   CTextarea,
-  CInputCheckbox,
+  CInputCheckbox
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {creatingPromotion} from './promotion.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { creatingPromotion } from './promotion.api';
 
+import { useHistory } from 'react-router-dom';
+import { fetching } from './promotion.reducer';
+import { PromotionStatus } from './contants';
 
-import {useHistory} from 'react-router-dom';
-import {fetching} from './promotion.reducer';
-import {PromotionStatus} from './contants';
-
-import {getCustomerType} from '../../customer/CustomerType/customer-type.api';
-import {globalizedcustomerTypeSelectors} from '../../customer/CustomerType/customer-type.reducer';
+import { getCustomerType } from '../../customer/CustomerType/customer-type.api';
+import { globalizedcustomerTypeSelectors } from '../../customer/CustomerType/customer-type.reducer';
 import Select from 'react-select';
 
-
-import {globalizedproductGroupsSelectors} from '../../product/ProductGroup/product-group.reducer';
-import {getProductGroup} from '../../product/ProductGroup/product-group.api';
-
+import { globalizedproductGroupsSelectors } from '../../product/ProductGroup/product-group.reducer';
+import { getProductGroup } from '../../product/ProductGroup/product-group.api';
+import { validate } from '../../../../shared/utils/normalize';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5, `Tên phải lớn hơn 5 kí tự`)
-        .required('Tên không để trống'),
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống'),
+    endTime: Yup.string().required('Ngày kết thúc không để trống')
   });
 };
 
-import {validate} from '../../../../shared/utils/normalize';
-const {selectAll} = globalizedcustomerTypeSelectors;
-const {selectAll: selectAllProductGroup} = globalizedproductGroupsSelectors;
+
+const { selectAll } = globalizedcustomerTypeSelectors;
+const { selectAll: selectAllProductGroup } = globalizedproductGroupsSelectors;
 
 const CreatePromotion = () => {
-  const {initialState} = useSelector((state) => state.promotion);
+  const { initialState } = useSelector(state => state.promotion);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -60,9 +59,8 @@ const CreatePromotion = () => {
     startTime: new Date(),
     endTime: new Date(),
     isLock: false,
-    status: PromotionStatus[0].value,
+    status: PromotionStatus[0].value
   });
-
 
   const customerType = useSelector(selectAll);
   const productGroups = useSelector(selectAllProductGroup);
@@ -81,23 +79,27 @@ const CreatePromotion = () => {
   }, [customerType]);
 
   const onAddProduct = () => {
-    const data = {name: '', totalMoney: 0, reducePercent: 0, productGroup: {}};
+    const data = { name: '', totalMoney: 0, reducePercent: 0, productGroup: [] };
     setPromotionItemList([...promotionItemList, data]);
   };
 
   const onSelectedProduct = (item, index) => {
     const copyArr = [...promotionItemList];
-    copyArr[index].productGroup = item.value;
+    copyArr[index].productGroup = item?.map(item => item.value) || [];
     setPromotionItemList(copyArr);
   };
 
   const onChangeProductPromotion = (value, index, type) => {
     const copyArr = [...promotionItemList];
-    copyArr[index][type] = value;
+    if (type === 'name') {
+      copyArr[index][type] = value;
+    } else {
+      copyArr[index][type] = Number(value).toString();
+    }
     setPromotionItemList(copyArr);
   };
 
-  const onSubmit = (values, {resetForm}) => {
+  const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
     values.customerType = initialValues.current?.customerType;
     values.promotionItems = promotionItemList;
@@ -123,15 +125,12 @@ const CreatePromotion = () => {
             errors,
             touched,
 
-
             handleChange,
             handleBlur,
             handleSubmit,
             setFieldValue,
 
-
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
@@ -176,12 +175,12 @@ const CreatePromotion = () => {
                       name="customerType"
                       id="customerType"
                       value={values.customerType}
-                      onChange={(e) => {
+                      onChange={e => {
                         setFieldValue('customerType', e.target.value);
                       }}
                     >
                       {customerType &&
-                        customerType.map((item) => (
+                        customerType.map(item => (
                           <option key={item.id} value={item.id}>
                             {item.name}
                           </option>
@@ -239,11 +238,11 @@ const CreatePromotion = () => {
                       name="status"
                       id="status"
                       value={values.status}
-                      onChange={(e) => {
+                      onChange={e => {
                         setFieldValue('status', e.target.value);
                       }}
                     >
-                      {PromotionStatus.map((item) => (
+                      {PromotionStatus.map(item => (
                         <option key={item.value} value={item.value}>
                           {item.title}
                         </option>
@@ -267,7 +266,7 @@ const CreatePromotion = () => {
                             id="name"
                             placeholder="Tên doanh số"
                             autoComplete="gnameift"
-                            onChange={(event) => onChangeProductPromotion(event.target.value, index, 'name')}
+                            onChange={event => onChangeProductPromotion(event.target.value, index, 'name')}
                             invalid={!promotionItemList[index].name}
                             valid={promotionItemList[index].name}
                             onBlur={handleBlur}
@@ -283,8 +282,9 @@ const CreatePromotion = () => {
                             id="totalMoney"
                             min={0}
                             placeholder="Mức doanh thu"
+                            onKeyDown={blockInvalidChar}
                             autoComplete="totalMoney"
-                            onChange={(event) => onChangeProductPromotion(event.target.value, index, 'totalMoney')}
+                            onChange={event => onChangeProductPromotion(event.target.value, index, 'totalMoney')}
                             invalid={!promotionItemList[index].totalMoney}
                             valid={promotionItemList[index].totalMoney}
                             onBlur={handleBlur}
@@ -303,7 +303,8 @@ const CreatePromotion = () => {
                             min={0}
                             placeholder="Chiết khấu"
                             autoComplete="reducePercent"
-                            onChange={(event) => onChangeProductPromotion(event.target.value, index, 'reducePercent')}
+                            onKeyDown={blockInvalidChar}
+                            onChange={event => onChangeProductPromotion(event.target.value, index, 'reducePercent')}
                             invalid={promotionItemList[index].reducePercent < 0}
                             valid={promotionItemList[index].reducePercent}
                             onBlur={handleBlur}
@@ -316,10 +317,11 @@ const CreatePromotion = () => {
                         <CCol lg="3">
                           <CLabel htmlFor="password">Nhóm sản phẩm</CLabel>
                           <Select
-                            onChange={(event) => onSelectedProduct(event, index)}
-                            options={productGroups.map((item) => ({
+                            onChange={event => onSelectedProduct(event, index)}
+                            isMulti
+                            options={productGroups.map(item => ({
                               value: item,
-                              label: `${item?.productBrand?.name}-${item.name}`,
+                              label: `${item?.productBrand?.name}-${item.name}`
                             }))}
                           />
                         </CCol>

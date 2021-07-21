@@ -17,7 +17,8 @@ import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district';
 import AdvancedTable from '../../../components/table/AdvancedTable';
 import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
-import { useMediaQuery } from 'react-responsive'
+import { useMediaQuery } from 'react-responsive';
+import { CSVLink } from 'react-csv';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -30,54 +31,54 @@ const mappingStatus = {
   SHIPPING: 'ĐANG VẬN CHUYỂN',
   SUCCESS: 'GIAO THÀNH CÔNG',
   COD_CANCEL: 'HỦY VẬN ĐƠN',
-  CREATED: 'CHỜ DUYỆT VẬN ĐƠN',
+  CREATED: 'CHỜ DUYỆT VẬN ĐƠN'
 };
 
 const statusList = [
   {
     value: 'WAITING',
-    label: 'CHỜ DUYỆT',
+    label: 'CHỜ DUYỆT'
   },
   {
     value: 'CREATED',
-    label: 'CHỜ DUYỆT VẬN ĐƠN',
+    label: 'CHỜ DUYỆT VẬN ĐƠN'
   },
   {
     value: 'APPROVED',
-    label: 'ĐÃ DUYỆT',
+    label: 'ĐÃ DUYỆT'
   },
   {
     value: 'CREATE_COD',
-    label: 'ĐÃ TẠO VẬN ĐƠN',
+    label: 'ĐÃ TẠO VẬN ĐƠN'
   },
   {
     value: 'CANCEL',
-    label: 'ĐÃ HỦY',
+    label: 'ĐÃ HỦY'
   },
   {
     value: 'COD_APPROVED',
-    label: 'ĐÃ DUYỆT VẬN ĐƠN',
+    label: 'ĐÃ DUYỆT VẬN ĐƠN'
   },
   {
     value: 'REJECTED',
-    label: 'TỪ CHỐI VẬN ĐƠN',
+    label: 'TỪ CHỐI VẬN ĐƠN'
   },
   {
     value: 'SUPPLY_WAITING',
-    label: 'ĐỢI XUẤT KHO',
+    label: 'ĐỢI XUẤT KHO'
   },
   {
     value: 'SHIPPING',
-    label: 'ĐANG VẬN CHUYỂN',
+    label: 'ĐANG VẬN CHUYỂN'
   },
   {
     value: 'SUCCESS',
-    label: 'GIAO THÀNH CÔNG',
+    label: 'GIAO THÀNH CÔNG'
   },
   {
     value: 'COD_CANCEL',
-    label: 'HỦY VẬN ĐƠN',
-  },
+    label: 'HỦY VẬN ĐƠN'
+  }
 ];
 const { selectAll } = globalizedOrdersSelectors;
 // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện Thoại	Nhân viên quản lý	đơn hàngg	Phân loại	Sửa	Tạo đơn
@@ -86,13 +87,13 @@ const fields = [
     key: 'order',
     label: 'STT',
     _style: { width: '1%' },
-    filter: false,
+    filter: false
   },
   {
     key: 'show_details',
     label: 'Xem chi tiết',
     _style: { width: '1%' },
-    filter: false,
+    filter: false
   },
   { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
   { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
@@ -105,11 +106,11 @@ const fields = [
     key: 'action',
     label: 'Hành động',
     _style: { width: '50%' },
-    filter: false,
-  },
+    filter: false
+  }
 ];
 
-const getBadge = (status) => {
+const getBadge = status => {
   switch (status) {
     case 'APPROVED':
       return 'success';
@@ -123,9 +124,9 @@ const getBadge = (status) => {
       return 'primary';
   }
 };
-const Order = (props) => {
+const Order = props => {
   const [details, setDetails] = useState([]);
-  const { initialState } = useSelector((state) => state.order);
+  const { initialState } = useSelector(state => state.order);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
@@ -133,9 +134,9 @@ const Order = (props) => {
   const rejectRef = useRef('');
   const paramRef = useRef(null);
   const { account } = useSelector(userSafeSelector);
-  const isAdmin = account.authorities.filter((item) => item === 'ROLE_ADMIN').length > 0;
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const orders = useSelector(selectAll);
-  const isMobile = useMediaQuery({ maxWidth: '50em' })
+  const isMobile = useMediaQuery({ maxWidth: '50em' });
 
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
@@ -163,20 +164,20 @@ const Order = (props) => {
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
-  const computedItems = (items) => {
-    return items.map((item) => {
+  const computedItems = items => {
+    return items.map(item => {
       return {
         ...item,
         customerName: item.customer?.name,
         createdBy: item.createdBy || '',
         quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
         createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
-        total: Number(item.realMoney)?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || '',
+        total: Number(item.realMoney)?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''
       };
     });
   };
 
-  const toggleDetails = (index) => {
+  const toggleDetails = index => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
     if (position !== -1) {
@@ -187,7 +188,7 @@ const Order = (props) => {
     setDetails(newDetails);
   };
 
-  const csvContent = orders.map((item) => Object.values(item).join(',')).join('\n');
+  const csvContent = orders.map(item => Object.values(item).join(',')).join('\n');
   const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateOrder = () => {
     const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
@@ -195,9 +196,9 @@ const Order = (props) => {
     history.push(`${props.match.url}/new`);
   };
 
-  const debouncedSearchColumn = _.debounce((value) => {
+  const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach((key) => {
+      Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
@@ -205,22 +206,22 @@ const Order = (props) => {
     }
   }, 300);
 
-  const onFilterColumn = (value) => {
+  const onFilterColumn = value => {
     debouncedSearchColumn(value);
   };
 
-  const toEditOrder = (typeId) => {
+  const toEditOrder = typeId => {
     const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/${typeId}/edit`);
   };
 
-  const toSeeBill = (item) => {
+  const toSeeBill = item => {
     history.push({
       pathname: `${props.match.url}/print`,
       state: {
-        item,
-      },
+        item
+      }
     });
   };
 
@@ -231,24 +232,24 @@ const Order = (props) => {
     }
   }, [initialState.updatingSuccess]);
 
-  const approveOrder = (order) => () => {
+  const approveOrder = order => () => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.APPROVED,
       action: 'approve',
-      customer: order.customer,
+      customer: order.customer
     };
     dispatch(updateStatusOrder(newOrder));
   };
 
-  const cancelOrder = (order) => {
+  const cancelOrder = order => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.CANCEL,
       action: 'cancel',
       customer: order.customer,
       createdBy: order.createdBy,
-      reject: rejectRef.current,
+      reject: rejectRef.current
     };
     if (order.createdBy !== account.login && (!account.branch || !account.branch.allow)) {
       dispatch(updateStatusOrder(newOrder));
@@ -257,50 +258,50 @@ const Order = (props) => {
     }
   };
 
-  const deleteOrder = (order) => () => {
+  const deleteOrder = order => () => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.DELETED,
       action: 'delete',
-      customer: order.customer,
+      customer: order.customer
     };
     dispatch(updateStatusOrder(newOrder));
   };
 
-  const createCodOrder = (order) => () => {
+  const createCodOrder = order => () => {
     const newOrder = {
       id: order.id,
       status: OrderStatus.CREATE_COD,
       action: 'create-cod',
-      customer: order.customer,
+      customer: order.customer
     };
     dispatch(updateStatusOrder(newOrder));
   };
 
-  const approveAlert = (item) => {
+  const approveAlert = item => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn duyệt đơn hàng này?',
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: approveOrder(item),
+          onClick: approveOrder(item)
         },
         {
-          label: 'Hủy',
-        },
-      ],
+          label: 'Hủy'
+        }
+      ]
     });
   };
 
-  const cancelAlert = (item) => {
+  const cancelAlert = item => {
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
           <div className="react-confirm-alert-body">
             <h1>Xác nhận</h1>
             <p>Bạn có chắc chắn muốn hủy đơn hàng này?</p>
-            <CTextarea placeholder="Nhập lý do hủy" onChange={(event) => (rejectRef.current = event.target.value)} />
+            <CTextarea placeholder="Nhập lý do hủy" onChange={event => (rejectRef.current = event.target.value)} />
             <div className="react-confirm-alert-button-group">
               <button onClick={onClose}>Không</button>
               <button
@@ -314,49 +315,49 @@ const Order = (props) => {
             </div>
           </div>
         );
-      },
+      }
     });
   };
 
-  const deleteAlert = (item) => {
+  const deleteAlert = item => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn xóa đơn hàng này?',
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: deleteOrder(item),
+          onClick: deleteOrder(item)
         },
         {
-          label: 'Hủy',
-        },
-      ],
+          label: 'Hủy'
+        }
+      ]
     });
   };
 
-  const codAlert = (item) => {
+  const codAlert = item => {
     confirmAlert({
       title: 'Xác nhận',
       message: 'Bạn có chắc chắn muốn tạo vận đơn cho đơn hàng này?',
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: createCodOrder(item),
+          onClick: createCodOrder(item)
         },
         {
-          label: 'Hủy',
-        },
-      ],
+          label: 'Hủy'
+        }
+      ]
     });
   };
-  const renderButtonStatus = (item) => {
+  const renderButtonStatus = item => {
     switch (item.status) {
       case OrderStatus.WAITING:
         return (
           <CCol>
-            {(isAdmin || account.role.filter((rol) => rol.method === 'PUT' && rol.entity === '/api/orders/approve').length > 0) && (
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/approve').length > 0) && (
               <CButton
-                onClick={(event) => {
+                onClick={event => {
                   event.stopPropagation();
                   approveAlert(item);
                 }}
@@ -364,7 +365,6 @@ const Order = (props) => {
                 variant="outline"
                 shape="square"
                 size="sm"
-              
                 className="mr-1"
               >
                 DUYỆT ĐƠN HÀNG
@@ -372,51 +372,49 @@ const Order = (props) => {
             )}
             {(isAdmin ||
               item.createdBy === account.login ||
-              account.role.filter((rol) => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
-                <CButton
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    cancelAlert(item);
-                  }}
-                  color="danger"
-                  variant="outline"
-                  shape="square"
-                  size="sm"
-                
-                  className="mr-1"
-                >
-                  HỦY ĐƠN HÀNG
-                </CButton>
-              )}
+              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
+              <CButton
+                onClick={event => {
+                  event.stopPropagation();
+                  cancelAlert(item);
+                }}
+                color="danger"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                HỦY ĐƠN HÀNG
+              </CButton>
+            )}
             {(item.createdBy === account.login ||
               isAdmin ||
-              account.role.filter((rol) => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
-                <CButton
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    dispatch(addPermission({ method: 'PUT', entity: '/api/orders', isSelf: true }));
-                    toEditOrder(item.id);
-                  }}
-                  color="warning"
-                  variant="outline"
-                
-                  shape="square"
-                  className="mr-1"
-                  size="sm"
-                >
-                  <CIcon name="cil-pencil" />
-                  CHỈNH SỬA
-                </CButton>
-              )}
+              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
+              <CButton
+                onClick={event => {
+                  event.stopPropagation();
+                  dispatch(addPermission({ method: 'PUT', entity: '/api/orders', isSelf: true }));
+                  toEditOrder(item.id);
+                }}
+                color="warning"
+                variant="outline"
+                shape="square"
+                className="mr-1"
+                size="sm"
+              >
+                <CIcon name="cil-pencil" />
+                CHỈNH SỬA
+              </CButton>
+            )}
           </CCol>
         );
       case OrderStatus.APPROVED:
         return (
           <CCol>
-            {(isAdmin || account.role.filter((rol) => rol.method === 'PUT' && rol.entity === '/api/orders/create-cod').length > 0) && (
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/create-cod').length > 0) && (
               <CCol>
                 <CButton
-                  onClick={(event) => {
+                  onClick={event => {
                     event.stopPropagation();
                     codAlert(item);
                   }}
@@ -424,7 +422,6 @@ const Order = (props) => {
                   variant="outline"
                   shape="square"
                   size="sm"
-                
                 >
                   TẠO VẬN ĐƠN
                 </CButton>
@@ -434,14 +431,13 @@ const Order = (props) => {
               (account.branch?.allow && (
                 <CCol>
                   <CButton
-                    onClick={(event) => {
+                    onClick={event => {
                       event.stopPropagation();
                       toEditOrder(item.id);
                     }}
                     color="warning"
                     variant="outline"
                     shape="square"
-                  
                     size="sm"
                   >
                     <CIcon name="cil-pencil" />
@@ -453,12 +449,11 @@ const Order = (props) => {
               (account.branch?.allow && (
                 <CCol>
                   <CButton
-                    onClick={(event) => {
+                    onClick={event => {
                       event.stopPropagation();
                       cancelAlert(item);
                     }}
                     color="danger"
-                  
                     variant="outline"
                     shape="square"
                     size="sm"
@@ -476,8 +471,7 @@ const Order = (props) => {
             variant="outline"
             shape="square"
             size="sm"
-          
-            onClick={(event) => {
+            onClick={event => {
               event.stopPropagation();
               toSeeBill(item);
             }}
@@ -488,16 +482,15 @@ const Order = (props) => {
       case OrderStatus.CANCEL:
         return (
           <CCol>
-            {(isAdmin || account.role.filter((rol) => rol.method === 'PUT' && rol.entity === '/api/orders' && !rol.isSelf).length > 0) && (
+            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders' && !rol.isSelf).length > 0) && (
               <CButton
-                onClick={(event) => {
+                onClick={event => {
                   event.stopPropagation();
                   toEditOrder(item.id);
                 }}
                 color="warning"
                 variant="outline"
                 shape="square"
-              
                 size="sm"
                 className="mr-1"
               >
@@ -506,7 +499,7 @@ const Order = (props) => {
               </CButton>
             )}
             <CButton
-              onClick={(event) => {
+              onClick={event => {
                 event.stopPropagation();
                 deleteAlert(item);
               }}
@@ -514,7 +507,6 @@ const Order = (props) => {
               variant="outline"
               shape="square"
               size="sm"
-            
               className="mr-1"
             >
               XÓA ĐƠN
@@ -528,8 +520,7 @@ const Order = (props) => {
             variant="outline"
             shape="square"
             size="sm"
-          
-            onClick={(event) => {
+            onClick={event => {
               event.stopPropagation();
               toSeeBill(item);
             }}
@@ -540,30 +531,43 @@ const Order = (props) => {
     }
   };
 
-  const memoComputedItems = React.useCallback((items) => computedItems(items), []);
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
-  const toDetailOrder = (id) => {
+  const toDetailOrder = id => {
     history.push(`${props.match.url}/${id}/detail`);
   };
+
+  const computedExcelItems = items => {
+    return items.map((item, index) => {
+      return {
+        ...item,
+        order: (activePage - 1) * size + index + 1,
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+      };
+    });
+  };
+  const memoExcelComputedItems = React.useCallback(items => computedExcelItems(orders), [orders]);
+  const memoExcelListed = React.useMemo(() => memoExcelComputedItems(orders), [orders]);
+
   return (
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách đơn hàng
-        {(isAdmin || account.role.filter((rol) => rol.method === 'POST' && rol.entity === '/api/orders').length > 0) && (
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/orders').length > 0) && (
           <CButton color="success" variant="outline" className="ml-3" onClick={toCreateOrder}>
             <CIcon name="cil-plus" /> Thêm mới
           </CButton>
         )}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="customertypes.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+        {/* <CSVLink headers={fields} data={memoExcelListed} filename={'order.csv'} className="btn">
+          Tải excel (.csv) ⬇
+        </CSVLink> */}
         <CRow className="ml-0 mt-4">
           <CLabel>Tổng :</CLabel>
           <strong>{`\u00a0\u00a0${initialState.totalItem}`}</strong>
         </CRow>
-        <CRow row className="d-flex justify-content-between ml-1 mr-1">
+        <CRow row className="d-flex justify-content-between ml-1" style={{ width: '50%' }}>
           <CRow row>
             <CCol>
               <CLabel htmlFor="date-input">Từ ngày</CLabel>
@@ -572,10 +576,10 @@ const Order = (props) => {
               <CInput
                 type="date"
                 id="date-input"
-                onChange={(e) =>
+                onChange={e =>
                   setDate({
                     ...date,
-                    startDate: e.target.value,
+                    startDate: e.target.value
                   })
                 }
                 name="date-input"
@@ -583,7 +587,7 @@ const Order = (props) => {
               />
             </CCol>
           </CRow>
-          <CRow row >
+          <CRow row>
             <CCol>
               <CLabel htmlFor="date-input">Đến ngày</CLabel>
             </CCol>
@@ -591,10 +595,10 @@ const Order = (props) => {
               <CInput
                 type="date"
                 id="date-input"
-                onChange={(e) =>
+                onChange={e =>
                   setDate({
                     ...date,
-                    endDate: e.target.value,
+                    endDate: e.target.value
                   })
                 }
                 name="date-input"
@@ -613,39 +617,39 @@ const Order = (props) => {
           sorter
           noItemsView={{
             noResults: 'Không tìm Thấy kết quả',
-            noItems: 'Không có dữ liệu',
+            noItems: 'Không có dữ liệu'
           }}
           // loading
-          onPaginationChange={(val) => setSize(val)}
+          onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
-          onRowClick={(val) => toDetailOrder(val.id)}
+          onRowClick={val => toDetailOrder(val.id)}
           columnFilterSlot={{
             status: (
               <div style={{ minWidth: 200 }}>
                 <Select
-                  onChange={(item) => {
+                  onChange={item => {
                     onFilterColumn({ ...paramRef.current, status: item?.value || '' });
                   }}
                   isClearable
                   placeholder="Chọn trạng thái"
-                  options={statusList.map((item) => ({
+                  options={statusList.map(item => ({
                     value: item.value,
-                    label: item.label,
+                    label: item.label
                   }))}
                 />
               </div>
-            ),
+            )
           }}
           scopedSlots={{
             order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
-            status: (item) => (
+            status: item => (
               <Td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </Td>
             ),
-            createdDate: (item) => <Td>{item.createdDate.substr(0, 10)}</Td>,
+            createdDate: item => <Td>{item.createdDate.substr(0, 10)}</Td>,
 
-            show_details: (item) => {
+            show_details: item => {
               return (
                 <Td className="py-2 d-flex">
                   <CButton
@@ -653,7 +657,7 @@ const Order = (props) => {
                     variant="outline"
                     shape="square"
                     size="sm"
-                    onClick={(event) => {
+                    onClick={event => {
                       event.stopPropagation();
                       toggleDetails(item.id);
                     }}
@@ -663,14 +667,14 @@ const Order = (props) => {
                 </Td>
               );
             },
-            action: (item) => {
+            action: item => {
               return (
                 <Td className="py-2 d-flex flex-row" style={{ minHeight: 40 }}>
                   {renderButtonStatus(item)}
                 </Td>
               );
             },
-            details: (item) => {
+            details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
@@ -682,8 +686,8 @@ const Order = (props) => {
                           <strong>{item?.customer.name}</strong>
                         </div>
                         <div>{item?.address}</div>
-                        <div>{`${district.filter((dist) => dist.value === item?.customer?.district)[0]?.label || ''}, ${cities.filter(
-                          (city) => city.value === item?.customer?.city,
+                        <div>{`${district.filter(dist => dist.value === item?.customer?.district)[0]?.label || ''}, ${cities.filter(
+                          city => city.value === item?.customer?.city
                         )[0]?.label || ''}`}</div>{' '}
                         <div>Phone: {item?.customer.tel}</div>
                       </CCol>
@@ -693,9 +697,9 @@ const Order = (props) => {
                           <strong> {item?.promotion?.name}</strong>
                         </div>
                         <div>
-                          {item?.promotion?.description.length > 10 ?
-                            `${item?.promotion?.description.substring(0, 30)}` :
-                            item?.promotion?.description}
+                          {item?.promotion?.description.length > 10
+                            ? `${item?.promotion?.description.substring(0, 30)}`
+                            : item?.promotion?.description}
                         </div>
                         <div>Loại khách hàng: {item?.promotion?.customerType?.name}</div>
                       </CCol>
@@ -724,14 +728,14 @@ const Order = (props) => {
                               <Td>
                                 {Number(item.priceReal || item.product?.price).toLocaleString('it-IT', {
                                   style: 'currency',
-                                  currency: 'VND',
+                                  currency: 'VND'
                                 }) || ''}
                               </Td>
                               <Td>{item.reducePercent}%</Td>
                               <Td>
                                 {(Number(item.priceReal || item.product?.price) * item.quantity).toLocaleString('it-IT', {
                                   style: 'currency',
-                                  currency: 'VND',
+                                  currency: 'VND'
                                 }) || ''}
                               </Td>
                               <Td>
@@ -740,7 +744,7 @@ const Order = (props) => {
                                   (Number(item.priceReal || item.product?.price) * item.quantity * item.reducePercent) / 100
                                 ).toLocaleString('it-IT', {
                                   style: 'currency',
-                                  currency: 'VND',
+                                  currency: 'VND'
                                 }) || ''}
                               </Td>
                             </Tr>
@@ -748,57 +752,56 @@ const Order = (props) => {
                         })}
                       </Tbody>
                     </Table>
-                    {!isMobile ? <CRow>
-                      <CCol lg="4" sm="5">
-                        Ghi chú: <strong>{item?.note}</strong>
-                        {item.status === 'CANCEL' && (
-                          <div>
-                            Lý do hủy: <strong>{item?.reject}</strong>
-                          </div>
-                        )}
-                      </CCol>
-                      <CCol lg="4" sm="5" className="ml-auto"><Table className="table-clear">
-                        <tbody>
-                          <tr>
-                            <td className="left">
-                              <strong>Tổng số lượng</strong>
-                            </td>
-                            <Td className="right">{item?.orderDetails.reduce((sum, current) => sum + current.quantity, 0) || ''}</Td>
-                          </tr>
-                          <tr>
-                            <td className="left">
-                              <strong>Tổng tiền</strong>
-                            </td>
-                            <td className="right">
-                              {Number(item?.totalMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="left">
-                              <strong>Chiết khấu</strong>
-                            </td>
-                            <td className="right">
-                              {Number(item?.reduceMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="left">
-                              <strong>Tiền thanh toán</strong>
-                            </td>
-                            <td className="right">
-                              <strong>
-                                {Number(item?.realMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-
-                              </strong>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </Table>
-                      </CCol>
-                    </CRow>
-                      :
+                    {!isMobile ? (
+                      <CRow>
+                        <CCol lg="4" sm="5">
+                          Ghi chú: <strong>{item?.note}</strong>
+                          {item.status === 'CANCEL' && (
+                            <div>
+                              Lý do hủy: <strong>{item?.reject}</strong>
+                            </div>
+                          )}
+                        </CCol>
+                        <CCol lg="4" sm="5" className="ml-auto">
+                          <Table className="table-clear">
+                            <tbody>
+                              <tr>
+                                <td className="left">
+                                  <strong>Tổng số lượng</strong>
+                                </td>
+                                <Td className="right">{item?.orderDetails.reduce((sum, current) => sum + current.quantity, 0) || ''}</Td>
+                              </tr>
+                              <tr>
+                                <td className="left">
+                                  <strong>Tổng tiền</strong>
+                                </td>
+                                <td className="right">
+                                  {Number(item?.totalMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="left">
+                                  <strong>Chiết khấu</strong>
+                                </td>
+                                <td className="right">
+                                  {Number(item?.reduceMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="left">
+                                  <strong>Tiền thanh toán</strong>
+                                </td>
+                                <td className="right">
+                                  <strong>
+                                    {Number(item?.realMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                  </strong>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </Table>
+                        </CCol>
+                      </CRow>
+                    ) : (
                       <div>
                         <Table className="table-clear">
                           <Thead>
@@ -836,17 +839,17 @@ const Order = (props) => {
                           )}
                         </CCol>
                       </div>
-                    }
+                    )}
                   </CCardBody>
                 </CCollapse>
               );
-            },
+            }
           }}
         />
         <CPagination
           activePage={activePage}
           pages={Math.floor(initialState.totalItem / size) + 1}
-          onActivePageChange={(i) => setActivePage(i)}
+          onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
     </CCard>

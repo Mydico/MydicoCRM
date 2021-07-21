@@ -40,6 +40,7 @@ export class ProductQuantityService {
       .createQueryBuilder('ProductQuantity')
       .leftJoinAndSelect('ProductQuantity.product', 'product')
       .leftJoinAndSelect('product.productBrand', 'productBrand')
+      .leftJoinAndSelect('product.productGroup', 'productGroup')
       .where(`ProductQuantity.store = ${filter['store']} AND ProductQuantity.status = 'ACTIVE'`)
       .orderBy(`ProductQuantity.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)

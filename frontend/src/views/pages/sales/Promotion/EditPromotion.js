@@ -220,7 +220,7 @@ const EditPromotion = props => {
                         type="date"
                         id="startTime"
                         name="startTime"
-                        defaultValue={values.startTime.split('T')[0]}
+                        value={values.startTime.split('T')[0]}
                         onChange={handleChange}
                         placeholder="Thời gian bắt đầu"
                       />
@@ -233,7 +233,7 @@ const EditPromotion = props => {
                         type="date"
                         id="endTime"
                         name="endTime"
-                        defaultValue={values.endTime.split('T')[0]}
+                        value={values.endTime.split('T')[0]}
                         onChange={handleChange}
                         placeholder="Thời gian kết thúc"
                       />
@@ -274,7 +274,7 @@ const EditPromotion = props => {
                     {productList &&
                       productList.map((item, index) => {
                         return (
-                          <CRow className="">
+                          <CRow className="mb-2">
                             <CCol lg="5">
                               <Select
                                 value={{

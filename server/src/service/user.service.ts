@@ -157,9 +157,18 @@ export class UserService {
     }
 
     async changePassword(user: ChangePasswordDTO): Promise<User | undefined> {
-        const userFind = await this.findByfields({ where: { password: user.password } });
+        const userFind = await this.findByfields({ where: { login: user.login, password: user.password } });
         if (!userFind) {
             throw new HttpException('Mật khẩu cũ không đúng', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        userFind.password = user.newPassword;
+        return await this.save(userFind);
+    }
+
+    async resetPassword(user: ChangePasswordDTO): Promise<User | undefined> {
+        const userFind = await this.findByfields({ where: { login: user.login } });
+        if (!userFind) {
+            throw new HttpException('Người dùng này không tồn tại', HttpStatus.UNPROCESSABLE_ENTITY);
         }
         userFind.password = user.newPassword;
         return await this.save(userFind);

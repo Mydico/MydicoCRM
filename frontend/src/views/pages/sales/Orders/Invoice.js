@@ -172,7 +172,6 @@ const Invoice = () => {
             </CCol>
           </CRow>
           <CRow className="d-flex justify-content-center mr-5">
-
             <CButton type="submit" size="lg" className="btn btn-success mr-5" disabled={initialState.loading} onClick={onCreateOrder}>
               {initialState.loading ? <CSpinner size="sm" /> : ' Tạo đơn hàng'}
             </CButton>

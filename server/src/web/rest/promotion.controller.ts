@@ -89,7 +89,7 @@ export class PromotionController {
         type: Promotion,
     })
     async put(@Res() res: Response, @Body() promotion: Promotion): Promise<Response> {
-        HeaderUtil.addEntityCreatedHeaders(res, 'Promotion', promotion.id);
+        HeaderUtil.addEntityUpdatedHeaders(res, 'Promotion', promotion.id);
         return res.send(await this.promotionService.update(promotion));
     }
 

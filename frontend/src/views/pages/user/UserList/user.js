@@ -3,7 +3,7 @@ import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, 
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUser, updateUser } from './user.api.js';
+import { getUser, resetPassword, updateUser } from './user.api.js';
 import { globalizedUserSelectors, reset } from './user.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -16,8 +16,11 @@ import { getDepartment } from '../UserDepartment/department.api.js';
 import Select from 'react-select';
 import { getBranch } from '../UserBranch/branch.api.js';
 import 'react-dates/initialize';
-import { DateRangePicker } from 'react-dates';
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import 'react-dates/lib/css/_datepicker.css';
+import { confirmAlert } from 'react-confirm-alert';
+import { CSVLink, CSVDownload } from 'react-csv';
+
 moment.locale('vi'); // Polish
 
 const { selectAll } = globalizedUserSelectors;
@@ -77,11 +80,11 @@ const User = props => {
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
-    if(date.endDate && date.startDate){
+    if (date.endDate && date.startDate) {
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getUser(params));
     }
-  }, [date])
+  }, [date]);
 
   useEffect(() => {
     dispatch(reset());
@@ -160,16 +163,61 @@ const User = props => {
     setPrimary(false);
   };
 
-
-
   const memoComputedItems = React.useCallback(items => computedItems(items), [users]);
   const memoListed = React.useMemo(() => memoComputedItems(users), [users]);
+
+
+  const computedExcelItems = items => {
+    return items.map((item, index) => {
+      return {
+        ...item,
+        order: (activePage - 1) * size + index + 1,
+        activated: item.activated ? 'Đang hoạt động' : 'Không hoạt động',
+        department: item.department?.name || '',
+        branch: item.branch?.name || '',
+        name: `${item.lastName || ''} ${item.firstName || ''}`,
+        roles: item.roles.reduce((sum, currentValue) => sum + currentValue.name, ''),
+        ward: item.ward?.name,
+        district: item.district?.name,
+        city: item.city?.name,
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+      };
+    });
+  };
+  const memoExcelComputedItems = React.useCallback(items => computedExcelItems(items), [users]);
+  const memoExcelListed = React.useMemo(() => memoExcelComputedItems(users), [users]);
+
   useEffect(() => {
     if (initialState.updatingSuccess) {
       dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC' }));
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
+
+  const approveAlert = item => () => {
+    confirmAlert({
+      title: 'Xác nhận',
+      message: 'Bạn có chắc chắn muốn cài lại mật khẩu?',
+      buttons: [
+        {
+          label: 'Đồng ý',
+          onClick: onResetPassword(item)
+        },
+        {
+          label: 'Hủy'
+        }
+      ]
+    });
+  };
+
+  const onResetPassword = item => () => {
+    const values = {
+      login: item.login,
+      newPassword: '123456'
+    };
+    dispatch(resetPassword(values));
+  };
+
   return (
     <CCard>
       <CCardHeader>
@@ -181,9 +229,9 @@ const User = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+        <CSVLink headers={fields} data={memoExcelListed} filename={'customer.csv'} className="btn">
+          Tải excel (.csv) ⬇
+        </CSVLink>
         <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>
@@ -370,6 +418,9 @@ const User = props => {
                         </dl>
                       </CCol>
                     </CRow>
+                    <CButton color="primary" onClick={approveAlert(item)}>
+                      Cài lại mật khẩu
+                    </CButton>
                   </CCardBody>
                 </CCollapse>
               );

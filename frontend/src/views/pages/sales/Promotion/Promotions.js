@@ -25,6 +25,7 @@ import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import moment from 'moment';
+import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
 
 const { selectAll } = globalizedPromotionSelectors;
 
@@ -130,27 +131,19 @@ const Promotion = props => {
     history.push(`${props.match.url}/${userId}/longterm`);
   };
 
-  const debouncedSearchColumn =  _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if (!value[key]) delete value[key];
-        });
-        paramRef.current = value;
-        dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300)
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
     debouncedSearchColumn(value);
   };
-
-  useEffect(() => {
-    if (initialState.updatingSuccess) {
-      setPrimary(false);
-      dispatch(getPromotion());
-      dispatch(reset());
-    }
-  }, [initialState.updatingSuccess]);
 
   const lockPromotion = () => {
     dispatch(updatePromotion({ id: selectedPro.current.id, isLock: !selectedPro.current.isLock }));
@@ -191,13 +184,7 @@ const Promotion = props => {
             noItems: 'Không có dữ liệu'
           }}
           // loading
-
-
-
           onPaginationChange={val => setSize(val)}
-
-
-
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
@@ -259,7 +246,7 @@ const Promotion = props => {
               return (
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
-                    <h5>Thông tin người dùng</h5>
+                    <h5>Thông tin chương trình</h5>
                     <CRow>
                       <CCol lg="6">
                         <dl className="row">
@@ -290,6 +277,55 @@ const Promotion = props => {
                         </dl>
                       </CCol>
                     </CRow>
+                    {item.type === 'SHORTTERM' ? (
+                      <Table>
+                        <Thead>
+                          <tr>
+                            <th className="center">#</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Dung tích</th>
+                            <th className="right">Chương trình</th>
+                          </tr>
+                        </Thead>
+                        <Tbody>
+                          {JSON.parse(JSON.stringify(item?.promotionProduct || [])).map((item, index) => {
+                            return (
+                              <Tr key={index}>
+                                <Td> {index + 1}</Td>
+                                <Td>{item?.product?.name}</Td>
+                                <Td>{item?.product?.volume}</Td>
+                                <Td>{`Mua ${item?.buy} tặng ${item?.gift}`}</Td>
+                              </Tr>
+                            );
+                          })}
+                        </Tbody>
+                      </Table>
+                    ) : (
+                      <Table>
+                        <Thead>
+                          <tr>
+                            <th className="center">#</th>
+                            <th>Tên doanh số</th>
+                            <th>Doanh số</th>
+                            <th className="right">Chiết khấu(%)</th>
+                            <th className="right">Nhóm sản phẩm áp dụng</th>
+                          </tr>
+                        </Thead>
+                        <Tbody>
+                          {JSON.parse(JSON.stringify(item?.promotionItems || [])).map((item, index) => {
+                            return (
+                              <Tr key={index}>
+                                <Td> {(activePage - 1) * size + index + 1}</Td>
+                                <Td>{item?.name}</Td>
+                                <Td>{item?.totalMoney} triệu đồng</Td>
+                                <Td>{item?.reducePercent}</Td>
+                                <Td>{item?.productGroup.map(item => item.name).join('')}</Td>
+                              </Tr>
+                            );
+                          })}
+                        </Tbody>
+                      </Table>
+                    )}
                   </CCardBody>
                 </CCollapse>
               );

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
 import Customer from './customer.entity';
@@ -52,6 +52,10 @@ export default class Order extends BaseEntity {
     @ManyToOne(type => Branch)
     branch?: Branch;
 
+
+    @ManyToOne(type => Branch)
+    promotionItem?: PromotionItem;
+
     /**
    * tổng tiền
    */
@@ -75,10 +79,6 @@ export default class Order extends BaseEntity {
 
     @ManyToOne(type => User)
     sale?: User;
-
-    @Column({ type: 'integer', name: 'promotion_item_id', nullable: true })
-    @Index()
-    promotionItem?: PromotionItem;
 
     @Column({ type: 'bigint', name: 'real_money', nullable: true })
     @Index()

@@ -37,8 +37,8 @@ import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
-import '../../../components/table/ResponsiveTable.css'
-const validationSchema = function () {
+import '../../../components/table/ResponsiveTable.css';
+const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object()
       .required('Khách hàng  không để trống')
@@ -50,7 +50,7 @@ const validationSchema = function () {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
-import { useMediaQuery } from 'react-responsive'
+import { useMediaQuery } from 'react-responsive';
 import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 const mappingType = {
@@ -81,14 +81,16 @@ const CreateOrder = props => {
   const promotions = useSelector(selectAllPromotion);
   const warehouses = useSelector(selectAllWarehouse);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
-  const isMobile = useMediaQuery({ maxWidth: '50em' })
+  const isMobile = useMediaQuery({ maxWidth: '50em' });
 
   const [initFormState, setInitFormState] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
+  const [selectedPromotionItem, setSelectedPromotionItem] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [productList, setProductList] = useState([]);
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
+  const [isSelectProItem, setIsSelectProItem] = useState(true);
   const [showProductPromotion, setShowProductPromotion] = useState(false);
   useEffect(() => {
     dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
@@ -99,7 +101,7 @@ const CreateOrder = props => {
       if (Object.keys(data).length > 0) {
         setInitFormState(data);
       }
-    } catch (e) { }
+    } catch (e) {}
   }, []);
 
   useEffect(() => {
@@ -163,7 +165,7 @@ const CreateOrder = props => {
     debouncedSearchPromotion(value);
   };
 
-  const onSubmit = (values, { }) => {
+  const onSubmit = (values, {}) => {
     let isValidProduct = true;
     productList.forEach(element => {
       if (element.quantity > element.quantityInStore) {
@@ -200,6 +202,11 @@ const CreateOrder = props => {
     const copyArr = [...productList];
     copyArr[index].priceReal = Number(value.price);
     copyArr[index].product = value;
+    if (selectedPromotion.type === 'LONGTERM') {
+      if (selectedPromotionItem) {
+        copyArr[index].reducePercent = selectedPromotionItem.reducePercent;
+      }
+    }
     setProductList(copyArr);
     onChangeQuantity({ target: { value: 1 } }, index);
   };
@@ -230,6 +237,13 @@ const CreateOrder = props => {
   }, [selectedWarehouse]);
 
   const onAddProduct = () => {
+    if (selectedPromotion?.type === 'LONGTERM') {
+      if (!selectedPromotionItem) {
+        setIsSelectProItem(false);
+        return;
+      }
+    }
+
     if (selectedWarehouse?.id) {
       const data = { product: {}, quantity: 1, quantityAndGift: 0, reducePercent: 0, priceReal: 0, store: { id: selectedWarehouse.id } };
       setProductList([...productList, data]);
@@ -278,7 +292,7 @@ const CreateOrder = props => {
     const copyArr = [...productList];
     copyArr[index].quantity = Number(target.value).toString();
     copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
-    if (Array.isArray(promotionState.promotionProducts)) {
+    if (Array.isArray(promotionState.promotionProducts) && promotionState.promotionProducts.length > 0) {
       const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
       if (founded.length > 0) {
         if (target.value >= founded[0].buy) {
@@ -467,6 +481,27 @@ const CreateOrder = props => {
                     </dl>
                   </CCol>
                 </CRow>
+                {selectedPromotion?.type === 'LONGTERM' && (
+                  <CFormGroup>
+                    <CRow className="mb-3">
+                      <CCol sm={4}>
+                        <CLabel htmlFor="lastName">Chọn doanh số</CLabel>
+                        <Select
+                          onChange={item => {
+                            setSelectedPromotionItem(item.value);
+                            setFieldValue('promotionItem', item.value);
+                          }}
+                          name="promotion"
+                          options={selectedPromotion.promotionItems?.map(item => ({
+                            value: item,
+                            label: `${item.name}`
+                          }))}
+                        />
+                      </CCol>
+                    </CRow>
+                    {!isSelectProItem && <FormFeedback className="d-block">Bạn phải chọn doanh số</FormFeedback>}
+                  </CFormGroup>
+                )}
                 <CButton
                   color="primary"
                   variant="outline"
@@ -488,6 +523,20 @@ const CreateOrder = props => {
                             <dl className="row" key={index}>
                               <dt className="col-sm-6">{`${item.product.name} ${item.product.volume}ml`}</dt>
                               <dd className="col-sm-6">{`Mua ${item.buy} Tặng ${item.gift}`}</dd>
+                            </dl>
+                          ))}
+                        {Array.isArray(selectedPromotion?.promotionItems) &&
+                          selectedPromotion?.promotionItems.map((item, index) => (
+                            <dl className="row" key={index}>
+                              <dt className="col-sm-6">{`${item.name}`}</dt>
+                              <dt className="col-sm-6">{`Chiết khấu ${item.reducePercent}%`}</dt>
+                              <dd className="col-sm-12">
+                                {item.productGroup.map((pGroup, index) => (
+                                  <dd className="col-sm-12" key={index}>
+                                    {pGroup.name}
+                                  </dd>
+                                ))}
+                              </dd>
                             </dl>
                           ))}
                       </CCol>
@@ -554,10 +603,10 @@ const CreateOrder = props => {
                           key={index}
                           style={
                             item.quantityInStore !== undefined &&
-                              Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
+                            Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
                               ? {
-                                boxShadow: '0px 0px 6px 5px red'
-                              }
+                                  boxShadow: '0px 0px 6px 5px red'
+                                }
                               : {}
                           }
                         >
@@ -695,55 +744,56 @@ const CreateOrder = props => {
                     </CFormGroup>
                   </CCol>
                   <CCol lg="4" sm="5" className="ml-auto">
-                    {!isMobile ? <Table className="table-clear">
-                      <tbody>
-                        <tr>
-                          <td className="left">
-                            <strong>Tổng số lượng</strong>
-                          </td>
-                          <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
-                        </tr>
-                        <tr>
-                          <td className="left">
-                            <strong>Tổng tiền</strong>
-                          </td>
-                          <td className="right">
-                            {productList
-                              .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
-                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="left">
-                            <strong>Chiết khấu</strong>
-                          </td>
-                          <td className="right">
-                            {productList
-                              .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
-                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="left">
-                            <strong>Tiền thanh toán</strong>
-                          </td>
-                          <td className="right">
-                            <strong>
+                    {!isMobile ? (
+                      <Table className="table-clear">
+                        <tbody>
+                          <tr>
+                            <td className="left">
+                              <strong>Tổng số lượng</strong>
+                            </td>
+                            <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
+                          </tr>
+                          <tr>
+                            <td className="left">
+                              <strong>Tổng tiền</strong>
+                            </td>
+                            <td className="right">
                               {productList
-                                .reduce(
-                                  (sum, current) =>
-                                    sum +
-                                    (current.priceReal * current.quantity -
-                                      (current.priceReal * current.quantity * current.reducePercent) / 100),
-                                  0
-                                )
+                                .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                            </strong>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                      :
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="left">
+                              <strong>Chiết khấu</strong>
+                            </td>
+                            <td className="right">
+                              {productList
+                                .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
+                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="left">
+                              <strong>Tiền thanh toán</strong>
+                            </td>
+                            <td className="right">
+                              <strong>
+                                {productList
+                                  .reduce(
+                                    (sum, current) =>
+                                      sum +
+                                      (current.priceReal * current.quantity -
+                                        (current.priceReal * current.quantity * current.reducePercent) / 100),
+                                    0
+                                  )
+                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                              </strong>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </Table>
+                    ) : (
                       <Table className="table-clear">
                         <Thead>
                           <Tr>
@@ -765,7 +815,6 @@ const CreateOrder = props => {
                             </Td>
                           </Tr>
                           <Tr>
-
                             <Td className="right">
                               {productList
                                 .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
@@ -773,7 +822,6 @@ const CreateOrder = props => {
                             </Td>
                           </Tr>
                           <Tr>
-
                             <Td className="right">
                               <strong>
                                 {productList
@@ -790,7 +838,7 @@ const CreateOrder = props => {
                           </Tr>
                         </Tbody>
                       </Table>
-                    }
+                    )}
                     <CFormGroup className="d-flex justify-content-center mt-5">
                       <CButton type="submit" size="lg" className="btn btn-success">
                         {'Tiếp tục'} <CIcon name="cilArrowRight" />

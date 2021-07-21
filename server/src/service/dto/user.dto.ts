@@ -33,11 +33,19 @@ export class UserDTO extends BaseDTO {
 
 export class ChangePasswordDTO {
     @IsString()
-    login: string;
+    login?: string;
 
     @IsString()
-    password: string;
+    password?: string;
 
     @IsString()
-    newPassword: string;
+    newPassword?: string;
+}
+
+export class ResetPasswordDTO {
+    @IsString()
+    login?: string;
+
+    @IsString()
+    newPassword?: string;
 }

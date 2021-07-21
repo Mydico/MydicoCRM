@@ -66,3 +66,13 @@ export const changePassword = createAsyncThunk('api/changePassword/users', async
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
+
+export const resetPassword = createAsyncThunk('api/resetPassword/users', async (body, thunkAPI) => {
+  try {
+    const result = await axios.put('api/users/reset-password', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

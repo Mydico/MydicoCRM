@@ -8,13 +8,15 @@ import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
-import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
+import { Td } from 'react-super-responsive-table';
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import { CLabel } from '@coreui/react';
 import AdvancedTable from '../../../components/table/AdvancedTable';
+import { CSVLink } from 'react-csv';
+
 const { selectAll } = globalizedCustomerSelectors;
 // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
 const fields = [
@@ -136,6 +138,22 @@ const Customer = props => {
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(customers), [customers]);
+
+  const computedExcelItems = items => {
+    return items.map((item, index) => {
+      return {
+        ...item,
+        order: (activePage - 1) * size + index + 1,
+        typeName: item.type?.code,
+        department: item.department?.code || '',
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+        sale: item.sale?.code || ''
+      };
+    });
+  };
+  const memoExcelComputedItems = React.useCallback(items => computedExcelItems(items), [customers]);
+  const memoExcelListed = React.useMemo(() => memoExcelComputedItems(customers), [customers]);
+
   return (
     <CCard>
       <CCardHeader>
@@ -147,9 +165,9 @@ const Customer = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+        <CSVLink headers={fields} data={memoExcelListed} filename={'customer.csv'} className="btn">
+          Tải excel (.csv) ⬇
+        </CSVLink>
         <CRow className="ml-0 mt-4">
           <CLabel>Tổng :</CLabel>
           <strong>{`\u00a0\u00a0${initialState.totalItem}`}</strong>

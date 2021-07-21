@@ -16,7 +16,7 @@ relationshipNames.push('customer');
 relationshipNames.push('transporter');
 relationshipNames.push('order');
 relationshipNames.push('store');
-  
+
 @Injectable()
 export class BillService {
   logger = new Logger('BillService');
@@ -27,7 +27,7 @@ export class BillService {
 
     @Inject(forwardRef(() => OrderService))
     private readonly orderService: OrderService,
-  ) {}
+  ) { }
 
   async findById(id: string): Promise<Bill | undefined> {
     const options = { relations: relationshipNames };
@@ -57,7 +57,7 @@ export class BillService {
         .replace(']', ')')}`;
     }
     if (req.query['endDate'] && req.query['startDate']) {
-      queryString += ` ${queryString.length === 0? "":" AND "}  Bill.createdDate  >= '${req['startDate']}' AND  Bill.createdDate <= '${req['endDate']} 24:00:00'`;
+      queryString += ` ${queryString.length === 0 ? "" : " AND "}  Bill.createdDate  >= '${req['startDate']}' AND  Bill.createdDate <= '${req['endDate']} 24:00:00'`;
     }
     const queryBuilder = this.billRepository
       .createQueryBuilder('Bill')
@@ -90,7 +90,7 @@ export class BillService {
         this.orderService.updateStatus({ id: bill.order.id, status: OrderStatus.COD_APPROVED });
         break;
       case BillStatus.CANCEL:
-        this.orderService.updateStatus({ id: bill.order.id, status: OrderStatus.COD_CANCEL});
+        this.orderService.updateStatus({ id: bill.order.id, status: OrderStatus.COD_CANCEL });
         break;
       case BillStatus.REJECTED:
         this.orderService.updateStatus({ id: bill.order.id, status: OrderStatus.REJECTED });
@@ -100,6 +100,9 @@ export class BillService {
         break;
       case BillStatus.SUCCESS:
         this.orderService.updateStatus({ id: bill.order.id, status: OrderStatus.SUCCESS });
+        break;
+      case BillStatus.CREATED:
+        this.orderService.updateStatus({ id: bill.order.id, status: OrderStatus.CREATED });
         break;
       case BillStatus.SUPPLY_WAITING:
         this.orderService.updateStatus({ id: bill.order.id, status: OrderStatus.SUPPLY_WAITING });

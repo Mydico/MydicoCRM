@@ -76,7 +76,7 @@ export const AdvancedTable = props => {
     const [columnFilterState, setColumnFilterState] = useState(columnFilterValue || {})
     const [page, setPage] = useState(activePage || 1)
     const [passedItems, setPassedItems] = useState(items || [])
-    const isMobile = useMediaQuery({ maxWidth: '40em' })
+    const isMobile = useMediaQuery({ maxWidth: '50em' })
     // functions
 
     const cellClass = (item, colName, index) => {

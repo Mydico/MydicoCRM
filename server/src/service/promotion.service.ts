@@ -11,7 +11,10 @@ const relationshipNames = [];
 // relationshipNames.push('product');
 relationshipNames.push('customerType');
 relationshipNames.push('promotionItems');
+relationshipNames.push('promotionItems.productGroup');
 relationshipNames.push('promotionProduct');
+relationshipNames.push('promotionProduct.product');
+
 @Injectable()
 export class PromotionService {
     logger = new Logger('PromotionService');
