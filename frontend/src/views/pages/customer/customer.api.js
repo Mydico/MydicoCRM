@@ -11,7 +11,16 @@ export const getCustomer = createAsyncThunk('api/customers', async (params = {pa
 });
 
 
-export const filterCustomer = createAsyncThunk('api/customers', async (params = {page: 0, size: 50, sort: 'createdDate,DESC'}, thunkAPI) => {
+export const filterCustomer = createAsyncThunk('api/customers/find', async (params = {page: 0, size: 50, sort: 'createdDate,DESC'}, thunkAPI) => {
+  try {
+    const result = await axios.get('api/customers/find', {params: params});
+    return {data: result.data, total: result.headers['x-total-count']};
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const filterCustomerNotToStore = createAsyncThunk('api/customers/filterCustomerNotToStore', async (params = {page: 0, size: 50, sort: 'createdDate,DESC'}, thunkAPI) => {
   try {
     const result = await axios.get('api/customers/find', {params: params});
     return {data: result.data, total: result.headers['x-total-count']};
@@ -53,6 +62,15 @@ export const creatingCustomer = createAsyncThunk('api/create/customers', async (
 export const updateCustomer = createAsyncThunk('api/update/customers', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/customers', body);
+    return {data: result.data, headers: result.headers, statusCode: result.status};
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const updateManyCustomer = createAsyncThunk('api/update/customers/many', async (body, thunkAPI) => {
+  try {
+    const result = await axios.put('api/customers/many', body);
     return {data: result.data, headers: result.headers, statusCode: result.status};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

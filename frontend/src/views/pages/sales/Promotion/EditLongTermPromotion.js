@@ -236,8 +236,7 @@ const EditPromotion = props => {
                         custom
                         id="isLock"
                         name="isLock"
-                        valid={!errors.isLock}
-                        invalid={touched.isLock && !!errors.isLock}
+                        checked={values.isLock}
                         onChange={handleChange}
                         onBlur={handleBlur}
                       />

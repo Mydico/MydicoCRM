@@ -243,9 +243,8 @@ const EditPromotion = props => {
                       <CInputCheckbox
                         custom
                         id="isLock"
+                        checked={values.isLock}
                         name="isLock"
-                        valid={!errors.isLock}
-                        invalid={touched.isLock && !!errors.isLock}
                         onChange={handleChange}
                         onBlur={handleBlur}
                       />

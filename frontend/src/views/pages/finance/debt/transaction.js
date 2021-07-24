@@ -90,7 +90,6 @@ const Transaction = props => {
     });
     dispatch(getCustomerTotalDebit({ id: props.match.params.id, dependency: true })).then(resp => {
       if(resp && resp.payload){
-        console.log(resp.payload)
         setDebt(resp.payload.sum);
       }
     })

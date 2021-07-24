@@ -72,6 +72,8 @@ const ProductWarehouse = loadable(() => import('./views/pages/warehouse/Product/
 const User = loadable(() => import('./views/pages/user/UserList/user'));
 const CreateUser = loadable(() => import('./views/pages/user/UserList/create-user'));
 const EditUser = loadable(() => import('./views/pages/user/UserList/edit-user'));
+const ViewUser = loadable(() => import('./views/pages/user/UserList/view-user'));
+const CustomerUser = loadable(() => import('./views/pages/user/UserList/customer-user'));
 
 const UserRole = loadable(() => import('./views/pages/user/UserRole/user-roles'));
 const CreateUserRole = loadable(() => import('./views/pages/user/UserRole/create-user-role'));
@@ -172,6 +174,8 @@ const routes = [
   {path: '/product-quantities/', name: 'Sản phẩm trong kho', component: ProductWarehouse, exact: true},
   {path: '/users/', name: 'Người dùng', component: User, exact: true},
   {path: '/users/:id/edit', name: 'Chỉnh sửa', component: EditUser},
+  {path: '/users/:id/view', name: 'Xem chi tiết', component: ViewUser, exact: true},
+  {path: '/users/:id/view/customer', name: 'Xem chi tiết', component: CustomerUser},
   {path: '/users/new', name: 'Tạo mới', component: CreateUser},
   {path: '/user-roles/', name: 'chức vụ', component: UserRole, exact: true},
   {path: '/user-roles/:id/edit', name: 'Chỉnh sửa', component: EditUserRole},

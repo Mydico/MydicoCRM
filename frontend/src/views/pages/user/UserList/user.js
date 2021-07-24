@@ -62,6 +62,24 @@ const getBadge = status => {
 const { selectAll: selectAllBranch } = globalizedBranchSelectors;
 const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
 
+const computedExcelItems = items => {
+  return items.map((item, index) => {
+    return {
+      ...item,
+      order:  index + 1,
+      activated: item.activated ? 'Đang hoạt động' : 'Không hoạt động',
+      department: item.department?.name || '',
+      branch: item.branch?.name || '',
+      name: `${item.lastName || ''} ${item.firstName || ''}`,
+      roles: item.roles?.reduce((sum, currentValue) => sum + currentValue.name, '') || '',
+      ward: item.ward?.name,
+      district: item.district?.name,
+      city: item.city?.name,
+      createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+    };
+  });
+};
+
 const User = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
@@ -167,23 +185,6 @@ const User = props => {
   const memoListed = React.useMemo(() => memoComputedItems(users), [users]);
 
 
-  const computedExcelItems = items => {
-    return items.map((item, index) => {
-      return {
-        ...item,
-        order: (activePage - 1) * size + index + 1,
-        activated: item.activated ? 'Đang hoạt động' : 'Không hoạt động',
-        department: item.department?.name || '',
-        branch: item.branch?.name || '',
-        name: `${item.lastName || ''} ${item.firstName || ''}`,
-        roles: item.roles.reduce((sum, currentValue) => sum + currentValue.name, ''),
-        ward: item.ward?.name,
-        district: item.district?.name,
-        city: item.city?.name,
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
-      };
-    });
-  };
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(items), [users]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(users), [users]);
 
@@ -216,6 +217,10 @@ const User = props => {
       newPassword: '123456'
     };
     dispatch(resetPassword(values));
+  };
+
+  const toDetailUser = id => {
+    history.push(`${props.match.url}/${id}/view`);
   };
 
   return (
@@ -288,6 +293,9 @@ const User = props => {
           loading={initialState.loading}
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
+          onRowClick={val => {
+            toDetailUser(val.login)
+          }}
           columnFilterSlot={{
             department: (
               <div style={{ minWidth: 200 }}>
@@ -334,7 +342,7 @@ const User = props => {
                 {item.lastName || ''} {item.firstName || ''}
               </td>
             ),
-            roles: item => <td>{item.roles.reduce((sum, currentValue) => sum + currentValue.name, '')}</td>,
+            roles: item => <td>{item.roles?.reduce((sum, currentValue) => sum + currentValue.name, '') || ''}</td>,
             show_details: item => {
               return (
                 <td className="d-flex py-2">
@@ -345,7 +353,8 @@ const User = props => {
                       shape="square"
                       size="sm"
                       className="mr-3"
-                      onClick={() => {
+                      onClick={event => {
+                        event.stopPropagation();
                         toEditUser(item.login);
                       }}
                     >
@@ -358,7 +367,8 @@ const User = props => {
                     shape="square"
                     size="sm"
                     className="mr-3"
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.stopPropagation();
                       toggleDetails(item.id);
                     }}
                   >
@@ -369,7 +379,8 @@ const User = props => {
                     variant="outline"
                     shape="square"
                     size="sm"
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.stopPropagation();
                       selectedPro.current = { id: item.id, activated: item.activated, login: item.login };
                       setPrimary(!primary);
                     }}

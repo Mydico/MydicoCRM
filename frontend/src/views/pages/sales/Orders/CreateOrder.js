@@ -36,7 +36,7 @@ import { FormFeedback, Table } from 'reactstrap';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import { Td, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
+import { Td, Table as TableResponsive, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
 import '../../../components/table/ResponsiveTable.css';
 const validationSchema = function() {
   return Yup.object().shape({
@@ -81,7 +81,7 @@ const CreateOrder = props => {
   const promotions = useSelector(selectAllPromotion);
   const warehouses = useSelector(selectAllWarehouse);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
-  const isMobile = useMediaQuery({ maxWidth: '50em' });
+  const isMobile = useMediaQuery({ maxWidth: '40em' });
 
   const [initFormState, setInitFormState] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -369,7 +369,7 @@ const CreateOrder = props => {
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-primary">
               <CCardHeader>
-                <CCardTitle>Thông tin khách hàng</CCardTitle>
+                <CCardTitle className="text-primary">Thông tin khách hàng</CCardTitle>
               </CCardHeader>
 
               <CCardBody>
@@ -440,7 +440,7 @@ const CreateOrder = props => {
             </CCard>
             <CCard className="card-accent-info">
               <CCardHeader>
-                <CCardTitle>Chương trình khuyến mại</CCardTitle>
+                <CCardTitle className="text-primary">Chương trình khuyến mại</CCardTitle>
               </CCardHeader>
               <CCardBody>
                 <CFormGroup>
@@ -555,7 +555,7 @@ const CreateOrder = props => {
             </CCard>
             <CCard className="card-accent-info">
               <CCardHeader>
-                <CCardTitle>Kho hàng</CCardTitle>
+                <CCardTitle className="text-primary">Kho hàng</CCardTitle>
               </CCardHeader>
               <CCardBody>
                 <CRow className="mb-3">
@@ -591,7 +591,7 @@ const CreateOrder = props => {
 
             <CCard>
               <CCardBody>
-                <Table responsive striped className="table-responsive table table-striped">
+                <Table responsive striped>
                   <thead>
                     <tr>
                       <th>Sản phẩm</th>
@@ -617,7 +617,7 @@ const CreateOrder = props => {
                               : {}
                           }
                         >
-                          <td>
+                          <td className="text-info">
                             {`${item.product.productBrand?.code || ''}-${item.product.name || ''}-${item.product.volume || ''}`}
                             {/* <Select
                               value={{
@@ -728,7 +728,7 @@ const CreateOrder = props => {
             </CCard>
             <CCard>
               <CCardHeader>
-                <CCardTitle>Thông tin khác</CCardTitle>
+                <CCardTitle className="text-primary">Thông tin khác</CCardTitle>
               </CCardHeader>
               <CCardBody>
                 <CRow>
@@ -813,7 +813,7 @@ const CreateOrder = props => {
                         </tbody>
                       </Table>
                     ) : (
-                      <Table className="table-clear">
+                      <TableResponsive className="table-clear">
                         <Thead>
                           <Tr>
                             <Th>Tổng số lượng</Th>
@@ -824,23 +824,17 @@ const CreateOrder = props => {
                         </Thead>
                         <Tbody>
                           <Tr>
-                            <Td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</Td>
-                          </Tr>
-                          <Tr>
+                            <Td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || '0'}</Td>
                             <Td className="right">
                               {productList
                                 .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                             </Td>
-                          </Tr>
-                          <Tr>
                             <Td className="right">
                               {productList
                                 .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                             </Td>
-                          </Tr>
-                          <Tr>
                             <Td className="right">
                               <strong>
                                 {productList
@@ -853,10 +847,10 @@ const CreateOrder = props => {
                                   )
                                   .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                               </strong>
-                            </Td>
+                              </Td>
                           </Tr>
                         </Tbody>
-                      </Table>
+                      </TableResponsive>
                     )}
                     <CFormGroup className="d-flex justify-content-center mt-5">
                       <CButton type="submit" size="lg" className="btn btn-success">
