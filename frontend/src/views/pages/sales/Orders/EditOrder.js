@@ -85,7 +85,7 @@ const EditOrder = props => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const isMobile = useMediaQuery({ maxWidth: '50em' })
+  const isMobile = useMediaQuery({ maxWidth: '40em' })
 
   const promotions = useSelector(selectAllPromotion);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);

@@ -19,7 +19,7 @@ import 'react-dates/initialize';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import 'react-dates/lib/css/_datepicker.css';
 import { confirmAlert } from 'react-confirm-alert';
-import { CSVLink, CSVDownload } from 'react-csv';
+import { CSVLink } from 'react-csv';
 
 moment.locale('vi'); // Polish
 

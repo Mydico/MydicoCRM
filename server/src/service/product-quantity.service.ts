@@ -63,7 +63,7 @@ export class ProductQuantityService {
       if (item === 'store') {
         queryString += `AND ProductQuantity.store = ${filter[item]} `;
       } else {
-        queryString += ` AND product.${item} like '%${filter[item]}%'`;
+        queryString += ` AND ProductQuantity.${item} like '%${filter[item]}%'`;
       }
     });
     if (departmentVisible.length > 0) {

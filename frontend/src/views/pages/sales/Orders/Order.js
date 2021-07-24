@@ -16,7 +16,7 @@ import Select from 'react-select';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district';
 import AdvancedTable from '../../../components/table/AdvancedTable';
-import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
+import { Td, Table, Thead, Th, Tr, Tbody } from '../../../components/super-responsive-table';
 import { useMediaQuery } from 'react-responsive';
 import { CSVLink } from 'react-csv';
 
@@ -136,7 +136,7 @@ const Order = props => {
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const orders = useSelector(selectAll);
-  const isMobile = useMediaQuery({ maxWidth: '50em' });
+  const isMobile = useMediaQuery({ maxWidth: '40em' });
 
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
@@ -354,7 +354,7 @@ const Order = props => {
     switch (item.status) {
       case OrderStatus.WAITING:
         return (
-          <CCol>
+          <CRow>
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/approve').length > 0) && (
               <CButton
                 onClick={event => {
@@ -406,7 +406,7 @@ const Order = props => {
                 CHỈNH SỬA
               </CButton>
             )}
-          </CCol>
+          </CRow>
         );
       case OrderStatus.APPROVED:
         return (
@@ -669,7 +669,7 @@ const Order = props => {
             },
             action: item => {
               return (
-                <Td className="py-2 d-flex flex-row" style={{ minHeight: 40 }}>
+                <Td className="py-2 d-flex flex-row" style={{ minHeight: 40,  minWidth: isMobile ?200:400,}}>
                   {renderButtonStatus(item)}
                 </Td>
               );

@@ -32,11 +32,11 @@ import { getWarehouse } from '../../warehouse/Warehouse/warehouse.api';
 import { getDetailProductPromotion } from '../Promotion/promotion.api';
 import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
 import { filterProductInStore, getProductInstore, getProductWarehouse } from '../../warehouse/Product/product-warehouse.api';
-import { FormFeedback } from 'reactstrap';
+import { FormFeedback, Table } from 'reactstrap';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
+import { Td, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
 import '../../../components/table/ResponsiveTable.css';
 const validationSchema = function() {
   return Yup.object().shape({
@@ -198,17 +198,25 @@ const CreateOrder = props => {
     }
   };
 
-  const onSelectedProduct = ({ value }, index) => {
+  const onSelectedProduct = ({ value }) => {
     const copyArr = [...productList];
-    copyArr[index].priceReal = Number(value.price);
-    copyArr[index].product = value;
-    if (selectedPromotion.type === 'LONGTERM') {
+    const data = {
+      product: value,
+      quantity: 1,
+      quantityAndGift: 0,
+      reducePercent: 0,
+      priceReal: Number(value.price),
+      store: { id: selectedWarehouse.id }
+    };
+    // copyArr[index].priceReal = Number(value.price);
+    // copyArr[index].product = value;
+    if (selectedPromotion && selectedPromotion.type === 'LONGTERM') {
       if (selectedPromotionItem) {
-        copyArr[index].reducePercent = selectedPromotionItem.reducePercent;
+        data.reducePercent = selectedPromotionItem.reducePercent;
       }
     }
-    setProductList(copyArr);
-    onChangeQuantity({ target: { value: 1 } }, index);
+    setProductList([...copyArr, data]);
+    // onChangeQuantity({ target: { value: 1 } }, index);
   };
 
   const onSelectWarehouse = value => {
@@ -584,22 +592,21 @@ const CreateOrder = props => {
             <CCard>
               <CCardBody>
                 <Table responsive striped className="table-responsive table table-striped">
-                  <Thead>
-                    <Tr>
-                      <Th>Sản phẩm</Th>
-                      <Th>Đơn vị</Th>
-                      <Th>Dung tích</Th>
-                      <Th>Số lượng</Th>
-                      <Th>Đơn giá</Th>
-                      <Th>Thành tiền</Th>
-                      <Th>Chiết khấu</Th>
-                      <Th>Thanh toán</Th>
-                    </Tr>
-                  </Thead>
+                  <thead>
+                    <tr>
+                      <th>Sản phẩm</th>
+                      <th>Dung tích</th>
+                      <th>Số lượng</th>
+                      <th>Đơn giá</th>
+                      <th>Thành tiền</th>
+                      <th>Chiết khấu</th>
+                      <th>Thanh toán</th>
+                    </tr>
+                  </thead>
                   <Tbody>
                     {productList.map((item, index) => {
                       return (
-                        <Tr
+                        <tr
                           key={index}
                           style={
                             item.quantityInStore !== undefined &&
@@ -610,8 +617,9 @@ const CreateOrder = props => {
                               : {}
                           }
                         >
-                          <Td style={{ minWidth: 300 }}>
-                            <Select
+                          <td>
+                            {`${item.product.productBrand?.code || ''}-${item.product.name || ''}-${item.product.volume || ''}`}
+                            {/* <Select
                               value={{
                                 value: item.product,
                                 label: `${item.product.productBrand?.code || ''}-${item.product.name || ''}-${item.product.volume || ''}`
@@ -623,11 +631,10 @@ const CreateOrder = props => {
                                 value: item.product,
                                 label: `${item.product.productBrand?.code}-[${item.product?.code}]-${item.product.name}-${item.product.volume}`
                               }))}
-                            />
-                          </Td>
-                          <Td>{item.product?.unit}</Td>
-                          <Td>{item.product?.volume}</Td>
-                          <Td style={{ minWidth: 100 }}>
+                            /> */}
+                          </td>
+                          <td>{item.product?.volume}</td>
+                          <td style={{ width: 80 }}>
                             <CInput
                               type="number"
                               min="0"
@@ -641,8 +648,8 @@ const CreateOrder = props => {
                               Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore && (
                                 <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
                               )}
-                          </Td>
-                          <Td style={{ minWidth: 200 }}>
+                          </td>
+                          <td style={{ minWidth: 100 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}
@@ -655,15 +662,15 @@ const CreateOrder = props => {
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
-                          </Td>
-                          <Td>
+                          </td>
+                          <td style={{maxWidth: 100}}>
                             {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                               style: 'currency',
                               currency: 'VND'
                             }) || ''}
-                          </Td>
+                          </td>
 
-                          <Td style={{ minWidth: 100 }}>
+                          <td style={{ width: 80 }}>
                             <CInput
                               type="number"
                               min={0}
@@ -673,8 +680,8 @@ const CreateOrder = props => {
                               onBlur={handleBlur}
                               value={item.reducePercent}
                             />
-                          </Td>
-                          <Td>
+                          </td>
+                          <td style={{maxWidth: 100}}>
                             {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
                               'it-IT',
                               {
@@ -682,8 +689,8 @@ const CreateOrder = props => {
                                 currency: 'VND'
                               }
                             ) || ''}
-                          </Td>
-                          <Td style={{ minWidth: 100 }}>
+                          </td>
+                          <td>
                             <CButton
                               color="danger"
                               variant="outline"
@@ -694,17 +701,29 @@ const CreateOrder = props => {
                             >
                               <CIcon name="cilXCircle" />
                             </CButton>
-                          </Td>
-                        </Tr>
+                          </td>
+                        </tr>
                       );
                     })}
                   </Tbody>
                 </Table>
-
-                <CButton color="primary" variant="outline" shape="square" size="sm" className="mb-3" onClick={onAddProduct}>
+                {selectedWarehouse && (
+                  <Select
+                    onInputChange={onSearchProduct}
+                    onChange={event => onSelectedProduct(event)}
+                    menuPortalTarget={document.body}
+                    className="mt-3"
+                    placeholder="Chọn sản phẩm"
+                    options={productInWarehouses.map(item => ({
+                      value: item.product,
+                      label: `${item.product.productBrand?.code}-[${item.product?.code}]-${item.product.name}-${item.product.volume}`
+                    }))}
+                  />
+                )}
+                {/* <CButton color="primary" variant="outline" shape="square" size="sm" className="mb-3" onClick={onAddProduct}>
                   <CIcon name={'cilArrowCircleRight'} className="mr-2" />
                   Thêm sản phẩm
-                </CButton>
+                </CButton> */}
               </CCardBody>
             </CCard>
             <CCard>

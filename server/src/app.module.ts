@@ -55,6 +55,8 @@ import { DebtDashboardModule } from './module/debt-dashboard.module';
 import { BranchModule } from './module/branch.module';
 import { RedisQueryResultCache } from './service/query/custom-query.cache';
 import { ReportModule } from './module/report.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './module/task.module';
 
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
@@ -70,8 +72,10 @@ import { ReportModule } from './module/report.module';
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, './', 'classes/static'),
         }),
+        ScheduleModule.forRoot(),
         RoleModule.forRootAsync(roleBDConfig, path.join(__dirname, '/acl-model.conf')),
         AuthModule,
+        TasksModule,
         CustomerTokenModule,
         PromotionModule,
         OrderModule,

@@ -15,8 +15,9 @@ export class CronJobService {
         const currentDate = new Date().toISOString().split("T")[0]
         await this.promotionRepository
             .createQueryBuilder('Promotion')
-            .where(`UPDATE Promotion SET isLock = true WHERE endTime < ${currentDate}`).execute()
-
-
+            .update()
+            .set({ isLock: true })
+            .where(`endTime < :channelId`, { channelId: currentDate})
+            .execute();
     }
 }

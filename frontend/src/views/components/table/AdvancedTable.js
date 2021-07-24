@@ -7,7 +7,7 @@ import CIcon from '@coreui/icons-react'
 import { cilArrowTop, cilBan, cilFilterX } from '@coreui/icons'
 import style from './AdvancedTable.module.css'
 import './AdvancedTable.css'
-import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
+import { Table, Thead, Tbody, Tr, Th, Td } from '../super-responsive-table';
 import './ResponsiveTable.css';
 import { CElementCover, CPagination, CCol, CLabel, CInput } from '@coreui/react/lib'
 import { useMediaQuery } from 'react-responsive'
@@ -76,7 +76,7 @@ export const AdvancedTable = props => {
     const [columnFilterState, setColumnFilterState] = useState(columnFilterValue || {})
     const [page, setPage] = useState(activePage || 1)
     const [passedItems, setPassedItems] = useState(items || [])
-    const isMobile = useMediaQuery({ maxWidth: '50em' })
+    const isMobile = useMediaQuery({ maxWidth: '40em' })
     // functions
 
     const cellClass = (item, colName, index) => {
