@@ -118,7 +118,8 @@ const EditOrder = props => {
   useEffect(() => {
     if (Array.isArray(initialState.orderDetails)) {
       const productArr = JSON.parse(JSON.stringify(initialState.orderDetails));
-
+      setProductList(productArr)
+      const copyArr = [...productArr]
       if (initialState.orderDetails.length > 0) {
         dispatch(
           getProductWarehouseByField({
@@ -129,13 +130,13 @@ const EditOrder = props => {
         ).then(numberOfQuantityInStore => {
           if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
             numberOfQuantityInStore.payload.forEach(element => {
-              const foundedIndex = productArr.findIndex(item => item.product.id === element.product.id);
+              const foundedIndex = copyArr.findIndex(item => item.product.id === element.product.id);
               if (foundedIndex !== -1) {
-                productArr[foundedIndex].quantityInStore = element.quantity;
+                copyArr[foundedIndex].quantityInStore = element.quantity;
               }
             });
           }
-          setProductList(productArr);
+          setProductList(copyArr);
         });
       }
     }
@@ -143,6 +144,10 @@ const EditOrder = props => {
 
   const onSubmit = (values, { }) => () => {
     values = JSON.parse(JSON.stringify(values));
+    if(productList.filter(item => item.quantity > item.quantityInStore).length > 0){
+      alert("Vui lòng chọn lại số lương sản phẩm")
+      return
+    }
     if (!values.address) values.address = selectedCustomer.address;
     if (selectedPromotion) {
       values.promotion = selectedPromotion;
@@ -256,7 +261,6 @@ const EditOrder = props => {
 
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
-    console.log(target.value)
     copyArr[index].quantity = Number(target.value).toString();
     copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
     if (Array.isArray(promotionState.promotionProducts) && copyArr[index].attachTo === null) {
@@ -561,7 +565,7 @@ const EditOrder = props => {
                           key={index}
                           style={
                             item.quantityInStore !== undefined &&
-                              Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
+                              Number(item.quantity) > item.quantityInStore
                               ? {
                                 boxShadow: '0px 0px 6px 5px red'
                               }

@@ -112,6 +112,7 @@ export class UserController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async createUser(@Res() res: Response, @Body() user: User): Promise<Response> {
+    user.password = '123456';
     const created = await this.userService.save(user);
     HeaderUtil.addEntityCreatedHeaders(res, 'User', created.id);
     return res.send(created);

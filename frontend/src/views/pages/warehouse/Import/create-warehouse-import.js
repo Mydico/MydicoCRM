@@ -232,7 +232,7 @@ const CreateWarehouse = () => {
                               menuPortalTarget={document.body}
                               options={products.map(item => ({
                                 value: item,
-                                label: `${item?.productBrand?.name}${item?.code}-${item?.name}-${item?.volume}`
+                                label: `${item?.code}-${item?.name}-${item?.volume}`
                               }))}
                             />
                           </td>

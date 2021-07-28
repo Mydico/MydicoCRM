@@ -30,6 +30,56 @@ export class CustomerService {
     return await this.customerRepository.findOne(options);
   }
 
+  async filterExact(
+    options: FindManyOptions<Customer>,
+    filter = {},
+    departmentVisible = [],
+  ): Promise<[Customer[], number]> {
+    options.cache = 3600000;
+    let queryString = '';
+    const length = Object.keys(filter).includes('sale') ? Object.keys(filter).length - 1 : Object.keys(filter).length;
+    Object.keys(filter).forEach((item, index) => {
+      if (item === 'sale') return;
+      if (item === 'branch') return;
+      queryString += `Customer.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'AND '}`;
+    });
+    let andQueryString = '1=1 ';
+
+    if (departmentVisible.length > 0) {
+      andQueryString += `AND Customer.department IN ${JSON.stringify(departmentVisible)
+        .replace('[', '(')
+        .replace(']', ')')}`;
+    }
+
+    if (filter['sale']) {
+      andQueryString += ` AND Customer.sale = ${filter['sale']}`;
+    }
+    if (filter['branch']) {
+      andQueryString += ` AND Customer.branch = ${filter['branch']}`;
+    }
+    const queryBuilder = this.customerRepository
+      .createQueryBuilder('Customer')
+      .leftJoinAndSelect('Customer.status', 'status')
+      .leftJoinAndSelect('Customer.type', 'type')
+      .leftJoinAndSelect('Customer.department', 'department')
+      .leftJoinAndSelect('Customer.sale', 'sale')
+      .where(andQueryString)
+      .orderBy(`Customer.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take)
+
+    const count = this.customerRepository
+      .createQueryBuilder('Customer')
+      .where(andQueryString)
+      .orderBy(`Customer.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take)
+
+    const result = await queryBuilder.getManyAndCount();
+    result[1] = await count.getCount();
+    return result;
+  }
+
   async filter(
     options: FindManyOptions<Customer>,
     filter = {},
@@ -213,6 +263,12 @@ export class CustomerService {
 
   async update(customer: Customer, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Customer | undefined> {
     return await this.save(customer, departmentVisible, isEmployee, currentUser);
+  }
+
+  async saveMany(customers: Customer[]): Promise<Customer[] | undefined> {
+    const cacheKeyBuilder = `get_customers_department`;
+    await this.customerRepository.removeCache([cacheKeyBuilder, 'Customer']);
+    return await this.customerRepository.save(customers);
   }
 
   async delete(customer: Customer): Promise<Customer | undefined> {

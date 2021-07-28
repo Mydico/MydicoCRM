@@ -22,7 +22,7 @@ export const filterCustomer = createAsyncThunk('api/customers/find', async (para
 
 export const filterCustomerNotToStore = createAsyncThunk('api/customers/filterCustomerNotToStore', async (params = {page: 0, size: 50, sort: 'createdDate,DESC'}, thunkAPI) => {
   try {
-    const result = await axios.get('api/customers/find', {params: params});
+    const result = await axios.get('api/customers/find/exact', {params: params});
     return {data: result.data, total: result.headers['x-total-count']};
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

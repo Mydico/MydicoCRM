@@ -20,7 +20,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { In, Like } from 'typeorm';
+import { Equal, In, Like } from 'typeorm';
 import { User } from '../../domain/user.entity';
 import { DepartmentService } from '../../service/department.service';
 import { ProductStatus } from '../../domain/enumeration/product-status';
@@ -69,13 +69,14 @@ export class ProductQuantityController {
           if (Array.isArray(arr)) {
             filter[item] = In(arr);
           } else {
-            filter[item] = Like(`%${req.query[item]}%`);
+            filter[item] = Equal(`${req.query[item]}`);
           }
         } catch (e) {
           filter[item] = Like(`%${req.query[item]}%`);
         }
       }
     });
+    console.log(filter)
     const results = await this.productQuantityService.findByfields({
       where: {
         ...filter

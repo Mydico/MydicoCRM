@@ -173,6 +173,11 @@ const CreateOrder = props => {
         return;
       }
     });
+    if(productList
+      .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)  === 0){
+        alert("Không để tổng số lượng bằng 0")
+        return
+      }
     if (!isValidProduct) return;
     if (!values.address) values.address = selectedCustomer.address;
     values.customer = selectedCustomer;
@@ -202,7 +207,7 @@ const CreateOrder = props => {
     const copyArr = [...productList];
     const data = {
       product: value,
-      quantity: 1,
+      quantity: 0,
       quantityAndGift: 0,
       reducePercent: 0,
       priceReal: Number(value.price),
@@ -617,7 +622,7 @@ const CreateOrder = props => {
                               : {}
                           }
                         >
-                          <td className="text-info">
+                          <td className="text-info" style={{ maxWidth: 200 }}>
                             {`${item.product.productBrand?.code || ''}-${item.product.name || ''}-${item.product.volume || ''}`}
                             {/* <Select
                               value={{
@@ -716,7 +721,7 @@ const CreateOrder = props => {
                     placeholder="Chọn sản phẩm"
                     options={productInWarehouses.map(item => ({
                       value: item.product,
-                      label: `${item.product.productBrand?.code}-[${item.product?.code}]-${item.product.name}-${item.product.volume}`
+                      label: `[${item.product?.code}]-${item.product.name}-${item.product.volume}`
                     }))}
                   />
                 )}

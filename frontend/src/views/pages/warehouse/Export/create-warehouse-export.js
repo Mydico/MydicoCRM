@@ -371,7 +371,7 @@ const CreateReceipt = () => {
                               menuPortalTarget={document.body}
                               options={products.map(item => ({
                                 value: item.product,
-                                label: `${item?.product?.productBrand?.name}-${item?.product?.name}-${item?.product?.volume}`
+                                label: `${item?.product?.code}-${item?.product?.name}-${item?.product?.volume}`
                               }))}
                             />
                           </td>

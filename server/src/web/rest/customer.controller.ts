@@ -110,6 +110,37 @@ export class CustomerController {
         return res.send(results);
     }
 
+    @Get('/find/exact')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'List all records',
+        type: Customer,
+    })
+    async findExact(@Req() req: Request, @Res() res): Promise<Customer[]> {
+        const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+        const filter: any = {};
+        Object.keys(req.query).forEach(item => {
+            if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency') {
+                filter[item] = req.query[item];
+            }
+        });
+
+        const currentUser = req.user as User;
+        let departmentVisible: any = [currentUser.department.id];
+        const [results, count] = await this.customerService.filterExact(
+            {
+                skip: +pageRequest.page * pageRequest.size,
+                take: +pageRequest.size,
+                order: pageRequest.sort.asOrder(),
+            },
+            filter,
+            departmentVisible,
+        );
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+        return res.send(results);
+    }
+
     @Get('/')
     @Roles(RoleType.USER)
     @ApiResponse({
@@ -204,6 +235,19 @@ export class CustomerController {
         HeaderUtil.addEntityUpdatedHeaders(res, 'Customer', customer.id);
         return res.send(await this.customerService.update(customer, departmentVisible, isEmployee, currentUser));
     }
+
+    @Put('/many')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'The record has been successfully updated.',
+        type: Customer,
+    })
+    async putMany(@Req() req: Request, @Res() res: Response, @Body() customers: Customer[]): Promise<Response> {
+        HeaderUtil.addEntityUpdatedHeaders(res, 'Customer', null);
+        return res.send(await this.customerService.saveMany(customers));
+    }
+
 
     @Delete('/:id')
     @Roles(RoleType.USER)

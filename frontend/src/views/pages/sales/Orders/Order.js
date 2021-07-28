@@ -410,59 +410,54 @@ const Order = props => {
         );
       case OrderStatus.APPROVED:
         return (
-          <CCol>
+          <CRow>
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/create-cod').length > 0) && (
-              <CCol>
-                <CButton
-                  onClick={event => {
-                    event.stopPropagation();
-                    codAlert(item);
-                  }}
-                  color="primary"
-                  variant="outline"
-                  shape="square"
-                  size="sm"
-                >
-                  TẠO VẬN ĐƠN
-                </CButton>
-              </CCol>
+              <CButton
+                onClick={event => {
+                  event.stopPropagation();
+                  codAlert(item);
+                }}
+                color="primary"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                TẠO VẬN ĐƠN
+              </CButton>
             )}
-            {isAdmin ||
-              (account.branch?.allow && (
-                <CCol>
-                  <CButton
-                    onClick={event => {
-                      event.stopPropagation();
-                      toEditOrder(item.id);
-                    }}
-                    color="warning"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                  >
-                    <CIcon name="cil-pencil" />
-                    CHỈNH SỬA
-                  </CButton>
-                </CCol>
-              ))}
-            {isAdmin ||
-              (account.branch?.allow && (
-                <CCol>
-                  <CButton
-                    onClick={event => {
-                      event.stopPropagation();
-                      cancelAlert(item);
-                    }}
-                    color="danger"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                  >
-                    HỦY ĐƠN HÀNG
-                  </CButton>
-                </CCol>
-              ))}
-          </CCol>
+            {(isAdmin || account.branch?.allow) && (
+              <CButton
+                onClick={event => {
+                  event.stopPropagation();
+                  toEditOrder(item.id);
+                }}
+                color="warning"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                <CIcon name="cil-pencil" />
+                CHỈNH SỬA
+              </CButton>
+            )}
+            {(isAdmin || account.branch?.allow) && (
+              <CButton
+                onClick={event => {
+                  event.stopPropagation();
+                  cancelAlert(item);
+                }}
+                color="danger"
+                variant="outline"
+                shape="square"
+                size="sm"
+                className="mr-1"
+              >
+                HỦY ĐƠN HÀNG
+              </CButton>
+            )}
+          </CRow>
         );
       case OrderStatus.CREATE_COD:
         return (
@@ -481,7 +476,7 @@ const Order = props => {
         );
       case OrderStatus.CANCEL:
         return (
-          <CCol>
+          <CRow>
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders' && !rol.isSelf).length > 0) && (
               <CButton
                 onClick={event => {
@@ -511,7 +506,7 @@ const Order = props => {
             >
               XÓA ĐƠN
             </CButton>
-          </CCol>
+          </CRow>
         );
       default:
         return (
@@ -669,7 +664,7 @@ const Order = props => {
             },
             action: item => {
               return (
-                <Td className="py-2 d-flex flex-row" style={{ minHeight: 40,  minWidth: isMobile ?200:400,}}>
+                <Td className="py-2 d-flex flex-row" style={{ minHeight: 40, minWidth: isMobile ? 200 : 400 }}>
                   {renderButtonStatus(item)}
                 </Td>
               );

@@ -146,11 +146,23 @@ const Promotion = props => {
   };
 
   const lockPromotion = () => {
+   if(Date.parse(selectedPro.current.endTime) < new Date() && selectedPro.current.isLock){
+    alert("Vui lòng chỉnh sửa ngày kết thúc lớn hơn ngày hiện tại")
+    return
+   }
     dispatch(updatePromotion({ id: selectedPro.current.id, isLock: !selectedPro.current.isLock }));
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(Promotions), [Promotions]);
+
+  useEffect(() => {
+    if (initialState.updatingSuccess) {
+      setPrimary(false)
+      dispatch(getPromotion({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+      dispatch(reset());
+    }
+  }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
@@ -190,7 +202,7 @@ const Promotion = props => {
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             isLock: item => (
               <td>
-                <CBadge color={getBadge(item.isLock)}>{item.isLock ? 'Đã khóa' : 'Đang mở'}</CBadge>
+                <CBadge color={getBadge(item.isLock)}>{item.isLock ? Date.parse(item.endTime) < new Date() ? 'Quá thời gian quy định' : 'Đã khóa' : 'Đang mở'}</CBadge>
               </td>
             ),
             type: item => (
@@ -233,7 +245,7 @@ const Promotion = props => {
                     shape="square"
                     size="sm"
                     onClick={() => {
-                      selectedPro.current = { id: item.id, isLock: item.isLock };
+                      selectedPro.current = { id: item.id, isLock: item.isLock, endTime: item.endTime };
                       setPrimary(!primary);
                     }}
                   >

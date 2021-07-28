@@ -20,7 +20,7 @@ export const resourceDesc = {
     'create-cod': 'tạo vận đơn',
     'orders': 'đơn hàng',
     'account': 'Tài khoản',
-    'birthday': '',
+    'birthday': 'sinh nhật',
 
     'reset-password': 'Xóa mật khẩu',
 
@@ -41,7 +41,7 @@ export const resourceDesc = {
     'home': 'trang chủ',
 
     'facility': 'Cơ sở',
-
+    'many': 'điều phối',
     'news-types': 'loại tin tức',
 
     'licenses': 'giấy phép',
@@ -171,6 +171,7 @@ export const blackList = [
     'associations',
     'self-edit',
     'utils',
+    'reset-password',
     '/api/users/transporter',
     '/api/product-quantities/find',
     'report',

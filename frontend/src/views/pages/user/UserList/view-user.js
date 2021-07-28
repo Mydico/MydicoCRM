@@ -46,7 +46,7 @@ import { validate } from '../../../../shared/utils/normalize';
 import { ProductStatus } from '../../product/ProductList/contants';
 import { globalizedBranchSelectors } from '../UserBranch/branch.reducer';
 import { getBranch } from '../UserBranch/branch.api';
-import { getSession } from '../../login/authenticate.reducer';
+import { getSession, userSafeSelector } from '../../login/authenticate.reducer';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -60,6 +60,8 @@ const { selectAll: selectAllRole } = globalizedUserRoleSelectors;
 const { selectAll: selectAllBranch } = globalizedBranchSelectors;
 const ViewUser = props => {
   const { initialState } = useSelector(state => state.user);
+  const { account } = useSelector(userSafeSelector);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -157,9 +159,11 @@ const ViewUser = props => {
       <CCardHeader>
         <CCardTitle>Xem thông tin người dùng</CCardTitle>
         <CFormGroup className="d-flex justify-content-start">
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/customers/many').length > 0) && (
           <CButton type="submit" size="md" color="primary" onClick={toCustomer(initValues)}>
             <CIcon name="cil-save" /> Điều phối khách hàng
           </CButton>
+        )}
           {/* <CButton type="reset" size="md" color="danger" className="ml-5">
             <CIcon name="cil-ban" /> Xóa nhập liệu
           </CButton> */}

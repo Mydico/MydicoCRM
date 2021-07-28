@@ -32,11 +32,6 @@ export default [
         name: 'Đơn hàng',
         to: '/orders',
       },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Điều phối khách hàng',
-        to: '/customer-statuses',
-      },
     ],
   },
   {

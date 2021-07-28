@@ -14,6 +14,7 @@ import {
   getDistrict,
   getWard,
   updateCustomer,
+  updateManyCustomer,
 } from './customer.api';
 
 const initialState = {
@@ -121,6 +122,14 @@ const slice = createSlice({
     },
     [getBranches.fulfilled]: (state, action) => {
       state.initialState.branch = action.payload;
+      state.initialState.loading = false;
+    },
+    [updateManyCustomer.fulfilled]: (state, action) => {
+      state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [updateManyCustomer.rejected]: (state, action) => {
+      state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
   },

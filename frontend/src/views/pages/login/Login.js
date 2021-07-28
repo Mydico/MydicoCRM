@@ -86,12 +86,7 @@ const Login = props => {
                           {errorMessage && <FormFeedback className="d-block">{errorMessage}</FormFeedback>}
                         </CInputGroup>
                         <CFormGroup variant="custom-checkbox" className="pb-3">
-                          <CInputCheckbox
-                            custom={true}
-                            id="rememberMe"
-                            name="rememberMe"
-                            onChange={handleChange}
-                          />
+                          <CInputCheckbox custom={true} id="rememberMe" name="rememberMe" onChange={handleChange} />
                           <CLabel variant="custom-checkbox" htmlFor="rememberMe">
                             Nhớ mật khẩu
                           </CLabel>

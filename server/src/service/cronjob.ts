@@ -10,7 +10,7 @@ export class CronJobService {
     constructor(@InjectRepository(PromotionRepository) private promotionRepository: PromotionRepository,
         private readonly promotionService: PromotionService) { }
 
-    @Cron('* * 1 * * *')
+    @Cron('0 0 1 * * *')
     async handleCron() {
         const currentDate = new Date().toISOString().split("T")[0]
         await this.promotionRepository
