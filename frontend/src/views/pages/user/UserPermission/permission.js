@@ -111,7 +111,7 @@ const PermissionGroups = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   CButton,
   CCard,
@@ -11,32 +11,31 @@ import {
   CLabel,
   CInput,
   CRow,
-
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {creatingCustomerStatus} from './customer-status.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { creatingCustomerStatus } from './customer-status.api';
 
-import {useHistory} from 'react-router-dom';
-import {fetching} from './customer-status.reducer';
-import {validate} from '../../../../shared/utils/normalize';
+import { useHistory } from 'react-router-dom';
+import { fetching } from './customer-status.reducer';
+import { validate } from '../../../../shared/utils/normalize';
 
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5, `Tên phải lớn hơn 5 kí tự`)
-        .required('Tên không để trống'),
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống')
   });
 };
 
 const CreateCustomerStatus = () => {
-  const {initialState} = useSelector((state) => state.customerStatus);
+  const { initialState } = useSelector(state => state.customerStatus);
   const initialValues = {
     name: '',
-    description: '',
+    description: ''
   };
 
   const dispatch = useDispatch();
@@ -64,14 +63,11 @@ const CreateCustomerStatus = () => {
             values,
             errors,
 
-
             handleChange,
             handleBlur,
             handleSubmit,
 
-
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

@@ -173,7 +173,7 @@ const User = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   const lockUser = () => {
@@ -190,7 +190,6 @@ const User = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC' }));
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
@@ -220,7 +219,7 @@ const User = props => {
   };
 
   const toDetailUser = id => {
-    history.push(`${props.match.url}/${id}/view`);
+    history.push(`${props.match.url}/${id}/detail`);
   };
 
   return (

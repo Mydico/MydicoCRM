@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   CButton,
   CCard,
@@ -11,36 +11,35 @@ import {
   CLabel,
   CInput,
   CRow,
-
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {creatingCustomerType} from './customer-type.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { creatingCustomerType } from './customer-type.api';
 
-import {useHistory} from 'react-router-dom';
-import {fetching} from './customer-type.reducer';
-import {validate} from '../../../../shared/utils/normalize';
+import { useHistory } from 'react-router-dom';
+import { fetching } from './customer-type.reducer';
+import { validate } from '../../../../shared/utils/normalize';
 
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5, `Tên phải lớn hơn 5 kí tự`)
-        .required('Tên không để trống'),
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống'),
     code: Yup.string()
-        .min(2, `Mã phải lớn hơn 2 kí tự`)
-        .required('Mã không để trống'),
+      .min(2, `Mã phải lớn hơn 2 kí tự`)
+      .required('Mã không để trống')
   });
 };
 
 const CreateCustomerType = () => {
-  const {initialState} = useSelector((state) => state.customerType);
+  const { initialState } = useSelector(state => state.customerType);
   const initialValues = {
     code: '',
     name: '',
-    description: '',
+    description: ''
   };
 
   const dispatch = useDispatch();
@@ -68,14 +67,11 @@ const CreateCustomerType = () => {
             values,
             errors,
 
-
             handleChange,
             handleBlur,
             handleSubmit,
 
-
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

@@ -98,7 +98,7 @@ const UserRole = props => {
     }, 300)
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   return (

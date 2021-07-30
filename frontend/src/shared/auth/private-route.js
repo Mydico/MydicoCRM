@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
 import { whiteList } from '../utils/constant';
 import { userSafeSelector } from '../../views/pages/login/authenticate.reducer';
+import { mapper } from './mappingRoleToRoutes';
 
 export const PrivateRouteComponent = ({ component: Component, ...rest }) => {
   const { isAuthenticated, sessionHasBeenFetched, account } = useSelector(userSafeSelector);
@@ -12,12 +13,16 @@ export const PrivateRouteComponent = ({ component: Component, ...rest }) => {
     const isWhiteList = whiteList.includes(props.location.pathname);
     const isHasPermission =
       account.role.filter(item => item.method === 'GET' && item.entity.includes(props.location.pathname)).length > 0 ||
-      account.role.filter(item => item.method === 'GET' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 && props.location.pathname.includes('detail') ||
+      (account.role.filter(item => item.method === 'GET' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 &&
+        props.location.pathname.includes('detail')) ||
       account.role.filter(
         item =>
           item.method === 'POST' && item.entity.includes(props.location.pathname.split('/')[1]) && props.location.pathname.includes('new')
       ).length > 0 ||
-      account.role.filter(item => item.method === 'PUT' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 && props.location.pathname.includes('edit') ||
+      (account.role.filter(item => item.method === 'PUT' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 &&
+        props.location.pathname.includes('edit')) ||
+      (account.role.filter(item => item.method === 'PUT' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 &&
+        props.location.pathname.includes(mapper[item.entity])) ||
       account.role.filter(item => item.method === 'DELETE' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0;
 
     return isWhiteList || isHasPermission || isAdmin ? (

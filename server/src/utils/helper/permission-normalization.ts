@@ -26,6 +26,7 @@ export const permissionDescriptionNormalize = (splitedEndpoint, isType) => {
     }
     if(isType){
         desc = desc.replace('xuất kho', '').trim();
+        desc = desc.replace('sinh nhật', '').trim();
         return desc;
     }
     if(desc.includes('trả hàng')){

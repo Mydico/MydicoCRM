@@ -20,7 +20,7 @@ export const resourceDesc = {
     'create-cod': 'tạo vận đơn',
     'orders': 'đơn hàng',
     'account': 'Tài khoản',
-    'birthday': 'sinh nhật',
+    'birthday': ' sinh nhật',
 
     'reset-password': 'Xóa mật khẩu',
 
@@ -71,17 +71,7 @@ export const resourceDesc = {
 
     'downloads': 'tải về',
     ':name': 'tên tập tin',
-
     'views': 'xem',
-
-    'feedbacks': 'nhận xét đánh giá',
-
-    'contribute-reports': 'ý kiến đóng góp',
-
-    'handler': 'người xử lý',
-
-    'receiver': 'người tiếp nhận',
-
     'addresses': 'địa chỉ',
     'bills': 'vận đơn',
     'investigation-histories': 'lịch sử thanh tra',

@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { getCustomerDebts, getDetailTransaction, getTransaction, getTransactionListDetail } from './debt.api';
+import { createCustomerDebts, getCustomerDebts, getDetailTransaction, getTransaction, getTransactionListDetail } from './debt.api';
 
 const initialState = {
   loading: false,
@@ -34,6 +34,14 @@ const slice = createSlice({
     debtRemove: debtAdapter.removeOne
   },
   extraReducers: {
+    [createCustomerDebts.fulfilled]: state => {
+      state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [createCustomerDebts.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
     [getCustomerDebts.fulfilled]: (state, action) => {
       debtAdapter.setAll(state, action.payload.data);
       state.initialState.totalItem = action.payload.total;

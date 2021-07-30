@@ -63,7 +63,7 @@ const ChangePassword = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      history.push('/')
+      history.goBack()
     }
   }, [initialState.updatingSuccess]);
 

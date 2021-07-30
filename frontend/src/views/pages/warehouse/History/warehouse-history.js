@@ -5,7 +5,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getStoreHistory } from './warehouse-history.api.js';
 import { globalizedStoreHistorySelectors, reset } from './warehouse-history.reducer.js';
-import { useHistory } from 'react-router-dom';
+import { CSVLink } from 'react-csv';
 import moment from 'moment';
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
@@ -36,6 +36,19 @@ const fields = [
   { key: 'type', label: 'Hình thức', _style: { width: '15%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false }
+];
+const excelFields = [
+  {
+    key: 'order',
+    label: 'STT',
+    filter: false
+  },
+  { key: 'code', label: 'Mã sản phẩm', _style: { width: '10%' } },
+  { key: 'name', label: 'Tên sản phẩm', _style: { width: '10%' } },
+  { key: 'quantity', label: 'Số lượng', _style: { width: '15%' } },
+  { key: 'type', label: 'Hình thức', _style: { width: '15%' } },
+  { key: 'storeName', label: 'Tên kho', _style: { width: '10%' }, filter: false },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false }
 ];
 const StoreHistory = () => {
   const { initialState } = useSelector(state => state.storeHistory);
@@ -74,12 +87,12 @@ const StoreHistory = () => {
     });
   };
 
-  const memoComputedItems = React.useCallback((items) => computedItems(items), []);
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(storeHistorys), [storeHistorys]);
 
   useEffect(() => {
-    console.log(storeHistorys)
-  }, [storeHistorys])
+    console.log(storeHistorys);
+  }, [storeHistorys]);
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
@@ -92,10 +105,27 @@ const StoreHistory = () => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
-
-  
+  // { key: 'code', label: 'Mã sản phẩm', _style: { width: '10%' } },
+  // { key: 'name', label: 'Tên sản phẩm', _style: { width: '10%' } },
+  // { key: 'quantity', label: 'Số lượng', _style: { width: '15%' } },
+  // { key: 'type', label: 'Hình thức', _style: { width: '15%' } },
+  // { key: 'storeName', label: 'Tên kho', _style: { width: '10%' }, filter: false },
+  // { key: 'createdDate', label: 'Dung tích', _style: { width: '10%' }, filter: false },
+  const computedExcelItems = items => {
+    return items.map((item, index) => {
+      return {
+        ...item,
+        name: item.product?.name,
+        code: item.product?.code,
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+        type: mappingStatus[item.type]
+      };
+    });
+  };
+  const memoExcelComputedItems = React.useCallback(items => computedExcelItems(storeHistorys), [storeHistorys]);
+  const memoExcelListed = React.useMemo(() => memoExcelComputedItems(storeHistorys), [storeHistorys]);
 
   return (
     <CCard>
@@ -103,6 +133,9 @@ const StoreHistory = () => {
         <CIcon name="cil-grid" /> Danh sách lịch sử xuất nhập kho
       </CCardHeader>
       <CCardBody>
+        <CSVLink headers={excelFields} data={memoExcelListed} filename={'history.csv'} className="btn">
+          Tải excel (.csv) ⬇
+        </CSVLink>
         <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>

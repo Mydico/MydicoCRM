@@ -76,7 +76,6 @@ const EditUserProfile = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(reset());
       dispatch(getSession());
       history.goBack();
     }

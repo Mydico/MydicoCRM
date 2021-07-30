@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -11,42 +11,39 @@ import {
   CLabel,
   CInput,
   CRow,
-
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-
-import {useHistory} from 'react-router-dom';
-import {getDetailCustomerStatus, updateCustomerStatus} from './customer-status.api';
-import {fetching, globalizedcustomerStatuselectors} from './customer-status.reducer';
-
+import { useHistory } from 'react-router-dom';
+import { getDetailCustomerStatus, updateCustomerStatus } from './customer-status.api';
+import { fetching, globalizedcustomerStatuselectors } from './customer-status.reducer';
 
 const validationSchema = function() {
   return Yup.object().shape({
     description: Yup.string()
-        .min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`)
-        .required('Tên liên lạc không để trống'),
+      .min(5, `Mô tả liên lạc phải lớn hơn 5 kí tự`)
+      .required('Tên liên lạc không để trống'),
     name: Yup.string()
-        .min(5, `Tên phải lớn hơn 5 kí tự`)
-        .required('Tên không để trống'),
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống')
   });
 };
-const {selectById} = globalizedcustomerStatuselectors;
+const { selectById } = globalizedcustomerStatuselectors;
 
-const CreateCustomerStatus = (props) => {
-  const {initialState} = useSelector((state) => state.customerStatus);
+const CreateCustomerStatus = props => {
+  const { initialState } = useSelector(state => state.customerStatus);
   const initialValues = {
     name: '',
-    description: '',
+    description: ''
   };
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const customerStatus = useSelector((state) => selectById(state, props.match.params.id));
+  const customerStatus = useSelector(state => selectById(state, props.match.params.id));
 
   const [initValues, setInitValues] = useState(null);
 
@@ -80,13 +77,9 @@ const CreateCustomerStatus = (props) => {
             values,
             errors,
 
-
             handleChange,
             handleBlur,
             handleSubmit
-
-
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

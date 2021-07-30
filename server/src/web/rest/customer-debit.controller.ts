@@ -134,7 +134,7 @@ export class CustomerDebitController {
     type: CustomerDebit
   })
   async put(@Res() res: Response, @Body() customerDebit: CustomerDebit): Promise<Response> {
-    HeaderUtil.addEntityCreatedHeaders(res, 'CustomerDebit', customerDebit.id);
+    HeaderUtil.addEntityUpdatedHeaders(res, 'CustomerDebit', customerDebit.id);
     return res.send(await this.customerDebitService.update(customerDebit));
   }
 

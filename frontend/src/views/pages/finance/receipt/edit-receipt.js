@@ -88,7 +88,7 @@ const EditReceipt = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      history.goBack();
+      history.goBack()
     }
   }, [initialState.updatingSuccess]);
 

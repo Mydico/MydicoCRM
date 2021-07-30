@@ -11,7 +11,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import Select from 'react-select';
 import { globalizedproductGroupsSelectors } from '../ProductGroup/product-group.reducer.js';
-import { getProductGroup } from '../ProductGroup/product-group.api.js';
+import { CSVLink } from 'react-csv';
 
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -30,10 +30,24 @@ const statusList = [
   {
     value: 'DELETED',
     label: 'ĐÃ XÓA'
+  }
+];
+const excelFields = [
+  {
+    key: 'order',
+    label: 'STT',
+    filter: false
   },
+  { key: 'code', label: 'Mã sản phẩm', _style: { width: '10%' } },
+  { key: 'name', label: 'Tên sản phẩm', _style: { width: '10%' } },
+  { key: 'desc', label: 'mô tả', _style: { width: '15%' } },
+  { key: 'price', label: 'Giá', _style: { width: '10%' }, filter: false },
+  { key: 'unit', label: 'Đơn vị', _style: { width: '10%' }, filter: false },
+  { key: 'volume', label: 'Dung tích', _style: { width: '10%' }, filter: false },
+  { key: 'brand', label: 'Thương hiệu', _style: { width: '10%' }, filter: false },
+  { key: 'group', label: 'Nhóm sản phẩm', _style: { width: '10%' }, filter: false },
 ];
 const { selectAll } = globalizedProductSelectors;
-const { selectAll : selectProfuctGroup } = globalizedproductGroupsSelectors;
 
 // Code	Tên sản phẩm	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Nhóm sản phẩm	Phân loại	Sửa	Tạo đơn
 const fields = [
@@ -138,22 +152,34 @@ const Product = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const debouncedSearchColumn =  _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if (!value[key]) delete value[key];
-        });
-        paramRef.current = value;
-        dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300)
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(products), [products]);
+
+  const computedExcelItems = items => {
+    return items.map((item, index) => {
+      return {
+        ...item,
+        brand: item.productBrand?.name || '',
+        group:item.productGroup?.name || '',
+      };
+    });
+  };
+  const memoExcelComputedItems = React.useCallback(items => computedExcelItems(products), [products]);
+  const memoExcelListed = React.useMemo(() => memoExcelComputedItems(products), [products]);
 
   return (
     <CCard>
@@ -166,9 +192,9 @@ const Product = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+      <CSVLink headers={excelFields} data={memoExcelListed} filename={'product.csv'} className="btn">
+          Tải excel (.csv) ⬇
+        </CSVLink>
         <CDataTable
           responsive={true}
           items={memoListed}
@@ -183,31 +209,25 @@ const Product = props => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-
-
-
           onPaginationChange={val => setSize(val)}
-
-
-
           onColumnFilterChange={onFilterColumn}
           columnFilterSlot={{
             status: (
               <div style={{ minWidth: 200 }}>
                 <Select
                   onChange={item => {
-                    onFilterColumn({ ...paramRef.current, status: item?.value || ''  });
+                    onFilterColumn({ ...paramRef.current, status: item?.value || '' });
                   }}
                   placeholder="Chọn trạng thái"
-                  isClearable                  isClearable
+                  isClearable
+                  isClearable
                   options={statusList.map(item => ({
                     value: item.value,
                     label: item.label
                   }))}
                 />
               </div>
-            ),
-
+            )
           }}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,

@@ -100,7 +100,7 @@ const CreateReceipt = () => {
         name: value,
         address: value,
         contactName: value,
-        dependency: true,
+        dependency: true
       })
     );
   }, 300);

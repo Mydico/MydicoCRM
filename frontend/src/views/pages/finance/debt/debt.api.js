@@ -72,6 +72,15 @@ export const getCustomerDebts = createAsyncThunk(
   }
 );
 
+export const createCustomerDebts = createAsyncThunk('api/customer-debits/create', async (body, thunkAPI) => {
+  try {
+    const result = await axios.post('api/customer-debits', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const getCustomerDebtsTotalDebit = createAsyncThunk('api/customer-debits/total-debit', async (params = {}, thunkAPI) => {
   try {
     const result = await axios.get('api/transactions/total-debit', { params: params });
@@ -84,7 +93,7 @@ export const getCustomerDebtsTotalDebit = createAsyncThunk('api/customer-debits/
 export const getCustomerTotalDebit = createAsyncThunk('api/customer-debits/total-debit', async (params, thunkAPI) => {
   try {
     const result = await axios.get('api/transactions/debt/' + params.id);
-    return result.data
+    return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

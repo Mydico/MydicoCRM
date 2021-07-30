@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { filterCustomer, filterCustomerNotToStore, getCustomer, updateManyCustomer } from '../../customer/customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../../customer/customer.reducer';
 import { Link, useHistory, useLocation } from 'react-router-dom';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
+
 import { Td } from 'react-super-responsive-table';
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 import moment from 'moment';
@@ -206,7 +206,7 @@ const CustomerUser = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
@@ -277,10 +277,10 @@ const CustomerUser = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
       dispatch(getCustomer(params));
-      setFilteredCustomer([])
-      setSelectedUser(null)
+      setFilteredCustomer([]);
+      setSelectedUser(null);
     }
   }, [initialState.updatingSuccess]);
 
@@ -367,11 +367,11 @@ const CustomerUser = props => {
                           <CCol lg="6">
                             <dl className="row">
                               <dt className="col-sm-3">Tỉnh thành:</dt>
-                              <dd className="col-sm-9">{cities.filter(city => city.value === item?.city)[0]?.label || ''}</dd>
+                              <dd className="col-sm-9">{memoizedGetCityName(item?.city)}</dd>
                             </dl>
                             <dl className="row">
                               <dt className="col-sm-3">Quận huyện:</dt>
-                              <dd className="col-sm-9">{district.filter(dist => dist.value === item?.district)[0]?.label || ''}</dd>
+                              <dd className="col-sm-9">{memoizedGetDistrictName(item?.district)}</dd>
                             </dl>
                             <dl className="row">
                               <dt className="col-sm-3">Địa chỉ:</dt>
@@ -399,7 +399,7 @@ const CustomerUser = props => {
               onActivePageChange={i => setActivePage(i)}
             />
           </CCol>
-            <CIcon name="cilArrowCircleLeft" size="4xl" className="align-self-start" />
+          <CIcon name="cilArrowCircleLeft" size="4xl" className="align-self-start" />
           <CCol>
             <Select
               name="customer"

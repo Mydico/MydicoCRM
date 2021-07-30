@@ -38,6 +38,9 @@ import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import { Td, Table as TableResponsive, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
 import '../../../components/table/ResponsiveTable.css';
+import { validate } from '../../../../shared/utils/normalize';
+import { useMediaQuery } from 'react-responsive';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object()
@@ -49,9 +52,7 @@ const validationSchema = function() {
   });
 };
 
-import { validate } from '../../../../shared/utils/normalize';
-import { useMediaQuery } from 'react-responsive';
-import { blockInvalidChar } from '../../../../shared/utils/helper';
+
 
 const mappingType = {
   SHORTTERM: 'Ngắn hạn',

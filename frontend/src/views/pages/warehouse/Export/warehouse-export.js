@@ -165,7 +165,7 @@ const WarehouseImport = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   const alertFunc = (item, message, operation) => {
@@ -260,7 +260,8 @@ const WarehouseImport = props => {
   const memoListed = React.useMemo(() => memoComputedItems(warehouses), [warehouses]);
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(getWarehouseExport());
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }; 
+      dispatch(getWarehouseExport(params));
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);

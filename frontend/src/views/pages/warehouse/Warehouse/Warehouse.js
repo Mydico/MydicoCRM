@@ -8,8 +8,8 @@ import { globalizedWarehouseSelectors, reset } from './warehouse.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
+
 import moment from 'moment';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -119,7 +119,7 @@ const Warehouse = props => {
     }, 300)
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   return (
@@ -218,13 +218,13 @@ const Warehouse = props => {
                         </dl>
                       </CCol>
                       <CCol lg="6">
-                        <dl className="row">
-                          <dt className="col-sm-3">Thành phố</dt>
-                          <dd className="col-sm-9">{cities.filter(city => city.value === item.city)[0]?.label || ''}</dd>
+                      <dl className="row">
+                          <dt className="col-sm-3">Tỉnh thành:</dt>
+                          <dd className="col-sm-9">{memoizedGetCityName(item?.city)}</dd>
                         </dl>
                         <dl className="row">
-                          <dt className="col-sm-3">Quận huyện</dt>
-                          <dd className="col-sm-9">{district.filter(dist => dist.value === item?.district)[0]?.label || ''}</dd>
+                          <dt className="col-sm-3">Quận huyện:</dt>
+                          <dd className="col-sm-9">{memoizedGetDistrictName(item?.district)}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Trạng thái</dt>

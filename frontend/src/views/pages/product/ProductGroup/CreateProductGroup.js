@@ -79,7 +79,7 @@ const CreateProductGroup = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      history.goBack();
+      history.goBack()
     }
   }, [initialState.updatingSuccess]);
 

@@ -157,7 +157,7 @@ const WarehouseImport = props => {
     }, 300)
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   const alertFunc = (item, message, operation) => {
@@ -249,7 +249,8 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(getWarehouseReturn());
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }; 
+      dispatch(getWarehouseReturn(params));
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);

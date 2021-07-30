@@ -1,5 +1,8 @@
 import queryString from 'query-string';
 import {createBrowserHistory} from 'history'
+import cities from '../../shared/utils/city';
+import district from '../../shared/utils/district.json';
+import memoize from 'fast-memoize';
 function preserveQueryParameters(history, preserve, location) {
   const currentQuery = queryString.parse(history.location.search);
   if (currentQuery) {
@@ -34,3 +37,8 @@ function createPreserveQueryHistory(createHistory, queryParameters) {
 
 export const history = createPreserveQueryHistory(createBrowserHistory, ['locale', 'token', 'returnTo'])();
 export const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
+const getCityName = (id) => cities.filter(city => city.value === id)[0]?.label || ''
+export const memoizedGetCityName = memoize(getCityName)
+
+const getDistrictName = (id) => district.filter(dist => dist.value === id)[0]?.label || ''
+export const memoizedGetDistrictName = memoize(getDistrictName)

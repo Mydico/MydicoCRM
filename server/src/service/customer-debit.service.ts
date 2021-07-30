@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../domain/user.entity';
 import { Brackets, FindManyOptions, FindOneOptions } from 'typeorm';
 import CustomerDebit from '../domain/customer-debit.entity';
 import { CustomerDebitRepository } from '../repository/customer-debit.repository';
+import { HttpException } from '@nestjs/common';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -13,7 +14,7 @@ relationshipNames.push('sale');
 export class CustomerDebitService {
   logger = new Logger('CustomerDebitService');
 
-  constructor(@InjectRepository(CustomerDebitRepository) private customerDebitRepository: CustomerDebitRepository) { }
+  constructor(@InjectRepository(CustomerDebitRepository) private customerDebitRepository: CustomerDebitRepository) {}
 
   async findById(id: string): Promise<CustomerDebit | undefined> {
     const options = { relations: relationshipNames };
@@ -44,7 +45,9 @@ export class CustomerDebitService {
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      queryString += ` AND CustomerDebit.lastModifiedDate  >= '${filter['startDate']}' AND CustomerDebit.lastModifiedDate <='${filter['endDate']} 24:00:00'`;
+      queryString += ` AND CustomerDebit.lastModifiedDate  >= '${filter['startDate']}' AND CustomerDebit.lastModifiedDate <='${
+        filter['endDate']
+      } 24:00:00'`;
     }
     if (!allowToSeeAll) {
       if (isEmployee) {
@@ -85,7 +88,9 @@ export class CustomerDebitService {
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` AND CustomerDebit.lastModifiedDate  >= '${filter['startDate']}' AND CustomerDebit.lastModifiedDate <= '${filter['endDate']} 24:00:00'`;
+      andQueryString += ` AND CustomerDebit.lastModifiedDate  >= '${filter['startDate']}' AND CustomerDebit.lastModifiedDate <= '${
+        filter['endDate']
+      } 24:00:00'`;
     }
     if (!allowViewAll) {
       if (isEmployee) {
@@ -117,6 +122,10 @@ export class CustomerDebitService {
   }
 
   async save(customerDebit: CustomerDebit): Promise<CustomerDebit | undefined> {
+    const exist = await this.customerDebitRepository.findOne({ where: { customer: customerDebit.customer } });
+    if (exist) {
+      throw new HttpException('Khách hàng này đã có công nợ', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
     return await this.customerDebitRepository.save(customerDebit);
   }
 

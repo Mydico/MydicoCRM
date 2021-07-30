@@ -94,7 +94,7 @@ const EditDepartment = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(reset());
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }; dispatch(reset());
       history.goBack();
     }
   }, [initialState.updatingSuccess]);

@@ -134,12 +134,13 @@ const Receipt = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(getReceipt());
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+      dispatch(getReceipt(params));
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);

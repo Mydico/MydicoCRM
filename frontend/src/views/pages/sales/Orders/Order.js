@@ -110,6 +110,21 @@ const fields = [
   }
 ];
 
+const excelFields = [
+  {
+    key: 'order',
+    label: 'STT',
+    filter: false
+  },
+  { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
+  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
+  { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
+  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' }, filter: false },
+  { key: 'total', label: 'Tiền Thanh toán', _style: { width: '10%' }, filter: false },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' }, filter: false },
+];
+
 const getBadge = status => {
   switch (status) {
     case 'APPROVED':
@@ -146,6 +161,7 @@ const Order = props => {
       dispatch(getOrder(params));
     }
   }, [date]);
+
   useEffect(() => {
     dispatch(reset());
     localStorage.setItem('order', JSON.stringify({}));
@@ -207,7 +223,7 @@ const Order = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   const toEditOrder = typeId => {
@@ -227,7 +243,8 @@ const Order = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(getOrder());
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }; 
+      dispatch(getOrder(params));
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
@@ -537,12 +554,18 @@ const Order = props => {
       return {
         ...item,
         order: (activePage - 1) * size + index + 1,
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+        quantity:  item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
+        total: item.totalMoney,
+        status: mappingStatus[item.status]
       };
     });
   };
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(orders), [orders]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(orders), [orders]);
+
+
+
 
   return (
     <CCard>
@@ -555,9 +578,9 @@ const Order = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        {/* <CSVLink headers={fields} data={memoExcelListed} filename={'order.csv'} className="btn">
+        <CSVLink headers={excelFields} data={memoExcelListed} filename={'order.csv'} className="btn">
           Tải excel (.csv) ⬇
-        </CSVLink> */}
+        </CSVLink>
         <CRow className="ml-0 mt-4">
           <CLabel>Tổng :</CLabel>
           <strong>{`\u00a0\u00a0${initialState.totalItem}`}</strong>

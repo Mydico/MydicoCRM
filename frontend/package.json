@@ -24,6 +24,7 @@
     "classnames": "^2.2.6",
     "compression-webpack-plugin": "^6.1.1",
     "core-js": "^3.6.5",
+    "fast-memoize": "^2.5.2",
     "formik": "^2.2.6",
     "query-string": "^5.1.1",
     "react": "^16.13.1",

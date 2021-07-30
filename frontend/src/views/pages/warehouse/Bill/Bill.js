@@ -203,7 +203,7 @@ const Bill = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   const toEditBill = typeId => {
@@ -212,7 +212,6 @@ const Bill = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
       setModal(false);
       dispatch(reset());
     }

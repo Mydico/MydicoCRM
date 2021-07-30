@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/domain/user.entity';
 import { Brackets, FindManyOptions, FindOneOptions, In, Like } from 'typeorm';
@@ -252,7 +252,18 @@ export class CustomerService {
     const cacheKeyBuilder = `get_customers_department_${JSON.stringify(departmentVisible)}_sale_${isEmployee ? currentUser.id : -1}`;
     await this.customerRepository.removeCache([cacheKeyBuilder, 'Customer']);
     if (customer.id) {
-      return await this.customerRepository.save(customer);
+      const foundedCustomer = await this.customerRepository.findOne({
+        code: customer.code
+      });
+      if(foundedCustomer && foundedCustomer.id !== customer.id){
+        const foundedCustomerList = await this.customerRepository.find({
+          code: Like(`%${customer.code}%`)
+        });
+        const newCustomer = checkCodeContext(customer, foundedCustomerList);
+        return await this.customerRepository.save(newCustomer);
+      }else{
+        return await this.customerRepository.save(customer);
+      }
     }
     const foundedCustomer = await this.customerRepository.find({
       code: Like(`%${customer.code}%`)

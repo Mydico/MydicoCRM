@@ -6,16 +6,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCustomer } from '../customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
 import { Link, useHistory, useLocation } from 'react-router-dom';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
 import { Td } from 'react-super-responsive-table';
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
-import { CLabel } from '@coreui/react';
+import { CInput, CLabel } from '@coreui/react';
 import AdvancedTable from '../../../components/table/AdvancedTable';
 import { CSVLink } from 'react-csv';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 
 const { selectAll } = globalizedCustomerSelectors;
 // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
@@ -38,6 +37,26 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   }
+];
+
+const fieldExcel = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã' },
+  { key: 'name', label: 'Tên cửa hàng/đại lý' },
+  { key: 'tel', label: 'Điện thoại' },
+  { key: 'saleName', label: 'Nhân viên quản lý' },
+  { key: 'typeName', label: 'Loại khách hàng',  },
+  { key: 'address', label: 'Địa chỉ', },
+  { key: 'date_of_birth', label: 'Ngày tháng năm sinh', },
+  { key: 'social', label: 'Mạng xã hội', },
+  { key: 'contact_name', label: 'Tên liên hệ', },
+  { key: 'city', label: 'thành phố', },
+  { key: 'district', label: 'quận huyện', },
 ];
 
 const getBadge = status => {
@@ -99,7 +118,7 @@ const Customer = props => {
     if (position !== -1) {
       newDetails.splice(position, 1);
     } else {
-      newDetails = [...details, index];
+      newDetails = [index];
     }
     setDetails(newDetails);
   };
@@ -133,11 +152,12 @@ const Customer = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(customers), [customers]);
+
 
   const computedExcelItems = items => {
     return items.map((item, index) => {
@@ -147,10 +167,15 @@ const Customer = props => {
         typeName: item.type?.code,
         department: item.department?.code || '',
         createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
-        sale: item.sale?.code || ''
+        sale: item.sale?.code || '',
+        district: memoizedGetDistrictName(item?.district),
+        city: memoizedGetCityName(item?.city),
+        contact_name: item.contactName,
+        date_of_birth: item.dateOfBirth
       };
     });
   };
+
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(items), [customers]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(customers), [customers]);
 
@@ -165,7 +190,7 @@ const Customer = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CSVLink headers={fields} data={memoExcelListed} filename={'customer.csv'} className="btn">
+        <CSVLink headers={fieldExcel} data={memoExcelListed} filename={'customer.csv'} className="btn">
           Tải excel (.csv) ⬇
         </CSVLink>
         <CRow className="ml-0 mt-4">
@@ -261,11 +286,11 @@ const Customer = props => {
                       <CCol lg="6">
                         <dl className="row">
                           <dt className="col-sm-3">Tỉnh thành:</dt>
-                          <dd className="col-sm-9">{cities.filter(city => city.value === item?.city)[0]?.label || ''}</dd>
+                          <dd className="col-sm-9">{memoizedGetCityName(item?.city)}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Quận huyện:</dt>
-                          <dd className="col-sm-9">{district.filter(dist => dist.value === item?.district)[0]?.label || ''}</dd>
+                          <dd className="col-sm-9">{memoizedGetDistrictName(item?.district)}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Địa chỉ:</dt>

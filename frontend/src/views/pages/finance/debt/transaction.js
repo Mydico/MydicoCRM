@@ -107,7 +107,7 @@ const Transaction = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   const renderLink = item => {

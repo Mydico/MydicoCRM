@@ -109,7 +109,6 @@ const ViewUser = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(reset());
       dispatch(getSession());
       history.goBack();
     }
@@ -151,7 +150,9 @@ const ViewUser = props => {
   };
 
   const toCustomer = data => () => {
-    history.push({ pathname: `${props.match.url}/customer`, state: data });
+    const arr = props.match.url.split('/')
+    arr.pop()
+    history.push({ pathname: `${arr.join('/')}/transfer`, state: data });
   };
 
   return (

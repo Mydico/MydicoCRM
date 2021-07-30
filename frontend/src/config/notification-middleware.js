@@ -21,6 +21,8 @@ const successMessageMapping = {
   'MydicoCRM.CustomerType.updated': 'Chỉnh sửa loại khách hàng thành công',
   'MydicoCRM.CustomerStatus.created': 'Tạo mới trạng thái khách hàng thành công',
   'MydicoCRM.CustomerStatus.updated': 'Chỉnh sửa trạng thái khách hàng thành công',
+  'MydicoCRM.CustomerDebit.created': 'Tạo mới công nợ thành công',
+  'MydicoCRM.CustomerDebit.updated': 'Chỉnh sửa công nợ thành công',
   'MydicoCRM.Store.created': 'Tạo mới kho thành công',
   'MydicoCRM.Store.updated': 'Chỉnh sửa kho thành công',
   'MydicoCRM.Order.created': 'Tạo mới đơn hàng thành công',

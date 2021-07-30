@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   CButton,
   CCard,
@@ -11,38 +11,36 @@ import {
   CLabel,
   CInput,
   CRow,
-
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {creatingProductBrand} from './product-brand.api';
-import {useHistory} from 'react-router-dom';
-import {fetching, reset} from './product-brand.reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { creatingProductBrand } from './product-brand.api';
+import { useHistory } from 'react-router-dom';
+import { fetching, reset } from './product-brand.reducer';
 
 const validationSchema = function() {
   return Yup.object().shape({
     code: Yup.string()
-        .min(1, `Mã thương hiệu phải lớn hơn 1 kí tự`)
-        .required('Mã thương hiệu không để trống')
-        .nullable(),
+      .min(1, `Mã thương hiệu phải lớn hơn 1 kí tự`)
+      .required('Mã thương hiệu không để trống')
+      .nullable(),
     name: Yup.string()
-        .min(5, `Tên phải lớn hơn 5 kí tự`)
-        .required('Tên không để trống'),
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống')
   });
 };
 
-import {validate} from '../../../../shared/utils/normalize';
-
+import { validate } from '../../../../shared/utils/normalize';
 
 const CreateProductBrand = () => {
-  const {initialState} = useSelector((state) => state.productBrand);
+  const { initialState } = useSelector(state => state.productBrand);
   const initialValues = {
     code: '',
     name: '',
-    description: '',
+    description: ''
   };
 
   const dispatch = useDispatch();
@@ -71,14 +69,11 @@ const CreateProductBrand = () => {
             values,
             errors,
 
-
             handleChange,
             handleBlur,
             handleSubmit,
 
-
             handleReset
-            ,
           }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>

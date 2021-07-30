@@ -11,6 +11,7 @@ import { globalizedDebtsSelectors, reset } from './debt.reducer.js';
 import moment from 'moment';
 import _ from 'lodash';
 import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
+import { userSafeSelector } from '../../login/authenticate.reducer.js';
 const { selectAll } = globalizedDebtsSelectors;
 
 // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
@@ -36,6 +37,8 @@ const fields = [
 const Debt = props => {
   const { initialState } = useSelector(state => state.debt);
   const [activePage, setActivePage] = useState(1);
+  const { account } = useSelector(userSafeSelector);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -102,6 +105,10 @@ const Debt = props => {
     history.push({ pathname: `${props.match.url}/${item.customerId}/detail`});
   };
 
+  const toCreate = item => {
+    history.push({ pathname: `${props.match.url}/new`});
+  };
+
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(debts), [debts]);
 
@@ -109,6 +116,11 @@ const Debt = props => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách Công nợ
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/customers').length > 0) && (
+          <CButton color="success" variant="outline" className="ml-3" onClick={toCreate} >
+            <CIcon name="cil-plus" /> Thêm mới công nợ
+          </CButton>
+        )}
       </CCardHeader>
       <CCardBody>
         <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">

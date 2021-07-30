@@ -92,6 +92,8 @@ const CreatePermission = loadable(() => import('./views/pages/user/UserPermissio
 const EditPermission = loadable(() => import('./views/pages/user/UserPermission/edit-permission'));
 
 const Debts = loadable(() => import('./views/pages/finance/debt/debt'));
+const CreateDebts = loadable(() => import('./views/pages/finance/debt/create-deb'));
+
 const Transaction = loadable(() => import('./views/pages/finance/debt/transaction'));
 
 const Receipt = loadable(() => import('./views/pages/finance/receipt/receipt'));
@@ -110,6 +112,7 @@ const routes = [
   {path: '/invoice/', name: 'Thống kê', component: Invoice},
   {path: '/print/', name: 'Hoa don', component: PrintBill},
   {path: '/customer-debits', name: 'Công nợ', component: Debts, exact: true},
+  {path: '/customer-debits/new', name: 'Thêm mới công nợ', component: CreateDebts},
   {path: '/customer-debits/:id/detail/order/:orderId', name: 'Chi tiết đơn hàng', component: ViewOrder},
   {path: '/customer-debits/:id/detail/receipt/:receiptId', name: 'Chi tiết phiếu thu', component: ViewReceipt},
   {path: '/customer-debits/:id/detail/store/:storeId', name: 'Chi tiết trả kho', component: ViewWarehouseReturn},
@@ -174,8 +177,8 @@ const routes = [
   {path: '/product-quantities/', name: 'Sản phẩm trong kho', component: ProductWarehouse, exact: true},
   {path: '/users/', name: 'Người dùng', component: User, exact: true},
   {path: '/users/:id/edit', name: 'Chỉnh sửa', component: EditUser},
-  {path: '/users/:id/view', name: 'Xem chi tiết', component: ViewUser, exact: true},
-  {path: '/users/:id/view/customer', name: 'Xem chi tiết', component: CustomerUser},
+  {path: '/users/:id/detail', name: 'Xem chi tiết', component: ViewUser, exact: true},
+  {path: '/users/:id/transfer', name: 'Xem chi tiết', component: CustomerUser},
   {path: '/users/new', name: 'Tạo mới', component: CreateUser},
   {path: '/user-roles/', name: 'chức vụ', component: UserRole, exact: true},
   {path: '/user-roles/:id/edit', name: 'Chỉnh sửa', component: EditUserRole},

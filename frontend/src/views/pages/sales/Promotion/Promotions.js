@@ -142,7 +142,7 @@ const Promotion = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   const lockPromotion = () => {
@@ -158,7 +158,6 @@ const Promotion = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      setPrimary(false)
       dispatch(getPromotion({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
       dispatch(reset());
     }

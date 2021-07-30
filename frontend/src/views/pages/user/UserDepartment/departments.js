@@ -83,7 +83,6 @@ const Department = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(getDepartment({ page: 0, size: size, sort: 'createdDate,DESC' }));
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
@@ -136,7 +135,7 @@ const Department = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   const renderChild = children => {

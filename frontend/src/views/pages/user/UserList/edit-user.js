@@ -107,7 +107,6 @@ const EditUser = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(reset());
       dispatch(getSession());
       history.goBack();
     }
