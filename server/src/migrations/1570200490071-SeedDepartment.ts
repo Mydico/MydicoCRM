@@ -121,7 +121,7 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
             lastName: item["Tên nhân viên"].split(' ')[0],
             firstName: item["Tên nhân viên"].split(' ').slice(1, item["Tên nhân viên"].split(' ').length).join(' '),
             password: '123456',
-            email: item.email || '',
+            email: '',
             phone: item["Sốđiệnthoại"]?.toString() || '',
             // old_login: item.username,
             // old_id: item.id.toString(),
