@@ -303,7 +303,7 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
         const productList = products.map(item => ({
             code: getProductCode(item['tên CRM chính thức'], item['Thương hiệu'], item['Nhóm sản phẩm'], item['Dung tích']),
             name: item['tên CRM chính thức'],
-            old_id: item.id.toString(),
+            // old_id: item.id.toString(),
             status: ProductStatus.ACTIVE,
             price: item['Giá bán'],
             volume: isNaN(Number(item['Dung tích'])) ? 0 : Number(item['Dung tích']),
@@ -333,10 +333,10 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
             .getRepository(Product)
             .save(productList);
 
-        const resultProductWithOldData = resultProduct.map((entity, index) => ({
-            ...entity,
-            old_id: productList[index].old_id,
-        }));
+        // const resultProductWithOldData = resultProduct.map((entity, index) => ({
+        //     ...entity,
+        //     old_id: productList[index].old_id,
+        // }));
         // const orderDetailList = orderDetail.map((item, index) => {
         //   return ({
         //     order: resultOrderWithOldData.filter(order => order.old_id === item.order_id)[0]?.id || null,
