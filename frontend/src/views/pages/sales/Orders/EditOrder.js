@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { editSelfOrder, getDetailOrder, getOrderDetail, updateOrder } from './order.api';
 import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
-import { globalizedOrdersSelectors } from './order.reducer';
+import { globalizedOrdersSelectors, reset } from './order.reducer';
 import Select from 'react-select';
 import { currencyMask } from '../../../components/currency-input/currency-input';
 import MaskedInput from 'react-text-mask';
@@ -103,6 +103,9 @@ const EditOrder = props => {
     dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, isLock: 0 }));
     dispatch(getDetailOrder({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
+    return () => {
+      dispatch(reset())
+    }
   }, []);
 
   useEffect(() => {

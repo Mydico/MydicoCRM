@@ -224,8 +224,6 @@ export class CustomerController {
     })
     async put(@Req() req: Request, @Res() res: Response, @Body() customer: Customer): Promise<Response> {
         const currentUser = req.user as User;
-        customer.department = currentUser.mainDepartment ||  currentUser.department;
-        customer.sale = currentUser;
         let departmentVisible: any = [];
         const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
         if (currentUser.department) {

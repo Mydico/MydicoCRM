@@ -85,8 +85,8 @@ const { selectAll } = globalizedOrdersSelectors;
 const fields = [
   {
     key: 'order',
-    label: 'STT',
-    _style: { width: '1%' },
+    label: '#',
+    _style: { maxWidth: 50 },
     filter: false
   },
   {
@@ -96,7 +96,7 @@ const fields = [
     filter: false
   },
   { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
-  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
+  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { maxWidth: 200 } },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' }, filter: false },
   { key: 'total', label: 'Tiền Thanh toán', _style: { width: '10%' }, filter: false },
@@ -168,7 +168,6 @@ const Order = props => {
   }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 100);
     const localParams = localStorage.getItem('params');
     let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     if (localParams) {

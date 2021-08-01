@@ -98,7 +98,7 @@ const Debt = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    debouncedSearchColumn(value);
+    if(value) debouncedSearchColumn(value);
   };
 
   const toDetail = item => {
@@ -116,7 +116,7 @@ const Debt = props => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách Công nợ
-        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/customers').length > 0) && (
+        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/customer-debits').length > 0) && (
           <CButton color="success" variant="outline" className="ml-3" onClick={toCreate} >
             <CIcon name="cil-plus" /> Thêm mới công nợ
           </CButton>

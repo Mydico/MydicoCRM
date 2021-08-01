@@ -66,8 +66,8 @@ export class OrderService {
   ): Promise<[Order[], number]> {
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
-      if (item === 'endDate' || item === 'startDate') return;
-      queryString += `Order.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+      if (item === 'endDate' || item === 'startDate' || item === 'status') return;
+      queryString += `Order.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
     });
     let andQueryString = '';
 
@@ -78,6 +78,9 @@ export class OrderService {
     }
     if (filter['endDate'] && filter['startDate']) {
       andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "}  Order.createdDate  >= '${filter['startDate']}' AND  Order.createdDate <= '${filter['endDate']} 24:00:00'`;
+    }
+    if (filter['status']) {
+      queryString += ` Order.status  = '${filter['status']}' `;
     }
     if (isEmployee) {
       andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "}  Order.sale = ${currentUser.id}`;

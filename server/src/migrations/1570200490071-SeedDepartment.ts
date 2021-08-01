@@ -116,18 +116,18 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
             .values(branches)
             .execute();
         const users = userhn.map(item => ({
-            login: getLoginFromName(item.full_name, item['Chi nhánh'], item['Phòng Ban']),
-            code: getLoginFromName(item.full_name, item['Chi nhánh'], item['Phòng Ban']),
-            lastName: item.full_name.split(' ')[0],
-            firstName: item.full_name.split(' ').slice(1, item.full_name.split(' ').length).join(' '),
+            login: item["tài khoản đăng nhập"],
+            code: item["tài khoản đăng nhập"],
+            lastName: item["Tên nhân viên"].split(' ')[0],
+            firstName: item["Tên nhân viên"].split(' ').slice(1, item["Tên nhân viên"].split(' ').length).join(' '),
             password: '123456',
             email: item.email || '',
-            phone: item.phone_number?.toString() || '',
-            old_login: item.username,
-            old_id: item.id.toString(),
+            phone: item["Sốđiệnthoại"]?.toString() || '',
+            // old_login: item.username,
+            // old_id: item.id.toString(),
             activated: true,
             branch: resultBranch.identifiers[branches.findIndex(branch => branch.code === item['Phòng Ban'])],
-            department: resultDepartment[departments.findIndex(branch => branch.code === item['Chi nhánh'])],
+            department: resultDepartment[departments.findIndex(branch => branch.code === item['Mã chi nhánh'])],
             roles: resultPosition.filter(item => item.code === 'NV'),
         }));
         for (let index = 0; index < users.length - 1; index++) {
@@ -167,9 +167,9 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
             departmentString: item['Chi nhánh'],
             type: resultCustomerType.identifiers[customerType.findIndex(type => type.code === item.type)],
             typeString: item.type,
-            sale: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.old_login === item.nhanvien_chamsoc)] || null,
-            saleName: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.old_login === item.nhanvien_chamsoc)]?.login || null,
-            branch: {id: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.old_login === item.nhanvien_chamsoc)]?.branch?.id || null} ,
+            sale: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.login === item['Nhân viên mã mới'])] || null,
+            saleName: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.login === item['Nhân viên mã mới'])]?.login || null,
+            branch: {id: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.login === item['Nhân viên mã mới'])]?.branch?.id || null} ,
             contactName: item.contact_name,
             city: city.filter(element => element.label.toLowerCase().includes(item.city_name.toLowerCase()))[0]?.value || '',
             district: districts.filter(element => element.label.toLowerCase().includes(item.district_name.toLowerCase()))[0]?.value || '',
@@ -301,13 +301,13 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
         const savedProductGroups = resultProductGroup;
 
         const productList = products.map(item => ({
-            code: getProductCode(item.newname, item['Thương hiệu'], item['Nhóm sản phẩm'], item.capacity),
-            name: item.newname,
+            code: getProductCode(item['tên CRM chính thức'], item['Thương hiệu'], item['Nhóm sản phẩm'], item['Dung tích']),
+            name: item['tên CRM chính thức'],
             old_id: item.id.toString(),
             status: ProductStatus.ACTIVE,
-            price: item.agent_price,
-            volume: isNaN(Number(item.capacity)) ? 0 : Number(item.capacity),
-            agentPrice: item.agent_price,
+            price: item['Giá bán'],
+            volume: isNaN(Number(item['Dung tích'])) ? 0 : Number(item['Dung tích']),
+            agentPrice: item['Giá bán'],
             unit: UnitType.Cái,
             productGroup:
         savedProductGroups[
