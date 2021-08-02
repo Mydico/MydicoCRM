@@ -25,7 +25,7 @@ const TheHeaderDropdown = () => {
           <strong>
             {account.lastName} {account.firstName}
           </strong>
-          <span> {account.department.name}</span>
+          <span> {account.department?.name || ''}</span>
         </CLabel>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
