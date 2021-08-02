@@ -67,7 +67,7 @@ const CreateBranch = () => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }; history.goBack();
+      history.goBack();
     }
   }, [initialState.updatingSuccess]);
   const onSelectGroupPermission = ({ value }) => {
