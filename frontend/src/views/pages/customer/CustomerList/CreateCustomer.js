@@ -79,7 +79,7 @@ const CreateCustomer = () => {
   useEffect(() => {
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getChildTreeDepartment({ id: account.department.id }));
+    dispatch(getChildTreeDepartment({ id: account.department?.id }));
   }, []);
   useEffect(() => {
     console.log(initialDepartmentState.allChild);
