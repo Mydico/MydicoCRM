@@ -16,6 +16,7 @@ const relationshipNames = [];
 relationshipNames.push('customer');
 relationshipNames.push('customer.sale');
 relationshipNames.push('sale');
+relationshipNames.push('sale.branch');
 relationshipNames.push('customer.department');
 relationshipNames.push('customer.type');
 relationshipNames.push('approver');
@@ -124,7 +125,7 @@ export class ReceiptService {
       transaction.customerName = entity.customer.name;
       transaction.sale = entity.sale;
       transaction.saleName = entity.sale.code;
-      transaction.branch= entity.branch;
+      transaction.branch= entity.sale.branch;
       transaction.department = entity.department;
       transaction.receipt = entity;
       transaction.collectMoney = entity.money;

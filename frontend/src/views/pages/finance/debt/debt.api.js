@@ -74,7 +74,16 @@ export const getCustomerDebts = createAsyncThunk(
 
 export const createCustomerDebts = createAsyncThunk('api/customer-debits/create', async (body, thunkAPI) => {
   try {
-    const result = await axios.post('api/customer-debits', body);
+    const result = await axios.post('api/transactions', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const mockTransfer = createAsyncThunk('api/customers/many', async (body, thunkAPI) => {
+  try {
+    const result = await axios.put('api/customers/many', body);
     return { data: result.data, headers: result.headers, statusCode: result.status };
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

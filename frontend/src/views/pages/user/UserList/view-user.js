@@ -160,7 +160,7 @@ const ViewUser = props => {
       <CCardHeader>
         <CCardTitle>Xem thông tin người dùng</CCardTitle>
         <CFormGroup className="d-flex justify-content-start">
-        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/customers/many').length > 0) && (
+        {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/customers/many').length > 0) && (
           <CButton type="submit" size="md" color="primary" onClick={toCustomer(initValues)}>
             <CIcon name="cil-save" /> Điều phối khách hàng
           </CButton>

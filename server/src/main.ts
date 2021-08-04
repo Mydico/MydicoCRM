@@ -94,54 +94,54 @@ async function bootstrap(): Promise<void> {
 
     await app.listen(port, () => {});
     logger.log(`Application listening on port ${port}`);
-    const permissionServices = app.get(PermissionService);
-    const permissionTypeServices = app.get(PermissionTypeService);
-    await permissionServices.clear();
-    await permissionTypeServices.clear();
-    const permissionList: Permission[] = [];
-    const permissionTypeList: PermissionType[] = [];
+    // const permissionServices = app.get(PermissionService);
+    // const permissionTypeServices = app.get(PermissionTypeService);
+    // await permissionServices.clear();
+    // await permissionTypeServices.clear();
+    // const permissionList: Permission[] = [];
+    // const permissionTypeList: PermissionType[] = [];
 
-    fastifyInstance.routes.forEach(element => {
-        const length = element.path.split('/').length;
-        const splitedEndpoint = element.path.split('/').splice(2, length - 1);
-        let type = '';
-        if (splitedEndpoint.length > 0) {
-            type = splitedEndpoint[0];
-        }
-        if (type) {
-            const desc = permissionDescriptionNormalize(splitedEndpoint, false);
-            const perType: PermissionType = {
-                name: type,
-                description: `Quản lý ${permissionDescriptionNormalize(splitedEndpoint, true)}`,
-                status:
-          blackList.filter(value => type.includes(value)).length > 0 || type === 'reports'
-              ? PermissionGroupStatus.DISABLED
-              : PermissionGroupStatus.ACTIVE,
-            };
-            element.methods.forEach(method => {
-                const foundedException = splitedEndpoint.filter(item => removeExceptional.includes(item));
-                const per: Permission = {
-                    action: method,
-                    resource: element.path,
-                    type,
-                    typeName: `Quản lý ${resourceDesc[type] || ''}`,
-                    status:
-            blackList.filter(value => element.path.includes(value)).length > 0 ||
-            blackListPermission.filter(value => element.path === value.url && method === value.method).length > 0
-                ? PermissionStatus.NONEPUBLIC
-                : PermissionStatus.PUBLIC,
-                    description: `${foundedException.length > 0 ? '' : actionDesc[method]} ${desc}`,
-                };
+    // fastifyInstance.routes.forEach(element => {
+    //     const length = element.path.split('/').length;
+    //     const splitedEndpoint = element.path.split('/').splice(2, length - 1);
+    //     let type = '';
+    //     if (splitedEndpoint.length > 0) {
+    //         type = splitedEndpoint[0];
+    //     }
+    //     if (type) {
+    //         const desc = permissionDescriptionNormalize(splitedEndpoint, false);
+    //         const perType: PermissionType = {
+    //             name: type,
+    //             description: `Quản lý ${permissionDescriptionNormalize(splitedEndpoint, true)}`,
+    //             status:
+    //       blackList.filter(value => type.includes(value)).length > 0 || type === 'reports'
+    //           ? PermissionGroupStatus.DISABLED
+    //           : PermissionGroupStatus.ACTIVE,
+    //         };
+    //         element.methods.forEach(method => {
+    //             const foundedException = splitedEndpoint.filter(item => removeExceptional.includes(item));
+    //             const per: Permission = {
+    //                 action: method,
+    //                 resource: element.path,
+    //                 type,
+    //                 typeName: `Quản lý ${resourceDesc[type] || ''}`,
+    //                 status:
+    //         blackList.filter(value => element.path.includes(value)).length > 0 ||
+    //         blackListPermission.filter(value => element.path === value.url && method === value.method).length > 0
+    //             ? PermissionStatus.NONEPUBLIC
+    //             : PermissionStatus.PUBLIC,
+    //                 description: `${foundedException.length > 0 ? '' : actionDesc[method]} ${desc}`,
+    //             };
 
-                permissionList.push(per);
-                permissionTypeList.push(perType);
-            });
-        }
-    });
-    await permissionServices.saveMany(permissionList);
-    await permissionTypeServices.saveMany(
-        Array.from(new Set(permissionTypeList.map(a => a.name))).map(name => permissionTypeList.find(a => a.name === name))
-    );
+    //             permissionList.push(per);
+    //             permissionTypeList.push(perType);
+    //         });
+    //     }
+    // });
+    // await permissionServices.saveMany(permissionList);
+    // await permissionTypeServices.saveMany(
+    //     Array.from(new Set(permissionTypeList.map(a => a.name))).map(name => permissionTypeList.find(a => a.name === name))
+    // );
 }
 
 async function loadCloudConfig(): Promise<void> {

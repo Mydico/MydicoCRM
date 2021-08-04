@@ -1,10 +1,12 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/domain/user.entity';
+import { TransactionRepository } from '../repository/transaction.repository';
 import { Brackets, FindManyOptions, FindOneOptions, In, Like } from 'typeorm';
 import Customer from '../domain/customer.entity';
 import { CustomerRepository } from '../repository/customer.repository';
 import { DepartmentService } from './department.service';
+import { TransactionService } from './transaction.service';
 import { getDates } from './utils/helperFunc';
 import { checkCodeContext } from './utils/normalizeString';
 
@@ -19,7 +21,7 @@ relationshipNames.push('sale');
 export class CustomerService {
   logger = new Logger('CustomerService');
 
-  constructor(@InjectRepository(CustomerRepository) private customerRepository: CustomerRepository) {}
+  constructor(@InjectRepository(CustomerRepository) private customerRepository: CustomerRepository,@InjectRepository(TransactionRepository) private transactionRepository: TransactionRepository) {}
 
   async findById(id: string): Promise<Customer | undefined> {
     const options = { relations: relationshipNames };
@@ -277,6 +279,25 @@ export class CustomerService {
   async saveMany(customers: Customer[]): Promise<Customer[] | undefined> {
     const cacheKeyBuilder = `get_customers_department`;
     await this.customerRepository.removeCache([cacheKeyBuilder, 'Customer']);
+    // select max(id) as ids from transaction where saleId in(4,1) group by saleId
+    const getTransIds = this.transactionRepository
+      .createQueryBuilder('Transaction')
+      .select('MAX(Transaction.id)', 'id')
+      .where(`Transaction.saleId IN ${JSON.stringify(customers.map(item => item.id))
+        .replace('[', '(')
+        .replace(']', ')')}`)
+      .groupBy('Transaction.saleId')
+
+    const rawData = await getTransIds.getRawMany();
+    console.log(rawData)
+    const debt = await this.transactionRepository.find({where: {
+      id: In(rawData.map(item => item.id))
+    }})
+    const customerHaveDebt = debt.filter(item => item.earlyDebt > 0)
+    if(customerHaveDebt.length > 0){
+      const customerCode = `${customerHaveDebt.map(item => item.customerCode).join(', ')}`
+      throw new HttpException(`Khách hàng ${customerCode} còn công nợ.Hãy thanh toán hết công nợ trước khi chuyển`, HttpStatus.UNPROCESSABLE_ENTITY)
+    }
     return await this.customerRepository.save(customers);
   }
 

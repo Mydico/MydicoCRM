@@ -27,9 +27,10 @@ import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import _ from 'lodash';
 import { filterCustomer, getCustomer } from '../../customer/customer.api';
 import { currencyMask } from '../../../components/currency-input/currency-input';
-import { createCustomerDebts } from './debt.api';
+import { createCustomerDebts, mockTransfer } from './debt.api';
 import { validate } from '../../../../shared/utils/normalize';
 import { FormFeedback } from 'reactstrap';
+import { fetching } from './debt.reducer';
 
 const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 const validationSchema = function() {
@@ -78,19 +79,26 @@ const CreateDebt = () => {
   };
 
   const onSubmit = (values, { resetForm }) => {
-    values.debt = Number(values.debt.replace(/\D/g, ''));
+    values.debt = typeof values.debt === 'number' ? values.debt : Number(values.debt.replace(/\D/g, ''));
+
     const data = {
-      debt: values.debt,
+      earlyDebt: values.debt,
+      totalMoney: values.debt,
+      type: 'DEBIT',
       customer: values.customer,
-      department: values.customer.department,
-      lastModifiedDate: new Date(),
-      branch: values.customer.branch,
       customerName: values.customer.name,
       customerCode: values.customer.code,
+      department: values.customer.department,
+      lastModifiedDate: new Date(),
+      branch: values.customer.sale.branch,
+      previousDebt: 0,
       saleName: values.customer.sale.code,
       sale: values.customer.sale
     };
-    dispatch(createCustomerDebts(data));
+    // dispatch(fetching())
+    // dispatch(createCustomerDebts(data));
+
+    dispatch(mockTransfer([{ id: 1 }, { id: 4 }]));
   };
 
   useEffect(() => {

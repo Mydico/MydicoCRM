@@ -38,6 +38,10 @@ export class TransactionService {
     return await this.transactionRepository.findOne(options);
   }
 
+  async findManyByfields(options: FindOneOptions<Transaction>): Promise<[Transaction[] ,number]> {
+    return await this.transactionRepository.findAndCount(options);
+  }
+
   async countDebit(
     filter = {},
     departmentVisible = [],
@@ -114,11 +118,11 @@ export class TransactionService {
       if (isEmployee) {
         andQueryString += ` AND Transaction.sale = ${currentUser.id}`;
       }
-      if (currentUser.branch) {
-        if (!currentUser.branch.seeAll) {
-          andQueryString += ` AND Transaction.branch = ${currentUser.branch.id}`;
-        }
-      }
+      // if (currentUser.branch) {
+      //   if (!currentUser.branch.seeAll) {
+      //     andQueryString += ` AND Transaction.branch = ${currentUser.branch.id}`;
+      //   }
+      // }
     }
 
     const queryBuilder = this.transactionRepository

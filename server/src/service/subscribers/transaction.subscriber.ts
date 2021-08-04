@@ -25,8 +25,8 @@ export class TransactionSubscriber implements EntitySubscriberInterface<Transact
         const debtDashboard = new DebtDashboard();
         if (event.entity.type === TransactionType.DEBIT) {
             debtDashboard.amount = event.entity.totalMoney;
-            debtDashboard.departmentId = event.entity.order.department.id;
-            debtDashboard.userId = event.entity.order.sale.id || null;
+            debtDashboard.departmentId = event.entity.order?.department?.id || event.entity.department.id;
+            debtDashboard.userId = event.entity.order?.sale.id || event.entity.sale.id;
             debtDashboard.type = DashboardType.DEBT;
         }else if(event.entity.type === TransactionType.PAYMENT) {
             debtDashboard.amount = event.entity.collectMoney;
@@ -40,23 +40,23 @@ export class TransactionSubscriber implements EntitySubscriberInterface<Transact
             debtDashboard.type = DashboardType.DEBT_RETURN;
         }
         await debtRepo.save(debtDashboard);
-        let exist = await customerDebitRepo.findOne({ where: { customer: event.entity.customer } });
-        if (exist) {
-            exist.debt = event.entity.earlyDebt;
-            exist.lastModifiedDate = new Date();
-            exist.branch = foundedCustomer.branch;
-        } else {
-            exist = new CustomerDebit();
-            exist.debt = event.entity.earlyDebt;
-            exist.customer = event.entity.customer;
-            exist.department = foundedCustomer.department;
-            exist.lastModifiedDate = new Date();
-            exist.branch = foundedCustomer.branch;
-            exist.customerName = foundedCustomer.name;
-            exist.customerCode = foundedCustomer.code;
-            exist.saleName = foundedCustomer.sale.code;
-            exist.sale = event.entity.type === TransactionType.DEBIT? event.entity.order.sale : foundedCustomer.sale;
-        }
-        await customerDebitRepo.save(exist);
+        // let exist = await customerDebitRepo.findOne({ where: { customer: event.entity.customer } });
+        // if (exist) {
+        //     exist.debt = event.entity.earlyDebt;
+        //     exist.lastModifiedDate = new Date();
+        //     exist.branch = foundedCustomer.branch;
+        // } else {
+        //     exist = new CustomerDebit();
+        //     exist.debt = event.entity.earlyDebt;
+        //     exist.customer = event.entity.customer;
+        //     exist.department = foundedCustomer.department;
+        //     exist.lastModifiedDate = new Date();
+        //     exist.branch = foundedCustomer.branch;
+        //     exist.customerName = foundedCustomer.name;
+        //     exist.customerCode = foundedCustomer.code;
+        //     exist.saleName = foundedCustomer.sale.code;
+        //     exist.sale = event.entity.type === TransactionType.DEBIT? event.entity.order.sale : foundedCustomer.sale;
+        // }
+        // await customerDebitRepo.save(exist);
     }
 }
