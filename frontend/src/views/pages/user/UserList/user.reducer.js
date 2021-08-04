@@ -1,5 +1,5 @@
 import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
-import {creatingUser, getUser, getDetailUser, updateUser, getTranporter, changePassword, updateUserInfo} from './user.api';
+import {creatingUser, getUser, getDetailUser, updateUser, getTranporter, changePassword, updateUserInfo, getExactUser} from './user.api';
 
 const initialState = {
   loading: false,
@@ -73,7 +73,15 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getUser.rejected]: (state ) => {
-      state.loading = false;
+      state.initialState.loading = false;
+    },
+    [getExactUser.fulfilled]: (state, action) => {
+      usersAdapter.setAll(state, action.payload.data);
+      state.initialState.totalItem = action.payload.total;
+      state.initialState.loading = false;
+    },
+    [getExactUser.rejected]: (state ) => {
+      state.initialState.loading = false;
     },
     [getTranporter.fulfilled]: (state, action) => {
       usersAdapter.setAll(state, action.payload.data);
@@ -81,7 +89,7 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getTranporter.rejected]: (state ) => {
-      state.loading = false;
+      state.initialState.loading = false;
     },
   },
 });

@@ -95,10 +95,10 @@ const CreateDebt = () => {
       saleName: values.customer.sale.code,
       sale: values.customer.sale
     };
-    // dispatch(fetching())
-    // dispatch(createCustomerDebts(data));
+    dispatch(fetching())
+    dispatch(createCustomerDebts(data));
 
-    dispatch(mockTransfer([{ id: 1 }, { id: 4 }]));
+    // dispatch(mockTransfer([{ id: 1 }, { id: 4 }]));
   };
 
   useEffect(() => {

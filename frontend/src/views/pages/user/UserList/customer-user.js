@@ -29,7 +29,7 @@ import AdvancedTable from '../../../components/table/AdvancedTable';
 import { CSVLink } from 'react-csv';
 import Select from 'react-select';
 import { globalizedUserSelectors } from './user.reducer.js';
-import { getUser } from './user.api.js';
+import { getExactUser, getUser } from './user.api.js';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 const computedItems = items => {
@@ -145,7 +145,7 @@ const CustomerUser = props => {
       localStorage.removeItem('params');
     }
     dispatch(getCustomer(params));
-    dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC' }));
+    dispatch(getExactUser({ page: 0, size: size, sort: 'createdDate,DESC', department: location.state.department.id, branch: location.state.branch.id }));
 
     window.scrollTo(0, 100);
   }, [activePage, size]);
@@ -158,8 +158,8 @@ const CustomerUser = props => {
           size: customerSize,
           sort: 'createdDate,DESC',
           sale: selectedUser.id,
-          department: location.state.department.id,
-          branch: location.state.branch.id,
+          department: selectedUser.department.id,
+          branch: selectedUser.branch.id,
           dependency: true
         })
       ).then(resp => {
@@ -227,21 +227,23 @@ const CustomerUser = props => {
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(items), [customers]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(customers), [customers]);
 
-  const debouncedSearchCustomer = _.debounce(value => {
+  const debouncedSearchUser = _.debounce(value => {
     dispatch(
-      getUser({
+      getExactUser({
         page: 0,
         size: customerSize,
         sort: 'createdDate,DESC',
         code: value,
+        department: location.state.department.id, 
+        branch: location.state.branch.id,
         dependency: true
       })
     );
   }, 300);
 
-  const onSearchCustomer = value => {
+  const onSearchUser = value => {
     if (Object.keys(value).length > 0) {
-      debouncedSearchCustomer(value);
+      debouncedSearchUser(value);
     }
   };
 
@@ -287,7 +289,7 @@ const CustomerUser = props => {
   return (
     <CCard>
       <CCardHeader>
-        <CCardTitle>Khách hàng của nhân viên {location.state.login}</CCardTitle>
+        <CCardTitle>Khách hàng của nhân viên {location.state.login} - {location.state.department.name} - {location.state.branch.name} </CCardTitle>
       </CCardHeader>
       <CCardBody>
         <CRow>
@@ -406,12 +408,12 @@ const CustomerUser = props => {
               onChange={e => {
                 setSelectedUser(e.value);
               }}
-              onInputChange={onSearchCustomer}
+              onInputChange={onSearchUser}
               placeholder="Chọn nhân viên"
               options={users.map(item => {
                 return {
                   value: item,
-                  label: `${item.code || ''}-${item.firstName || ''}-${item.lastName}`
+                  label: `${item.code || ''}-${item.firstName || ''}-${item.lastName}-${item.department?.name || ''}-${item.branch?.name || ''}`
                 };
               })}
             />

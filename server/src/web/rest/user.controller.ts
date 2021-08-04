@@ -68,6 +68,34 @@ export class UserController {
     return res.send(results);
   }
 
+  @Get('/find/exact')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+      status: 200,
+      description: 'List all records',
+      type: User,
+  })
+  async findExact(@Req() req: Request, @Res() res): Promise<User[]> {
+      const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+      const filter: any = {};
+      Object.keys(req.query).forEach(item => {
+          if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+              filter[item] = req.query[item];
+          }
+      });
+
+      const [results, count] = await this.userService.filterExact(
+          {
+              skip: +pageRequest.page * pageRequest.size,
+              take: +pageRequest.size,
+              order: pageRequest.sort.asOrder(),
+          },
+          filter,
+      );
+      HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+      return res.send(results);
+  }
+
   @Get('/')
   @ApiResponse({
     status: 200,
@@ -112,7 +140,6 @@ export class UserController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async createUser(@Res() res: Response, @Body() user: User): Promise<Response> {
-    user.password = '123456';
     const created = await this.userService.save(user);
     HeaderUtil.addEntityCreatedHeaders(res, 'User', created.id);
     return res.send(created);

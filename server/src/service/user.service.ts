@@ -37,6 +37,38 @@ export class UserService {
         return this.flatAuthorities(result);
     }
 
+    async filterExact(options: FindManyOptions<User>, filter = {}): Promise<[User[], number]> {
+        options.cache = 3600000;
+        let queryString = '';
+        const length = Object.keys(filter).length;
+        Object.keys(filter).forEach((item, index) => {
+          if (item === 'branch') return;
+          if (item === 'department') return;
+          queryString += `User.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'OR '}`;
+        });
+        let andQueryString = '1=1 ';
+    
+        if (filter['department']) {
+          andQueryString += ` AND User.department = ${filter['department']}`;
+        }
+        if (filter['branch']) {
+          andQueryString += ` AND User.branch = ${filter['branch']}`;
+        }
+        console.log(andQueryString)
+        const queryBuilder = this.userRepository
+          .createQueryBuilder('User')
+          .leftJoinAndSelect('User.branch', 'branch')
+          .leftJoinAndSelect('User.department', 'department')
+          .where(andQueryString)
+          .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+          .skip(options.skip)
+          .take(options.take);
+    
+        const result = await queryBuilder.getManyAndCount();
+        result[1] = 0;
+        return result;
+      }
+
     async findTransporter(options: FindManyOptions<User>, filter = {}, departmentId): Promise<User[]> {
         let queryString = '';
         Object.keys(filter).forEach((item, index) => {
@@ -131,13 +163,17 @@ export class UserService {
         user = this.convertInAuthorities(user);
         await this.userRepository.removeCache([user.login, 'get_users']);
         if (!user.id) {
+            const code = `${user.department.code}_${user.branch.code}_${user.login}`.toLowerCase()
             const foundedUser = await this.userRepository.find({
-                code: Like(`%${user.code}%`),
+                code: Like(`%${code}%`),
             });
+            user.code = code
             user = checkCodeContext(user, foundedUser);
+            user.login = code
         }
+       
         const result = await this.userRepository.save(user);
-        await this.userRepository.query('update customer, user set customer.branchId = user.branchId where customer.saleId = user.id;')
+        await this.userRepository.query('update User, user set User.branchId = user.branchId where User.saleId = user.id;')
         const founded = await this.roleService.filterGroupingPolicies(1, result.login);
         await this.roleService.removeGroupingPolicies(founded);
         const newGroupingRules = [];

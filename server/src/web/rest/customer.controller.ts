@@ -121,13 +121,11 @@ export class CustomerController {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const filter: any = {};
         Object.keys(req.query).forEach(item => {
-            if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'department' && item !== 'dependency') {
+            if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
                 filter[item] = req.query[item];
             }
         });
 
-        const currentUser = req.user as User;
-        let departmentVisible: any = [currentUser.department.id];
         const [results, count] = await this.customerService.filterExact(
             {
                 skip: +pageRequest.page * pageRequest.size,
@@ -135,7 +133,6 @@ export class CustomerController {
                 order: pageRequest.sort.asOrder(),
             },
             filter,
-            departmentVisible,
         );
         HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return res.send(results);

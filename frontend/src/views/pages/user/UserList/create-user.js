@@ -36,6 +36,8 @@ const validationSchema = function() {
     login: Yup.string()
       .min(3, `Tên đăng nhập phải lớn hơn 5 kí tự`)
       .required('Tên đăng nhập không để trống'),
+    department: Yup.object().required('Không để trống chi nhánh'),
+    branch: Yup.object().required('Không để trống phòng ban'),
     password: Yup.string()
       .min(5, `Mật khẩu phải lớn hơn 5 kí tự`)
       .required('Mật khẩu không để trống'),
@@ -171,7 +173,10 @@ const CreateUser = () => {
                       name="login"
                       id="login"
                       placeholder="Tên đăng nhập"
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        const validLogin = e.target.value.replace(/[`~0-9!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
+                        setFieldValue('login', validLogin)
+                      }}
                       onBlur={handleBlur}
                       value={values.login}
                     />
@@ -188,7 +193,6 @@ const CreateUser = () => {
                           autoComplete="family-name"
                           valid={errors.firstName || null}
                           invalid={errors.firstName}
-                          required
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.firstName}

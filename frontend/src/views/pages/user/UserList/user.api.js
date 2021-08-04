@@ -10,6 +10,15 @@ export const getUser = createAsyncThunk('api/users', async (params = { page: 0, 
   }
 });
 
+export const getExactUser = createAsyncThunk('api/users/exact', async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
+  try {
+    const result = await axios.get('api/users/find/exact', { params: params });
+    return { data: result.data, total: result.headers['x-total-count'] };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const getTranporter = createAsyncThunk(
   'api/users/transporter',
   async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {

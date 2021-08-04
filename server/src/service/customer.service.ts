@@ -33,25 +33,23 @@ export class CustomerService {
     return await this.customerRepository.findOne(options);
   }
 
-  async filterExact(options: FindManyOptions<Customer>, filter = {}, departmentVisible = []): Promise<[Customer[], number]> {
+  async filterExact(options: FindManyOptions<Customer>, filter = {}): Promise<[Customer[], number]> {
     options.cache = 3600000;
     let queryString = '';
     const length = Object.keys(filter).includes('sale') ? Object.keys(filter).length - 1 : Object.keys(filter).length;
     Object.keys(filter).forEach((item, index) => {
       if (item === 'sale') return;
       if (item === 'branch') return;
+      if (item === 'department') return;
       queryString += `Customer.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'AND '}`;
     });
     let andQueryString = '1=1 ';
 
-    if (departmentVisible.length > 0) {
-      andQueryString += `AND Customer.department IN ${JSON.stringify(departmentVisible)
-        .replace('[', '(')
-        .replace(']', ')')}`;
-    }
-
     if (filter['sale']) {
       andQueryString += ` AND Customer.sale = ${filter['sale']}`;
+    }
+    if (filter['department']) {
+      andQueryString += ` AND Customer.department = ${filter['department']}`;
     }
     if (filter['branch']) {
       andQueryString += ` AND Customer.branch = ${filter['branch']}`;
@@ -283,16 +281,17 @@ export class CustomerService {
     const getTransIds = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select('MAX(Transaction.id)', 'id')
-      .where(`Transaction.saleId IN ${JSON.stringify(customers.map(item => item.id))
+      .where(`Transaction.customerId IN ${JSON.stringify(customers.map(item => item.id))
         .replace('[', '(')
         .replace(']', ')')}`)
-      .groupBy('Transaction.saleId')
+      .groupBy('Transaction.customerId')
 
     const rawData = await getTransIds.getRawMany();
     console.log(rawData)
     const debt = await this.transactionRepository.find({where: {
       id: In(rawData.map(item => item.id))
     }})
+    console.log(debt)
     const customerHaveDebt = debt.filter(item => item.earlyDebt > 0)
     if(customerHaveDebt.length > 0){
       const customerCode = `${customerHaveDebt.map(item => item.customerCode).join(', ')}`
