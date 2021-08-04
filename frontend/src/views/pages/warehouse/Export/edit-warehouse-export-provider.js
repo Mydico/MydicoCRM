@@ -33,6 +33,7 @@ import { WarehouseImportType } from './contants';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -330,6 +331,7 @@ const EditWarehouseExportProvider = props => {
                                 min={1}
                                 name="code"
                                 id="code"
+                                onKeyDown={blockInvalidChar}
                                 onChange={event => onChangeQuantity(event, index)}
                                 onBlur={handleBlur}
                                 value={item.quantity}

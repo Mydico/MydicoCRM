@@ -203,7 +203,7 @@ const Bill = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    if(value) debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const toEditBill = typeId => {
@@ -213,6 +213,8 @@ const Bill = props => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       setModal(false);
+      dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+      window.scrollTo(0, 100);
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
@@ -467,7 +469,9 @@ const Bill = props => {
   }, 300);
 
   const onSearchUser = value => {
-    debouncedSearchUser(value);
+    if (value) {
+      debouncedSearchUser(value);
+    }
   };
 
   return (
@@ -560,7 +564,6 @@ const Bill = props => {
             )
           }}
           scopedSlots={{
-           
             bill: (item, index) => <td> {(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
@@ -596,7 +599,7 @@ const Bill = props => {
                     <h5>Thông tin vận đơn</h5>
                     <CRow className="mb-4">
                       <CCol sm="4">
-                      <h6 className="mb-1">Tới:</h6>
+                        <h6 className="mb-1">Tới:</h6>
                         <div>
                           <strong>{item?.customer?.name || ''}</strong>
                         </div>

@@ -13,6 +13,7 @@ const successMessageMapping = {
   'MydicoCRM.ProductGroup.updated': 'Chỉnh sửa Nhóm sản phẩm thành công',
   'MydicoCRM.ProductBrand.created': 'Tạo mới Thương hiệu thành công',
   'MydicoCRM.ProductBrand.updated': 'Chỉnh sửa Thương hiệu thành công',
+  'MydicoCRM.Bill.updated': 'Chỉnh sửa vận đơn thành công',
   'MydicoCRM.Product.created': 'Tạo mới sản phẩm thành công',
   'MydicoCRM.Product.updated': 'Chỉnh sửa sản phẩm thành công',
   'MydicoCRM.Customer.created': 'Tạo mới khách hàng thành công',

@@ -35,6 +35,7 @@ import { WarehouseImportType } from './contants';
 import { globalizedProviderSelectors } from '../Provider/provider.reducer';
 import { getProvider } from '../Provider/provider.api';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -303,6 +304,7 @@ const CreateWarehouseExportProvider = () => {
                               <CInput
                                 type="number"
                                 min={1}
+                                onKeyDown={blockInvalidChar}
                                 name="code"
                                 id="code"
                                 onChange={event => onChangeQuantity(event, index)}

@@ -32,6 +32,8 @@ import { filterProduct, getProduct } from '../../product/ProductList/product.api
 import { WarehouseImportType } from './contants';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { blockInvalidChar } from '../../../../shared/utils/helper';
+
 const validationSchema = function() {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -333,6 +335,7 @@ const EditWarehouseExport = props => {
                                 min={1}
                                 name="code"
                                 id="code"
+                                onKeyDown={blockInvalidChar}
                                 onChange={event => onChangeQuantity(event, index)}
                                 onBlur={handleBlur}
                                 value={item.quantity}

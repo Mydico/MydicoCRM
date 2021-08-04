@@ -32,6 +32,7 @@ import { WarehouseImportType } from './contants';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -246,6 +247,7 @@ const CreateWarehouse = () => {
                                 type="number"
                                 min={1}
                                 name="code"
+                                onKeyDown={blockInvalidChar}
                                 id="code"
                                 onChange={event => onChangeQuantity(event, index)}
                                 onBlur={handleBlur}

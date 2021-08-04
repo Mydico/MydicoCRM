@@ -31,7 +31,8 @@ const mappingStatus = {
   SHIPPING: 'ĐANG VẬN CHUYỂN',
   SUCCESS: 'GIAO THÀNH CÔNG',
   COD_CANCEL: 'HỦY VẬN ĐƠN',
-  CREATED: 'CHỜ DUYỆT VẬN ĐƠN'
+  CREATED: 'CHỜ DUYỆT VẬN ĐƠN',
+  DELETED: 'ĐÃ XÓA'
 };
 
 const statusList = [
@@ -54,6 +55,10 @@ const statusList = [
   {
     value: 'CANCEL',
     label: 'ĐÃ HỦY'
+  },
+  {
+    value: 'DELETE',
+    label: 'ĐÃ XÓA'
   },
   {
     value: 'COD_APPROVED',
@@ -135,6 +140,8 @@ const getBadge = status => {
       return 'warning';
     case 'CANCEL':
       return 'danger';
+    case 'DELETED':
+        return 'danger';
     default:
       return 'primary';
   }
@@ -525,20 +532,7 @@ const Order = props => {
           </CRow>
         );
       default:
-        return (
-          <CButton
-            color="info"
-            variant="outline"
-            shape="square"
-            size="sm"
-            onClick={event => {
-              event.stopPropagation();
-              toSeeBill(item);
-            }}
-          >
-            XEM VẬN ĐƠN
-          </CButton>
-        );
+        return null;
     }
   };
 

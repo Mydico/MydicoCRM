@@ -22,6 +22,7 @@ import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDetailPromotion, updatePromotion } from './promotion.api';
 import _ from 'lodash';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedPromotionSelectors } from './promotion.reducer';
@@ -298,6 +299,8 @@ const EditPromotion = props => {
                                 onChange={event => onChangeProductPromotion(event.target.value, index, 'buy')}
                                 invalid={!productList[index].buy}
                                 valid={productList[index].buy}
+                                onKeyDown={blockInvalidChar}
+                                min={0}
                                 onBlur={handleBlur}
                                 value={productList[index].buy}
                               />
@@ -310,6 +313,8 @@ const EditPromotion = props => {
                                 id="gift"
                                 placeholder="Dung tích"
                                 autoComplete="gift"
+                                onKeyDown={blockInvalidChar}
+                                min={0}
                                 onChange={event => onChangeProductPromotion(event.target.value, index, 'gift')}
                                 invalid={!productList[index].gift}
                                 valid={productList[index].gift}

@@ -43,6 +43,7 @@ const CreateDebt = () => {
   const { initialState } = useSelector(state => state.debt);
 
   const initialValues = {
+    customer: {},
     debt: '0'
   };
 

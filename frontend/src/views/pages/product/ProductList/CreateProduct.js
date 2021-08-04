@@ -42,6 +42,7 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -204,6 +205,8 @@ const CreateProduct = () => {
                       <CInput
                         type="number"
                         name="volume"
+                        onKeyDown={blockInvalidChar}
+                        min={0}
                         id="volume"
                         placeholder="Dung tích"
                         autoComplete="volume"

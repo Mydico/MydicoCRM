@@ -30,6 +30,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import CurrencyInput from '../../../components/currency-input/currency-input';
 import {getCodeByName} from '../../../../shared/utils/normalize';
+import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -247,6 +248,8 @@ const EditProduct = (props) => {
                     <CInput
                       type="number"
                       name="volume"
+                      onKeyDown={blockInvalidChar}
+                      min={0}
                       id="volume"
                       placeholder="Dung tích"
                       autoComplete="volume"

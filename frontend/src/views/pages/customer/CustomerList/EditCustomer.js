@@ -27,6 +27,8 @@ import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize'
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer';
+import { globalizedBranchSelectors } from '../../user/UserBranch/branch.reducer';
+import { getBranch } from '../../user/UserBranch/branch.api';
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = function() {
@@ -50,8 +52,8 @@ const validationSchema = function() {
   });
 };
 
-const { selectAll } = globalizedDepartmentSelectors;
 const { selectById } = globalizedCustomerSelectors;
+const { selectAll: selectAllBranch } = globalizedBranchSelectors;
 
 const EditCustomer = props => {
   const ref = useRef(null);
@@ -79,11 +81,14 @@ const EditCustomer = props => {
 
   const departments = [account.department];
   const customer = useSelector(state => selectById(state, props.match.params.id));
+  const branches = useSelector(selectAllBranch);
 
   useEffect(() => {
     dispatch(getDetailCustomer({ id: props.match.params.id, dependency: true }));
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getBranch({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true }));
+
   }, []);
 
   useEffect(() => {
@@ -332,11 +337,32 @@ const EditCustomer = props => {
                       placeholder="Chi nhánh"
                       options={departments.map(item => ({
                         value: item,
-                        label: item.name
+                        label: item?.name || ''
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
                   </CFormGroup>
+                  <CFormGroup>
+                <CLabel htmlFor="userName">Phòng ban</CLabel>
+                <Select
+                  name="branch"
+                  onChange={e => {
+                    setFieldValue('branch', e?.value || null);
+                  }}
+                  value={{
+                    value: values.branch,
+                    label: values.branch?.name
+                  }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  placeholder="Chọn Phòng ban"
+                  options={branches.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
+                <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
+              </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="code">Trạng thái</CLabel>
                     <Select

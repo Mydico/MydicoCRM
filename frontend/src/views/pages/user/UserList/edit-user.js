@@ -99,7 +99,7 @@ const EditUser = props => {
     dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getUserRole({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getBranch({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getBranch({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true }));
     return () => {
       dispatch(reset());
     };

@@ -643,7 +643,7 @@ const CreateOrder = props => {
                           <td style={{ width: 80 }}>
                             <CInput
                               type="number"
-                              min="0"
+                              min={0}
                               onKeyDown={blockInvalidChar}
                               onChange={event => onChangeQuantity(event, index)}
                               onBlur={handleBlur}
