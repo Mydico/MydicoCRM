@@ -137,6 +137,7 @@ export class UserService {
             user = checkCodeContext(user, foundedUser);
         }
         const result = await this.userRepository.save(user);
+        await this.userRepository.query('update customer, user set customer.branchId = user.branchId where customer.saleId = user.id;')
         const founded = await this.roleService.filterGroupingPolicies(1, result.login);
         await this.roleService.removeGroupingPolicies(founded);
         const newGroupingRules = [];

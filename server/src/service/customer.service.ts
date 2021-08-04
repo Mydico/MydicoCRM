@@ -12,6 +12,7 @@ const relationshipNames = [];
 relationshipNames.push('status');
 relationshipNames.push('type');
 relationshipNames.push('department');
+relationshipNames.push('branch');
 relationshipNames.push('sale');
 
 @Injectable()
@@ -30,11 +31,7 @@ export class CustomerService {
     return await this.customerRepository.findOne(options);
   }
 
-  async filterExact(
-    options: FindManyOptions<Customer>,
-    filter = {},
-    departmentVisible = [],
-  ): Promise<[Customer[], number]> {
+  async filterExact(options: FindManyOptions<Customer>, filter = {}, departmentVisible = []): Promise<[Customer[], number]> {
     options.cache = 3600000;
     let queryString = '';
     const length = Object.keys(filter).includes('sale') ? Object.keys(filter).length - 1 : Object.keys(filter).length;
@@ -66,14 +63,14 @@ export class CustomerService {
       .where(andQueryString)
       .orderBy(`Customer.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
-      .take(options.take)
+      .take(options.take);
 
     const count = this.customerRepository
       .createQueryBuilder('Customer')
       .where(andQueryString)
       .orderBy(`Customer.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
-      .take(options.take)
+      .take(options.take);
 
     const result = await queryBuilder.getManyAndCount();
     result[1] = await count.getCount();
@@ -170,21 +167,21 @@ export class CustomerService {
     options.cache = 3600000;
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
-      if(item === 'findBirthday') return
+      if (item === 'findBirthday') return;
       queryString += `Customer.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
     });
     let andQueryString = '1=1 ';
-    if( filter['findBirthday']){
-      const startDate = new Date()
-      const endDate = new Date(new Date().setDate(new Date().getDate() + 7))
-      const listDate = getDates(startDate,endDate)
-      const listMonth = listDate.map(item => item.getMonth()+1);
+    if (filter['findBirthday']) {
+      const startDate = new Date();
+      const endDate = new Date(new Date().setDate(new Date().getDate() + 7));
+      const listDate = getDates(startDate, endDate);
+      const listMonth = listDate.map(item => item.getMonth() + 1);
       const listDay = listDate.map(item => item.getDate());
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  MONTH(Customer.dateOfBirth) in ${JSON.stringify(listMonth)
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  MONTH(Customer.dateOfBirth) in ${JSON.stringify(listMonth)
         .replace('[', '(')
         .replace(']', ')')} AND  DAY(Customer.dateOfBirth) IN ${JSON.stringify(listDay)
-          .replace('[', '(')
-          .replace(']', ')')} `;
+        .replace('[', '(')
+        .replace(']', ')')} `;
     }
     if (departmentVisible.length > 0) {
       andQueryString += `AND Customer.department IN ${JSON.stringify(departmentVisible)
@@ -255,15 +252,16 @@ export class CustomerService {
       const foundedCustomer = await this.customerRepository.findOne({
         code: customer.code
       });
-      if(foundedCustomer && foundedCustomer.id !== customer.id){
+      let tempCustomer = customer;
+      if (foundedCustomer && foundedCustomer.id !== customer.id) {
         const foundedCustomerList = await this.customerRepository.find({
           code: Like(`%${customer.code}%`)
         });
         const newCustomer = checkCodeContext(customer, foundedCustomerList);
-        return await this.customerRepository.save(newCustomer);
-      }else{
-        return await this.customerRepository.save(customer);
+        tempCustomer = newCustomer;
       }
+      const result = await this.customerRepository.save(tempCustomer);
+      return result;
     }
     const foundedCustomer = await this.customerRepository.find({
       code: Like(`%${customer.code}%`)
