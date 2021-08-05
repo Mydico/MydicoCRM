@@ -281,7 +281,9 @@ const CreateOrder = props => {
   }, 300);
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value);
+    if(value){
+      debouncedSearchProduct(value);
+    }
   };
 
   const debouncedSearchProductInStore = _.debounce((copyArr, index) => {
@@ -640,7 +642,7 @@ const CreateOrder = props => {
                             /> */}
                           </td>
                           <td>{item.product?.volume}</td>
-                          <td style={{ width: 80 }}>
+                          <td style={{ width: 130 }}>
                             <CInput
                               type="number"
                               min={0}
@@ -655,7 +657,7 @@ const CreateOrder = props => {
                                 <FormFeedback className="d-block">Số lượng sản phẩm và quà tặng lớn hơn số lượng trong kho</FormFeedback>
                               )}
                           </td>
-                          <td style={{ minWidth: 100 }}>
+                          <td style={{ minWidth: 100, maxWidth: 300 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}
@@ -676,7 +678,7 @@ const CreateOrder = props => {
                             }) || ''}
                           </td>
 
-                          <td style={{ width: 80 }}>
+                          <td style={{ width: 130 }}>
                             <CInput
                               type="number"
                               min={0}

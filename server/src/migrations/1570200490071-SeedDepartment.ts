@@ -116,17 +116,17 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
             .values(branches)
             .execute();
         const users = userhn.map(item => ({
-            login: item["tài khoản đăng nhập"],
+            login: item['tài khoản đăng nhập'],
             code: item["tài khoản đăng nhập"],
             lastName: item["Tên nhân viên"].split(' ')[0],
             firstName: item["Tên nhân viên"].split(' ').slice(1, item["Tên nhân viên"].split(' ').length).join(' '),
             password: '123456',
             email: '',
-            phone: item["Sốđiệnthoại"]?.toString() || '',
+            phone: item['Số điện thoại']?.toString() || '',
             // old_login: item.username,
             // old_id: item.id.toString(),
             activated: true,
-            branch: resultBranch.identifiers[branches.findIndex(branch => branch.code === item['Phòng Ban'])],
+            branch: resultBranch.identifiers[branches.findIndex(branch => branch.code === item['Mã Phòng Ban'])],
             department: resultDepartment[departments.findIndex(branch => branch.code === item['Mã chi nhánh'])],
             roles: resultPosition.filter(item => item.code === 'NV'),
         }));
@@ -140,6 +140,9 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
             }
         }
         const newGroupingRules = [];
+        const resultUsers = await conn
+        .getRepository(User)
+        .save(users);
         users.forEach((result, index) => {
             if (result.branch) {
                 newGroupingRules.push({ ptype: 'g', v0: branches[resultBranch.identifiers.findIndex(id => id === result.branch)].code, v1: result.login });
@@ -150,48 +153,102 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
         });
         await conn.createQueryBuilder().insert().into('casbin_rule', ['ptype', 'v0', 'v1']).values(newGroupingRules).execute();
 
-        const resultUsers = await conn
-            .getRepository(User)
-            .save(users);
-        const resultUsersWithOldData = resultUsers.map((entity, index) => ({
-            ...users[index],
-            ...entity,
-        }));
-        const customerList = customers.map(item => ({
-            old_id: item.id.toString(),
-            name: item.name,
-            address: item.address,
-            tel: item.tel.toString(),
-            code: `${item['Chi nhánh']}_${item.type}_${getCodeByCustomer(item.name)}`,
-            department: resultDepartment[departments.findIndex(branch => branch.code === item['Chi nhánh'])],
-            departmentString: item['Chi nhánh'],
-            type: resultCustomerType.identifiers[customerType.findIndex(type => type.code === item.type)],
-            typeString: item.type,
-            sale: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.login === item['Nhân viên mã mới'])] || null,
-            saleName: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.login === item['Nhân viên mã mới'])]?.login || null,
-            branch: {id: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.login === item['Nhân viên mã mới'])]?.branch?.id || null} ,
-            contactName: item.contact_name,
-            city: city.filter(element => element.label.toLowerCase().includes(item.city_name.toLowerCase()))[0]?.value || '',
-            district: districts.filter(element => element.label.toLowerCase().includes(item.district_name.toLowerCase()))[0]?.value || '',
-        }));
-        let lastestIndex = 1;
-        for (let index = 0; index < customerList.length - 1; index++) {
-            for (let innerIndex = index + 1; innerIndex < customerList.length; innerIndex++) {
-                if (customerList[innerIndex].code === customerList[index].code) {
-                    customerList[innerIndex].code = `${customerList[innerIndex].departmentString}_${customerList[innerIndex].typeString}_${getCodeByCustomer(customerList[innerIndex].name)}${lastestIndex}`;
-                    lastestIndex++;
-                }
+        const brand = brands.map(item => ({
+            code: item['Mã thương hiệu'],
+            name: item['tên thương hiệu']
+          }));
+      
+          const resultBrand = await conn.getRepository(ProductBrand).save(brand);
+          const productGroup = productGroups.map(item => ({
+            code: item['Mã nhóm SP'],
+            name: item['Tên nhóm sản phẩm'],
+            productBrand: resultBrand[brands.findIndex(brand => brand['Mã thương hiệu'] === item['tên thương hiệu'])]
+          }));
+      
+          const resultProductGroup = await conn.getRepository(ProductGroup).save(productGroup);
+      
+          const savedProductGroups = resultProductGroup;
+          const productList = products.map(item => ({
+            code: getProductCode(item['Tên CRM chính thức'], item['Thương hiệu'], item['Nhóm sản phẩm'], item['Dung tích']),
+            name: item['Tên CRM chính thức'],
+            // old_id: item.id.toString(),
+            status: ProductStatus.ACTIVE,
+            price: item['Giá bán'],
+            volume: isNaN(Number(item['Dung tích'])) ? 0 : Number(item['Dung tích']),
+            agentPrice: item['Giá bán'],
+            unit: UnitType.Cái,
+            productGroup:
+              savedProductGroups[
+                savedProductGroups.findIndex(
+                  pGroup =>
+                    pGroup.productBrand === resultBrand[brands.findIndex(brand => brand['Mã thương hiệu'] === item['Thương hiệu'])] &&
+                    pGroup.code === item['Nhóm sản phẩm']
+                )
+              ] || null,
+            productBrand: resultBrand[brands.findIndex(brand => brand['Mã thương hiệu'] === item['Thương hiệu'])]
+          }));
+      
+          const unique = [];
+      
+          const getDuplicate = arr => {
+            return arr.filter(o => {
+              if (unique.find(i => i.code === o.code)) {
+                return true;
+              }
+      
+              unique.push(o);
+              return false;
+            });
+          };
+      
+          const duplicates = getDuplicate(productList);
+          duplicates.forEach(element => {
+            const founded = duplicates.filter(item => item.code === element.code);
+            for (let index = 0; index < founded.length; index++) {
+              founded[index].code = `${founded[index].code}${index === 0 ? '' : '_' + index}`;
             }
-        }
+          });
+          await conn.getRepository(Product).save([...unique,...duplicates]);
+
+        // const resultUsersWithOldData = resultUsers.map((entity, index) => ({
+        //     ...users[index],
+        //     ...entity,
+        // }));
+        // const customerList = customers.map(item => ({
+        //     old_id: item.id.toString(),
+        //     name: item.name,
+        //     address: item.address,
+        //     tel: item.tel.toString(),
+        //     code: `${item['Chi nhánh']}_${item.type}_${getCodeByCustomer(item.name)}`,
+        //     department: resultDepartment[departments.findIndex(branch => branch.code === item['Chi nhánh'])],
+        //     departmentString: item['Chi nhánh'],
+        //     type: resultCustomerType.identifiers[customerType.findIndex(type => type.code === item.type)],
+        //     typeString: item.type,
+        //     sale: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.login === item['Nhân viên mã mới'])] || null,
+        //     saleName: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.login === item['Nhân viên mã mới'])]?.login || null,
+        //     branch: {id: resultUsersWithOldData[resultUsersWithOldData.findIndex(user => user.login === item['Nhân viên mã mới'])]?.branch?.id || null} ,
+        //     contactName: item.contact_name,
+        //     city: city.filter(element => element.label.toLowerCase().includes(item.city_name.toLowerCase()))[0]?.value || '',
+        //     district: districts.filter(element => element.label.toLowerCase().includes(item.district_name.toLowerCase()))[0]?.value || '',
+        // }));
+        // let lastestIndex = 1;
+        // for (let index = 0; index < customerList.length - 1; index++) {
+        //     for (let innerIndex = index + 1; innerIndex < customerList.length; innerIndex++) {
+        //         if (customerList[innerIndex].code === customerList[index].code) {
+        //             customerList[innerIndex].code = `${customerList[innerIndex].departmentString}_${customerList[innerIndex].typeString}_${getCodeByCustomer(customerList[innerIndex].name)}${lastestIndex}`;
+        //             lastestIndex++;
+        //         }
+        //     }
+        // }
 
 
-        const insertedCustomer = await conn
-            .getRepository(Customer)
-            .save(customerList);
-        const resultCustomerWithOldData = insertedCustomer.map((entity, index) => ({
-            ...entity,
-            old_id: customerList[index].old_id,
-        }));
+        // const insertedCustomer = await conn
+        //     .getRepository(Customer)
+        //     .save(customerList);
+        // const resultCustomerWithOldData = insertedCustomer.map((entity, index) => ({
+        //     ...entity,
+        //     old_id: customerList[index].old_id,
+        // }));
         // const orderList = orderJSON.map((item, index) => {
         //   return ({
         //     old_id: item.id,
@@ -280,58 +337,50 @@ export class SeedDepartment1570200490071 implements MigrationInterface {
         // })
         // await conn.getRepository(IncomeDashboard).save(incomeDash);
 
-        const brand = brands.map(item => ({
-            code: item['Mã thương hiệu'],
-            name: item['tên thương hiệu'],
-        }));
+        // const brand = brands.map(item => ({
+        //     code: item['Mã thương hiệu'],
+        //     name: item['tên thương hiệu'],
+        // }));
 
-        const resultBrand = await conn
-            .getRepository(ProductBrand)
-            .save(brand);
-        const productGroup = productGroups.map(item => ({
-            code: item['Mã nhóm SP'],
-            name: item['Tên nhóm sản phẩm'],
-            productBrand: resultBrand[brands.findIndex(brand => brand['Mã thương hiệu'] === item['tên thương hiệu'])],
-        }));
+        // const resultBrand = await conn
+        //     .getRepository(ProductBrand)
+        //     .save(brand);
+        // const productGroup = productGroups.map(item => ({
+        //     code: item['Mã nhóm SP'],
+        //     name: item['Tên nhóm sản phẩm'],
+        //     productBrand: resultBrand[brands.findIndex(brand => brand['Mã thương hiệu'] === item['tên thương hiệu'])],
+        // }));
 
-        const resultProductGroup = await conn
-            .getRepository(ProductGroup)
-            .save(productGroup);
+        // const resultProductGroup = await conn
+        //     .getRepository(ProductGroup)
+        //     .save(productGroup);
 
-        const savedProductGroups = resultProductGroup;
+        // const savedProductGroups = resultProductGroup;
 
-        const productList = products.map(item => ({
-            code: getProductCode(item['tên CRM chính thức'], item['Thương hiệu'], item['Nhóm sản phẩm'], item['Dung tích']),
-            name: item['tên CRM chính thức'],
-            // old_id: item.id.toString(),
-            status: ProductStatus.ACTIVE,
-            price: item['Giá bán'],
-            volume: isNaN(Number(item['Dung tích'])) ? 0 : Number(item['Dung tích']),
-            agentPrice: item['Giá bán'],
-            unit: UnitType.Cái,
-            productGroup:
-        savedProductGroups[
-            savedProductGroups.findIndex(
-                pGroup =>
-                    pGroup.productBrand ===
-            resultBrand[brands.findIndex(brand => brand['Mã thương hiệu'] === item['Thương hiệu'])] &&
-            pGroup.code === item['Nhóm sản phẩm']
-            )
-        ] || null,
-            productBrand: resultBrand[brands.findIndex(brand => brand['Mã thương hiệu'] === item['Thương hiệu'])],
-        }));
-        for (let index = 0; index < productList.length - 1; index++) {
-            for (let innerIndex = index + 1; innerIndex < productList.length; innerIndex++) {
-                let lastestDuplicate = '';
-                if (productList[innerIndex].code === productList[index].code) {
-                    productList[innerIndex].code = increment_alphanumeric_str(lastestDuplicate.length > 0 ? lastestDuplicate : `${productList[innerIndex].code}_0`);
-                    lastestDuplicate = productList[innerIndex].code;
-                }
-            }
-        }
-        const resultProduct = await conn
-            .getRepository(Product)
-            .save(productList);
+        // const productList = products.map(item => ({
+        //     code: getProductCode(item['tên CRM chính thức'], item['Thương hiệu'], item['Nhóm sản phẩm'], item['Dung tích']),
+        //     name: item['tên CRM chính thức'],
+        //     // old_id: item.id.toString(),
+        //     status: ProductStatus.ACTIVE,
+        //     price: item['Giá bán'],
+        //     volume: isNaN(Number(item['Dung tích'])) ? 0 : Number(item['Dung tích']),
+        //     agentPrice: item['Giá bán'],
+        //     unit: UnitType.Cái,
+        //     productGroup:
+        // savedProductGroups[
+        //     savedProductGroups.findIndex(
+        //         pGroup =>
+        //             pGroup.productBrand ===
+        //     resultBrand[brands.findIndex(brand => brand['Mã thương hiệu'] === item['Thương hiệu'])] &&
+        //     pGroup.code === item['Nhóm sản phẩm']
+        //     )
+        // ] || null,
+        //     productBrand: resultBrand[brands.findIndex(brand => brand['Mã thương hiệu'] === item['Thương hiệu'])],
+        // }));
+
+        // await conn
+        //     .getRepository(Product)
+        //     .save(productList);
 
         // const resultProductWithOldData = resultProduct.map((entity, index) => ({
         //     ...entity,

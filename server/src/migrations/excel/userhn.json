@@ -2,8 +2,8 @@
   {
     "STT": 1,
     "Tên nhân viên": "Kim Thị Thu",
-    "Phòng Ban": "KDBB",
-    "Sốđiệnthoại": 913784919,
+    "Mã Phòng Ban": "KDBB",
+    "Số điện thoại": 913784919,
     "tài khoản đăng nhập": "hn_kdbb_kimthithu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -11,8 +11,8 @@
   {
     "STT": 2,
     "Tên nhân viên": "Phùng Quang Diệp",
-    "Phòng Ban": "KDBB",
-    "Sốđiệnthoại": 948810730,
+    "Mã Phòng Ban": "KDBB",
+    "Số điện thoại": 948810730,
     "tài khoản đăng nhập": "hn_kdbb_phungquangdiep",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -20,8 +20,8 @@
   {
     "STT": 3,
     "Tên nhân viên": "Đào Ngọc Cường",
-    "Phòng Ban": "KDBB",
-    "Sốđiệnthoại": 915584509,
+    "Mã Phòng Ban": "KDBB",
+    "Số điện thoại": 915584509,
     "tài khoản đăng nhập": "hn_kdbb_daongoccuong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -29,8 +29,8 @@
   {
     "STT": 4,
     "Tên nhân viên": "Trần Thị Thảo",
-    "Phòng Ban": "KDBB",
-    "Sốđiệnthoại": 984353910,
+    "Mã Phòng Ban": "KDBB",
+    "Số điện thoại": 984353910,
     "tài khoản đăng nhập": "hn_kdbb_tranthithao",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -38,8 +38,8 @@
   {
     "STT": 5,
     "Tên nhân viên": "Trần Văn Tuấn",
-    "Phòng Ban": "KDBS",
-    "Sốđiệnthoại": 982088891,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 982088891,
     "tài khoản đăng nhập": "hn_kdbs_tranvantuan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -47,8 +47,8 @@
   {
     "STT": 6,
     "Tên nhân viên": "Nguyễn Thị Bích Nhàn",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 986294176,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 986294176,
     "tài khoản đăng nhập": "hn_kdbs_nguyenthibichnhan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -56,8 +56,8 @@
   {
     "STT": 7,
     "Tên nhân viên": "Đinh Thị Hiền",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 978873898,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 978873898,
     "tài khoản đăng nhập": "hn_kdbs_dinhthihien",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -65,8 +65,8 @@
   {
     "STT": 8,
     "Tên nhân viên": "Ngô Thị Hồng Mây",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 919358031,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 919358031,
     "tài khoản đăng nhập": "hn_kdbs_ngothihongmay",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -74,8 +74,8 @@
   {
     "STT": 9,
     "Tên nhân viên": "Dương Mạnh Tiến",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 902825858,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 902825858,
     "tài khoản đăng nhập": "hn_kdbs_duongmanhtien",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -83,8 +83,8 @@
   {
     "STT": 10,
     "Tên nhân viên": "Trần Trung Hiếu",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 916065079,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 916065079,
     "tài khoản đăng nhập": "hn_kdbs_trantrunghieu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -92,8 +92,8 @@
   {
     "STT": 11,
     "Tên nhân viên": "Nguyễn Tiến Nghị",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 982300151,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 982300151,
     "tài khoản đăng nhập": "hn_kdbs_nguyentiennghi",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -101,8 +101,8 @@
   {
     "STT": 12,
     "Tên nhân viên": "Vũ Văn Dụ",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 989611481,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 989611481,
     "tài khoản đăng nhập": "hn_kdbs_vuvandu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -110,8 +110,8 @@
   {
     "STT": 13,
     "Tên nhân viên": "Trịnh Minh Hiền",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 333689393,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 333689393,
     "tài khoản đăng nhập": "hn_kdbs_trinhminhhien",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -119,8 +119,8 @@
   {
     "STT": 14,
     "Tên nhân viên": "Nguyễn Đình Sơn",
-    "Phòng Ban": "Phó phòng KD",
-    "Sốđiệnthoại": 932291819,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 932291819,
     "tài khoản đăng nhập": "hn_kdbs_nguyendinhson",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -128,8 +128,8 @@
   {
     "STT": 15,
     "Tên nhân viên": "Lý Quốc Khánh",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 934583858,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 934583858,
     "tài khoản đăng nhập": "hn_kdbs_lyquockhanh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -137,8 +137,8 @@
   {
     "STT": 16,
     "Tên nhân viên": "Trần Văn Hải",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 987858632,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 987858632,
     "tài khoản đăng nhập": "hn_kdbs_tranvanhai",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -146,8 +146,8 @@
   {
     "STT": 17,
     "Tên nhân viên": "Trương Thị Hiếu",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 349625022,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 349625022,
     "tài khoản đăng nhập": "hn_kdbs_truongthihieu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -155,8 +155,8 @@
   {
     "STT": 18,
     "Tên nhân viên": "Trần Trọng Nam",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 936335779,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 936335779,
     "tài khoản đăng nhập": "hn_kdbs_trantrongnam",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -164,8 +164,8 @@
   {
     "STT": 19,
     "Tên nhân viên": "Vũ Thanh Tuyền",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 903493665,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 903493665,
     "tài khoản đăng nhập": "hn_kdbs_vuthanhtuyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -173,8 +173,8 @@
   {
     "STT": 20,
     "Tên nhân viên": "Trần Thị Thanh Hà",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 988494605,
+    "Mã Phòng Ban": "KDBS",
+    "Số điện thoại": 988494605,
     "tài khoản đăng nhập": "hn_kdbs_tranthithanhha",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -182,8 +182,8 @@
   {
     "STT": 21,
     "Tên nhân viên": "Nghiêm Xuân Tuyến",
-    "Phòng Ban": "GN",
-    "Sốđiệnthoại": 978282856,
+    "Mã Phòng Ban": "GN",
+    "Số điện thoại": 978282856,
     "tài khoản đăng nhập": "hn_gn_nghiemxuantuyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -191,8 +191,8 @@
   {
     "STT": 22,
     "Tên nhân viên": "Đỗ Tuấn Linh",
-    "Phòng Ban": "GN",
-    "Sốđiệnthoại": 982114836,
+    "Mã Phòng Ban": "GN",
+    "Số điện thoại": 982114836,
     "tài khoản đăng nhập": "hn_gn_dotuanlinh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -200,8 +200,8 @@
   {
     "STT": 23,
     "Tên nhân viên": "Đào Văn Thịnh",
-    "Phòng Ban": "GN",
-    "Sốđiệnthoại": 973499687,
+    "Mã Phòng Ban": "GN",
+    "Số điện thoại": 973499687,
     "tài khoản đăng nhập": "hn_gn_daovanthinh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -209,8 +209,8 @@
   {
     "STT": 24,
     "Tên nhân viên": "Phạm Tiến Thịnh",
-    "Phòng Ban": "GN",
-    "Sốđiệnthoại": 983739926,
+    "Mã Phòng Ban": "GN",
+    "Số điện thoại": 983739926,
     "tài khoản đăng nhập": "hn_gn_phamtienthinh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -218,8 +218,8 @@
   {
     "STT": 25,
     "Tên nhân viên": "Vũ Khắc Anh Tuấn",
-    "Phòng Ban": "GN",
-    "Sốđiệnthoại": 986936768,
+    "Mã Phòng Ban": "GN",
+    "Số điện thoại": 986936768,
     "tài khoản đăng nhập": "hn_gn_vukhacanhtuan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -227,8 +227,8 @@
   {
     "STT": 26,
     "Tên nhân viên": "Đào Xuân Dương",
-    "Phòng Ban": "GN",
-    "Sốđiệnthoại": 963693732,
+    "Mã Phòng Ban": "GN",
+    "Số điện thoại": 963693732,
     "tài khoản đăng nhập": "hn_gn_daoxuanduong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -236,8 +236,8 @@
   {
     "STT": 27,
     "Tên nhân viên": "Nguyễn Minh Đức",
-    "Phòng Ban": "GN",
-    "Sốđiệnthoại": 975945335,
+    "Mã Phòng Ban": "GN",
+    "Số điện thoại": 975945335,
     "tài khoản đăng nhập": "hn_gn_nguyenminhduc",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -245,8 +245,8 @@
   {
     "STT": 28,
     "Tên nhân viên": "Nguyễn Đình Dũng",
-    "Phòng Ban": "GN",
-    "Sốđiệnthoại": 987955593,
+    "Mã Phòng Ban": "GN",
+    "Số điện thoại": 987955593,
     "tài khoản đăng nhập": "hn_gn_nguyendinhdung",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -254,8 +254,8 @@
   {
     "STT": 29,
     "Tên nhân viên": "Tạ Thị Đào",
-    "Phòng Ban": "KT trưởng",
-    "Sốđiệnthoại": 978616768,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 978616768,
     "tài khoản đăng nhập": "hn_kt_tathidao",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -263,8 +263,8 @@
   {
     "STT": 30,
     "Tên nhân viên": "Trần Thị Thìn",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 986702642,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 986702642,
     "tài khoản đăng nhập": "hn_kt_tranthithin",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -272,8 +272,8 @@
   {
     "STT": 31,
     "Tên nhân viên": "Đinh Thị Huế",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 989194264,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 989194264,
     "tài khoản đăng nhập": "hn_kt_dinhthihue",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -281,8 +281,8 @@
   {
     "STT": 32,
     "Tên nhân viên": "Trần Thị Ánh Hoa",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 904660290,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 904660290,
     "tài khoản đăng nhập": "hn_kt_tranthianhhoa",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -290,8 +290,8 @@
   {
     "STT": 33,
     "Tên nhân viên": "Phan Thị Hương",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 977901193,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 977901193,
     "tài khoản đăng nhập": "hn_kt_phanthihuong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -299,8 +299,8 @@
   {
     "STT": 34,
     "Tên nhân viên": "Trần Thị Mai",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 376876727,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 376876727,
     "tài khoản đăng nhập": "hn_kt_tranthimai",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -308,8 +308,8 @@
   {
     "STT": 35,
     "Tên nhân viên": "Trương Thị Khánh Huyền",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 973972372,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 973972372,
     "tài khoản đăng nhập": "hn_kt_truongthikhanhhuyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -317,8 +317,8 @@
   {
     "STT": 36,
     "Tên nhân viên": "Phạm Thùy Chi",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 774224546,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 774224546,
     "tài khoản đăng nhập": "hn_kt_phamthuychi",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -326,8 +326,8 @@
   {
     "STT": 37,
     "Tên nhân viên": "Đỗ Thúy Hồng",
-    "Phòng Ban": "KT kho",
-    "Sốđiệnthoại": 912639899,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 912639899,
     "tài khoản đăng nhập": "hn_kt_dothuyhong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -335,8 +335,8 @@
   {
     "STT": 38,
     "Tên nhân viên": "Nguyễn Dương Thăng",
-    "Phòng Ban": "KT kho",
-    "Sốđiệnthoại": 974146836,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 974146836,
     "tài khoản đăng nhập": "hn_kt_nguyenduongthang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -344,8 +344,8 @@
   {
     "STT": 39,
     "Tên nhân viên": "Lê Thu Hà",
-    "Phòng Ban": "MAR",
-    "Sốđiệnthoại": 904589821,
+    "Mã Phòng Ban": "MAR",
+    "Số điện thoại": 904589821,
     "tài khoản đăng nhập": "hn_mar_lethuha",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -353,8 +353,8 @@
   {
     "STT": 40,
     "Tên nhân viên": "Nguyễn Thị Ngân",
-    "Phòng Ban": "MAR",
-    "Sốđiệnthoại": 963838869,
+    "Mã Phòng Ban": "MAR",
+    "Số điện thoại": 963838869,
     "tài khoản đăng nhập": "hn_mar_nguyenthingan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -362,8 +362,8 @@
   {
     "STT": 41,
     "Tên nhân viên": "Đỗ Thị Ngọc Bích",
-    "Phòng Ban": "HR",
-    "Sốđiệnthoại": 984517810,
+    "Mã Phòng Ban": "HR",
+    "Số điện thoại": 984517810,
     "tài khoản đăng nhập": "hn_hr_dothingocbich",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -371,8 +371,8 @@
   {
     "STT": 42,
     "Tên nhân viên": "Lê Anh Tuấn",
-    "Phòng Ban": "IT",
-    "Sốđiệnthoại": 934568981,
+    "Mã Phòng Ban": "IT",
+    "Số điện thoại": 934568981,
     "tài khoản đăng nhập": "hn_it_leanhtuan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -380,8 +380,8 @@
   {
     "STT": 43,
     "Tên nhân viên": "Phạm Tuấn Anh",
-    "Phòng Ban": "KTT",
-    "Sốđiệnthoại": 987585626,
+    "Mã Phòng Ban": "KTT",
+    "Số điện thoại": 987585626,
     "tài khoản đăng nhập": "hn_ktt_phamtuananh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -389,8 +389,8 @@
   {
     "STT": 44,
     "Tên nhân viên": "Trương Ngọc Tú",
-    "Phòng Ban": "KTT",
-    "Sốđiệnthoại": 961195479,
+    "Mã Phòng Ban": "KTT",
+    "Số điện thoại": 961195479,
     "tài khoản đăng nhập": "hn_ktt_truongngoctu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -398,8 +398,8 @@
   {
     "STT": 45,
     "Tên nhân viên": "Trần Tiến Đạt",
-    "Phòng Ban": "KTT",
-    "Sốđiệnthoại": 964886604,
+    "Mã Phòng Ban": "KTT",
+    "Số điện thoại": 964886604,
     "tài khoản đăng nhập": "hn_ktt_trantiendat",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -407,8 +407,8 @@
   {
     "STT": 46,
     "Tên nhân viên": "Nguyễn Tuấn Thành",
-    "Phòng Ban": "KTT",
-    "Sốđiệnthoại": 367319894,
+    "Mã Phòng Ban": "KTT",
+    "Số điện thoại": 367319894,
     "tài khoản đăng nhập": "hn_ktt_nguyentuanthanh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -416,8 +416,8 @@
   {
     "STT": 47,
     "Tên nhân viên": "Nguyễn Anh Tuấn",
-    "Phòng Ban": "KTT",
-    "Sốđiệnthoại": 945080287,
+    "Mã Phòng Ban": "KTT",
+    "Số điện thoại": 945080287,
     "tài khoản đăng nhập": "hn_ktt_nguyenanhtuan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -425,8 +425,8 @@
   {
     "STT": 48,
     "Tên nhân viên": "Trần Hoài Lương",
-    "Phòng Ban": "KTT",
-    "Sốđiệnthoại": 337892923,
+    "Mã Phòng Ban": "KTT",
+    "Số điện thoại": 337892923,
     "tài khoản đăng nhập": "hn_ktt_tranhoailuong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -434,8 +434,17 @@
   {
     "STT": 49,
     "Tên nhân viên": "Vũ Bùi Ngọc Minh",
-    "Phòng Ban": "Trưởng VP tỉnh",
-    "Sốđiệnthoại": 904203006,
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 904203006,
+    "tài khoản đăng nhập": "hn_kdt_vubuingocminh",
+    "Mật Khẩu": 123456,
+    "Mã chi nhánh": "HN"
+  },
+  {
+    "STT": 49,
+    "Tên nhân viên": "Vũ Bùi Ngọc Minh",
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 904203006,
     "tài khoản đăng nhập": "hn_kdt_vubuingocminhtp",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -443,17 +452,26 @@
   {
     "STT": 50,
     "Tên nhân viên": "Nguyễn Trung Hiếu",
-    "Phòng Ban": "KDT",
-    "Sốđiệnthoại": 936499252,
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 936499252,
     "tài khoản đăng nhập": "hn_kdt_nguyentrunghieu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
   },
   {
     "STT": 51,
+    "Tên nhân viên": "Trương Văn Quyết",
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 84915676839,
+    "tài khoản đăng nhập": "hn_kdt_truongvanquyet",
+    "Mật Khẩu": 123456,
+    "Mã chi nhánh": "HN"
+  },
+  {
+    "STT": 51,
     "Tên nhân viên": "Nguyễn Văn Phương",
-    "Phòng Ban": "KDT",
-    "Sốđiệnthoại": 965148446,
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 965148446,
     "tài khoản đăng nhập": "hn_kdt_nguyenvanphuong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -461,8 +479,8 @@
   {
     "STT": 52,
     "Tên nhân viên": "Phạm Quang Đàm",
-    "Phòng Ban": "KDT",
-    "Sốđiệnthoại": 978925051,
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 978925051,
     "tài khoản đăng nhập": "hn_kdt_phamquangdam",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -470,8 +488,8 @@
   {
     "STT": 53,
     "Tên nhân viên": "Đỗ Việt Phương",
-    "Phòng Ban": "KDT",
-    "Sốđiệnthoại": 982671693,
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 982671693,
     "tài khoản đăng nhập": "hn_kdt_dovietphuong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -479,8 +497,8 @@
   {
     "STT": 54,
     "Tên nhân viên": "Đỗ Thanh Liêm",
-    "Phòng Ban": "KDT",
-    "Sốđiệnthoại": 936999245,
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 936999245,
     "tài khoản đăng nhập": "hn_kdt_dothanhliem",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -488,8 +506,8 @@
   {
     "STT": 55,
     "Tên nhân viên": "Văn Danh Hoàng",
-    "Phòng Ban": "KDT",
-    "Sốđiệnthoại": 988810983,
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 988810983,
     "tài khoản đăng nhập": "hn_kdt_vandanhhoang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -497,8 +515,8 @@
   {
     "STT": 56,
     "Tên nhân viên": "Lã Duy Hiếu",
-    "Phòng Ban": "KDT",
-    "Sốđiệnthoại": 936959573,
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 936959573,
     "tài khoản đăng nhập": "hn_kdt_laduyhieu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -506,8 +524,8 @@
   {
     "STT": 57,
     "Tên nhân viên": "Ngô Minh Đức",
-    "Phòng Ban": "KDT",
-    "Sốđiệnthoại": 898576886,
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 898576886,
     "tài khoản đăng nhập": "hn_kdt_ngominhduc",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -515,8 +533,8 @@
   {
     "STT": 58,
     "Tên nhân viên": "Ngô Vũ Đông",
-    "Phòng Ban": "KDT",
-    "Sốđiệnthoại": 989690005,
+    "Mã Phòng Ban": "KDT",
+    "Số điện thoại": 989690005,
     "tài khoản đăng nhập": "hn_kdt_ngovudong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HN"
@@ -524,8 +542,8 @@
   {
     "STT": 59,
     "Tên nhân viên": "Dương Quang Khanh",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 905821078,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 905821078,
     "tài khoản đăng nhập": "ct_kd_duongquangkhanh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -533,8 +551,8 @@
   {
     "STT": 60,
     "Tên nhân viên": "Lê Thị Kiều Nương",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 939724297,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 939724297,
     "tài khoản đăng nhập": "ct_kt_lethikieunuong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -542,8 +560,8 @@
   {
     "STT": 61,
     "Tên nhân viên": "Trần Văn Phúc",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 772108221,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 772108221,
     "tài khoản đăng nhập": "ct_kd_tranvanphuc",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -551,8 +569,8 @@
   {
     "STT": 62,
     "Tên nhân viên": "Nguyễn Thành Phát",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 902525274,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 902525274,
     "tài khoản đăng nhập": "ct_kd_nguyenthanhphat",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -560,8 +578,8 @@
   {
     "STT": 63,
     "Tên nhân viên": "Huỳnh Bá Niên",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 945006707,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 945006707,
     "tài khoản đăng nhập": "ct_kd_huynhbanien",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -569,8 +587,8 @@
   {
     "STT": 64,
     "Tên nhân viên": "Lê Tịnh Ngô",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 383028824,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 383028824,
     "tài khoản đăng nhập": "ct_kd_letinhngo",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -578,8 +596,8 @@
   {
     "STT": 65,
     "Tên nhân viên": "Võ Thị Lệ Diễm",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 905446067,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 905446067,
     "tài khoản đăng nhập": "ct_kd_vothilediem",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -587,8 +605,8 @@
   {
     "STT": 66,
     "Tên nhân viên": "Nguyễn Hữu Lượng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 961919537,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 961919537,
     "tài khoản đăng nhập": "ct_kd_nguyenhuuluong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -596,8 +614,8 @@
   {
     "STT": 67,
     "Tên nhân viên": "Nguyễn Thanh Toàn",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 907883094,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 907883094,
     "tài khoản đăng nhập": "ct_kd_nguyenthanhtoan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -605,8 +623,8 @@
   {
     "STT": 68,
     "Tên nhân viên": "Phạm Trần Phương Thảo",
-    "Phòng Ban": "",
-    "Sốđiệnthoại": 939001699,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 939001699,
     "tài khoản đăng nhập": "ct_kd_phamtranphuongthao",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -614,8 +632,8 @@
   {
     "STT": 69,
     "Tên nhân viên": "Trần Thị Anh Thư",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 827347909,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 827347909,
     "tài khoản đăng nhập": "ct_kd_tranthianhthu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -623,8 +641,8 @@
   {
     "STT": 70,
     "Tên nhân viên": "Dương Nhật Trường",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 908934461,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 908934461,
     "tài khoản đăng nhập": "ct_kd_duongnhattruong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "CT"
@@ -632,8 +650,8 @@
   {
     "STT": 71,
     "Tên nhân viên": "Trịnh Thị Kim Mai",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 905850639,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 905850639,
     "tài khoản đăng nhập": "dng_kd_trinhthikimmai",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -641,8 +659,8 @@
   {
     "STT": 72,
     "Tên nhân viên": "Hồ Thị Ái Vy",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 906949965,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 906949965,
     "tài khoản đăng nhập": "dng_kt_hothiaivy",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -650,8 +668,8 @@
   {
     "STT": 73,
     "Tên nhân viên": "Nguyễn Thị Đan Thanh",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 915674339,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 915674339,
     "tài khoản đăng nhập": "dng_kd_nguyenthidanthanh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -659,8 +677,8 @@
   {
     "STT": 74,
     "Tên nhân viên": "Đỗ Thọ",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 934369608,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 934369608,
     "tài khoản đăng nhập": "dng_kd_dotho",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -668,8 +686,8 @@
   {
     "STT": 75,
     "Tên nhân viên": "Trần Thị Kim Yến",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 905399916,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 905399916,
     "tài khoản đăng nhập": "dng_kd_tranthikimyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -677,8 +695,8 @@
   {
     "STT": 76,
     "Tên nhân viên": "Trương Như Hứa",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 901782656,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 901782656,
     "tài khoản đăng nhập": "dng_kd_truongnhuhua",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -686,8 +704,8 @@
   {
     "STT": 77,
     "Tên nhân viên": "Đỗ Ngọc Niên",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 977241100,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 977241100,
     "tài khoản đăng nhập": "dng_kd_dongocnien",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -695,8 +713,8 @@
   {
     "STT": 78,
     "Tên nhân viên": "Đỗ Ngọc Quốc",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 905963439,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 905963439,
     "tài khoản đăng nhập": "dng_kd_dongocquoc",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -704,8 +722,8 @@
   {
     "STT": 79,
     "Tên nhân viên": "Trần Thị Linh",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 905688876,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 905688876,
     "tài khoản đăng nhập": "dng_kd_tranthilinh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -713,8 +731,8 @@
   {
     "STT": 80,
     "Tên nhân viên": "Võ Tấn Trọng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 932567404,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 932567404,
     "tài khoản đăng nhập": "dng_kd_votantrong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -722,8 +740,8 @@
   {
     "STT": 81,
     "Tên nhân viên": "Lâm Thị Như Huyền",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 905836629,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 905836629,
     "tài khoản đăng nhập": "dng_kd_lamthinhuhuyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -731,8 +749,8 @@
   {
     "STT": 82,
     "Tên nhân viên": "Nguyễn Hạ Bão",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 905730965,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 905730965,
     "tài khoản đăng nhập": "dng_kd_nguyenhabao",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -740,8 +758,8 @@
   {
     "STT": 83,
     "Tên nhân viên": "Nguyễn Thị Cẩm Duyên",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 914773915,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 914773915,
     "tài khoản đăng nhập": "dng_kd_nguyenthicamduyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNG"
@@ -749,8 +767,8 @@
   {
     "STT": 84,
     "Tên nhân viên": "Nguyễn Xuân Thủy",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 393553750,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 393553750,
     "tài khoản đăng nhập": "dl_kd_nguyenxuanthuy",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DL"
@@ -758,8 +776,8 @@
   {
     "STT": 85,
     "Tên nhân viên": "Nguyễn Thị Đào",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 903594465,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 903594465,
     "tài khoản đăng nhập": "dl_kt_nguyenthidao",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DL"
@@ -767,8 +785,8 @@
   {
     "STT": 86,
     "Tên nhân viên": "Đặng Hữu Thành",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 915919462,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 915919462,
     "tài khoản đăng nhập": "dl_kd_danghuuthanh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DL"
@@ -776,8 +794,8 @@
   {
     "STT": 87,
     "Tên nhân viên": "Đinh Ngọc Vẫn",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 393627815,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 393627815,
     "tài khoản đăng nhập": "dl_kd_dinhngocvan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DL"
@@ -785,8 +803,8 @@
   {
     "STT": 88,
     "Tên nhân viên": "Lê Thị Kim Hồng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 352965310,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 352965310,
     "tài khoản đăng nhập": "dl_kd_lethikimhong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DL"
@@ -794,8 +812,8 @@
   {
     "STT": 89,
     "Tên nhân viên": "Tòng Quang Thắng",
-    "Phòng Ban": "",
-    "Sốđiệnthoại": 382797302,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 382797302,
     "tài khoản đăng nhập": "dl_kd_tongquangthang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DL"
@@ -803,8 +821,8 @@
   {
     "STT": 90,
     "Tên nhân viên": "Phạm Hà Cẩm Uyên",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 587844902,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 587844902,
     "tài khoản đăng nhập": "dl_kd_phamhacamuyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DL"
@@ -812,8 +830,8 @@
   {
     "STT": 91,
     "Tên nhân viên": "Đỗ Đức Chi Lăng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 939812817,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 939812817,
     "tài khoản đăng nhập": "dni_kd_doducchilang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNI"
@@ -821,8 +839,8 @@
   {
     "STT": 92,
     "Tên nhân viên": "Nguyễn Xuân Hậu",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 918043747,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 918043747,
     "tài khoản đăng nhập": "dni_kd_nguyenxuanhau",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNI"
@@ -830,8 +848,8 @@
   {
     "STT": 93,
     "Tên nhân viên": "Lê Thanh Quan",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 765599998,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 765599998,
     "tài khoản đăng nhập": "dni_kd_lethanhquan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNI"
@@ -839,8 +857,8 @@
   {
     "STT": 94,
     "Tên nhân viên": "Trịnh Thị Hảo",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 937355275,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 937355275,
     "tài khoản đăng nhập": "dni_kt_trinhthihao",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNI"
@@ -848,17 +866,17 @@
   {
     "STT": 95,
     "Tên nhân viên": "Nguyễn Văn Đông",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 937147172,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 937147172,
     "tài khoản đăng nhập": "dni_kd_nguyenvandong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNI"
   },
   {
     "STT": 96,
-    "Tên nhân viên": "Nguyễn Quốc Trang",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 857959776,
+    "Tên nhân viên": "Nguyễn Quốc Trạng",
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 857959776,
     "tài khoản đăng nhập": "dni_kd_nguyenquoctrang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNI"
@@ -866,8 +884,8 @@
   {
     "STT": 97,
     "Tên nhân viên": "Nguyễn Phước Huy Lâm",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 983463830,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 983463830,
     "tài khoản đăng nhập": "dni_kd_nguyenphuochuylam",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNI"
@@ -875,8 +893,8 @@
   {
     "STT": 98,
     "Tên nhân viên": "Phạm Thị Huyền Trân",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 906394128,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 906394128,
     "tài khoản đăng nhập": "dni_kd_phamthihuyentran",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "DNI"
@@ -884,8 +902,8 @@
   {
     "STT": 99,
     "Tên nhân viên": "Nguyễn Trọng Thăng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 964736788,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 964736788,
     "tài khoản đăng nhập": "hd_kd_nguyentrongthang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HD"
@@ -893,8 +911,8 @@
   {
     "STT": 100,
     "Tên nhân viên": "Hoàng Thị Phương",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 975643988,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 975643988,
     "tài khoản đăng nhập": "hd_kt_hoangthiphuong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HD"
@@ -902,8 +920,8 @@
   {
     "STT": 101,
     "Tên nhân viên": "Nguyễn Thế Thường",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 343997986,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 343997986,
     "tài khoản đăng nhập": "hd_kd_nguyenthethuong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HD"
@@ -911,8 +929,8 @@
   {
     "STT": 102,
     "Tên nhân viên": "Nguyễn Thị Thu Thủy",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 983267922,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 983267922,
     "tài khoản đăng nhập": "hd_kd_nguyenthithuthuy",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HD"
@@ -920,8 +938,8 @@
   {
     "STT": 103,
     "Tên nhân viên": "Vũ Văn Đại",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 903285355,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 903285355,
     "tài khoản đăng nhập": "hd_kd_vuvandai",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HD"
@@ -929,8 +947,8 @@
   {
     "STT": 104,
     "Tên nhân viên": "Vũ Trung Giáp",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 975773133,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 975773133,
     "tài khoản đăng nhập": "hd_kd_vutrunggiap",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HD"
@@ -938,8 +956,8 @@
   {
     "STT": 105,
     "Tên nhân viên": "Nguyễn Văn Hà",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 936667338,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 936667338,
     "tài khoản đăng nhập": "hd_kd_nguyenvanha",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HD"
@@ -947,8 +965,8 @@
   {
     "STT": 106,
     "Tên nhân viên": "Đặng quang hiệp",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 966788345,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 966788345,
     "tài khoản đăng nhập": "hd_kd_dangquanghiep",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HD"
@@ -956,8 +974,8 @@
   {
     "STT": 107,
     "Tên nhân viên": "Đỗ Thị Kim Dung",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 977583516,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 977583516,
     "tài khoản đăng nhập": "hp_kd_dothikimdung",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HP"
@@ -965,8 +983,8 @@
   {
     "STT": 108,
     "Tên nhân viên": "Bùi Thái Giang",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 973775295,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 973775295,
     "tài khoản đăng nhập": "hp_kt_buithaigiang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HP"
@@ -974,8 +992,8 @@
   {
     "STT": 109,
     "Tên nhân viên": "Bùi Thị Duyên",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 904077633,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 904077633,
     "tài khoản đăng nhập": "hp_kd_buithiduyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HP"
@@ -983,8 +1001,8 @@
   {
     "STT": 110,
     "Tên nhân viên": "Đỗ Thanh Tâm",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 936812979,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 936812979,
     "tài khoản đăng nhập": "hp_kd_dothanhtam",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HP"
@@ -992,8 +1010,8 @@
   {
     "STT": 111,
     "Tên nhân viên": "Nguyễn Thị Ái",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 982321892,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 982321892,
     "tài khoản đăng nhập": "hp_kd_nguyenthiai",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HP"
@@ -1001,8 +1019,8 @@
   {
     "STT": 112,
     "Tên nhân viên": "Đỗ Thị Hằng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 936566515,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 936566515,
     "tài khoản đăng nhập": "hp_kd_dothihang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HP"
@@ -1010,8 +1028,8 @@
   {
     "STT": 113,
     "Tên nhân viên": "Nguyễn Thị Hiền",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 979332434,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 979332434,
     "tài khoản đăng nhập": "hp_kd_nguyenthihien",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HP"
@@ -1019,8 +1037,8 @@
   {
     "STT": 114,
     "Tên nhân viên": "Bùi Văn Hiệp",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 934263040,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 934263040,
     "tài khoản đăng nhập": "hp_kd_buivanhiep",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "HP"
@@ -1028,8 +1046,8 @@
   {
     "STT": 115,
     "Tên nhân viên": "Trần Văn An",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 888666131,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 888666131,
     "tài khoản đăng nhập": "nd_kd_tranvanan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "ND"
@@ -1037,8 +1055,8 @@
   {
     "STT": 116,
     "Tên nhân viên": "Nguyễn Thị Thu Dịu",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 965150516,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 965150516,
     "tài khoản đăng nhập": "nd_kt_nguyenthithudiu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "ND"
@@ -1046,8 +1064,8 @@
   {
     "STT": 117,
     "Tên nhân viên": "Nguyễn Thị Tuyết Trinh",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 989462452,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 989462452,
     "tài khoản đăng nhập": "nd_kd_nguyenthituyettrinh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "ND"
@@ -1055,8 +1073,8 @@
   {
     "STT": 118,
     "Tên nhân viên": "Trần Văn Đức",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 964666231,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 964666231,
     "tài khoản đăng nhập": "nd_kd_tranvanduc",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "ND"
@@ -1064,8 +1082,8 @@
   {
     "STT": 119,
     "Tên nhân viên": "Đới Văn Đức",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 972781026,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 972781026,
     "tài khoản đăng nhập": "nd_kd_doivanduc",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "ND"
@@ -1073,8 +1091,8 @@
   {
     "STT": 120,
     "Tên nhân viên": "Phạm Thị Xuân",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 372603100,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 372603100,
     "tài khoản đăng nhập": "nd_kd_phamthixuan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "ND"
@@ -1082,8 +1100,8 @@
   {
     "STT": 121,
     "Tên nhân viên": "Đặng Văn Truyền",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 982352532,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 982352532,
     "tài khoản đăng nhập": "nd_kd_dangvantruyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "ND"
@@ -1091,8 +1109,8 @@
   {
     "STT": 122,
     "Tên nhân viên": "Trần Thị Ánh Tuyết",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 947911329,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 947911329,
     "tài khoản đăng nhập": "nd_kd_tranthianhtuyet",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "ND"
@@ -1100,8 +1118,8 @@
   {
     "STT": 123,
     "Tên nhân viên": "Huỳnh Tấn Tài",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 905990827,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 905990827,
     "tài khoản đăng nhập": "nt_kd_huynhtantai",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "NT"
@@ -1109,8 +1127,8 @@
   {
     "STT": 124,
     "Tên nhân viên": "Lê Thị Ái Nhân",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 347648244,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 347648244,
     "tài khoản đăng nhập": "nt_kt_lethiainhan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "NT"
@@ -1118,8 +1136,8 @@
   {
     "STT": 125,
     "Tên nhân viên": "Trương Thị Chi",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 902328991,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 902328991,
     "tài khoản đăng nhập": "nt_kd_truongthichi",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "NT"
@@ -1127,8 +1145,8 @@
   {
     "STT": 126,
     "Tên nhân viên": "Trần Thị Lụa",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 971686988,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 971686988,
     "tài khoản đăng nhập": "nt_kd_tranthilua",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "NT"
@@ -1136,8 +1154,8 @@
   {
     "STT": 127,
     "Tên nhân viên": "Đậu Văn Hùng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 988803039,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 988803039,
     "tài khoản đăng nhập": "nt_kd_dauvanhung",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "NT"
@@ -1145,8 +1163,8 @@
   {
     "STT": 128,
     "Tên nhân viên": "Võ Thị Họa My",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 985197976,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 985197976,
     "tài khoản đăng nhập": "nt_kd_vothihoamy",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "NT"
@@ -1154,8 +1172,8 @@
   {
     "STT": 129,
     "Tên nhân viên": "Nguyễn Đại",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 905116150,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 905116150,
     "tài khoản đăng nhập": "nt_kd_nguyendai",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "NT"
@@ -1163,8 +1181,8 @@
   {
     "STT": 130,
     "Tên nhân viên": "Trần Thị Ly Trúc",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 937008926,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 937008926,
     "tài khoản đăng nhập": "nt_kd_tranthilytruc",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "NT"
@@ -1172,8 +1190,8 @@
   {
     "STT": 131,
     "Tên nhân viên": "Võ Đức Trọng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 909256243,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 909256243,
     "tài khoản đăng nhập": "sg_kd_voductrong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1181,8 +1199,8 @@
   {
     "STT": 132,
     "Tên nhân viên": "Phạm Hoàng Phương",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 934018469,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 934018469,
     "tài khoản đăng nhập": "sg_kd_phamhoangphuong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1190,8 +1208,8 @@
   {
     "STT": 133,
     "Tên nhân viên": "Nguyễn Thị Thu Quyết",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 933317392,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 933317392,
     "tài khoản đăng nhập": "sg_kd_nguyenthithuquyet",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1199,8 +1217,8 @@
   {
     "STT": 134,
     "Tên nhân viên": "Nguyễn Văn Bình",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 902608369,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 902608369,
     "tài khoản đăng nhập": "sg_kd_nguyenvanbinh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1208,8 +1226,8 @@
   {
     "STT": 135,
     "Tên nhân viên": "Nguyễn Kiều Minh Hiếu",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 902991088,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 902991088,
     "tài khoản đăng nhập": "sg_kd_nguyenkieuminhhieu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1217,8 +1235,8 @@
   {
     "STT": 136,
     "Tên nhân viên": "Nguyễn Thị Hồng Trinh",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 903141219,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 903141219,
     "tài khoản đăng nhập": "sg_kd_nguyenthihongtrinh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1226,8 +1244,8 @@
   {
     "STT": 137,
     "Tên nhân viên": "Lê Văn Nhàng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 933580804,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 933580804,
     "tài khoản đăng nhập": "sg_kd_levannhang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1235,8 +1253,8 @@
   {
     "STT": 138,
     "Tên nhân viên": "Trương Thị Hồng Vân",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 765655778,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 765655778,
     "tài khoản đăng nhập": "sg_kd_truongthihongvan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1244,8 +1262,8 @@
   {
     "STT": 139,
     "Tên nhân viên": "Bùi Thị Thúy Diễm",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 938004221,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 938004221,
     "tài khoản đăng nhập": "sg_kd_buithithuydiem",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1253,8 +1271,8 @@
   {
     "STT": 140,
     "Tên nhân viên": "Lê Quang Thái",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 909926426,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 909926426,
     "tài khoản đăng nhập": "sg_kd_lequangthai",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1262,8 +1280,8 @@
   {
     "STT": 141,
     "Tên nhân viên": "Bùi Ngọc Sáng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 909487939,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 909487939,
     "tài khoản đăng nhập": "sg_kd_buingocsang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1271,8 +1289,8 @@
   {
     "STT": 142,
     "Tên nhân viên": "Nguyễn Thị Thu Hằng",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 905937636,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 905937636,
     "tài khoản đăng nhập": "sg_kt_nguyenthithuhang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "SG"
@@ -1280,8 +1298,8 @@
   {
     "STT": 143,
     "Tên nhân viên": "Vũ Hữu Huy",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 982923109,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 982923109,
     "tài khoản đăng nhập": "tn_kd_vuhuuhuy",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TN"
@@ -1289,8 +1307,8 @@
   {
     "STT": 144,
     "Tên nhân viên": "Vũ Thị Nhật",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 968796752,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 968796752,
     "tài khoản đăng nhập": "tn_kt_vuthinhat",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TN"
@@ -1298,8 +1316,8 @@
   {
     "STT": 145,
     "Tên nhân viên": "Nguyễn Thị Dung",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 968007231,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 968007231,
     "tài khoản đăng nhập": "tn_kd_nguyenthidung",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TN"
@@ -1307,8 +1325,8 @@
   {
     "STT": 146,
     "Tên nhân viên": "Cao Thị Lan",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 982838814,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 982838814,
     "tài khoản đăng nhập": "tn_kd_caothilan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TN"
@@ -1316,8 +1334,8 @@
   {
     "STT": 147,
     "Tên nhân viên": "Trần Thị Yến",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 865630950,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 865630950,
     "tài khoản đăng nhập": "tn_kd_tranthiyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TN"
@@ -1325,8 +1343,8 @@
   {
     "STT": 148,
     "Tên nhân viên": "Hoàng Thị Hồng Nhung",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 348230253,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 348230253,
     "tài khoản đăng nhập": "tn_kd_hoangthihongnhung",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TN"
@@ -1334,8 +1352,8 @@
   {
     "STT": 149,
     "Tên nhân viên": "Nguyễn Thùy Linh",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 394857734,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 394857734,
     "tài khoản đăng nhập": "tn_kd_nguyenthuylinh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TN"
@@ -1343,8 +1361,8 @@
   {
     "STT": 150,
     "Tên nhân viên": "Trần Đại Nghĩa",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 985636148,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 985636148,
     "tài khoản đăng nhập": "th_kd_trandainghia",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TH"
@@ -1352,8 +1370,8 @@
   {
     "STT": 151,
     "Tên nhân viên": "Nguyễn Thị Hằng",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 936959559,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 936959559,
     "tài khoản đăng nhập": "th_kt_nguyenthihang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TH"
@@ -1361,8 +1379,8 @@
   {
     "STT": 152,
     "Tên nhân viên": "Hoàng Văn Cương",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 984739005,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 984739005,
     "tài khoản đăng nhập": "th_kd_hoangvancuong",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TH"
@@ -1370,8 +1388,8 @@
   {
     "STT": 153,
     "Tên nhân viên": "Phạm Thị Hoa",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 974720828,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 974720828,
     "tài khoản đăng nhập": "th_kd_phamthihoa",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TH"
@@ -1379,8 +1397,8 @@
   {
     "STT": 154,
     "Tên nhân viên": "Nguyễn Đức Thuận",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 972331056,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 972331056,
     "tài khoản đăng nhập": "th_kd_nguyenducthuan",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TH"
@@ -1388,8 +1406,8 @@
   {
     "STT": 155,
     "Tên nhân viên": "Lưu Thị Mai",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 963085238,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 963085238,
     "tài khoản đăng nhập": "th_kd_luuthimai",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TH"
@@ -1397,8 +1415,8 @@
   {
     "STT": 156,
     "Tên nhân viên": "Nguyễn Thị Mai",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 904992260,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 904992260,
     "tài khoản đăng nhập": "th_kd_nguyenthimai",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TH"
@@ -1406,8 +1424,8 @@
   {
     "STT": 157,
     "Tên nhân viên": "Nguyễn Thị Nụ",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 973317369,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 973317369,
     "tài khoản đăng nhập": "th_kd_nguyenthinu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "TH"
@@ -1415,8 +1433,8 @@
   {
     "STT": 158,
     "Tên nhân viên": "Lê Quang Hòa",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 916876588,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 916876588,
     "tài khoản đăng nhập": "v_kd_lequanghoa",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "V"
@@ -1424,8 +1442,8 @@
   {
     "STT": 159,
     "Tên nhân viên": "Nguyễn Ngọc Thủy",
-    "Phòng Ban": "KT",
-    "Sốđiệnthoại": 904449933,
+    "Mã Phòng Ban": "KT",
+    "Số điện thoại": 904449933,
     "tài khoản đăng nhập": "v_kt_nguyenngocthuy",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "V"
@@ -1433,8 +1451,8 @@
   {
     "STT": 160,
     "Tên nhân viên": "Dương Lê Hưng",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 984900102,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 984900102,
     "tài khoản đăng nhập": "v_kd_duonglehung",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "V"
@@ -1442,8 +1460,8 @@
   {
     "STT": 161,
     "Tên nhân viên": "Đặng Thị Quỳnh Trang",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 947841233,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 947841233,
     "tài khoản đăng nhập": "v_kd_dangthiquynhtrang",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "V"
@@ -1451,8 +1469,8 @@
   {
     "STT": 162,
     "Tên nhân viên": "Đậu Thị Yến",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 367686353,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 367686353,
     "tài khoản đăng nhập": "v_kd_dauthiyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "V"
@@ -1460,8 +1478,8 @@
   {
     "STT": 163,
     "Tên nhân viên": "Nguyễn Thị Thu Huyền",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 369581882,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 369581882,
     "tài khoản đăng nhập": "v_kd_nguyenthithuhuyen",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "V"
@@ -1469,8 +1487,8 @@
   {
     "STT": 164,
     "Tên nhân viên": "Nguyễn Thị Tú",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 975776057,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 975776057,
     "tài khoản đăng nhập": "v_kd_nguyenthitu",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "V"
@@ -1478,8 +1496,8 @@
   {
     "STT": 165,
     "Tên nhân viên": "Trần Thị Thanh",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 945784526,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 945784526,
     "tài khoản đăng nhập": "v_kd_tranthithanh",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "V"
@@ -1487,8 +1505,8 @@
   {
     "STT": 166,
     "Tên nhân viên": "Nguyễn Thị Thu Thủy",
-    "Phòng Ban": "KD",
-    "Sốđiệnthoại": 972878212,
+    "Mã Phòng Ban": "KD",
+    "Số điện thoại": 972878212,
     "tài khoản đăng nhập": "v_kd_nguyenthithuthuy",
     "Mật Khẩu": 123456,
     "Mã chi nhánh": "V"

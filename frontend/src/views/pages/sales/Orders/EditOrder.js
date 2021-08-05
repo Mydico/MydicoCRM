@@ -237,7 +237,7 @@ const EditOrder = props => {
   }, 300);
 
   const onSearchProduct = value => {
-    if (Object.keys(value).length > 0) {
+    if (value) {
       debouncedSearchProduct(value);
     }
   };

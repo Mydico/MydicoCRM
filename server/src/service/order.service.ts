@@ -92,6 +92,7 @@ export class OrderService {
     } else {
       andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} Order.branch is NULL `;
     }
+    andQueryString += ` Order.status <> DELETED`
     const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_branch_${currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
       }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Order.${Object.keys(
         options.order

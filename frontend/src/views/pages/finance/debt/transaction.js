@@ -115,13 +115,16 @@ const Transaction = props => {
     let href = '';
     if (item.order) {
       link = `Đơn hàng ${item.order.code}`;
-      href = `${props.match.url}/order/${item.order.id}`;
+      href = `${props.match.url}/order/${item.order?.id}`;
     } else if (item.receipt) {
       link = `Phiếu thu ${item.receipt.code}`;
-      href = `${props.match.url}/receipt/${item.receipt.id}`;
-    } else {
+      href = `${props.match.url}/receipt/${item.receipt?.id}`;
+    } else if (item.storeInput) {
       link = `Đơn trả hàng`;
-      href = `${props.match.url}/store/${item.storeInput.id}`;
+      href = `${props.match.url}/store/${item.storeInput?.id}`;
+    } else {
+      link = `Công nợ ban đầu`;
+      href = ``;
     }
     return (
       <CLink onClick={() => history.push({ pathname: href })} target="_blank">
@@ -136,8 +139,10 @@ const Transaction = props => {
       debt = item.order.realMoney;
     } else if (item.receipt) {
       debt = item.receipt.money;
-    } else {
+    } else if (item.storeInput){
       debt = item.storeInput.realMoney;
+    }else{
+      debt = item.earlyDebt
     }
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(debt);
   };

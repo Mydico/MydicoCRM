@@ -173,7 +173,7 @@ export class UserService {
         }
        
         const result = await this.userRepository.save(user);
-        await this.userRepository.query('update User, user set User.branchId = user.branchId where User.saleId = user.id;')
+        // await this.userRepository.query('update User, user set User.branchId = user.branchId where User.saleId = user.id;')
         const founded = await this.roleService.filterGroupingPolicies(1, result.login);
         await this.roleService.removeGroupingPolicies(founded);
         const newGroupingRules = [];
