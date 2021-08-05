@@ -76,7 +76,6 @@ export class ProductQuantityController {
         }
       }
     });
-    console.log(filter)
     const results = await this.productQuantityService.findByfields({
       where: {
         ...filter

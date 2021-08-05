@@ -41,10 +41,11 @@ export class UserService {
         options.cache = 3600000;
         let queryString = '';
         const length = Object.keys(filter).length;
+        console.log(filter)
         Object.keys(filter).forEach((item, index) => {
           if (item === 'branch') return;
           if (item === 'department') return;
-          queryString += `User.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'OR '}`;
+          queryString += `User.${item} like '%${filter[item]}%' ${length - 2 === index+1 ? '' : 'OR '}`;
         });
         let andQueryString = '1=1 ';
     
@@ -54,7 +55,6 @@ export class UserService {
         if (filter['branch']) {
           andQueryString += ` AND User.branch = ${filter['branch']}`;
         }
-        console.log(andQueryString)
         const queryBuilder = this.userRepository
           .createQueryBuilder('User')
           .leftJoinAndSelect('User.branch', 'branch')
@@ -63,7 +63,11 @@ export class UserService {
           .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
           .skip(options.skip)
           .take(options.take);
-    
+          if (queryString) {
+            queryBuilder.andWhere(new Brackets(sqb => {
+                sqb.where(queryString);
+            }))
+        }
         const result = await queryBuilder.getManyAndCount();
         result[1] = 0;
         return result;

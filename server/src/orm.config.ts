@@ -22,14 +22,24 @@ let ormconfig: TypeOrmModuleOptions = {
     cli: commonConf.CLI,
     migrationsRun: commonConf.MIGRATIONS_RUN,
 };
-const roleBDConfig: ConnectionOptions = {
+let roleBDConfig: ConnectionOptions = {
     database: 'MydicoCRM',
     type: 'mysql',
-    host: '14.225.17.151',
+    host: 'localhost',
     port: 3306,
     username: 'root',
     password: 'Dunghd@123',
 };
+if (process.env.NODE_ENV === 'dev') {
+    roleBDConfig = {
+        database: 'MydicoCRM',
+        type: 'mysql',
+        host: '14.225.17.151',
+        port: 3306,
+        username: 'root',
+        password: 'Dunghd@123',
+    };
+}
 if (process.env.NODE_ENV === 'prod') {
     ormconfig = {
         name: 'default',

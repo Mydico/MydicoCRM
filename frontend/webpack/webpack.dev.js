@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const writeFilePlugin = require('write-file-webpack-plugin');
-const webpackMerge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
@@ -13,15 +13,15 @@ const commonConfig = require('./webpack.common.js');
 
 const ENV = 'development';
 
-module.exports = (options) =>
-  webpackMerge(commonConfig({env: ENV}), {
+module.exports = options =>
+  merge(commonConfig({ env: ENV }), {
     devtool: 'cheap-module-source-map', // https://reactjs.org/docs/cross-origin-errors.html
     mode: ENV,
     entry: ['./src/index'],
     output: {
       path: utils.root('target/classes/static/'),
       filename: 'app/[name].bundle.js',
-      chunkFilename: 'app/[id].chunk.js',
+      chunkFilename: 'app/[id].chunk.js'
     },
     module: {
       rules: [
@@ -32,54 +32,58 @@ module.exports = (options) =>
             'css-loader',
             {
               loader: 'sass-loader',
-              options: {implementation: sass},
-            },
-          ],
-        },
-      ],
+              options: { implementation: sass }
+            }
+          ]
+        }
+      ]
+    },
+    stats:{
+      preset: false,
     },
     devServer: {
-      stats: options.stats,
       hot: true,
-      contentBase: './target/classes/static/',
+      static: './target/classes/static/',
+      compress: true,
+      port: 9060,
+      devMiddleware: {
+        writeToDisk: true,
+      },
       proxy: [
         {
           context: ['/api', '/services', '/management', '/swagger-resources', '/v2/api-docs', '/h2-console', '/auth'],
           target: `http${options.tls ? 's' : ''}://localhost:8082`,
           secure: false,
-          changeOrigin: options.tls,
-        },
+          changeOrigin: options.tls
+        }
       ],
-      watchOptions: {
-        ignored: /node_modules/,
-      },
+
       https: options.tls,
-      historyApiFallback: true,
+      historyApiFallback: true
     },
-    stats: process.env.JHI_DISABLE_WEBPACK_LOGS ? 'none' : options.stats,
     plugins: [
-      process.env.JHI_DISABLE_WEBPACK_LOGS ?
-        null :
-        new SimpleProgressWebpackPlugin({
-          format: options.stats === 'minimal' ? 'compact' : 'expanded',
-        }),
+      process.env.JHI_DISABLE_WEBPACK_LOGS
+        ? null
+        : new SimpleProgressWebpackPlugin({
+            format: options.stats === 'minimal' ? 'compact' : 'expanded'
+          }),
       new FriendlyErrorsWebpackPlugin(),
       new BrowserSyncPlugin(
-          {
-            https: options.tls,
-            host: 'localhost',
-            port: 9000,
-            proxy: {
-              target: `http${options.tls ? 's' : ''}://localhost:9060`,
-              proxyOptions: {
-                changeOrigin: false, // pass the Host header to the backend unchanged  https://github.com/Browsersync/browser-sync/issues/430
-              },
-            },
-            socket: {
-              clients: {
-                heartbeatTimeout: 60000,
-              },
-            },
+        {
+          https: options.tls,
+          host: 'localhost',
+          port: 9000,
+          proxy: {
+            target: `http${options.tls ? 's' : ''}://localhost:9060`,
+            proxyOptions: {
+              changeOrigin: false // pass the Host header to the backend unchanged  https://github.com/Browsersync/browser-sync/issues/430
+            }
+          },
+          socket: {
+            clients: {
+              heartbeatTimeout: 60000
+            }
+          }
           /*
       ,ghostMode: { // uncomment this part to disable BrowserSync ghostMode; https://github.com/jhipster/generator-jhipster/issues/11116
         clicks: false,
@@ -87,18 +91,16 @@ module.exports = (options) =>
         forms: false,
         scroll: false
       } */
-          },
-          {
-            reload: false,
-          },
+        },
+        {
+          reload: false
+        }
       ),
-      new webpack.NamedModulesPlugin(),
       new webpack.HotModuleReplacementPlugin(),
-      new writeFilePlugin(),
-      new webpack.WatchIgnorePlugin([utils.root('src/test')]),
+      // new writeFilePlugin(),
       new WebpackNotifierPlugin({
         title: 'Mydico CRM',
-        contentImage: path.join(__dirname, 'logo-jhipster.png'),
-      }),
-    ].filter(Boolean),
+        contentImage: path.join(__dirname, 'logo-jhipster.png')
+      })
+    ].filter(Boolean)
   });

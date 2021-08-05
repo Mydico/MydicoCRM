@@ -5,9 +5,7 @@ import { DocTienBangChu } from '../../../../shared/utils/toMoneyString';
 import ReactToPrint from 'react-to-print';
 
 class PrintBill extends Component {
-  componentDidMount() {
-    console.log(this.props.location.state);
-  }
+
   render() {
     var docTien = new DocTienBangChu();
     const { item } = this.props.location.state;

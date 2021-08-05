@@ -287,11 +287,9 @@ export class CustomerService {
       .groupBy('Transaction.customerId')
 
     const rawData = await getTransIds.getRawMany();
-    console.log(rawData)
     const debt = await this.transactionRepository.find({where: {
       id: In(rawData.map(item => item.id))
     }})
-    console.log(debt)
     const customerHaveDebt = debt.filter(item => item.earlyDebt > 0)
     if(customerHaveDebt.length > 0){
       const customerCode = `${customerHaveDebt.map(item => item.customerCode).join(', ')}`

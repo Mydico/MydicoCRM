@@ -9,6 +9,7 @@ import { mapper } from './mappingRoleToRoutes';
 export const PrivateRouteComponent = ({ component: Component, ...rest }) => {
   const { isAuthenticated, sessionHasBeenFetched, account } = useSelector(userSafeSelector);
   const checkAuthorities = props => {
+
     const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
     const isWhiteList = whiteList.includes(props.location.pathname);
     const isHasPermission =
@@ -21,8 +22,8 @@ export const PrivateRouteComponent = ({ component: Component, ...rest }) => {
       ).length > 0 ||
       (account.role.filter(item => item.method === 'PUT' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 &&
         props.location.pathname.includes('edit')) ||
-      (account.role.filter(item => item.method === 'PUT' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 &&
-      account.role.filter(item => props.location.pathname.includes(mapper[item.entity]))) ||
+      (account.role.filter(item => item.method === 'PUT' && 
+      account.role.filter(item => props.location.pathname.includes(mapper[item.entity])).length> 0).length > 0) ||
       account.role.filter(item => item.method === 'DELETE' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0;
 
     return isWhiteList || isHasPermission || isAdmin ? (

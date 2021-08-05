@@ -81,9 +81,7 @@ const CreateCustomer = () => {
     dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getChildTreeDepartment({ id: account.department?.id }));
   }, []);
-  useEffect(() => {
-    console.log(initialDepartmentState.allChild);
-  }, [initialDepartmentState.allChild]);
+  
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
     dispatch(creatingCustomer(values));

@@ -28,6 +28,7 @@
     "node": ">=8.9.0"
   },
   "dependencies": {
-    "express-list-endpoints": "^5.0.0"
+    "express-list-endpoints": "^5.0.0",
+    "webpack": "^5.48.0"
   }
 }

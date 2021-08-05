@@ -90,9 +90,6 @@ const StoreHistory = () => {
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(storeHistorys), [storeHistorys]);
 
-  useEffect(() => {
-    console.log(storeHistorys);
-  }, [storeHistorys]);
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {

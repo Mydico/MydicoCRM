@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const webpackMerge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -13,16 +13,25 @@ const commonConfig = require('./webpack.common.js');
 
 const ENV = 'production';
 
-module.exports = webpackMerge(commonConfig({ env: ENV }), {
-  devtool: 'source-map',
+module.exports = merge(commonConfig({ env: ENV }), {
+  devtool: false,
   mode: ENV,
   entry: {
     main: './src/index.js'
   },
+  cache: {
+    type: 'filesystem',
+    compression: 'gzip',
+    hashAlgorithm: 'md4'
+  },
   output: {
     path: utils.root('target/classes/static/'),
-    filename: 'app/[name].[hash].bundle.js',
-    chunkFilename: 'app/[name].[hash].chunk.js'
+    filename: 'app/[name].[contenthash].bundle.js',
+    chunkFilename: 'app/[name].[contenthash].chunk.js'
+  },
+  performance: {
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000
   },
   module: {
     rules: [
@@ -88,8 +97,8 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
   plugins: [
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output
-      filename: 'content/[name].[hash].css',
-      chunkFilename: 'content/[name].[hash].css'
+      filename: 'content/[name].[contenthash].css',
+      chunkFilename: 'content/[name].[contenthash].css'
     }),
     new webpack.optimize.AggressiveMergingPlugin(),
     new MomentLocalesPlugin({

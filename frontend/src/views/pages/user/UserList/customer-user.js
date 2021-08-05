@@ -138,14 +138,14 @@ const CustomerUser = props => {
 
   useEffect(() => {
     const localParams = localStorage.getItem('params');
-    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', dependency: true, ...paramRef.current };
     if (localParams) {
       params = JSON.parse(localParams);
       setActivePage(params.page + 1);
       localStorage.removeItem('params');
     }
     dispatch(getCustomer(params));
-    dispatch(getExactUser({ page: 0, size: size, sort: 'createdDate,DESC', department: location.state.department.id, branch: location.state.branch.id }));
+    dispatch(getExactUser({ page: 0, size: size, sort: 'createdDate,DESC', dependency: true, department: location.state.department.id, branch: location.state.branch.id }));
 
     window.scrollTo(0, 100);
   }, [activePage, size]);
@@ -201,7 +201,7 @@ const CustomerUser = props => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value,  dependency: true }));
     }
   }, 300);
 
@@ -271,7 +271,7 @@ const CustomerUser = props => {
     }));
     dispatch(updateManyCustomer(filterData)).then(resp => {
       if (resp && resp.payload && resp.payload.statusCode === 200) {
-        let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+        let params = { page: activePage - 1, size, sort: 'createdDate,DESC', dependency: true, ...paramRef.current };
         dispatch(getCustomer(params));
       }
     });
@@ -279,7 +279,7 @@ const CustomerUser = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current,  dependency: true };
       dispatch(getCustomer(params));
       setFilteredCustomer([]);
       setSelectedUser(null);

@@ -54,6 +54,7 @@ module.exports = (options) => ({
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     modules: ['node_modules'],
+    fallback: { "path": require.resolve("path-browserify") }
     // alias: utils.mapTypescriptAliasToWebpackAlias()
   },
   module: {
@@ -91,19 +92,24 @@ module.exports = (options) => ({
   },
   optimization: {
     splitChunks: {
-      // cacheGroups: {
-      //   commons: {
-      //     test: /[\\/]node_modules[\\/]/,
-      //     name: 'vendors',
-      //     chunks: 'all',
-      //   },
-      // },
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+        vendors: {
+          test: /[\\/]node_modules[\\/]/, ///< put all used node_modules modules in this chunk
+          name: "vendor", ///< name of bundle
+          chunks: "all" ///< type of code to put in this bundle
+        }
+      },
     },
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: `'${options.env}'`,
+        'process.env.NODE_ENV': `'${options.env}'`,
         BUILD_TIMESTAMP: `'${new Date().getTime()}'`,
         '__REACT_DEVTOOLS_GLOBAL_HOOK__': '({ isDisabled: true })',
         // APP_VERSION is passed as an environment variable from the Gradle / Maven build tasks.
@@ -116,6 +122,9 @@ module.exports = (options) => ({
         SERVER_API_URL: `''`,
       },
     }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
     new ForkTsCheckerWebpackPlugin({eslint: true}),
     new CopyWebpackPlugin([
       // {from: './content/', to: 'content'},
@@ -126,7 +135,7 @@ module.exports = (options) => ({
     ]),
     new HtmlWebpackPlugin({
       template: './public/index.html',
-      chunksSortMode: 'dependency',
+      chunksSortMode: 'auto',
       inject: 'body',
     }),
     new BaseHrefWebpackPlugin({baseHref: '/'}),
