@@ -27,7 +27,7 @@ export default class Product extends BaseEntity {
     @Index()
     desc: string;
 
-    @Column({ name: 'code', length: 255, nullable: true })
+    @Column({ name: 'code', length: 255, nullable: true, unique: true })
     @Index()
     code: string;
 

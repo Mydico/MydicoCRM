@@ -88,7 +88,6 @@ const EditCustomer = props => {
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getBranch({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true }));
-
   }, []);
 
   useEffect(() => {
@@ -342,27 +341,6 @@ const EditCustomer = props => {
                     />
                     <CInvalidFeedback className="d-block">{errors.department}</CInvalidFeedback>
                   </CFormGroup>
-                  <CFormGroup>
-                <CLabel htmlFor="userName">Phòng ban</CLabel>
-                <Select
-                  name="branch"
-                  onChange={e => {
-                    setFieldValue('branch', e?.value || null);
-                  }}
-                  value={{
-                    value: values.branch,
-                    label: values.branch?.name
-                  }}
-                  isClearable={true}
-                  openMenuOnClick={false}
-                  placeholder="Chọn Phòng ban"
-                  options={branches.map(item => ({
-                    value: item,
-                    label: item.name
-                  }))}
-                />
-                <CInvalidFeedback className="d-block">{errors.branch}</CInvalidFeedback>
-              </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="code">Trạng thái</CLabel>
                     <Select

@@ -84,7 +84,7 @@ const EditProduct = (props) => {
   const productGroup = useSelector(selectAll);
   useEffect(() => {
     dispatch(getDetailProduct({ id: props.match.params.id, dependency: true }));
-    dispatch(getProductGroup({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getProductGroup({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   useEffect(() => {

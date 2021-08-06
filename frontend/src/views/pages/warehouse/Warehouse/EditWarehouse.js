@@ -69,7 +69,7 @@ const EditWarehouse = props => {
 
   useEffect(() => {
     dispatch(getDetailWarehouse({id: props.match.params.id, dependency: true }));
-    dispatch(getDepartment({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => {

@@ -77,8 +77,8 @@ const CreateCustomer = () => {
   const departments = initialDepartmentState.allChild;
   const branches = account.branch ? [account.branch] : [];
   useEffect(() => {
-    dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomerType({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomerStatus({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getChildTreeDepartment({ id: account.department?.id }));
   }, []);
   

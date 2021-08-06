@@ -53,7 +53,7 @@ const CreateDebt = () => {
   const customers = useSelector(selectAllCustomer);
 
   useEffect(() => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const debouncedSearchCustomer = _.debounce(value => {

@@ -86,8 +86,8 @@ const EditWarehouseExportProvider = props => {
   useEffect(() => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getProvider({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(filterProduct({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getProvider({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   useEffect(() => {

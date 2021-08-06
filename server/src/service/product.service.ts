@@ -19,7 +19,7 @@ export class ProductService {
         @InjectRepository(ProductRepository) private productRepository: ProductRepository,
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
         private productQuantity: ProductQuantityService
-    ) {}
+    ) { }
 
     // async clearCache() {
     //   const keys: string[] = await this.cacheManager.store.keys();
@@ -38,7 +38,7 @@ export class ProductService {
     }
 
     async findByfields(options: FindOneOptions<Product>): Promise<Product | undefined> {
-    // options.cache = 36000000
+        // options.cache = 36000000
         return await this.productRepository.findOne(options);
     }
 
@@ -97,13 +97,11 @@ export class ProductService {
     }
 
     async save(product: Product): Promise<Product | undefined> {
-        if (!product.code) {
-            const foundedCustomer = await this.productRepository.find({ code: Like(`%${product.code}%`) });
-            if (foundedCustomer.length > 0) {
-                foundedCustomer.sort((a, b) => a.createdDate.valueOf() - b.createdDate.valueOf());
-                const res = increment_alphanumeric_str(foundedCustomer[foundedCustomer.length - 1].code);
-                product.code = res;
-            }
+        const foundedCustomer = await this.productRepository.find({ code: Like(`%${product.code}%`) });
+        if (foundedCustomer.length > 0) {
+            foundedCustomer.sort((a, b) => a.createdDate.valueOf() - b.createdDate.valueOf());
+            const res = increment_alphanumeric_str(foundedCustomer[foundedCustomer.length - 1].code);
+            product.code = res;
         }
         return await this.productRepository.save(product);
     }

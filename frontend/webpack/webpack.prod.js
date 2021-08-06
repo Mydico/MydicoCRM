@@ -46,7 +46,8 @@ module.exports = merge(commonConfig({ env: ENV }), {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              publicPath: '../'
+              publicPath: '../',
+              esModule: false,
             }
           },
           'css-loader',
@@ -61,17 +62,14 @@ module.exports = merge(commonConfig({ env: ENV }), {
   optimization: {
     runtimeChunk: false,
     usedExports: true,
+    minimize: true,
     minimizer: [
       new TerserPlugin({
-        cache: true,
-        parallel: true,
+        parallel: 4,
         // sourceMap: true, // Enable source maps. Please note that this will slow down the build
         terserOptions: {
           ecma: 6,
-          toplevel: true,
           module: true,
-          beautify: false,
-          comments: false,
           compress: {
             warnings: false,
             ecma: 6,
@@ -79,8 +77,6 @@ module.exports = merge(commonConfig({ env: ENV }), {
             toplevel: true
           },
           output: {
-            comments: false,
-            beautify: false,
             indent_level: 2,
             ecma: 6
           },
