@@ -90,7 +90,7 @@ const CreateDebt = () => {
       customerCode: values.customer.code,
       department: values.customer.department,
       lastModifiedDate: new Date(),
-      branch: values.customer.sale.branch,
+      branch: values.customer.branch,
       previousDebt: 0,
       saleName: values.customer.sale.code,
       sale: values.customer.sale

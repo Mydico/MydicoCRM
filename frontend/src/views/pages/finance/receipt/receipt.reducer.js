@@ -41,7 +41,11 @@ const slice = createSlice({
       state.initialState.updatingSuccess = true;
     },
     [getDetailReceipt.fulfilled]: (state, action) => {
-      receiptAdapter.addOne(state, action.payload);
+      receiptAdapter.setAll(state, [action.payload]);
+      state.initialState.loading = false;
+    },
+    [getDetailReceipt.rejected]: (state, action) => {
+      state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },
     [getReceipt.fulfilled]: (state, action) => {

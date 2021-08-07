@@ -75,7 +75,9 @@ const CreatePromotion = () => {
   }, 300);
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value);
+    if(value){
+      debouncedSearchProduct(value);
+    }
   };
   useEffect(() => {
     if (customerType.length > 0) {

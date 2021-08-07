@@ -53,8 +53,6 @@ const CreateWarehouse = () => {
   const { initialState } = useSelector(state => state.warehouseImport);
   const { account } = useSelector(userSafeSelector);
 
-
-
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -82,7 +80,7 @@ const CreateWarehouse = () => {
   const onSubmit = (values, {}) => () => {
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.NEW;
-    values.department = { id: account.department?.id || null};
+    values.department = { id: account.department?.id || null };
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
   };
@@ -110,12 +108,14 @@ const CreateWarehouse = () => {
     const data = { product: {}, quantity: 1 };
     setProductList([...productList, data]);
   };
-  const debouncedSearchProduct =  _.debounce(value => {
-      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
-    }, 300)
+  const debouncedSearchProduct = _.debounce(value => {
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+  }, 300);
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value);
+    if (value) {
+      debouncedSearchProduct(value);
+    }
   };
 
   useEffect(() => {

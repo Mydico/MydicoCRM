@@ -16,8 +16,7 @@ import CurrencyInput from '../../../components/currency-input/currency-input';
 import { getDetailReceipt, updateReceipt } from './receipt.api';
 import { fetching, globalizedReceiptsSelectors } from './receipt.reducer';
 import { validate } from '../../../../shared/utils/normalize';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object().required('Khách hàng không để trống'),
@@ -185,11 +184,11 @@ const EditReceipt = props => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetCityName(selectedCustomer?.city)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetDistrictName(selectedCustomer?.district)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Nhân viên phụ trách: </dt>

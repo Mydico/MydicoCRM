@@ -53,6 +53,7 @@ export class IncomeDashboardController {
         }
         const [results, count] = await this.incomeDashboardService.findAndCount({
             where,
+            cache: 3*3600
         });
         return res.send(results);
     }

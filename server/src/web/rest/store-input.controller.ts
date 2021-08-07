@@ -58,6 +58,7 @@ export class StoreInputController {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
         }
+        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
         const type = StoreImportType.EXPORT;
         const [results, count] = await this.storeInputService.findAndCount(
             {
@@ -67,6 +68,8 @@ export class StoreInputController {
             },
             filter,
             departmentVisible,
+            isEmployee,
+            currentUser,
             type
         );
         HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
@@ -94,6 +97,7 @@ export class StoreInputController {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
         }
+        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
         const type = StoreImportType.RETURN;
         const [results, count] = await this.storeInputService.findAndCount(
             {
@@ -103,6 +107,8 @@ export class StoreInputController {
             },
             filter,
             departmentVisible,
+            isEmployee,
+            currentUser,
             type
         );
         HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
@@ -130,6 +136,7 @@ export class StoreInputController {
             departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
             departmentVisible = departmentVisible.map(item => item.id);
         }
+        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
         const type = StoreImportType.NEW;
         const [results, count] = await this.storeInputService.findAndCount(
             {
@@ -139,6 +146,8 @@ export class StoreInputController {
             },
             filter,
             departmentVisible,
+            isEmployee,
+            currentUser,
             type
         );
         HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
@@ -178,7 +187,6 @@ export class StoreInputController {
     async postExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
         const currentUser = req.user as User;
         storeInput.createdBy = currentUser.login;
-        storeInput.department = currentUser.mainDepartment ||  currentUser.department;
         storeInput.storeName = storeInput.store.name;
         storeInput.storeTransferName = storeInput.storeTransfer.name;
         const created = await this.storeInputService.save(storeInput);
@@ -197,7 +205,6 @@ export class StoreInputController {
     async postReturn(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
         const currentUser = req.user as User;
         storeInput.createdBy = currentUser.login;
-        storeInput.department = currentUser.mainDepartment ||  currentUser.department;
         storeInput.customerName = storeInput.customer.name;
         storeInput.storeName = storeInput.store.name;
         const created = await this.storeInputService.save(storeInput);

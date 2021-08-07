@@ -38,7 +38,7 @@ import { validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import { blockInvalidChar } from '../../../../shared/utils/helper';
+import { blockInvalidChar, memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
 
 const validationSchema = function(values) {
   return Yup.object().shape({
@@ -94,33 +94,36 @@ const CreateWarehouse = () => {
     );
     values.reduceMoney = productList.reduce((sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100, 0);
     values.type = WarehouseImportType.RETURN;
-    values.department = { id: account.department?.id || null };
+    values.department = { id: selectedCustomer.department?.id || null };
+    values.sale = selectedCustomer.sale;
     dispatch(fetching());
     dispatch(creatingWarehouseReturn(values));
   };
 
-  const debouncedSearchProduct =  _.debounce(value => {
-      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
-    }, 300)
+  const debouncedSearchProduct = _.debounce(value => {
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+  }, 300);
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value);
+    if (value) {
+      debouncedSearchProduct(value);
+    }
   };
 
-  const debouncedSearchCustomer =  _.debounce(value => {
-      dispatch(
-        filterCustomer({
-          page: 0,
-          size: 20,
-          sort: 'createdDate,DESC',
-          code: value,
-          name: value,
-          address: value,
-          contactName: value,
-          dependency: true,
-        })
-      );
-    }, 300)
+  const debouncedSearchCustomer = _.debounce(value => {
+    dispatch(
+      filterCustomer({
+        page: 0,
+        size: 20,
+        sort: 'createdDate,DESC',
+        code: value,
+        name: value,
+        address: value,
+        contactName: value,
+        dependency: true
+      })
+    );
+  }, 300);
 
   const onSearchCustomer = value => {
     debouncedSearchCustomer(value);
@@ -132,7 +135,7 @@ const CreateWarehouse = () => {
 
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
-    copyArr[index].quantity =  Number(target.value).toString();
+    copyArr[index].quantity = Number(target.value).toString();
     setProductList(copyArr);
   };
 
@@ -306,11 +309,11 @@ const CreateWarehouse = () => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetCityName(selectedCustomer?.city)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetDistrictName(selectedCustomer?.district)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Nhân viên phụ trách: </dt>
@@ -343,7 +346,7 @@ const CreateWarehouse = () => {
                     {productList.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{ width: 300 }}>
+                          <td style={{ minWidth: 400 }}>
                             <Select
                               value={{
                                 value: item,
@@ -354,7 +357,7 @@ const CreateWarehouse = () => {
                               menuPortalTarget={document.body}
                               options={products.map(item => ({
                                 value: item,
-                                label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`
+                                label: `[${item?.code}]-${item.name}-${item.volume}`
                               }))}
                             />
                           </td>

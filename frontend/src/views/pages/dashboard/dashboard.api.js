@@ -25,3 +25,19 @@ export const getOrderSale = createAsyncThunk('api/report-sale-order', async (par
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+export const getBestProductSale = createAsyncThunk('api/best-product-saler', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/best-product-sale', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+export const getBestCustomer = createAsyncThunk('api/best-customer', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/best-customer', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

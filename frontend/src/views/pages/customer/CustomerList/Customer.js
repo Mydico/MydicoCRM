@@ -279,8 +279,8 @@ const Customer = props => {
                           <dd className="col-sm-9">{item.dateOfBirth}</dd>
                         </dl>
                         <dl className="row">
-                          <dt className="col-sm-3">Email:</dt>
-                          <dd className="col-sm-9">{item.email}</dd>
+                          <dt className="col-sm-3">Mạng xã hội:</dt>
+                          <dd className="col-sm-9">{item.social}</dd>
                         </dl>
                       </CCol>
                       <CCol lg="6">

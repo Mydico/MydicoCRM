@@ -33,14 +33,12 @@ import { getDetailProductPromotion } from '../Promotion/promotion.api';
 import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
 import { filterProductInStore, getProductInstore, getProductWarehouse } from '../../warehouse/Product/product-warehouse.api';
 import { FormFeedback, Table } from 'reactstrap';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import { Td, Table as TableResponsive, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
 import '../../../components/table/ResponsiveTable.css';
 import { validate } from '../../../../shared/utils/normalize';
 import { useMediaQuery } from 'react-responsive';
-import { blockInvalidChar } from '../../../../shared/utils/helper';
+import { blockInvalidChar, memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object()
@@ -51,8 +49,6 @@ const validationSchema = function() {
       .nullable()
   });
 };
-
-
 
 const mappingType = {
   SHORTTERM: 'Ngắn hạn',
@@ -174,11 +170,10 @@ const CreateOrder = props => {
         return;
       }
     });
-    if(productList
-      .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)  === 0){
-        alert("Không để tổng số lượng bằng 0")
-        return
-      }
+    if (productList.reduce((sum, current) => sum + current.quantity, 0) === 0) {
+      alert('Không để tổng số lượng bằng 0');
+      return;
+    }
     if (!isValidProduct) return;
     if (!values.address) values.address = selectedCustomer.address;
     values.customer = selectedCustomer;
@@ -281,7 +276,7 @@ const CreateOrder = props => {
   }, 300);
 
   const onSearchProduct = value => {
-    if(value){
+    if (value) {
       debouncedSearchProduct(value);
     }
   };
@@ -295,6 +290,9 @@ const CreateOrder = props => {
     ).then(numberOfQuantityInStore => {
       if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
         copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
+        if (numberOfQuantityInStore?.payload[0] && numberOfQuantityInStore?.payload[0]?.quantity < 100 && copyArr[index].quantity > numberOfQuantityInStore?.payload[0]?.quantity ) {
+          copyArr[index].quantity = numberOfQuantityInStore?.payload[0]?.quantity;
+        }
         setProductList(copyArr);
       }
     });
@@ -432,11 +430,11 @@ const CreateOrder = props => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetCityName(selectedCustomer?.city)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetDistrictName(selectedCustomer?.district)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Loại khách hàng: </dt>
@@ -642,7 +640,7 @@ const CreateOrder = props => {
                             /> */}
                           </td>
                           <td>{item.product?.volume}</td>
-                          <td style={{ width: 130 }}>
+                          <td style={{ minWidth: 130, maxWidth: 200 }}>
                             <CInput
                               type="number"
                               min={0}
@@ -671,14 +669,14 @@ const CreateOrder = props => {
                               />
                             }
                           </td>
-                          <td style={{maxWidth: 100}}>
+                          <td style={{ maxWidth: 100 }}>
                             {(item.priceReal * item.quantity).toLocaleString('it-IT', {
                               style: 'currency',
                               currency: 'VND'
                             }) || ''}
                           </td>
 
-                          <td style={{ width: 130 }}>
+                          <td style={{ minWidth: 130, maxWidth: 200 }}>
                             <CInput
                               type="number"
                               min={0}
@@ -689,7 +687,7 @@ const CreateOrder = props => {
                               value={item.reducePercent}
                             />
                           </td>
-                          <td style={{maxWidth: 100}}>
+                          <td style={{ maxWidth: 100 }}>
                             {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
                               'it-IT',
                               {
@@ -855,7 +853,7 @@ const CreateOrder = props => {
                                   )
                                   .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                               </strong>
-                              </Td>
+                            </Td>
                           </Tr>
                         </Tbody>
                       </TableResponsive>

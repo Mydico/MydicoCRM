@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { creatingWarehouseImport } from '../Import/warehouse-import.api';
 import { currencyMask } from '../../../components/currency-input/currency-input';
 import MaskedInput from 'react-text-mask';
-
+import _ from 'lodash'
 import { useHistory } from 'react-router-dom';
 import { fetching } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
@@ -136,8 +136,14 @@ const CreateWarehouseExportProvider = () => {
     setProductList(copyArr);
   };
 
-  const onSearchProduct = value => {
+  const debouncedSearchProduct = _.debounce(value => {
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+  }, 300);
+
+  const onSearchProduct = value => {
+    if (value) {
+      debouncedSearchProduct(value);
+    }
   };
 
   useEffect(() => {
@@ -291,7 +297,7 @@ const CreateWarehouseExportProvider = () => {
                               menuPortalTarget={document.body}
                               options={products.map(item => ({
                                 value: item,
-                                label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`
+                                label:  `[${item?.code || ''}]-${item.name}-${item.volume}`
                               }))}
                             />
                           </td>

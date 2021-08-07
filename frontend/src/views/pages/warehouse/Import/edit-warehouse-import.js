@@ -78,7 +78,7 @@ const EditWarehouseImport = props => {
 
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
-    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true}));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
   }, []);
 
@@ -117,12 +117,14 @@ const EditWarehouseImport = props => {
     setProductList(copyArr);
   };
 
-  const debouncedSearchProduct =  _.debounce(value => {
-      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
-    }, 300)
+  const debouncedSearchProduct = _.debounce(value => {
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+  }, 300);
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value)
+    if (value) {
+      debouncedSearchProduct(value);
+    }
   };
 
   const onAddProduct = () => {

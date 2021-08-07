@@ -102,12 +102,14 @@ export class StoreInputService {
         options: FindManyOptions<StoreInput>,
         filter = {},
         departmentVisible = [],
+        isEmployee: boolean,
+        currentUser: User,
         type = ''
     ): Promise<[StoreInput[], number]> {
         let queryString = '';
         Object.keys(filter).forEach((item, index) => {
             if (item === 'endDate' || item === 'startDate') return;
-            queryString += `StoreInput.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+            queryString += `StoreInput.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
         });
         let andQueryString = '';
 
@@ -122,6 +124,9 @@ export class StoreInputService {
         if (type.length > 0) {
             andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.type like '%${type}%' `;
         }
+        if(isEmployee){
+            andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.sale = ${currentUser.id} `;
+        }
         const cacheKeyBuilder = `get_StoreInputs_department_${departmentVisible.join(',')}_endDate_${filter['endDate'] || ''}startDate${filter['startDate'] || ''}_type_${type}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_StoreInput.${Object.keys(options.order)[0] ||
             'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
         const queryBuilder = this.storeInputRepository
@@ -130,6 +135,7 @@ export class StoreInputService {
             .leftJoinAndSelect('StoreInput.store', 'store')
             .leftJoinAndSelect('StoreInput.department', 'department')
             .leftJoinAndSelect('StoreInput.customer', 'customer')
+            .leftJoinAndSelect('StoreInput.sale', 'sale')
             .leftJoinAndSelect('StoreInput.storeInputDetails', 'storeInputDetails')
             .leftJoinAndSelect('storeInputDetails.product', 'product')
             .leftJoinAndSelect('StoreInput.storeTransfer', 'storeTransfer')
@@ -189,7 +195,6 @@ export class StoreInputService {
         if (Array.isArray(storeInput.storeInputDetails)) {
             await this.storeInputDetailsService.saveMany(storeInput.storeInputDetails);
         }
-        storeInput.sale = storeInput.customer?.sale || null;
         return await this.storeInputRepository.save(storeInput);
     }
 

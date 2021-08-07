@@ -31,7 +31,7 @@ export default class StoreInput extends BaseEntity {
 
     @Column({ name: 'customer_name', length: 255, nullable: true })
     @Index()
-    customerName: string;
+    customerName?: string;
 
     @ManyToOne(type => User)
     sale?: User;
@@ -56,36 +56,36 @@ export default class StoreInput extends BaseEntity {
 
     @Column({ name: 'approver_name', length: 255, nullable: true })
     @Index()
-    approverName: string;
+    approverName?: string;
 
     @Column({ name: 'note', length: 255, nullable: true })
     @Index()
-    note: string;
+    note?: string;
 
 
     @OneToMany(type => StoreInputDetails, other => other.storeInput)
     storeInputDetails? : StoreInputDetails[];
 
     @ManyToOne(type => Store)
-    store: Store;
+    store?: Store;
 
     @Column({ name: 'store_name', length: 255, nullable: true })
     @Index()
-    storeName: string;
+    storeName?: string;
 
     @ManyToOne(type => Provider)
-    provider: Provider;
+    provider?: Provider;
 
     @Column({ name: 'provider_name', length: 255, nullable: true })
     @Index()
-    providerName: string;
+    providerName?: string;
 
     @ManyToOne(type => Store)
     storeTransfer?: Store;
 
     @Column({ name: 'store_transfer_name', length: 255, nullable: true })
     @Index()
-    storeTransferName: string;
+    storeTransferName?: string;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

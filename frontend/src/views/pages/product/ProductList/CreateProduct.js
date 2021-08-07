@@ -107,8 +107,8 @@ const CreateProduct = () => {
 
   const renderProductCode = () => {
     const codeName = getCodeByName(ref.current.values.name);
-    const code = `${ref.current.values.productGroup?.productBrand?.code || ''}_${ref.current.values.productGroup?.code || ''}_${codeName}_${
-      ref.current.values.volume
+    const code = `${ref.current.values.productGroup?.productBrand?.code || ''}_${ref.current.values.productGroup?.code || ''}_${codeName}${
+      Number(ref.current.values.volume) > 0 ? '_'+ref.current.values.volume:''
     }`;
     ref.current.setFieldValue('code', `${code}`.toUpperCase());
   };

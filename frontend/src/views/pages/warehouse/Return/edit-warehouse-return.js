@@ -33,8 +33,6 @@ import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
 import { filterCustomer, getCustomer } from '../../customer/customer.api';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import MaskedInput from 'react-text-mask';
 
@@ -45,7 +43,7 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
-import { blockInvalidChar } from '../../../../shared/utils/helper';
+import { blockInvalidChar, memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -149,28 +147,30 @@ const EditWarehouseReturn = props => {
     setProductList([...productList, data]);
   };
 
-  const debouncedSearchProduct =  _.debounce(value => {
-      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
-    }, 300)
+  const debouncedSearchProduct = _.debounce(value => {
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+  }, 300);
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value);
+    if (value) {
+      debouncedSearchProduct(value);
+    }
   };
 
-  const debouncedSearchCustomer =  _.debounce(value => {
-      dispatch(
-        filterCustomer({
-          page: 0,
-          size: 20,
-          sort: 'createdDate,DESC',
-          code: value,
-          name: value,
-          address: value,
-          contactName: value,
-          dependency: true,
-        })
-      );
-    }, 300)
+  const debouncedSearchCustomer = _.debounce(value => {
+    dispatch(
+      filterCustomer({
+        page: 0,
+        size: 20,
+        sort: 'createdDate,DESC',
+        code: value,
+        name: value,
+        address: value,
+        contactName: value,
+        dependency: true
+      })
+    );
+  }, 300);
 
   const onSearchCustomer = value => {
     debouncedSearchCustomer(value);
@@ -334,11 +334,11 @@ const EditWarehouseReturn = props => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetCityName(selectedCustomer?.city)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetDistrictName(selectedCustomer?.district)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Nhân viên phụ trách: </dt>

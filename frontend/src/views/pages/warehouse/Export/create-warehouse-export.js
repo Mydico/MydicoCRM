@@ -56,7 +56,6 @@ const CreateReceipt = () => {
 
   const { account } = useSelector(userSafeSelector);
 
-
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -93,12 +92,10 @@ const CreateReceipt = () => {
     if (!isValidProduct) return;
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
-    values.department = { id: account.department?.id || null};
+    values.department = { id: account.department?.id || null };
     dispatch(fetching());
     dispatch(creatingWarehouseExport(values));
   };
-
-
 
   useEffect(() => {
     if (selectedWarehouse) {
@@ -186,13 +183,14 @@ const CreateReceipt = () => {
     setProductList([...productList, data]);
   };
 
-  const debouncedSearchProduct =  _.debounce(value => {
-      dispatch(filterProduct
-        ({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
-    }, 300)
+  const debouncedSearchProduct = _.debounce(value => {
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
+  }, 300);
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value);
+    if (value) {
+      debouncedSearchProduct(value);
+    }
   };
 
   const onChangePrice = ({ target }, index) => {
@@ -352,8 +350,7 @@ const CreateReceipt = () => {
                         <tr
                           key={index}
                           style={
-                            item.quantityInStore !== undefined &&
-                            Number(item.quantity) > item.quantityInStore
+                            item.quantityInStore !== undefined && Number(item.quantity) > item.quantityInStore
                               ? {
                                   boxShadow: '0px 0px 6px 5px red'
                                 }

@@ -5,17 +5,10 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useHistory } from 'react-router-dom';
-
-import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
-
-import { getCustomer } from '../../customer/customer.api';
-
 import CurrencyInput from '../../../components/currency-input/currency-input';
 import { getDetailReceipt } from './receipt.api';
 import { globalizedReceiptsSelectors } from './receipt.reducer';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
+
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object().required('Khách hàng không để trống'),
@@ -24,6 +17,7 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
 
 const getBadge = status => {
   switch (status) {
@@ -68,7 +62,6 @@ const DetailReceipt = props => {
   }, [receipt]);
 
   useEffect(() => {
-    dispatch(getCustomer());
     dispatch(getDetailReceipt({ id: props.match.params.receiptId, dependency: true }));
   }, []);
 
@@ -117,11 +110,11 @@ const DetailReceipt = props => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetCityName(selectedCustomer?.city)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetDistrictName(selectedCustomer?.district)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Loại khách hàng: </dt>

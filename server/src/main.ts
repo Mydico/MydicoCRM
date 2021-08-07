@@ -33,8 +33,8 @@ const port = process.env.NODE_SERVER_PORT || config.get('server.port');
 const useJHipsterRegistry = config.get('eureka.client.enabled');
 
 async function bootstrap(): Promise<void> {
-    loadCloudConfig();
-    registerAsEurekaService();
+    // loadCloudConfig();
+    // registerAsEurekaService();
 
     const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
     const fastifyInstance = app.getHttpAdapter().getInstance();
@@ -79,7 +79,7 @@ async function bootstrap(): Promise<void> {
     const staticClientPath = path.join(__dirname, '../dist/classes/static');
     const staticFilePath = path.join(__dirname, '../uploads');
     if (fs.existsSync(staticClientPath)) {
-        app.use(express.static(staticClientPath));
+        app.use(express.static(staticClientPath,{cacheControl: true}));
         logger.log(`Serving static client resources on ${staticClientPath}`);
     } else {
         logger.log('No client it has been found');

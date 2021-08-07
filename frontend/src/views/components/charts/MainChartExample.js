@@ -5,8 +5,6 @@ import { getStyle, hexToRgba } from '@coreui/utils';
 
 
 const MainChart = attributes => {
-  
-
   const defaultDatasets = (() => {
     const data = attributes.data ? Object.values(attributes.data) : [];
     return [

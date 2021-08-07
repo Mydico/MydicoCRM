@@ -17,8 +17,6 @@ import { fetching } from './receipt.reducer';
 import { getCustomerDebts } from '../debt/debt.api';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object().required('Khách hàng không để trống'),
@@ -28,6 +26,7 @@ const validationSchema = function() {
 
 import { validate } from '../../../../shared/utils/normalize';
 import { userSafeSelector } from '../../login/authenticate.reducer';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
 const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 
 const CreateReceipt = () => {
@@ -54,7 +53,9 @@ const CreateReceipt = () => {
   const onSubmit = (values, { resetForm }) => () => {
     dispatch(fetching());
     values.money = Number(values.money.replace(/\D/g, ''));
-    values.department = { id: account.department?.id || null };
+    values.sale = selectedCustomer.sale;
+    values.branch = selectedCustomer.branch;
+    values.department = selectedCustomer.department;
     dispatch(creatingReceipt(values));
   };
 
@@ -189,11 +190,11 @@ const CreateReceipt = () => {
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Thành phố:</dt>
-                          <dd className="col-sm-9">{cities.filter(city => city.value === selectedCustomer?.city)[0]?.label || ''}</dd>
+                          <dd className="col-sm-9">{memoizedGetCityName(selectedCustomer?.city)}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Quận huyện:</dt>
-                          <dd className="col-sm-9">{district.filter(dist => dist.value === selectedCustomer?.district)[0]?.label || ''}</dd>
+                          <dd className="col-sm-9">{memoizedGetDistrictName(selectedCustomer?.district)}</dd>
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Nhân viên phụ trách: </dt>

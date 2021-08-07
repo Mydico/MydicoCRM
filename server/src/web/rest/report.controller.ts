@@ -53,4 +53,26 @@ export class ReportController {
       throw new HttpException('Không thể xử lý dữ liệu', HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
+
+  @Get('/best-product-sale')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getBest10ProductSale(@Req() req: Request, @Res() res): Promise<any> {
+      return res.send(await this.reportService.getTop10BestSaleProduct());
+  }
+
+  @Get('/best-customer')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getBest10Customer(@Req() req: Request, @Res() res): Promise<any> {
+    if (req.query['saleId']) {
+      return res.send(await this.reportService.getTop10BestCustomer(req.query['saleId']));
+    } else {
+      throw new HttpException('Không thể xử lý dữ liệu', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
 }

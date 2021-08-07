@@ -18,7 +18,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDetailWarehouseImport, updateWarehouseImport } from '../Import/warehouse-import.api';
-
+import _ from 'lodash'
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
@@ -119,8 +119,14 @@ const EditWarehouseExportProvider = props => {
     setProductList(copyArr);
   };
 
-  const onSearchProduct = value => {
+  const debouncedSearchProduct = _.debounce(value => {
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+  }, 300);
+
+  const onSearchProduct = value => {
+    if (value) {
+      debouncedSearchProduct(value);
+    }
   };
 
   const onSelectedProduct = ({ value }, index) => {

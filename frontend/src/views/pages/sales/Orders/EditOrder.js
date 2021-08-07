@@ -40,8 +40,6 @@ import { OrderStatus } from './order-status';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { userSafeSelector, removePermission } from '../../login/authenticate.reducer.js';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
 import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
 import '../../../components/table/ResponsiveTable.css'
 import { useMediaQuery } from 'react-responsive'
@@ -58,7 +56,7 @@ const validationSchema = function () {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
-import { blockInvalidChar } from '../../../../shared/utils/helper';
+import { blockInvalidChar, memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
 
 const mappingType = {
   SHORTTERM: 'Ngắn hạn',
@@ -251,6 +249,9 @@ const EditOrder = props => {
     ).then(numberOfQuantityInStore => {
       if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
         copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
+        if (numberOfQuantityInStore?.payload[0] && numberOfQuantityInStore?.payload[0]?.quantity < 100 && copyArr[index].quantity > numberOfQuantityInStore?.payload[0]?.quantity ) {
+          copyArr[index].quantity = numberOfQuantityInStore?.payload[0]?.quantity;
+        }
         setProductList(copyArr);
       }
     });
@@ -394,11 +395,11 @@ const EditOrder = props => {
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{cities.filter(city => city.value === values.customer?.city)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetCityName(values.customer?.city)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{district.filter(city => city.value === values.customer?.district)[0]?.label || ''}</dd>
+                      <dd className="col-sm-9">{memoizedGetDistrictName(values.customer?.district)}</dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Loại khách hàng: </dt>

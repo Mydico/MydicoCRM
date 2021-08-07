@@ -103,9 +103,9 @@ export class ReceiptController {
     async post(@Req() req: Request, @Res() res: Response, @Body() receipt: Receipt): Promise<Response> {
         const currentUser = req.user as User;
         receipt.createdBy = currentUser.login;
-        receipt.sale = receipt.customer.sale;
-        receipt.branch = currentUser.branch;
-        receipt.department = currentUser.mainDepartment ||  currentUser.department;
+        // receipt.sale = receipt.customer.sale;
+        // receipt.branch = currentUser.branch;
+        // receipt.department = currentUser.mainDepartment ||  currentUser.department;
         receipt.customerName = receipt.customer.name;
         const created = await this.receiptService.save(receipt, currentUser);
         HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', created.id);

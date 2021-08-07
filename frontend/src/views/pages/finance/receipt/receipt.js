@@ -58,6 +58,7 @@ const fields = [
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'customerName', label: 'Khách hàng', _style: { width: '15%' } },
   { key: 'money', label: 'Số tiền', _style: { width: '10%' }, filter: false },
+  { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '10%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'approverName', label: 'Người duyệt', _style: { width: '15%' } },
   { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
@@ -101,6 +102,7 @@ const Receipt = props => {
       return {
         ...item,
         customer: item.customer?.name || '',
+        sale: item.sale?.code || '',
         createdBy: item.createdBy || '',
         approver: item.approver?.login || '',
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')

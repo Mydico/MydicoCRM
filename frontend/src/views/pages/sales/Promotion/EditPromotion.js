@@ -16,7 +16,7 @@ import {
   CTextarea,
   CInputCheckbox
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -98,12 +98,14 @@ const EditPromotion = props => {
     setProductList(copyArr);
   };
 
-  const debouncedSearchProduct =  _.debounce(value => {
-      dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
-    }, 300)
+  const debouncedSearchProduct = _.debounce(value => {
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+  }, 300);
 
   const onSearchProduct = value => {
-    debouncedSearchProduct(value);
+    if (value) {
+      debouncedSearchProduct(value);
+    }
   };
 
   const onChangeProductPromotion = (value, index, type) => {
@@ -122,7 +124,7 @@ const EditPromotion = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-       history.goBack();
+      history.goBack();
     }
   }, [initialState.updatingSuccess]);
 

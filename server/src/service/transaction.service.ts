@@ -70,11 +70,11 @@ export class TransactionService {
       if (isEmployee) {
         queryString += ` AND Transaction.sale = ${currentUser.id}`;
       }
-      // if (currentUser.branch) {
-      //   if (!currentUser.branch.seeAll) {
-      //     queryString += ` AND Transaction.branch = ${currentUser.branch.id}`;
-      //   }
-      // }
+      if (currentUser.branch) {
+        if (!currentUser.branch.seeAll) {
+          queryString += ` AND Transaction.branch = ${currentUser.branch.id}`;
+        }
+      }
     }
     const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
@@ -118,11 +118,11 @@ export class TransactionService {
       if (isEmployee) {
         andQueryString += ` AND Transaction.sale = ${currentUser.id}`;
       }
-      // if (currentUser.branch) {
-      //   if (!currentUser.branch.seeAll) {
-      //     andQueryString += ` AND Transaction.branch = ${currentUser.branch.id}`;
-      //   }
-      // }
+      if (currentUser.branch) {
+        if (!currentUser.branch.seeAll) {
+          andQueryString += ` AND Transaction.branch = ${currentUser.branch.id}`;
+        }
+      }
     }
 
     const queryBuilder = this.transactionRepository

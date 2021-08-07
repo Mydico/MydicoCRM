@@ -53,10 +53,10 @@ export class ProductService {
             .leftJoinAndSelect('Product.productBrand', 'productBrand')
             .leftJoinAndSelect('Product.productGroup', 'productGroup')
             .cache(cacheKeyBuilder, 604800)
-            .where(queryString)
+            .where(` Product.status = 'ACTIVE'`)
             .andWhere(
                 new Brackets(sqb => {
-                    sqb.where(' Product.status = \'ACTIVE\'');
+                    sqb.where(queryString);
                 })
             )
             .orderBy(`Product.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')

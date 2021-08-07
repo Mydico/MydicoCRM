@@ -43,6 +43,7 @@ const fields = [
   },
   { key: 'storeName', label: 'Tên kho nhập', _style: { width: '10%' } },
   { key: 'customerName', label: 'Khách hàng', _style: { width: '10%' } },
+  { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'approverName', label: 'Người duyệt', _style: { width: '10%' } },
@@ -114,6 +115,7 @@ const WarehouseImport = props => {
       return {
         ...item,
         storeName: item.storeName || '',
+        sale: item.sale.code,
         customerName: item.customerName || '',
         approverName: item.approverName || '',
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')

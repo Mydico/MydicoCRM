@@ -53,6 +53,7 @@ export class DebtDashboardController {
         }
         const [results, count] = await this.debtDashboardService.findAndCount({
             where,
+            cache: 3*3600
         });
         return res.send(results);
     }
