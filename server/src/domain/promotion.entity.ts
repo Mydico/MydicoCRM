@@ -27,8 +27,7 @@ export default class Promotion extends BaseEntity {
     @Index()
     name: string;
 
-    @Column({ name: 'description', length: 512, nullable: true })
-    @Index()
+    @Column({ name: 'description', type:'text', nullable: true })
     description: string;
 
     @Column({ type: 'bigint', name: 'total_revenue', nullable: true })

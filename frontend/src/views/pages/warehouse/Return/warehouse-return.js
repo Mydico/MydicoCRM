@@ -115,7 +115,7 @@ const WarehouseImport = props => {
       return {
         ...item,
         storeName: item.storeName || '',
-        sale: item.sale.code,
+        sale: item.sale?.code || '',
         customerName: item.customerName || '',
         approverName: item.approverName || '',
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')

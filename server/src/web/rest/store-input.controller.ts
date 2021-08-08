@@ -27,6 +27,7 @@ import { StoreImportStatus } from '../../domain/enumeration/store-import-status'
 import { In, Like } from 'typeorm';
 import { DepartmentService } from '../../service/department.service';
 import { StoreImportType } from '../../domain/enumeration/store-import-type';
+import { StoreInputUpdateStatusDTO } from '../../service/dto/store-input.dto';
 
 @Controller('api/store-inputs')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -223,7 +224,6 @@ export class StoreInputController {
     async post(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
         const currentUser = req.user as User;
         storeInput.createdBy = currentUser.login;
-        storeInput.department = currentUser.mainDepartment ||  currentUser.department;
         storeInput.storeName = storeInput.store.name;
         const created = await this.storeInputService.save(storeInput);
         HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
@@ -271,7 +271,7 @@ export class StoreInputController {
         description: 'The record has been successfully updated.',
         type: StoreInput,
     })
-    async approve(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+    async approve(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInputUpdateStatusDTO): Promise<Response> {
         HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
         if (storeInput.status === StoreImportStatus.APPROVED) {
             const currentUser = req.user as User;

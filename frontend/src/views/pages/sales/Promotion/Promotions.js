@@ -272,6 +272,10 @@ const Promotion = props => {
                           <dt className="col-sm-3">Ngày kết thúc:</dt>
                           <dd className="col-sm-9">{item.endTime}</dd>
                         </dl>
+                        <dl className="row">
+                          <dt className="col-sm-3">Mô tả:</dt>
+                          <dd className="col-sm-9">{item.description || ''}</dd>
+                        </dl>
                       </CCol>
                       <CCol lg="6">
                         <dl className="row">

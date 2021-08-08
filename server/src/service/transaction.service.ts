@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../domain/user.entity';
 import { Brackets, FindManyOptions, FindOneOptions } from 'typeorm';
@@ -161,6 +161,10 @@ export class TransactionService {
   }
 
   async save(transaction: Transaction): Promise<Transaction | undefined> {
+    const exist = await this.transactionRepository.findOne({ where: { customer: transaction.customer } });
+    if (exist) {
+      throw new HttpException('Khách hàng này đã có công nợ', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
     return await this.transactionRepository.save(transaction);
   }
 

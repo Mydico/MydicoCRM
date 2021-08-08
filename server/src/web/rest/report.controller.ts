@@ -60,7 +60,11 @@ export class ReportController {
     description: 'List all records'
   })
   async getBest10ProductSale(@Req() req: Request, @Res() res): Promise<any> {
-      return res.send(await this.reportService.getTop10BestSaleProduct());
+    if (req.query['saleId']) {
+      return res.send(await this.reportService.getTop10BestSaleProduct(req.query['saleId']));
+    } else {
+      throw new HttpException('Không thể xử lý dữ liệu', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   @Get('/best-customer')

@@ -48,6 +48,8 @@ const validationSchema = function() {
     department: Yup.object().required('Chi nhánh không để trống'),
     branch: Yup.object().required('Bạn chưa chọn hoặc chưa có phòng ban. Liên hệ quản trị viên để cài đặt'),
     city: Yup.string().required('Thành phố không để trống'),
+    district: Yup.string().required('Quận huyện không để trống'),
+    address: Yup.string().required('Địa chỉ không để trống'),
     social: Yup.string().required('Link mạng xã hội không để trống')
   });
 };
@@ -252,7 +254,7 @@ const CreateCustomer = () => {
                             label: item.label
                           }))}
                         />
-                        <CInvalidFeedback className="d-block">{errors.districts}</CInvalidFeedback>
+                        <CInvalidFeedback className="d-block">{errors.district}</CInvalidFeedback>
                       </CFormGroup>
                     </CCol>
                   </CRow>

@@ -54,14 +54,16 @@ export class ProductService {
             .leftJoinAndSelect('Product.productGroup', 'productGroup')
             .cache(cacheKeyBuilder, 604800)
             .where(` Product.status = 'ACTIVE'`)
-            .andWhere(
-                new Brackets(sqb => {
-                    sqb.where(queryString);
-                })
-            )
             .orderBy(`Product.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
             .take(options.take);
+            if(queryString.length > 0){
+                queryBuilder.andWhere(
+                    new Brackets(sqb => {
+                        sqb.where(queryString);
+                    })
+                )
+            }
         const result = await queryBuilder.getMany();
         return result;
     }
@@ -96,14 +98,30 @@ export class ProductService {
         return result;
     }
 
-    async save(product: Product): Promise<Product | undefined> {
+    async getNewProductCode(product: Product): Promise<Product | undefined>{
         const foundedCustomer = await this.productRepository.find({ code: Like(`%${product.code}%`) });
         if (foundedCustomer.length > 0) {
             foundedCustomer.sort((a, b) => a.createdDate.valueOf() - b.createdDate.valueOf());
             const res = increment_alphanumeric_str(foundedCustomer[foundedCustomer.length - 1].code);
             product.code = res;
         }
-        return await this.productRepository.save(product);
+        return product;
+    }
+    
+    async save(product: Product): Promise<Product | undefined> {
+        if (product.id) {
+            const foundedProduct = await this.productRepository.findOne({
+              code: product.code
+            });
+            let tempProduct = product;
+            if (foundedProduct && foundedProduct.id !== product.id ) {
+                tempProduct = await this.getNewProductCode(product);
+            }
+            const result = await this.productRepository.save(tempProduct);
+            return result;
+        }
+        const newProduct = await this.getNewProductCode(product);
+        return await this.productRepository.save(newProduct);
     }
 
     async update(product: Product): Promise<Product | undefined> {

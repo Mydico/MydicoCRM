@@ -79,8 +79,8 @@ const CreateDebt = () => {
   };
 
   const onSubmit = (values, { resetForm }) => {
-    values.debt = typeof values.debt === 'number' ? values.debt : Number(values.debt.replace(/\D/g, ''));
-
+    values = JSON.parse(JSON.stringify(values))
+    values.debt = typeof values.debt === 'number' ? values.debt : Number(values.debt.replace(/đ/g, '').replace(/,/g, ''));
     const data = {
       earlyDebt: values.debt,
       totalMoney: values.debt,

@@ -14,7 +14,7 @@ export const defaultMaskOptions = {
   decimalSymbol: '.',
   decimalLimit: 0, // how many digits allowed after the decimal
   integerLimit: 100, // limit length of integer numbers
-  allowNegative: false,
+  allowNegative: true,
   allowLeadingZeroes: false,
 };
 export const currencyMask = createNumberMask({

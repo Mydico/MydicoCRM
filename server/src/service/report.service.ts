@@ -18,11 +18,16 @@ export class ReportService {
     if (filter['endDate'] && filter['startDate']) {
       queryString += `Order.createdDate  >= '${filter['startDate']}' AND  Order.createdDate <= '${filter['endDate']} 24:00:00'`;
     }
+    // WAITING = 'WAITING',
+    // APPROVED = 'APPROVED',
+    // CANCEL = 'CANCEL',
+    // CREATED = "CREATED",
+    // DELETED = 'DELETED',
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .select('COUNT(*)', 'count')
       .cache(3*3600)
-      .where(`Order.sale = ${userId} and Order.status = 'CREATE_COD'`);
+      .where(`Order.sale = ${userId} and Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`);
     if (queryString) {
       queryBuilder.andWhere(
         new Brackets(sqb => {
@@ -32,14 +37,27 @@ export class ReportService {
     }
     return await queryBuilder.getRawOne();
   }
-  async getTop10BestSaleProduct(): Promise<any> {
+  async getTop10BestSaleProduct(saleId): Promise<any> {
     // select sum(quantity), productId, p.code,p.name from order_details join product p on p.id = order_details.productId group by productId ORDER BY sum(quantity) DESC limit 10
+    const listCustomer = await this.orderRepository.find({
+      where: {
+        sale: saleId
+      },
+      cache: 3 * 3600
+    });
+    let andQueryString = ''
+    if (listCustomer.length > 0) {
+      andQueryString += ` OrderDetails.order IN ${JSON.stringify(listCustomer.map(item => item.id ))
+        .replace('[', '(')
+        .replace(']', ')')}`;
+    }
     const queryBuilder = this.orderDetailsRepository
       .createQueryBuilder('OrderDetails')
       .select(['product.code, product.name'])
       .addSelect('Sum(OrderDetails.quantity)', 'sum')
       .leftJoin('OrderDetails.product', 'product')
       .groupBy('OrderDetails.productId')
+      .where(andQueryString)
       .cache(3*3600)
       .orderBy('sum(OrderDetails.quantity)', 'DESC')
       .limit(10);
@@ -62,7 +80,7 @@ export class ReportService {
     }
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
-      .select(['customer.code, customer.contactName'])
+      .select(['customer.code, customer.name'])
       .addSelect('Sum(Order.real_money)', 'sum')
       .leftJoin('Order.customer', 'customer')
       .where(andQueryString)

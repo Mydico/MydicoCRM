@@ -78,7 +78,7 @@ const Dashboard = () => {
         setDebt(sum);
       }
     });
-    dispatch(getBestProductSale()).then(data => {
+    dispatch(getBestProductSale({ saleId: account.id })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         setBestSaleProduct(data.payload);
       }
@@ -89,10 +89,6 @@ const Dashboard = () => {
       }
     });
   };
-
-  useEffect(() => {
-    console.log(debt, incomeTotal);
-  }, [debt, incomeTotal]);
 
   useEffect(() => {
     const today = moment();
@@ -269,7 +265,7 @@ const Dashboard = () => {
                     <div>{item.code}</div>
                   </td>
                   <td>
-                    <div>{item.contact_name}</div>
+                    <div>{item.name}</div>
                   </td>
                   <td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>

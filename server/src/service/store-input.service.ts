@@ -124,7 +124,7 @@ export class StoreInputService {
         if (type.length > 0) {
             andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.type like '%${type}%' `;
         }
-        if(isEmployee){
+        if(isEmployee && type.includes("RETURN")){
             andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.sale = ${currentUser.id} `;
         }
         const cacheKeyBuilder = `get_StoreInputs_department_${departmentVisible.join(',')}_endDate_${filter['endDate'] || ''}startDate${filter['startDate'] || ''}_type_${type}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_StoreInput.${Object.keys(options.order)[0] ||

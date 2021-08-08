@@ -211,6 +211,7 @@ export class CustomerService {
       .leftJoinAndSelect('Customer.status', 'status')
       .leftJoinAndSelect('Customer.type', 'type')
       .leftJoinAndSelect('Customer.department', 'department')
+      .leftJoinAndSelect('Customer.branch', 'branch')
       .leftJoinAndSelect('Customer.sale', 'sale')
       .where(andQueryString)
       .orderBy(`Customer.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
@@ -255,7 +256,7 @@ export class CustomerService {
         code: customer.code
       });
       let tempCustomer = customer;
-      if (foundedCustomer && foundedCustomer.id !== customer.id) {
+      if (foundedCustomer && foundedCustomer.id !== customer.id ) {
         const foundedCustomerList = await this.customerRepository.find({
           code: Like(`%${customer.code}%`)
         });
