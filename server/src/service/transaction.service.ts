@@ -162,7 +162,7 @@ export class TransactionService {
 
   async save(transaction: Transaction): Promise<Transaction | undefined> {
     const exist = await this.transactionRepository.findOne({ where: { customer: transaction.customer } });
-    if (exist) {
+    if (!transaction.order && !transaction.receipt && !transaction.storeInput && exist) {
       throw new HttpException('Khách hàng này đã có công nợ', HttpStatus.UNPROCESSABLE_ENTITY);
     }
     return await this.transactionRepository.save(transaction);

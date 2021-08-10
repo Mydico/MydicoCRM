@@ -43,7 +43,7 @@ export class ReceiptService {
 
   async findAndCount(
     options: FindManyOptions<Receipt>,
-    filter = [],
+    filter,
     departmentVisible = [],
     isEmployee: boolean,
     currentUser: User

@@ -328,7 +328,7 @@ const CreateCustomer = () => {
                         onChange={async item => {
                           await setFieldValue('branch', item.value);
                         }}
-                        placeholder="Chi nhánh"
+                        placeholder="Phòng ban"
                         options={branches.map(item => ({
                           value: item,
                           label: item?.name || ''

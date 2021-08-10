@@ -33,7 +33,8 @@ export class ProductQuantityService {
   async filter(filter = {}, options: FindManyOptions<ProductQuantity>): Promise<[ProductQuantity[], number]> {
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
-      if (item !== 'store')
+      if (item === 'store') return
+      if (item === 'status') return
         queryString += `product.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '} `;
     });
     const queryBuilder = this.productQuantityRepository

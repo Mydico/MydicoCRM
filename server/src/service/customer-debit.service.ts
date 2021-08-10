@@ -122,10 +122,10 @@ export class CustomerDebitService {
   }
 
   async save(customerDebit: CustomerDebit): Promise<CustomerDebit | undefined> {
-    const exist = await this.customerDebitRepository.findOne({ where: { customer: customerDebit.customer } });
-    if (exist) {
-      throw new HttpException('Khách hàng này đã có công nợ', HttpStatus.UNPROCESSABLE_ENTITY);
-    }
+    // const exist = await this.customerDebitRepository.findOne({ where: { customer: customerDebit.customer } });
+    // if (exist) {
+    //   throw new HttpException('Khách hàng này đã có công nợ', HttpStatus.UNPROCESSABLE_ENTITY);
+    // }
     return await this.customerDebitRepository.save(customerDebit);
   }
 

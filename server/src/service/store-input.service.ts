@@ -263,6 +263,15 @@ export class StoreInputService {
                 quantity: item.quantity - totalProduct > 0 ? item.quantity - totalProduct : 0,
             };
         });
+        const merged = productInStore.reduce((previousValue, currentValue) => {
+            const sum = previousValue.find(e => e.product.id === currentValue.product.id);
+            if (!sum) {
+              previousValue.push(Object.assign({}, currentValue));
+            } else {
+              sum.quantity += currentValue.quantity;
+            }
+            return previousValue;
+          }, []);
         await this.productQuantityService.saveMany(productInStore);
         if (entity.storeTransfer) {
             let arrDetails = [];
@@ -304,7 +313,16 @@ export class StoreInputService {
             };
         });
         const total = [...productInStore, ...productNotInStore];
-        await this.productQuantityService.saveMany(total);
+        const merged = total.reduce((previousValue, currentValue) => {
+            const sum = previousValue.find(e => e.product.id === currentValue.product.id);
+            if (!sum) {
+              previousValue.push(Object.assign({}, currentValue));
+            } else {
+              sum.quantity += currentValue.quantity;
+            }
+            return previousValue;
+          }, []);
+        await this.productQuantityService.saveMany(merged);
     }
 
     async delete(storeInput: StoreInput): Promise<StoreInput | undefined> {

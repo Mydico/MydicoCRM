@@ -21,7 +21,7 @@ import { getCustomerStatus, getCustomerType, getDetailCustomer, getDistrict, upd
 import Select from 'react-select';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedCustomerSelectors } from '../customer.reducer';
-import { getDepartment } from '../../user/UserDepartment/department.api';
+import { getChildTreeDepartment, getDepartment } from '../../user/UserDepartment/department.api';
 import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
 import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city';
@@ -59,6 +59,7 @@ const EditCustomer = props => {
   const ref = useRef(null);
   const { initialState } = useSelector(state => state.customer);
   const { account } = useSelector(userSafeSelector);
+  const { initialState: initialDepartmentState } = useSelector(state => state.department);
 
   const initialValues = {
     code: '',
@@ -79,12 +80,13 @@ const EditCustomer = props => {
   const [initValues, setInitValues] = useState(null);
   const [districts, setDistricts] = useState([]);
 
-  const departments = [account.department];
+  const departments = initialDepartmentState.allChild;
   const customer = useSelector(state => selectById(state, props.match.params.id));
   const branches = useSelector(selectAllBranch);
 
   useEffect(() => {
     dispatch(getDetailCustomer({ id: props.match.params.id, dependency: true }));
+    dispatch(getChildTreeDepartment({ id: account.department?.id }));
     dispatch(getCustomerType({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getCustomerStatus({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getBranch({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true }));

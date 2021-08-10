@@ -184,7 +184,19 @@ const CreateReceipt = () => {
   };
 
   const debouncedSearchProduct = _.debounce(value => {
-    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
+    dispatch(
+      filterProductInStore({
+        store: selectedWarehouse.id,
+        code: value,
+        name: value,
+        dependency: true
+      })
+    ).then(resp => {
+      if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
+        setProducts(resp.payload.data);
+      }
+    });
+    // dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, status: 'ACTIVE', dependency: true }));
   }, 300);
 
   const onSearchProduct = value => {
@@ -224,16 +236,7 @@ const CreateReceipt = () => {
   return (
     <CCard>
       <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={editAlert} innerRef={formikRef}>
-        {({
-          values,
-
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          setFieldValue,
-
-          handleReset
-        }) => (
+        {({ values, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
               <CCardHeader>

@@ -96,17 +96,17 @@ const fields = [
   },
   {
     key: 'show_details',
-    label: 'Xem chi tiết',
+    label: 'Chi tiết',
     _style: { width: '1%' },
     filter: false
   },
-  { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
-  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { maxWidth: 200 } },
+  { key: 'code', label: 'Mã đơn hàng', _style: { maxWidth: 250, } },
+  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { maxWidth: 400 } },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' }, filter: false },
+  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%', maxWidth: 200 }, filter: false },
   { key: 'total', label: 'Tiền Thanh toán', _style: { width: '10%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false },
-  { key: 'status', label: 'Trạng thái', _style: { width: '10%' }, filter: false },
+  { key: 'status', label: 'Trạng thái', filter: false },
   {
     key: 'action',
     label: 'Hành động',
