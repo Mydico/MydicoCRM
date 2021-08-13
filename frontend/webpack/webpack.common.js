@@ -54,9 +54,10 @@ module.exports = options => ({
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     modules: ['node_modules'],
-    fallback: { path: require.resolve('path-browserify') }
+    fallback: { path: require.resolve('path-browserify'), fs: false, crypto: false }
     // alias: utils.mapTypescriptAliasToWebpackAlias()
   },
+  externals: [{ './cptable': 'var cptable' }, { './jszip': 'jszip' }],
   module: {
     rules: [
       {
@@ -78,7 +79,7 @@ module.exports = options => ({
         test: [/\.js?$/, /\.ts?$/, /\.jsx?$/, /\.tsx?$/],
         enforce: 'pre',
         exclude: /node_modules/,
-        use: ['source-map-loader'],
+        use: ['source-map-loader']
       },
       {
         test: /\.(j|t)sx?$/,
@@ -131,7 +132,8 @@ module.exports = options => ({
       }
     }),
     new webpack.ProvidePlugin({
-      process: 'process/browser'
+      process: 'process/browser',
+      JSZip: 'jszip', 
     }),
     new ForkTsCheckerWebpackPlugin({ eslint: true }),
     new CopyWebpackPlugin([

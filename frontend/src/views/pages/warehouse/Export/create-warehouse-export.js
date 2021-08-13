@@ -92,7 +92,7 @@ const CreateReceipt = () => {
     if (!isValidProduct) return;
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
-    values.department = { id: account.department?.id || null };
+    values.department = account.mainDepartment || account.department;
     dispatch(fetching());
     dispatch(creatingWarehouseExport(values));
   };

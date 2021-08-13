@@ -24,6 +24,7 @@ const initialState = {
   cities: [],
   districts: [],
   wards: [],
+  birthday: [],
   type: [],
   branch: [],
   status: [],
@@ -45,6 +46,7 @@ const slice = createSlice({
     },
     reset(state) {
       state.initialState.loading = false;
+      customersAdapter.removeAll(state)
       state.initialState.updatingSuccess = false;
     },
     customersAddOne: customersAdapter.addOne,
@@ -97,6 +99,7 @@ const slice = createSlice({
     },
     [getCustomerBirthday.fulfilled]: (state, action) => {
       customersAdapter.setAll(state, action.payload.data);
+      state.initialState.birthday = action.payload.data
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },

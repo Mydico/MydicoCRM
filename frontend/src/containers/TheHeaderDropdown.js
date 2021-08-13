@@ -17,9 +17,9 @@ const TheHeaderDropdown = () => {
   };
   return (
     <CDropdown inNav className="c-header-nav-items mx-2" direction="down">
-      <CDropdownToggle className="c-header-nav-link  d-flex align-items-start" caret={false}>
+      <CDropdownToggle className="c-header-nav-link  d-flex align-items-start align-items-center" caret={false}>
         <div className="c-avatar">
-          <CImg src={'avatars/6.jpg'} className="c-avatar-img" alt="admin@bootstrapmaster.com" />
+          <CImg src={account.imageUrl} style={{width: 45, height:45, borderRadius: 25}} />
         </div>
         <CLabel className="ml-3  d-flex flex-column">
           <strong>

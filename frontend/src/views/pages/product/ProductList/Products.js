@@ -10,8 +10,7 @@ import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import moment from 'moment';
 import _ from 'lodash';
 import Select from 'react-select';
-import { globalizedproductGroupsSelectors } from '../ProductGroup/product-group.reducer.js';
-import { CSVLink } from 'react-csv';
+import Download from '../../../components/excel/DownloadExcel.js';
 
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -192,9 +191,10 @@ const Product = props => {
         )}
       </CCardHeader>
       <CCardBody>
-      <CSVLink headers={excelFields} data={memoExcelListed} filename={'product.csv'} className="btn">
+      <Download data={memoExcelListed}  headers={excelFields} name={'product'} />
+      {/* <CSVLink headers={excelFields} data={memoExcelListed} filename={'product.csv'} className="btn">
           Tải excel (.csv) ⬇
-        </CSVLink>
+        </CSVLink> */}
         <CDataTable
           responsive={true}
           items={memoListed}

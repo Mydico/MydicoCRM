@@ -486,9 +486,6 @@ const Bill = props => {
         </CButton> */}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="customertypes.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
         <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>

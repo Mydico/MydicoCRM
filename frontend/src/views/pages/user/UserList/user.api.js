@@ -85,3 +85,12 @@ export const resetPassword = createAsyncThunk('api/resetPassword/users', async (
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
+export const uploadImage = createAsyncThunk('api/files/upload', async (body, thunkAPI) => {
+  try {
+    const result = await axios.post('api/files', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

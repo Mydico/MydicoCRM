@@ -17,10 +17,10 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUserInfo } from './user.api';;
+import { updateUserInfo, uploadImage } from './user.api';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedUserSelectors, reset } from './user.reducer';
-
+import ImageUploading from 'react-images-uploading';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -35,6 +35,8 @@ const validationSchema = function() {
 
 import { validate } from '../../../../shared/utils/normalize';
 import { getSession, userSafeSelector } from '../../login/authenticate.reducer';
+import AvatarEditor from 'react-avatar-editor';
+import { CImg } from '@coreui/react';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -56,16 +58,24 @@ const EditUserProfile = props => {
     tel: ''
   });
 
-  const user = useSelector(state => selectById(state, props.match.params.id));
+  const fileInput = useRef(null);
 
   const [initValues, setInitValues] = useState(null);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
+  const [preview, setPreview] = useState(null);
+  const [images, setImages] = React.useState();
 
+  const onChange = (imageList, addUpdateIndex) => {
+    // data for submit
+    console.log(imageList, addUpdateIndex);
+    setImages(imageList);
+  };
 
   useEffect(() => {
     setInitValues(account);
+    setImages(account.imageUrl)
   }, [account]);
 
   useEffect(() => {
@@ -85,11 +95,26 @@ const EditUserProfile = props => {
     values = JSON.parse(JSON.stringify(values));
     values.roles = selectedRoles;
     values.departments = selectedDepartment;
+    values.imageUrl = images
     values.permissionGroups = selectedGroupPermission;
     dispatch(fetching());
     dispatch(updateUserInfo(values));
   };
-
+  const onClose = () => {
+    setPreview(null);
+  };
+  const onCrop = pv => {
+    setPreview(pv);
+  };
+  const onBeforeFileLoad = e => {
+    const formData = new FormData();
+    formData.set('file', e.target.files[0]);
+    dispatch(uploadImage(formData)).then(resp => {
+      if (resp && resp.payload && resp.payload.data) {
+        setImages(resp.payload.data[0].url);
+      }
+    });
+  };
 
   return (
     <CCard>
@@ -105,6 +130,16 @@ const EditUserProfile = props => {
         >
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
+              <CRow className="d-flex justify-content-center mb-3">
+                <CCol lg="6" className="d-flex flex-column align-items-center">
+                  <CImg src={images} style={{ width: 150, height: 150, borderRadius: 100 }} />
+                  <CInput type="file" onChange={onBeforeFileLoad} innerRef={fileInput} style={{ display: 'none' }} />
+
+                  <CButton type="reset" size="md" color="primary" onClick={() => fileInput.current.click()} className="mt-3">
+                    <CIcon name="cil-Cloud-Upload" /> Chọn ảnh
+                  </CButton>
+                </CCol>
+              </CRow>
               <CRow>
                 <CCol lg="6">
                   <CFormGroup>

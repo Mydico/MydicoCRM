@@ -87,10 +87,10 @@ const CreateOrder = props => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [productList, setProductList] = useState([]);
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
-  const [isSelectProItem, setIsSelectProItem] = useState(true);
+  const [isSelectProItem, setIsSelectProItem] = useState(false);
   const [showProductPromotion, setShowProductPromotion] = useState(false);
   useEffect(() => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getWarehouse({ dependency: true }));
     const existOrder = localStorage.getItem('order');
     try {
@@ -104,7 +104,7 @@ const CreateOrder = props => {
   useEffect(() => {
     if (selectedCustomer) {
       dispatch(
-        getPromotion({ isLock: 0, page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, customerType: selectedCustomer?.type?.id })
+        getPromotion({ isLock: 0, page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, customerType: selectedCustomer?.type?.id })
       );
     }
   }, [selectedCustomer]);
@@ -126,7 +126,7 @@ const CreateOrder = props => {
     dispatch(
       filterCustomer({
         page: 0,
-        size: 20,
+        size: 50,
         sort: 'createdDate,DESC',
         code: value,
         name: value,
@@ -148,7 +148,7 @@ const CreateOrder = props => {
         getPromotion({
           isLock: 0,
           page: 0,
-          size: 20,
+          size: 50,
           name: value,
           sort: 'createdDate,DESC',
           dependency: true,
@@ -170,6 +170,10 @@ const CreateOrder = props => {
         return;
       }
     });
+    if(selectedPromotion && selectedPromotion.type === 'LONGTERM' && !selectedPromotionItem){
+      alert('Bạn phải chọn doanh số');
+      return;
+    }
     if (productList.reduce((sum, current) => sum + current.quantity, 0) === 0) {
       alert('Không để tổng số lượng bằng 0');
       return;
@@ -237,7 +241,7 @@ const CreateOrder = props => {
         filterProductInStore({
           store: selectedWarehouse?.id,
           page: 0,
-          size: 20,
+          size: 50,
           sort: 'createdDate,DESC',
           dependency: true
         })
@@ -266,7 +270,7 @@ const CreateOrder = props => {
       filterProductInStore({
         store: selectedWarehouse?.id,
         page: 0,
-        size: 20,
+        size: 50,
         sort: 'createdDate,DESC',
         name: value,
         code: value,
@@ -502,7 +506,7 @@ const CreateOrder = props => {
                         <CLabel htmlFor="lastName">Chọn doanh số</CLabel>
                         <Select
                           onChange={item => {
-                            setSelectedPromotionItem(item.value);
+                            setSelectedPromotionItem(true);
                             setFieldValue('promotionItem', item.value);
                           }}
                           name="promotion"
@@ -513,7 +517,7 @@ const CreateOrder = props => {
                         />
                       </CCol>
                     </CRow>
-                    {!isSelectProItem && <FormFeedback className="d-block">Bạn phải chọn doanh số</FormFeedback>}
+                    {!selectedPromotionItem && <FormFeedback className="d-block">Bạn phải chọn doanh số</FormFeedback>}
                   </CFormGroup>
                 )}
                 <CButton

@@ -89,7 +89,7 @@ const CreateWarehouseExportProvider = () => {
   const onSubmit = (values, { resetForm }) => () => {
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT_TO_PROVIDER;
-    values.department = { id: account.department?.id || null };
+    values.department = account.mainDepartment || account.department;
 
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));

@@ -133,9 +133,7 @@ const Warehouse = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+
         <CDataTable
           items={computedItems(warehouses)}
           fields={fields}

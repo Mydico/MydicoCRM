@@ -14,6 +14,7 @@ import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import Select from 'react-select';
 import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
+import Download from '../../../components/excel/DownloadExcel';
 
 const getBadge = status => {
   switch (status) {
@@ -69,6 +70,45 @@ const fields = [
     filter: false
   }
 ];
+
+const computedItems = items => {
+  return items.map(item => {
+    return {
+      ...item,
+      customer: item.customer?.name || '',
+      sale: item.sale?.code || '',
+      createdBy: item.createdBy || '',
+      approver: item.approver?.login || '',
+      createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+    };
+  });
+};
+const excelFields = [
+  {
+    key: 'order',
+    label: 'STT',
+  },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
+  { key: 'customerName', label: 'Khách hàng', _style: { width: '15%' } },
+  { key: 'money', label: 'Số tiền', _style: { width: '10%' }, filter: false },
+  { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '10%' }, filter: false },
+  { key: 'approverName', label: 'Người duyệt', _style: { width: '15%' } },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+
+];
+const computedExcelItems = items => {
+  return items.map((item, index) => {
+    return {
+      ...item,
+      order: index +1,
+      customer: item.customer?.name || '',
+      sale: item.sale?.code || '',
+      approver: item.approver?.login || '',
+      createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+      status: mappingStatus[item.status],
+    };
+  });
+};
 const Receipt = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
@@ -97,18 +137,7 @@ const Receipt = props => {
   }, [activePage, size]);
 
   const warehouses = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
-      return {
-        ...item,
-        customer: item.customer?.name || '',
-        sale: item.sale?.code || '',
-        createdBy: item.createdBy || '',
-        approver: item.approver?.login || '',
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
-      };
-    });
-  };
+
   const toggleDetails = index => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
@@ -245,6 +274,11 @@ const Receipt = props => {
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(warehouses), [warehouses]);
 
+  const memoComputedItemsExcel = React.useCallback(items => computedExcelItems(items), []);
+  const memoExcelListed = React.useMemo(() => memoComputedItemsExcel(warehouses), [warehouses]);
+
+  
+
   return (
     <CCard>
       <CCardHeader>
@@ -256,9 +290,8 @@ const Receipt = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+        <Download data={memoExcelListed} headers={excelFields} name={'order'} />
+
         <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>

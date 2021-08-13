@@ -19,6 +19,7 @@ import AdvancedTable from '../../../components/table/AdvancedTable';
 import { Td, Table, Thead, Th, Tr, Tbody } from '../../../components/super-responsive-table';
 import { useMediaQuery } from 'react-responsive';
 import { CSVLink } from 'react-csv';
+import Download from '../../../components/excel/DownloadExcel.js';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -100,8 +101,8 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
-  { key: 'code', label: 'Mã đơn hàng', _style: { maxWidth: 250, } },
-  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { maxWidth: 400 } },
+  { key: 'code', label: 'Mã đơn hàng', _style: { maxWidth: 250 } },
+  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { minWidth: 200, maxWidth: 400 } },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%', maxWidth: 200 }, filter: false },
   { key: 'total', label: 'Tiền Thanh toán', _style: { width: '10%' }, filter: false },
@@ -110,7 +111,7 @@ const fields = [
   {
     key: 'action',
     label: 'Hành động',
-    _style: { width: '50%' },
+    _style: { minWidth: 400 },
     filter: false
   }
 ];
@@ -127,7 +128,7 @@ const excelFields = [
   { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' }, filter: false },
   { key: 'total', label: 'Tiền Thanh toán', _style: { width: '10%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false },
-  { key: 'status', label: 'Trạng thái', _style: { width: '10%' }, filter: false },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' }, filter: false }
 ];
 
 const getBadge = status => {
@@ -141,7 +142,7 @@ const getBadge = status => {
     case 'CANCEL':
       return 'danger';
     case 'DELETED':
-        return 'danger';
+      return 'danger';
     default:
       return 'primary';
   }
@@ -229,7 +230,7 @@ const Order = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    if(value) debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const toEditOrder = typeId => {
@@ -249,7 +250,7 @@ const Order = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }; 
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
       dispatch(getOrder(params));
       dispatch(reset());
     }
@@ -532,7 +533,20 @@ const Order = props => {
           </CRow>
         );
       default:
-        return null;
+        return (
+          <CButton
+            color="info"
+            variant="outline"
+            shape="square"
+            size="sm"
+            onClick={event => {
+              event.stopPropagation();
+              toSeeBill(item);
+            }}
+          >
+            XEM VẬN ĐƠN
+          </CButton>
+        );
     }
   };
 
@@ -548,7 +562,7 @@ const Order = props => {
         ...item,
         order: (activePage - 1) * size + index + 1,
         createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
-        quantity:  item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
+        quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
         total: item.totalMoney,
         status: mappingStatus[item.status]
       };
@@ -556,9 +570,6 @@ const Order = props => {
   };
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(orders), [orders]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(orders), [orders]);
-
-
-
 
   return (
     <CCard>
@@ -571,9 +582,8 @@ const Order = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CSVLink headers={excelFields} data={memoExcelListed} filename={'order.csv'} className="btn">
-          Tải excel (.csv) ⬇
-        </CSVLink>
+        <Download data={memoExcelListed} headers={excelFields} name={'order'} />
+
         <CRow className="ml-0 mt-4">
           <CLabel>Tổng :</CLabel>
           <strong>{`\u00a0\u00a0${initialState.totalItem}`}</strong>

@@ -59,13 +59,12 @@ const TheHeader = () => {
       </CHeaderNav>
 
       <CHeaderNav className="px-3">
-
+        <TheHeaderDropdownNotif />
         <TheHeaderDropdown />
         <CToggler inHeader className="d-md-down-none" onClick={() => dispatch(setAsideShow(!asideShow))}>
           <CIcon className="mr-2" size="lg" name="cil-applications-settings" />
         </CToggler>
       </CHeaderNav>
-
       {/* <CSubheader className="px-3 justify-content-between">
         <CBreadcrumbRouter className="border-0 c-subheader-nav m-0 px-0 px-md-3" routes={routes} />
         <div className="d-md-down-none mfe-2 c-subheader-nav">

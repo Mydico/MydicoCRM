@@ -42,3 +42,14 @@ export const memoizedGetCityName = memoize(getCityName)
 
 const getDistrictName = (id) => district.filter(dist => dist.value === id)[0]?.label || ''
 export const memoizedGetDistrictName = memoize(getDistrictName)
+const getExcelData = (headers = [], data = []) => {
+  const dataSheet = {
+    columns: headers.map(item =>  item.label),
+    data: data.map(item => headers.map(header => ({
+      value: item[header.key]?.toString() || '',
+      style: {font: {name: "Times New Roman"}}
+    })))
+  }
+  return [dataSheet]
+}
+export const memoizedGetExcelData = memoize(getExcelData)

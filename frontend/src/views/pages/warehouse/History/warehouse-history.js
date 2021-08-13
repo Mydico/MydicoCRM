@@ -7,6 +7,8 @@ import { getStoreHistory } from './warehouse-history.api.js';
 import { globalizedStoreHistorySelectors, reset } from './warehouse-history.reducer.js';
 import { CSVLink } from 'react-csv';
 import moment from 'moment';
+import Download from '../../../components/excel/DownloadExcel.js';
+
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
   IMPORT: 'NHẬP KHO'
@@ -90,7 +92,6 @@ const StoreHistory = () => {
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(storeHistorys), [storeHistorys]);
 
-
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       Object.keys(value).forEach(key => {
@@ -130,9 +131,8 @@ const StoreHistory = () => {
         <CIcon name="cil-grid" /> Danh sách lịch sử xuất nhập kho
       </CCardHeader>
       <CCardBody>
-        <CSVLink headers={excelFields} data={memoExcelListed} filename={'history.csv'} className="btn">
-          Tải excel (.csv) ⬇
-        </CSVLink>
+        <Download data={memoExcelListed} headers={excelFields} name={'history'} />
+
         <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>

@@ -80,7 +80,7 @@ const CreateWarehouse = () => {
   const onSubmit = (values, {}) => () => {
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.NEW;
-    values.department = { id: account.department?.id || null };
+    values.department = account.mainDepartment || account.department;
     dispatch(fetching());
     dispatch(creatingWarehouseImport(values));
   };

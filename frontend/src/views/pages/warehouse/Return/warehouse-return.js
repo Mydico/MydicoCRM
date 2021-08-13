@@ -15,6 +15,8 @@ import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import Select from 'react-select';
+import { computedExcelItemsWarehouse, fieldsExcelWarehouse } from '../Import/warehouse-import.js';
+import Download from '../../../components/excel/DownloadExcel';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -260,6 +262,9 @@ const WarehouseImport = props => {
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(warehouses), [warehouses]);
 
+  const memoExcelComputedItems = React.useCallback(items => computedExcelItemsWarehouse(items), []);
+  const memoExelListed = React.useMemo(() => memoExcelComputedItems(warehouses), [warehouses]);
+
   return (
     <CCard>
       <CCardHeader>
@@ -271,9 +276,8 @@ const WarehouseImport = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+        <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'order'} />
+
         <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>

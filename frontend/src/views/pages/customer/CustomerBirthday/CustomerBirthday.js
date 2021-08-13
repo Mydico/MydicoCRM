@@ -96,9 +96,7 @@ const Customer = props => {
         <CIcon name="cil-grid" /> Danh sách khách hàng sinh nhật 7 ngày tới
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+
         <CDataTable
           items={computedItems(customers)}
           fields={fields}

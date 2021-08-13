@@ -7,6 +7,8 @@ import { getProductWarehouse } from './product-warehouse.api.js';
 import { globalizedProductWarehouseSelectors, reset } from './product-warehouse.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
+import Download from '../../../components/excel/DownloadExcel';
+
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -27,6 +29,7 @@ const fields = [
   { key: 'storeName', label: 'Tên kho', _style: { width: '15%' } },
   { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false }
 ];
+
 
 const getBadge = status => {
   switch (status) {
@@ -116,9 +119,8 @@ const ProductWarehouse = props => {
         <CIcon name="cil-grid" /> Danh sách sản phẩm
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+      <Download data={memoListed} headers={fields} name={'order'} />
+
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -132,13 +134,7 @@ const ProductWarehouse = props => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-
-
-
           onPaginationChange={val => setSize(val)}
-
-
-
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,

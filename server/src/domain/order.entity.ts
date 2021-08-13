@@ -53,7 +53,7 @@ export default class Order extends BaseEntity {
     branch?: Branch;
 
 
-    @ManyToOne(type => Branch)
+    @ManyToOne(type => PromotionItem)
     promotionItem?: PromotionItem;
 
     /**

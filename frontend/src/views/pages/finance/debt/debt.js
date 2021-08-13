@@ -12,6 +12,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import Download from '../../../components/excel/DownloadExcel';
+
 const { selectAll } = globalizedDebtsSelectors;
 
 // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
@@ -24,7 +26,6 @@ const fields = [
   },
   { key: 'customerCode', label: 'Mã khách hàng', _style: { width: '20%' } },
   { key: 'customerName', label: 'Tên khách hàng', _style: { width: '15%' } },
-  // { key: 'tel', label: 'Số điện thoại', _style: { width: '15%' }, filter: false },
   { key: 'debt', label: 'Tổng nợ', _style: { width: '10%' }, filter: false },
   { key: 'saleName', label: 'Nhân viên quản lý', _style: { width: '15%' } },
   {
@@ -34,6 +35,37 @@ const fields = [
     filter: false
   }
 ];
+const excelFields = [
+  {
+    key: 'order',
+    label: 'STT',
+  },
+  { key: 'customerCode', label: 'Mã khách hàng', _style: { width: '20%' } },
+  { key: 'customerName', label: 'Tên khách hàng', _style: { width: '15%' } },
+  { key: 'debt', label: 'Tổng nợ', _style: { width: '10%' }, filter: false },
+  { key: 'saleName', label: 'Nhân viên quản lý', _style: { width: '15%' } },
+];
+// const computedExcelItems = items => {
+//   return items.map((item, index) => {
+//     return {
+//       ...item,
+//       order: index +1,
+//       customer: item.customer?.name || '',
+//       sale: item.sale?.code || '',
+//       approver: item.approver?.login || '',
+//       createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+//       status: mappingStatus[item.status],
+//     };
+//   });
+// };
+const computedItems = items => {
+  return items.map(item => {
+    return {
+      ...item,
+      createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+    };
+  });
+};
 const Debt = props => {
   const { initialState } = useSelector(state => state.debt);
   const [activePage, setActivePage] = useState(1);
@@ -47,18 +79,18 @@ const Debt = props => {
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
-    if(date.endDate && date.startDate){
+    if (date.endDate && date.startDate) {
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getCustomerDebts(params));
-      dispatch(getCustomerDebtsTotalDebit({...paramRef.current, ...date})).then(resp => {
+      dispatch(getCustomerDebtsTotalDebit({ ...paramRef.current, ...date })).then(resp => {
         setTotal(Number(resp.payload.data.sum));
       });
     }
-  }, [date])
+  }, [date]);
 
   useEffect(() => {
     dispatch(reset());
-    dispatch(getCustomerDebtsTotalDebit({...paramRef.current, ...date})).then(resp => {
+    dispatch(getCustomerDebtsTotalDebit({ ...paramRef.current, ...date })).then(resp => {
       setTotal(Number(resp.payload.data.sum));
     });
   }, []);
@@ -69,15 +101,7 @@ const Debt = props => {
   }, [activePage, size]);
 
   const debts = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
-      return {
-        ...item,
-        // tel: item.customer?.tel || '',
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
-      };
-    });
-  };
+
 
   const csvContent = computedItems(debts)
     .map(item => Object.values(item).join(','))
@@ -98,34 +122,36 @@ const Debt = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    if(value) debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const toDetail = item => {
-    history.push({ pathname: `${props.match.url}/${item.customerId}/detail`});
+    history.push({ pathname: `${props.match.url}/${item.customerId}/detail` });
   };
 
   const toCreate = item => {
-    history.push({ pathname: `${props.match.url}/new`});
+    history.push({ pathname: `${props.match.url}/new` });
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(debts), [debts]);
+
+  const memoComputedItemsExcel = React.useCallback(items => computedItems(items), []);
+  const memoExcelListed = React.useMemo(() => memoComputedItemsExcel(debts), [debts]);
 
   return (
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách Công nợ
         {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/customer-debits').length > 0) && (
-          <CButton color="success" variant="outline" className="ml-3" onClick={toCreate} >
+          <CButton color="success" variant="outline" className="ml-3" onClick={toCreate}>
             <CIcon name="cil-plus" /> Thêm mới công nợ
           </CButton>
         )}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+        <Download data={memoExcelListed} headers={excelFields} name={'order'} />
+
         <CRow className="ml-0 mt-4">
           <CLabel>Tổng nợ:</CLabel>
           <strong>{`\u00a0\u00a0${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}`}</strong>

@@ -3,7 +3,7 @@ import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, 
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCustomer } from '../customer.api.js';
+import { getCustomer, getCustomerStatus, getCustomerType } from '../customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Td } from 'react-super-responsive-table';
@@ -13,8 +13,11 @@ import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import { CInput, CLabel } from '@coreui/react';
 import AdvancedTable from '../../../components/table/AdvancedTable';
-import { CSVLink } from 'react-csv';
+import Select from 'react-select';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
+import Download from '../../../components/excel/DownloadExcel.js';
+import { getDepartment } from '../../user/UserDepartment/department.api.js';
+import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer.js';
 
 const { selectAll } = globalizedCustomerSelectors;
 // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
@@ -50,13 +53,14 @@ const fieldExcel = [
   { key: 'name', label: 'Tên cửa hàng/đại lý' },
   { key: 'tel', label: 'Điện thoại' },
   { key: 'saleName', label: 'Nhân viên quản lý' },
-  { key: 'typeName', label: 'Loại khách hàng',  },
-  { key: 'address', label: 'Địa chỉ', },
-  { key: 'date_of_birth', label: 'Ngày tháng năm sinh', },
-  { key: 'social', label: 'Mạng xã hội', },
-  { key: 'contact_name', label: 'Tên liên hệ', },
-  { key: 'city', label: 'thành phố', },
-  { key: 'district', label: 'quận huyện', },
+  { key: 'typeName', label: 'Loại khách hàng' },
+  { key: 'status', label: 'Trạng thái' },
+  { key: 'address', label: 'Địa chỉ' },
+  { key: 'date_of_birth', label: 'Ngày tháng năm sinh' },
+  { key: 'social', label: 'Mạng xã hội' },
+  { key: 'contact_name', label: 'Tên liên hệ' },
+  { key: 'city', label: 'thành phố' },
+  { key: 'district', label: 'quận huyện' }
 ];
 
 const getBadge = status => {
@@ -73,6 +77,26 @@ const getBadge = status => {
       return 'primary';
   }
 };
+const computedExcelItems = items => {
+  return items.map((item, index) => {
+    return {
+      ...item,
+      order:  index + 1,
+      typeName: item.type?.code,
+      status: item.status?.name || '',
+      department: item.department?.code || '',
+      createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+      sale: item.sale?.code || '',
+      district: memoizedGetDistrictName(item?.district),
+      city: memoizedGetCityName(item?.city),
+      contact_name: item.contactName,
+      date_of_birth: item.dateOfBirth
+    };
+  });
+};
+
+const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
+
 const Customer = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
@@ -83,23 +107,12 @@ const Customer = props => {
   const paramRef = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
+  const departments = useSelector(selectAllDepartment);
+
   useEffect(() => {
     dispatch(reset());
   }, []);
 
-  useEffect(() => {
-    const localParams = localStorage.getItem('params');
-    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
-    if (localParams) {
-      params = JSON.parse(localParams);
-      setActivePage(params.page + 1);
-      localStorage.removeItem('params');
-    }
-    dispatch(getCustomer(params));
-    window.scrollTo(0, 100);
-  }, [activePage, size]);
-
-  const customers = useSelector(selectAll);
   const computedItems = items => {
     return items.map((item, index) => {
       return {
@@ -112,6 +125,24 @@ const Customer = props => {
       };
     });
   };
+  
+  useEffect(() => {
+    const localParams = localStorage.getItem('params');
+    dispatch(getCustomerType({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    if (localParams) {
+      params = JSON.parse(localParams);
+      setActivePage(params.page + 1);
+      localStorage.removeItem('params');
+    }
+    dispatch(getCustomer(params));
+    window.scrollTo(0, 100);
+  }, [activePage, size]);
+
+  const customers = useSelector(selectAll);
+
   const toggleDetails = index => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
@@ -158,24 +189,6 @@ const Customer = props => {
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(customers), [customers]);
 
-
-  const computedExcelItems = items => {
-    return items.map((item, index) => {
-      return {
-        ...item,
-        order: (activePage - 1) * size + index + 1,
-        typeName: item.type?.code,
-        department: item.department?.code || '',
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
-        sale: item.sale?.code || '',
-        district: memoizedGetDistrictName(item?.district),
-        city: memoizedGetCityName(item?.city),
-        contact_name: item.contactName,
-        date_of_birth: item.dateOfBirth
-      };
-    });
-  };
-
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(items), [customers]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(customers), [customers]);
 
@@ -190,9 +203,10 @@ const Customer = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CSVLink headers={fieldExcel} data={memoExcelListed} filename={'customer.csv'} className="btn">
+        <Download data={memoExcelListed} headers={fieldExcel} name={'customer'} />
+        {/* <CSVLink headers={fieldExcel} data={memoExcelListed} filename={'customer.csv'} className="btn">
           Tải excel (.csv) ⬇
-        </CSVLink>
+        </CSVLink> */}
         <CRow className="ml-0 mt-4">
           <CLabel>Tổng :</CLabel>
           <strong>{`\u00a0\u00a0${initialState.totalItem}`}</strong>
@@ -213,6 +227,38 @@ const Customer = props => {
 
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
+          columnFilterSlot={{
+            typeName: (
+              <div style={{ minWidth: 200 }}>
+                <Select
+                  onChange={item => {
+                    onFilterColumn({ ...paramRef.current, type: item?.value || '' });
+                  }}
+                  isClearable
+                  placeholder="Chọn loại"
+                  options={initialState.type.map(item => ({
+                    value: item.id,
+                    label: item.name
+                  }))}
+                />
+              </div>
+            ),
+            department: (
+              <div style={{ minWidth: 200 }}>
+                <Select
+                  onChange={item => {
+                    onFilterColumn({ ...paramRef.current, departmentId: item?.value || '' });
+                  }}
+                  isClearable
+                  placeholder="Chọn chi nhánh"
+                  options={departments.map(item => ({
+                    value: item.id,
+                    label: item.name
+                  }))}
+                />
+              </div>
+            )
+          }}
           scopedSlots={{
             order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
             status: item => (

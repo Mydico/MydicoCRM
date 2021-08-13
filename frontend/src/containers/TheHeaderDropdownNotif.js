@@ -1,22 +1,37 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {CBadge, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CProgress} from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { getCustomerBirthday } from '../views/pages/customer/customer.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { globalizedCustomerSelectors } from '../views/pages/customer/customer.reducer';
+
+const { selectAll } = globalizedCustomerSelectors;
 
 const TheHeaderDropdownNotif = () => {
-  const itemsCount = 5;
+  const dispatch = useDispatch();
+  const { initialState } = useSelector(state => state.customer);
+
+  useEffect(() => {
+    dispatch(getCustomerBirthday({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+  }, [])
+
   return (
     <CDropdown inNav className="c-header-nav-item mx-2">
       <CDropdownToggle className="c-header-nav-link" caret={false}>
-        <CIcon name="cil-bell" />
+        <CIcon name="cil-bell" size="lg" />
         <CBadge shape="pill" color="danger">
-          {itemsCount}
+          {initialState.birthday.length}
         </CBadge>
       </CDropdownToggle>
       <CDropdownMenu placement="bottom-end" className="pt-0">
         <CDropdownItem header tag="div" className="text-center" color="light">
-          <strong>You have {itemsCount} notifications</strong>
+          <strong>Bạn có {initialState.birthday.length} khách hàng sắp đến ngày sinh nhật</strong>
         </CDropdownItem>
-        <CDropdownItem>
+        {initialState.birthday.map((item,index) =>        <CDropdownItem key={index}>
+          <CIcon name="cil-user-follow" className="mr-2 text-success" />{`Tên: ${item.name} - Sinh nhật: ${item.dateOfBirth}`}
+        </CDropdownItem> )}
+
+        {/* <CDropdownItem>
           <CIcon name="cil-user-follow" className="mr-2 text-success" /> New user registered
         </CDropdownItem>
         <CDropdownItem>
@@ -33,34 +48,8 @@ const TheHeaderDropdownNotif = () => {
         </CDropdownItem>
         <CDropdownItem header tag="div" color="light">
           <strong>Server</strong>
-        </CDropdownItem>
-        <CDropdownItem className="d-block">
-          <div className="text-uppercase mb-1">
-            <small>
-              <b>CPU Usage</b>
-            </small>
-          </div>
-          <CProgress size="xs" color="info" value={25} />
-          <small className="text-muted">348 Processes. 1/4 Cores.</small>
-        </CDropdownItem>
-        <CDropdownItem className="d-block">
-          <div className="text-uppercase mb-1">
-            <small>
-              <b>Memory Usage</b>
-            </small>
-          </div>
-          <CProgress size="xs" color="warning" value={70} />
-          <small className="text-muted">11444GB/16384MB</small>
-        </CDropdownItem>
-        <CDropdownItem className="d-block">
-          <div className="text-uppercase mb-1">
-            <small>
-              <b>SSD 1 Usage</b>
-            </small>
-          </div>
-          <CProgress size="xs" color="danger" value={90} />
-          <small className="text-muted">243GB/256GB</small>
-        </CDropdownItem>
+        </CDropdownItem> */}
+
       </CDropdownMenu>
     </CDropdown>
   );

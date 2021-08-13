@@ -15,6 +15,8 @@ import Select from 'react-select';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
+import Download from '../../../components/excel/DownloadExcel';
+
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -68,6 +70,21 @@ const fields = [
   }
 ];
 
+export const fieldsExcelWarehouse = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'storeName', label: 'Tên kho nhập', _style: { width: '10%' } },
+  { key: 'storeTransferName', label: 'Xuất từ kho', _style: { width: '10%' } },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
+  { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
+  { key: 'approverName', label: 'Người duyệt', _style: { width: '10%' } },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+];
+
 const getBadge = status => {
   switch (status) {
     case WarehouseImportStatus.APPROVED:
@@ -79,6 +96,44 @@ const getBadge = status => {
     default:
       return 'primary';
   }
+};
+const computedItems = items => {
+  return items.map(item => {
+    return {
+      ...item,
+      approverName: item.approverName || '',
+      storeTransferName: item.storeTransferName || '',
+      createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+    };
+  });
+};
+
+// const fieldsExcel = [
+//   {
+//     key: 'order',
+//     label: 'STT',
+//     _style: { width: '1%' },
+//     filter: false
+//   },
+//   { key: 'storeName', label: 'Tên kho nhập', _style: { width: '10%' } },
+//   { key: 'storeTransferName', label: 'Xuất từ kho', _style: { width: '10%' } },
+//   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
+//   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
+//   { key: 'approverName', label: 'Người duyệt', _style: { width: '10%' } },
+//   { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+// ];
+
+export const computedExcelItemsWarehouse = items => {
+  return items.map((item,index) => {
+    return {
+      ...item,
+      order: index+1,
+      approverName: item.approverName || '',
+      storeTransferName: item.storeTransferName || '',
+      status: mappingStatus[item.status],
+      createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+    };
+  });
 };
 const WarehouseImport = props => {
   const { account } = useSelector(userSafeSelector);
@@ -93,11 +148,11 @@ const WarehouseImport = props => {
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
-    if(date.endDate && date.startDate){
+    if (date.endDate && date.startDate) {
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getWarehouseImport(params));
     }
-  }, [date])
+  }, [date]);
 
   useEffect(() => {
     dispatch(reset());
@@ -109,16 +164,7 @@ const WarehouseImport = props => {
   }, [activePage, size]);
 
   const warehouses = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
-      return {
-        ...item,
-        approverName: item.approverName || '',
-        storeTransferName: item.storeTransferName || '',
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
-      };
-    });
-  };
+
   const toggleDetails = index => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
@@ -142,18 +188,18 @@ const WarehouseImport = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const debouncedSearchColumn =  _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if (!value[key]) delete value[key];
-        });
-        paramRef.current = value;
-        dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300)
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
-    if(value) debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const alertFunc = (item, message, operation) => {
@@ -193,7 +239,7 @@ const WarehouseImport = props => {
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs').length > 0) && (
               <CButton
                 onClick={() => {
-                   toEditWarehouseImport(item.id) 
+                  toEditWarehouseImport(item.id);
                 }}
                 color="warning"
                 variant="outline"
@@ -243,7 +289,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }; 
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
       dispatch(getWarehouseImport(params));
       dispatch(reset());
     }
@@ -251,6 +297,9 @@ const WarehouseImport = props => {
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(warehouses), [warehouses]);
+
+  const memoExcelComputedItems = React.useCallback(items => computedExcelItemsWarehouse(items), []);
+  const memoExelListed = React.useMemo(() => memoExcelComputedItems(warehouses), [warehouses]);
 
   return (
     <CCard>
@@ -263,9 +312,8 @@ const WarehouseImport = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="coreui-table-data.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+        <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'order'} />
+
         <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>
@@ -319,24 +367,19 @@ const WarehouseImport = props => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-
-
-
           onPaginationChange={val => setSize(val)}
-
-
-
           onColumnFilterChange={onFilterColumn}
           columnFilterSlot={{
             status: (
               <div style={{ minWidth: 200 }}>
                 <Select
                   onChange={item => {
-                   onFilterColumn({ ...paramRef.current, status: item?.value || ''  });
+                    onFilterColumn({ ...paramRef.current, status: item?.value || '' });
                   }}
                   maxMenuHeight="200"
                   placeholder="Chọn trạng thái"
-                  isClearable                  options={statusList.map(item => ({
+                  isClearable
+                  options={statusList.map(item => ({
                     value: item.value,
                     label: item.label
                   }))}

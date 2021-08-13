@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
-import { CFormGroup, CInput, CLabel, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
+import { CFormGroup, CImg, CInput, CLabel, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import { globalizedBranchSelectors } from '../UserBranch/branch.reducer.js';
 import { globalizedDepartmentSelectors } from '../UserDepartment/department.reducer.js';
 import { getDepartment } from '../UserDepartment/department.api.js';
@@ -20,11 +20,36 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import 'react-dates/lib/css/_datepicker.css';
 import { confirmAlert } from 'react-confirm-alert';
 import { CSVLink } from 'react-csv';
+import Download from '../../../components/excel/DownloadExcel.js';
 
 moment.locale('vi'); // Polish
 
 const { selectAll } = globalizedUserSelectors;
 // Code	Tên người dùng	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại người dùng	Phân loại	Sửa	Tạo đơn
+const excelFields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'login', label: 'Tên đăng nhập', _style: { width: '10%' } },
+  { key: 'name', label: 'Họ tên', _style: { width: '15%' } },
+  { key: 'code', label: 'Mã nhân viên', _style: { width: '15%' } },
+  { key: 'phone', label: 'Số điện thoại', _style: { width: '15%' } },
+  { key: 'department', label: 'Chi nhánh', _style: { width: '15%' } },
+  { key: 'branch', label: 'Phòng ban', _style: { width: '15%' } },
+  { key: 'roles', label: 'Chức vụ', _style: { width: '15%' }, filter: false },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
+  { key: 'activated', label: 'Trạng thái', _style: { width: '15%' } },
+  {
+    key: 'show_details',
+    label: '',
+    _style: { width: '1%' },
+    filter: false
+  }
+];
+
 const fields = [
   {
     key: 'order',
@@ -32,6 +57,7 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
+  { key: 'imageUrl', label: '' },
   { key: 'login', label: 'Tên đăng nhập', _style: { width: '10%' } },
   { key: 'name', label: 'Họ tên', _style: { width: '15%' } },
   { key: 'code', label: 'Mã nhân viên', _style: { width: '15%' } },
@@ -66,15 +92,15 @@ const computedExcelItems = items => {
   return items.map((item, index) => {
     return {
       ...item,
-      order:  index + 1,
+      order: index + 1,
       activated: item.activated ? 'Đang hoạt động' : 'Không hoạt động',
       department: item.department?.name || '',
       branch: item.branch?.name || '',
       name: `${item.lastName || ''} ${item.firstName || ''}`,
       roles: item.roles?.reduce((sum, currentValue) => sum + currentValue.name, '') || '',
       ward: item.ward?.name,
-      district: item.district?.name,
-      city: item.city?.name,
+      district: item.district?.name || '',
+      city: item.city?.name || '',
       createdDate: moment(item.createdDate).format('DD-MM-YYYY')
     };
   });
@@ -173,7 +199,7 @@ const User = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    if(value) debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const lockUser = () => {
@@ -183,7 +209,6 @@ const User = props => {
 
   const memoComputedItems = React.useCallback(items => computedItems(items), [users]);
   const memoListed = React.useMemo(() => memoComputedItems(users), [users]);
-
 
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(items), [users]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(users), [users]);
@@ -233,9 +258,8 @@ const User = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CSVLink headers={fields} data={memoExcelListed} filename={'customer.csv'} className="btn">
-          Tải excel (.csv) ⬇
-        </CSVLink>
+        <Download data={memoExcelListed} headers={excelFields} name={'customer'} />
+
         <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>
@@ -293,7 +317,7 @@ const User = props => {
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
           onRowClick={val => {
-            toDetailUser(val.login)
+            toDetailUser(val.login);
           }}
           columnFilterSlot={{
             department: (
@@ -329,6 +353,11 @@ const User = props => {
           }}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+            imageUrl: (item, index) => (
+              <td>
+                <CImg src={item.imageUrl} style={{ width: 40, height: 40, borderRadius: 20 }} />
+              </td>
+            ),
             activated: item => (
               <td>
                 <CBadge color={getBadge(item.activated)}>{item.activated ? 'Đang hoạt động' : 'Không hoạt động'}</CBadge>
@@ -366,7 +395,7 @@ const User = props => {
                     shape="square"
                     size="sm"
                     className="mr-3"
-                    onClick={(event) => {
+                    onClick={event => {
                       event.stopPropagation();
                       toggleDetails(item.id);
                     }}
@@ -378,7 +407,7 @@ const User = props => {
                     variant="outline"
                     shape="square"
                     size="sm"
-                    onClick={(event) => {
+                    onClick={event => {
                       event.stopPropagation();
                       selectedPro.current = { id: item.id, activated: item.activated, login: item.login };
                       setPrimary(!primary);
