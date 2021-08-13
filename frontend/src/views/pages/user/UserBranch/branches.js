@@ -102,10 +102,6 @@ const Branch = props => {
 
   // Code	Tên nhà cung cấp	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại nhà cung cấp	Phân loại	Sửa	Tạo đơn
 
-  const csvContent = computedItems(branchs)
-    .map(item => Object.values(item).join(','))
-    .join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
   const toEditBranch = userId => {
     history.push(`${props.match.url}/${userId}/edit`);

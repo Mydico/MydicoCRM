@@ -10,7 +10,8 @@ import {
   UseGuards,
   Req,
   UseInterceptors,
-  Res
+  Res,
+  CacheInterceptor
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -27,7 +28,7 @@ import { ProductStatus } from '../../domain/enumeration/product-status';
 
 @Controller('api/product-quantities')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor)
+@UseInterceptors(LoggingInterceptor, CacheInterceptor)
 @ApiBearerAuth()
 export class ProductQuantityController {
   logger = new Logger('ProductQuantityController');

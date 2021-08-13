@@ -12,7 +12,8 @@ import {
   UseInterceptors,
   Res,
   HttpException,
-  HttpStatus
+  HttpStatus,
+  CacheInterceptor
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
@@ -22,21 +23,18 @@ import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UserService } from '../../service/user.service';
-import { In, Like } from 'typeorm';
-import { BranchService } from '../../service/branch.service';
 import { ChangePasswordDTO, ResetPasswordDTO } from '../../service/dto/user.dto';
 import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/users')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor)
+@UseInterceptors(LoggingInterceptor, CacheInterceptor)
 @ApiBearerAuth()
 export class UserController {
   logger = new Logger('UserController');
 
   constructor(
     private readonly userService: UserService,
-    private readonly branchServices: BranchService,
     private readonly departmentService: DepartmentService
   ) {}
 

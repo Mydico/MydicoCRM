@@ -168,9 +168,11 @@ export class CustomerService {
   ): Promise<[Customer[], number]> {
     options.cache = 3600000;
     let queryString = '';
-    Object.keys(filter).forEach((item, index) => {
+    const arr = Object.keys(filter)
+    arr.splice(arr.findIndex(item => item === 'findBirthday'),1)
+    arr.forEach((item, index) => {
       if (item === 'findBirthday') return;
-      queryString += `Customer.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+      queryString += `Customer.${item} like '%${filter[item]}%' ${arr.length - 1 === index ? '' : 'AND '}`;
     });
     let andQueryString = '1=1 ';
     if (filter['findBirthday']) {
@@ -181,7 +183,7 @@ export class CustomerService {
       const listDay = listDate.map(item => item.getDate());
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  MONTH(Customer.dateOfBirth) in ${JSON.stringify(listMonth)
         .replace('[', '(')
-        .replace(']', ')')} AND  DAY(Customer.dateOfBirth) IN ${JSON.stringify(listDay)
+        .replace(']', ')')} AND DAY(Customer.dateOfBirth) IN ${JSON.stringify(listDay)
         .replace('[', '(')
         .replace(']', ')')} `;
     }

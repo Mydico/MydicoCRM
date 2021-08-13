@@ -102,12 +102,6 @@ const Debt = props => {
 
   const debts = useSelector(selectAll);
 
-
-  const csvContent = computedItems(debts)
-    .map(item => Object.values(item).join(','))
-    .join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
-
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       Object.keys(value).forEach(key => {

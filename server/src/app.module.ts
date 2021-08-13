@@ -130,6 +130,7 @@ import { TasksModule } from './module/task.module';
     // jhipster-needle-add-controller-module-to-main - JHipster will add controller modules here, do not remove
     ],
     providers: [
+        
     // jhipster-needle-add-service-module-to-main - JHipster will add service modules here, do not remove
     ],
 })

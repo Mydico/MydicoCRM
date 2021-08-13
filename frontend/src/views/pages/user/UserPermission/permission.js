@@ -88,10 +88,7 @@ const PermissionGroups = props => {
         return 'primary';
     }
   };
-  const csvContent = computedItems(groupPermisions)
-    .map(item => Object.values(item).join(','))
-    .join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
+
   const toCreatePermissionGroups = () => {
     history.push(`${props.match.url}/new`);
   };

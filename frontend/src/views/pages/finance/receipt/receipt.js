@@ -149,10 +149,6 @@ const Receipt = props => {
     setDetails(newDetails);
   };
 
-  const csvContent = computedItems(warehouses)
-    .map(item => Object.values(item).join(','))
-    .join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {

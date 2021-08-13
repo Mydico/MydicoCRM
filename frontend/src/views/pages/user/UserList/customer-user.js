@@ -183,10 +183,6 @@ const CustomerUser = props => {
     setDetails(newDetails);
   };
 
-  const csvContent = computedItems(customers)
-    .map(item => Object.values(item).join(','))
-    .join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {
     const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     localStorage.setItem('params', JSON.stringify(params));

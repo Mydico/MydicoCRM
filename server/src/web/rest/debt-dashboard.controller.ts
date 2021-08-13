@@ -11,6 +11,7 @@ import {
     Req,
     UseInterceptors,
     Res,
+    CacheInterceptor,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -24,7 +25,7 @@ import { Between, Equal } from 'typeorm';
 
 @Controller('api/debt-dashboards')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor)
+@UseInterceptors(LoggingInterceptor, CacheInterceptor)
 @ApiBearerAuth()
 export class DebtDashboardController {
     logger = new Logger('DebtDashboardController');

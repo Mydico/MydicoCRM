@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { ReportController } from '../web/rest/report.controller';
 import { ReportService } from '../service/report.service';
 import { DepartmentModule } from './department.module';
@@ -9,7 +9,7 @@ import { OrderDetailsRepository } from '../repository/order-details.repository';
 import { CustomerRepository } from '../repository/customer.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([OrderRepository, OrderDetailsRepository, CustomerRepository]), DepartmentModule,OrderModule],
+  imports: [CacheModule.register(),TypeOrmModule.forFeature([OrderRepository, OrderDetailsRepository, CustomerRepository]), DepartmentModule,OrderModule],
   controllers: [ReportController],
   providers: [ReportService],
   exports: [ReportService]

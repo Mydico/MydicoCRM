@@ -13,6 +13,7 @@ import {
     HttpException,
     HttpStatus,
     Res,
+    CacheInterceptor,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -29,7 +30,7 @@ import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/orders')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor)
+@UseInterceptors(LoggingInterceptor, CacheInterceptor)
 @ApiBearerAuth()
 export class OrderController {
     logger = new Logger('OrderController');

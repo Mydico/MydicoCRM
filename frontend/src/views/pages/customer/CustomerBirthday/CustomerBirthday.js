@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';;
@@ -7,6 +7,8 @@ import { getCustomerBirthday } from '../customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment'
+import _ from 'lodash';
+
 const { selectAll } = globalizedCustomerSelectors;
 
   // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
@@ -30,13 +32,13 @@ const Customer = props => {
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const paramRef = useRef(null);
   useEffect(() => {
     dispatch(reset());
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomerBirthday({ page: activePage - 1, size, sort: 'createdDate,DESC' }));
+    dispatch(getCustomerBirthday({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
@@ -79,15 +81,19 @@ const Customer = props => {
     }
   };
 
-  const csvContent = computedItems(customers)
-    .map(item => Object.values(item).join(','))
-    .join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
 
-  const onFilterColumn = value => {
+  const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
       dispatch(getCustomerBirthday({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
+  }, 300);
+
+  const onFilterColumn = value => {
+    if (value) debouncedSearchColumn(value);
   };
 
   return (

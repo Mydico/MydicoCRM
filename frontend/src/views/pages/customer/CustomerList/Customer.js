@@ -111,9 +111,11 @@ const Customer = props => {
 
   useEffect(() => {
     dispatch(reset());
+    dispatch(getCustomerType({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
-  const computedItems = items => {
+  const computedItems =  React.useCallback(items => {
     return items.map((item, index) => {
       return {
         ...item,
@@ -124,12 +126,11 @@ const Customer = props => {
         sale: item.sale?.code || ''
       };
     });
-  };
+  },[]);
   
   useEffect(() => {
     const localParams = localStorage.getItem('params');
-    dispatch(getCustomerType({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+
 
     let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     if (localParams) {
@@ -154,10 +155,6 @@ const Customer = props => {
     setDetails(newDetails);
   };
 
-  const csvContent = computedItems(customers)
-    .map(item => Object.values(item).join(','))
-    .join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {
     const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     localStorage.setItem('params', JSON.stringify(params));

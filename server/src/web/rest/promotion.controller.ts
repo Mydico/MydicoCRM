@@ -11,6 +11,7 @@ import {
     Req,
     UseInterceptors,
     Res,
+    CacheInterceptor,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -24,7 +25,7 @@ import { Like } from 'typeorm';
 
 @Controller('api/promotions')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor)
+@UseInterceptors(LoggingInterceptor, CacheInterceptor)
 @ApiBearerAuth()
 export class PromotionController {
     logger = new Logger('PromotionController');

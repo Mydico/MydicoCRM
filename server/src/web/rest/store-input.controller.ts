@@ -13,6 +13,7 @@ import {
     HttpException,
     HttpStatus,
     Res,
+    CacheInterceptor,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -31,7 +32,7 @@ import { StoreInputUpdateStatusDTO } from '../../service/dto/store-input.dto';
 
 @Controller('api/store-inputs')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor)
+@UseInterceptors(LoggingInterceptor, CacheInterceptor)
 @ApiBearerAuth()
 export class StoreInputController {
     logger = new Logger('StoreInputController');
