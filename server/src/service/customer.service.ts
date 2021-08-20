@@ -21,7 +21,10 @@ relationshipNames.push('sale');
 export class CustomerService {
   logger = new Logger('CustomerService');
 
-  constructor(@InjectRepository(CustomerRepository) private customerRepository: CustomerRepository,@InjectRepository(TransactionRepository) private transactionRepository: TransactionRepository) {}
+  constructor(
+    @InjectRepository(CustomerRepository) private customerRepository: CustomerRepository,
+    @InjectRepository(TransactionRepository) private transactionRepository: TransactionRepository
+  ) {}
 
   async findById(id: string): Promise<Customer | undefined> {
     const options = { relations: relationshipNames };
@@ -168,12 +171,14 @@ export class CustomerService {
   ): Promise<[Customer[], number]> {
     options.cache = 3600000;
     let queryString = '';
-    const arr = Object.keys(filter)
-    arr.splice(arr.findIndex(item => item === 'findBirthday'),1)
+    const arr = Object.keys(filter);
     arr.forEach((item, index) => {
       if (item === 'findBirthday') return;
       queryString += `Customer.${item} like '%${filter[item]}%' ${arr.length - 1 === index ? '' : 'AND '}`;
     });
+    if (queryString.trim().substr(queryString.length - 4, queryString.length - 1) === 'AND') {
+      queryString = queryString.substr(0, queryString.length - 4);
+    }
     let andQueryString = '1=1 ';
     if (filter['findBirthday']) {
       const startDate = new Date();
@@ -181,6 +186,7 @@ export class CustomerService {
       const listDate = getDates(startDate, endDate);
       const listMonth = listDate.map(item => item.getMonth() + 1);
       const listDay = listDate.map(item => item.getDate());
+
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  MONTH(Customer.dateOfBirth) in ${JSON.stringify(listMonth)
         .replace('[', '(')
         .replace(']', ')')} AND DAY(Customer.dateOfBirth) IN ${JSON.stringify(listDay)
@@ -207,7 +213,6 @@ export class CustomerService {
         andQueryString += ` AND Customer.branch = ${currentUser.branch.id} `;
       }
     }
-
     const queryBuilder = this.customerRepository
       .createQueryBuilder('Customer')
       .leftJoinAndSelect('Customer.status', 'status')
@@ -258,7 +263,7 @@ export class CustomerService {
         code: customer.code
       });
       let tempCustomer = customer;
-      if (foundedCustomer && foundedCustomer.id !== customer.id ) {
+      if (foundedCustomer && foundedCustomer.id !== customer.id) {
         const foundedCustomerList = await this.customerRepository.find({
           code: Like(`%${customer.code}%`)
         });
@@ -286,19 +291,26 @@ export class CustomerService {
     const getTransIds = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select('MAX(Transaction.id)', 'id')
-      .where(`Transaction.customerId IN ${JSON.stringify(customers.map(item => item.id))
-        .replace('[', '(')
-        .replace(']', ')')}`)
-      .groupBy('Transaction.customerId')
+      .where(
+        `Transaction.customerId IN ${JSON.stringify(customers.map(item => item.id))
+          .replace('[', '(')
+          .replace(']', ')')}`
+      )
+      .groupBy('Transaction.customerId');
 
     const rawData = await getTransIds.getRawMany();
-    const debt = await this.transactionRepository.find({where: {
-      id: In(rawData.map(item => item.id))
-    }})
-    const customerHaveDebt = debt.filter(item => item.earlyDebt > 0)
-    if(customerHaveDebt.length > 0){
-      const customerCode = `${customerHaveDebt.map(item => item.customerCode).join(', ')}`
-      throw new HttpException(`Khách hàng ${customerCode} còn công nợ.Hãy thanh toán hết công nợ trước khi chuyển`, HttpStatus.UNPROCESSABLE_ENTITY)
+    const debt = await this.transactionRepository.find({
+      where: {
+        id: In(rawData.map(item => item.id))
+      }
+    });
+    const customerHaveDebt = debt.filter(item => item.earlyDebt > 0);
+    if (customerHaveDebt.length > 0) {
+      const customerCode = `${customerHaveDebt.map(item => item.customerCode).join(', ')}`;
+      throw new HttpException(
+        `Khách hàng ${customerCode} còn công nợ.Hãy thanh toán hết công nợ trước khi chuyển`,
+        HttpStatus.UNPROCESSABLE_ENTITY
+      );
     }
     return await this.customerRepository.save(customers);
   }

@@ -36,6 +36,7 @@ const slice = createSlice({
     },
     reset(state) {
       state.initialState.loading = false;
+      productWarehousesAdapter.removeAll(state)
       state.initialState.updatingSuccess = false;
     },
     productWarehousesAddOne: productWarehousesAdapter.addOne,

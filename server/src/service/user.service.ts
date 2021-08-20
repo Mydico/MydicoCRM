@@ -41,7 +41,6 @@ export class UserService {
         options.cache = 3600000;
         let queryString = '';
         const length = Object.keys(filter).length;
-        console.log(filter)
         Object.keys(filter).forEach((item, index) => {
           if (item === 'branch') return;
           if (item === 'department') return;

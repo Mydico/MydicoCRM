@@ -17,6 +17,7 @@ export class RoleModule {
                 const adapter = await TypeORMAdapter.newAdapter(dbConnectionOptions);
                 const enforcer = await new Enforcer();
                 await enforcer.initWithAdapter(casbinModelPath, (adapter as any) as Adapter);
+                enforcer.enableAutoSave(true)
                 return enforcer;
             },
         };

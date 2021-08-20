@@ -1,31 +1,73 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerBirthday } from '../customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
-import { useHistory } from 'react-router-dom';
-import moment from 'moment'
+import Download from '../../../components/excel/DownloadExcel.js';
+import moment from 'moment';
 import _ from 'lodash';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 
 const { selectAll } = globalizedCustomerSelectors;
 
-  // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
-  const fields = [
-    { key: 'code', label: 'Mã', _style: { width: '10%' } },
-    { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
-    { key: 'contactName', label: 'Người liên lạc', _style: { width: '15%' } },
-    { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
-    { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '15%' } },
-    { key: 'dateOfBirth', label: 'Ngày sinh', _style: { width: '10%' } },
-    {
-      key: 'show_details',
-      label: '',
-      _style: { width: '1%' },
-      filter: false
-    }
-  ];
+// Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
+const fields = [
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
+  { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { width: '15%' } },
+  { key: 'contactName', label: 'Người liên lạc', _style: { width: '15%' } },
+  { key: 'tel', label: 'Điện thoại', _style: { width: '15%' } },
+  { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '15%' } },
+  { key: 'dateOfBirth', label: 'Ngày sinh', _style: { width: '10%' } },
+  {
+    key: 'show_details',
+    label: '',
+    _style: { width: '1%' },
+    filter: false
+  }
+];
+
+const computedExcelItems = items => {
+  return items.map((item, index) => {
+    return {
+      ...item,
+      order: index + 1,
+      typeName: item.type?.code,
+      status: item.status?.name || '',
+      department: item.department?.code || '',
+      createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+      sale: item.sale?.code || '',
+      district: memoizedGetDistrictName(item?.district),
+      city: memoizedGetCityName(item?.city),
+      contact_name: item.contactName,
+      date_of_birth: item.dateOfBirth
+    };
+  });
+};
+
+const fieldExcel = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã' },
+  { key: 'name', label: 'Tên cửa hàng/đại lý' },
+  { key: 'tel', label: 'Điện thoại' },
+  { key: 'saleName', label: 'Nhân viên quản lý' },
+  { key: 'typeName', label: 'Loại khách hàng' },
+  { key: 'status', label: 'Trạng thái' },
+  { key: 'address', label: 'Địa chỉ' },
+  { key: 'date_of_birth', label: 'Ngày tháng năm sinh' },
+  { key: 'social', label: 'Mạng xã hội' },
+  { key: 'contact_name', label: 'Tên liên hệ' },
+  { key: 'city', label: 'thành phố' },
+  { key: 'district', label: 'quận huyện' }
+];
+
+
 const Customer = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.customer);
@@ -42,14 +84,13 @@ const Customer = props => {
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
-  const customers = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
       return {
         ...item,
         typeName: item.type?.name,
         sale: item.sale?.code,
-        createdDate: moment(item.createdDate).format("DD-MM-YYYY")
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
   };
@@ -63,8 +104,6 @@ const Customer = props => {
     }
     setDetails(newDetails);
   };
-
-
 
   const getBadge = status => {
     switch (status) {
@@ -81,7 +120,6 @@ const Customer = props => {
     }
   };
 
-
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       Object.keys(value).forEach(key => {
@@ -96,15 +134,21 @@ const Customer = props => {
     if (value) debouncedSearchColumn(value);
   };
 
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
+  const memoListed = React.useMemo(() => memoComputedItems(initialState.birthday), [initialState.birthday]);
+
+  const memoExcelComputedItems = React.useCallback(items => computedExcelItems(items), [initialState.birthday]);
+  const memoExcelListed = React.useMemo(() => memoExcelComputedItems(initialState.birthday), [initialState.birthday]);
   return (
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách khách hàng sinh nhật 7 ngày tới
       </CCardHeader>
       <CCardBody>
+        <Download data={memoExcelListed} headers={fieldExcel} name={'customer'} />
 
         <CDataTable
-          items={computedItems(customers)}
+          items={memoListed}
           fields={fields}
           columnFilter
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}

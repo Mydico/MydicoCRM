@@ -28,10 +28,10 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
-  { key: 'code', label: 'Mã' },
-  { key: 'name', label: 'Tên cửa hàng/đại lý' },
-  { key: 'tel', label: 'Điện thoại' },
-  { key: 'saleName', label: 'Nhân viên quản lý' },
+  { key: 'code', label: 'Mã', _style: { minWidth: 150 } },
+  { key: 'name', label: 'Tên cửa hàng/đại lý', _style: { minWidth: 150 } },
+  { key: 'tel', label: 'Điện thoại', _style: { minWidth: 150 } },
+  { key: 'saleName', label: 'Nhân viên quản lý', _style: { minWidth: 150 } },
   { key: 'typeName', label: 'Loại khách hàng', filter: false },
   { key: 'department', label: 'Chi nhánh', filter: false },
   {
@@ -81,7 +81,7 @@ const computedExcelItems = items => {
   return items.map((item, index) => {
     return {
       ...item,
-      order:  index + 1,
+      order: index + 1,
       typeName: item.type?.code,
       status: item.status?.name || '',
       department: item.department?.code || '',
@@ -108,6 +108,7 @@ const Customer = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const departments = useSelector(selectAllDepartment);
+  const customers = useSelector(selectAll);
 
   useEffect(() => {
     dispatch(reset());
@@ -115,7 +116,7 @@ const Customer = props => {
     dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
-  const computedItems =  React.useCallback(items => {
+  const computedItems = items => {
     return items.map((item, index) => {
       return {
         ...item,
@@ -126,12 +127,11 @@ const Customer = props => {
         sale: item.sale?.code || ''
       };
     });
-  },[]);
-  
+  };
+
   useEffect(() => {
+    dispatch(reset());
     const localParams = localStorage.getItem('params');
-
-
     let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     if (localParams) {
       params = JSON.parse(localParams);
@@ -141,8 +141,6 @@ const Customer = props => {
     dispatch(getCustomer(params));
     window.scrollTo(0, 100);
   }, [activePage, size]);
-
-  const customers = useSelector(selectAll);
 
   const toggleDetails = index => {
     const position = details.indexOf(index);
@@ -226,7 +224,7 @@ const Customer = props => {
           onColumnFilterChange={onFilterColumn}
           columnFilterSlot={{
             typeName: (
-              <div style={{ minWidth: 200 }}>
+              <div style={{ minWidth: 100 }}>
                 <Select
                   onChange={item => {
                     onFilterColumn({ ...paramRef.current, type: item?.value || '' });

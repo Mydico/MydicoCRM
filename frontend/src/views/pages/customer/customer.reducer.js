@@ -98,9 +98,8 @@ const slice = createSlice({
       state.loading = false;
     },
     [getCustomerBirthday.fulfilled]: (state, action) => {
-      customersAdapter.setAll(state, action.payload.data);
+      // customersAdapter.setAll(state, action.payload.data);
       state.initialState.birthday = action.payload.data
-      state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
     [getCity.fulfilled]: (state, action) => {

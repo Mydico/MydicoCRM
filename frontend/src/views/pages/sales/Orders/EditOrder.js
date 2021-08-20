@@ -587,7 +587,7 @@ const EditOrder = props => {
                               menuPortalTarget={document.body}
                               options={productInWarehouses.map(item => ({
                                 value: item.product.id,
-                                label: `${item.product.productBrand?.code}-${item.product.name}-${item.product.volume}`
+                                label: `[${item.product?.code}]-${item.product.name}-${item.product.volume}`
                               }))}
                             />
                           </Td>
