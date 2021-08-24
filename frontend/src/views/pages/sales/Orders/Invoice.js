@@ -8,12 +8,14 @@ import { reset, fetching } from './order.reducer';
 
 import { CButton, CCard, CCardHeader, CCardBody, CCol, CRow } from '@coreui/react/lib';
 import { CSpinner } from '@coreui/react';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
+import { socket } from '../../../../App';
+import { userSafeSelector } from '../../login/authenticate.reducer';
+import { OrderStatus } from './order-status';
 const Invoice = () => {
   const location = useLocation();
   const dispatch = useDispatch();
-  const history = useHistory();
+  const { account } = useSelector(userSafeSelector);
 
   const { initialState } = useSelector(state => state.order);
 
@@ -40,6 +42,7 @@ const Invoice = () => {
   };
   useEffect(() => {
     if (initialState.updatingSuccess) {
+      socket.emit('order', invoice);
       dispatch(reset());
       localStorage.setItem('order', JSON.stringify({}));
       history.push('/orders');
@@ -71,9 +74,7 @@ const Invoice = () => {
                 <strong>{invoice?.customer.name || ''}</strong>
               </div>
               <div>{invoice?.address || ''}</div>
-              <div>{`${district.filter(dist => dist.value === invoice?.customer?.district)[0]?.label || ''}, ${cities.filter(
-                city => city.value === invoice?.customer?.city
-              )[0]?.label || ''}`}</div>{' '}
+              <div>{`${memoizedGetDistrictName(invoice?.customer?.district)}, ${ memoizedGetCityName(invoice?.customer?.city)}`}</div>
               <div>Phone: {invoice?.customer.tel || ''}</div>
             </CCol>
             <CCol sm="4">

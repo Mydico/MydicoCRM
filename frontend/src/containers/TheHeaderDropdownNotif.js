@@ -18,8 +18,8 @@ const TheHeaderDropdownNotif = () => {
   return (
     <CDropdown inNav className="c-header-nav-item mx-2">
       <CDropdownToggle className="c-header-nav-link" caret={false}>
-        <CIcon name="cil-bell" size="lg" />
-        <CBadge shape="pill" color="danger">
+        <CIcon name="cilBirthdayCake" size="lg" />
+        <CBadge shape="pill"  color="warning">
           {initialState.birthday.length}
         </CBadge>
       </CDropdownToggle>

@@ -5,8 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getDetailOrder } from './order.api';
 
 import { globalizedOrdersSelectors } from './order.reducer';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 import { Table } from 'reactstrap';
 const { selectById } = globalizedOrdersSelectors;
 
@@ -49,9 +48,7 @@ const ViewOrder = props => {
                 <strong>{invoice?.customer?.name || ''}</strong>
               </div>
               <div>{invoice?.address}</div>
-              <div>{`${district.filter(dist => dist.value === invoice?.customer?.district)[0]?.label || ''}, ${cities.filter(
-                city => city.value === invoice?.customer?.city
-              )[0]?.label || ''}`}</div>
+              <div>{`${memoizedGetDistrictName(invoice?.customer?.district)}, ${memoizedGetCityName(invoice?.customer?.city)}`}</div>
               <div>Phone: {invoice?.customer?.tel || ''}</div>
             </CCol>
             <CCol sm="4">

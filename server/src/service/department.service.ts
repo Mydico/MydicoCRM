@@ -37,6 +37,11 @@ export class DepartmentService {
     return arrTree;
   }
 
+  async findAncestor(department: Department): Promise<Department[]> {
+    const flatTree = await this.departmentRepository.findAncestors(department);
+    return flatTree;
+  }
+
   async findById(id: string): Promise<Department | undefined> {
     const options = { relations: relationshipNames };
     const child = await this.departmentRepository.findOne(id, options);

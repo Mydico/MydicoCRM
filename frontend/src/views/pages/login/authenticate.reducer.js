@@ -2,6 +2,7 @@ import { createAsyncThunk, createDraftSafeSelector, createSlice, current } from 
 import axios from 'axios';
 import { Storage } from 'react-jhipster';
 const AUTH_TOKEN_KEY = 'authenticationToken';
+export const USER_INFO = 'userinfo';
 
 const initialState = {
   loading: false,
@@ -39,9 +40,11 @@ export const login = createAsyncThunk('api/authenticate', async ({ username, pas
 
 export const getSession = createAsyncThunk('api/account', async (args, thunkAPI) => {
   try {
-    const accountResponse = await axios.get('api/account',{headers: {
-      Authorization: `Bearer ${Storage.session.get(AUTH_TOKEN_KEY)}`
-    }});
+    const accountResponse = await axios.get('api/account', {
+      headers: {
+        Authorization: `Bearer ${Storage.session.get(AUTH_TOKEN_KEY)}`
+      }
+    });
     return accountResponse.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -57,10 +60,10 @@ const slice = createSlice({
     },
     addPermission: (state, action) => {
       const copyedRole = [...current(state.account.role)];
-      copyedRole.push(action.payload)
+      copyedRole.push(action.payload);
       state.account.role = copyedRole;
     },
-    removePermission: (state) => {
+    removePermission: state => {
       const copyedRole = state.account.role.filter(item => !item.isSelf);
       state.account.role = copyedRole;
     },
@@ -71,9 +74,11 @@ const slice = createSlice({
       state.sessionHasBeenFetched = false;
       if (Storage.local.get(AUTH_TOKEN_KEY)) {
         Storage.local.remove(AUTH_TOKEN_KEY);
+        Storage.local.remove(USER_INFO);
       }
       if (Storage.session.get(AUTH_TOKEN_KEY)) {
         Storage.session.remove(AUTH_TOKEN_KEY);
+        Storage.session.remove(USER_INFO);
       }
     }
   },
@@ -90,12 +95,20 @@ const slice = createSlice({
       state.isAuthenticated = isAuthenticated;
       state.loading = false;
       state.sessionHasBeenFetched = true;
+      Storage.local.set(USER_INFO, action.payload);
+      Storage.session.set(USER_INFO, action.payload);
     },
     [getSession.rejected]: (state, action) => {
       state.account = {};
       state.isAuthenticated = false;
       state.loading = false;
       state.sessionHasBeenFetched = false;
+      if (Storage.local.get(USER_INFO)) {
+        Storage.local.remove(USER_INFO);
+      }
+      if (Storage.session.get(USER_INFO)) {
+        Storage.session.remove(USER_INFO);
+      }
     },
     [login.rejected]: (state, action) => {
       state.loginError = action.payload.statusCode;

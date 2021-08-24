@@ -57,6 +57,7 @@ import { RedisQueryResultCache } from './service/query/custom-query.cache';
 import { ReportModule } from './module/report.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './module/task.module';
+import { EventsModule } from './module/event.module';
 
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
@@ -124,6 +125,7 @@ import { TasksModule } from './module/task.module';
         IncomeDashboardModule,
         DebtDashboardModule,
         BranchModule,
+        EventsModule
     // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
     ],
     controllers: [

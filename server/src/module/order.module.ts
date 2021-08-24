@@ -10,6 +10,7 @@ import { IncomeDashboardModule } from './income-dashboard.module';
 import { CustomerModule } from './customer.module';
 import { OrderSubscriber } from '../service/subscribers/order.subscriber';
 import { BillModule } from './bill.module';
+import { EventsGateway } from './provider/events.gateway';
 
 @Module({
   imports: [
@@ -20,10 +21,10 @@ import { BillModule } from './bill.module';
     TransactionModule,
     DepartmentModule,
     IncomeDashboardModule,
-    CustomerModule
+    CustomerModule,
   ],
   controllers: [OrderController],
-  providers: [OrderService, OrderSubscriber],
+  providers: [OrderService, OrderSubscriber, EventsGateway],
   exports: [OrderService]
 })
 export class OrderModule {}

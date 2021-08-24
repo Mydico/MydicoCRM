@@ -13,13 +13,11 @@ import { userSafeSelector, addPermission } from '../../login/authenticate.reduce
 import _ from 'lodash';
 import { CFormGroup, CInput, CLabel, CTextarea } from '@coreui/react';
 import Select from 'react-select';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district';
 import AdvancedTable from '../../../components/table/AdvancedTable';
 import { Td, Table, Thead, Th, Tr, Tbody } from '../../../components/super-responsive-table';
 import { useMediaQuery } from 'react-responsive';
-import { CSVLink } from 'react-csv';
 import Download from '../../../components/excel/DownloadExcel.js';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -707,9 +705,7 @@ const Order = props => {
                           <strong>{item?.customer.name}</strong>
                         </div>
                         <div>{item?.address}</div>
-                        <div>{`${district.filter(dist => dist.value === item?.customer?.district)[0]?.label || ''}, ${cities.filter(
-                          city => city.value === item?.customer?.city
-                        )[0]?.label || ''}`}</div>{' '}
+                        <div>{`${memoizedGetDistrictName(item?.customer?.district)}, ${memoizedGetCityName(item?.customer?.city)}`}</div>{' '}
                         <div>Phone: {item?.customer.tel}</div>
                       </CCol>
                       <CCol sm="4">
@@ -718,7 +714,7 @@ const Order = props => {
                           <strong> {item?.promotion?.name}</strong>
                         </div>
                         <div>
-                          {item?.promotion?.description.length > 10
+                          {item?.promotion?.description?.length > 10
                             ? `${item?.promotion?.description.substring(0, 30)}`
                             : item?.promotion?.description}
                         </div>

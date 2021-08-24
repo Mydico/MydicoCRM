@@ -18,6 +18,8 @@ import IncomeDashboard from '../domain/income-dashboard.entity';
 import { DashboardType } from '../domain/enumeration/dashboard-type';
 import { CustomerService } from './customer.service';
 import { User } from '../domain/user.entity';
+import { EventsGateway } from '../module/provider/events.gateway';
+import { DepartmentService } from './department.service';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -40,8 +42,10 @@ export class OrderService {
     private readonly billService: BillService,
     private readonly productQuantityService: ProductQuantityService,
     private readonly transactionService: TransactionService,
-    private readonly incomeDashboardService: IncomeDashboardService
-  ) { }
+    private readonly incomeDashboardService: IncomeDashboardService,
+    private readonly departmentService: DepartmentService,
+    private readonly eventsGateway: EventsGateway
+  ) {}
 
   async findById(id: string): Promise<Order | undefined> {
     if (!relationshipNames.includes('customer.department') && !relationshipNames.includes('customer.type')) {
@@ -72,31 +76,34 @@ export class OrderService {
     let andQueryString = '';
 
     if (departmentVisible.length > 0) {
-      andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} Order.department IN ${JSON.stringify(departmentVisible)
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '} Order.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "}  Order.createdDate  >= '${filter['startDate']}' AND  Order.createdDate <= '${filter['endDate']} 24:00:00'`;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.createdDate  >= '${
+        filter['startDate']
+      }' AND  Order.createdDate <= '${filter['endDate']} 24:00:00'`;
     }
     if (filter['status']) {
       queryString += ` Order.status  = '${filter['status']}' `;
     }
     if (isEmployee) {
-      andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "}  Order.sale = ${currentUser.id}`;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.sale = ${currentUser.id}`;
     }
     if (currentUser.branch) {
       if (!currentUser.branch.seeAll) {
-        andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "}  Order.branch = ${currentUser.branch.id}`;
+        andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.branch = ${currentUser.branch.id}`;
       }
     } else {
-      andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} Order.branch is NULL `;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '} Order.branch is NULL `;
     }
-    andQueryString += ` AND Order.status <> 'DELETED'`
-    const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_branch_${currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
-      }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Order.${Object.keys(
-        options.order
-      )[0] || 'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+    andQueryString += ` AND Order.status <> 'DELETED'`;
+    const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_branch_${
+      currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
+    }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Order.${Object.keys(
+      options.order
+    )[0] || 'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .leftJoinAndSelect('Order.customer', 'customer')
@@ -120,7 +127,8 @@ export class OrderService {
       .skip(options.skip)
       .take(options.take)
       .cache(
-        `cache_count_get_orders_department_${JSON.stringify(departmentVisible)}_branch_${currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
+        `cache_count_get_orders_department_${JSON.stringify(departmentVisible)}_branch_${
+          currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
         }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}`
       );
     if (queryString) {
@@ -220,7 +228,10 @@ export class OrderService {
     if (!order.id) {
       order.code = `${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}-${count + 1}`;
     }
-    return await this.orderRepository.save(order);
+    const result = await this.orderRepository.save(order);
+    const ancestor = await this.departmentService.findAncestor(order.department);
+    await this.eventsGateway.emitMessage({ ...result, departmentVisible: ancestor.map(item => item.id) });
+    return result;
   }
 
   async updateStatus(order: Order): Promise<Order | undefined> {

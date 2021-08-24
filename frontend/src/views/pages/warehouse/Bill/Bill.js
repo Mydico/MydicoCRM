@@ -33,8 +33,8 @@ import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer';
 import _ from 'lodash';
 import { CFormGroup, CInput } from '@coreui/react';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
+
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
@@ -601,9 +601,7 @@ const Bill = props => {
                           <strong>{item?.customer?.name || ''}</strong>
                         </div>
                         <div>{item?.customer?.address || ''}</div>
-                        <div>{`${district.filter(dist => dist.value === item?.customer?.district)[0]?.label || ''}, ${cities.filter(
-                          city => city.value === item?.customer?.city
-                        )[0]?.label || ''}`}</div>
+                        <div>{`${memoizedGetDistrictName(item?.customer?.district)}, ${memoizedGetCityName(item?.customer?.city)}`}</div>
                         <div>Địa chỉ: {item?.customer?.tel || ''}</div>
                         <div>Phone: {item?.customer?.tel || ''}</div>
                       </CCol>

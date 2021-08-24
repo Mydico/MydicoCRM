@@ -60,6 +60,7 @@ const TheHeader = () => {
 
       <CHeaderNav className="px-3">
         <TheHeaderDropdownNotif />
+        <TheHeaderDropdownMssg/>
         <TheHeaderDropdown />
         <CToggler inHeader className="d-md-down-none" onClick={() => dispatch(setAsideShow(!asideShow))}>
           <CIcon className="mr-2" size="lg" name="cil-applications-settings" />
