@@ -16,7 +16,7 @@ const Invoice = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { account } = useSelector(userSafeSelector);
-
+  const history = useHistory()
   const { initialState } = useSelector(state => state.order);
 
   const [invoice, setInvoice] = useState(null);

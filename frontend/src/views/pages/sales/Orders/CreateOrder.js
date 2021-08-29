@@ -178,6 +178,10 @@ const CreateOrder = props => {
       alert('Không để tổng số lượng bằng 0');
       return;
     }
+    if (productList.filter(item => item.quantity === 0).length > 0) {
+      alert('Không để sản phẩm có số lượng bằng 0 khi tạo đơn hàng');
+      return;
+    }
     if (!isValidProduct) return;
     if (!values.address) values.address = selectedCustomer.address;
     values.customer = selectedCustomer;

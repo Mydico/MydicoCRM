@@ -159,9 +159,11 @@ export class CustomerController {
 
     const currentUser = req.user as User;
     const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-    if (currentUser.department) {
+    if (currentUser.department && !Object.keys(req.query).includes('departmentId')) {
       departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
       departmentVisible = departmentVisible.map(item => item.id);
+    } else {
+      departmentVisible.push(req.query['departmentId']);
     }
     const [results, count] = await this.customerService.findAndCount(
       {

@@ -21,6 +21,9 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { ReportService } from '../../service/report.service';
 import { OrderService } from '../../service/order.service';
+import { User } from 'src/domain/user.entity';
+import { In } from 'typeorm';
+import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/reports')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -29,7 +32,7 @@ import { OrderService } from '../../service/order.service';
 export class ReportController {
   logger = new Logger('ReportController');
 
-  constructor(private readonly orderService: OrderService, private readonly reportService: ReportService) {}
+  constructor(private readonly departmentService: DepartmentService, private readonly reportService: ReportService) {}
 
   @Get('/sale-report')
   @ApiResponse({
@@ -43,10 +46,21 @@ export class ReportController {
         filter[item] = req.query[item];
       }
     });
-    if (req.query['userId']) {
-      return res.send(await this.reportService.getOrderSaleReport(req.query['userId'], filter));
+    const currentUser = req.user as User;
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+
+    if (!isEmployee) {
+      let departmentVisible: any = [];
+
+      if (currentUser.department) {
+        departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        departmentVisible = departmentVisible.map(item => item.id);
+      } else {
+        departmentVisible.push(req.query['departmentId']);
+      }
+      return res.send(await this.reportService.getOrderSaleReportForManager(departmentVisible, filter));
     } else {
-      throw new HttpException('Không thể xử lý dữ liệu', HttpStatus.UNPROCESSABLE_ENTITY);
+      return res.send(await this.reportService.getOrderSaleReport(req.query['userId'], filter));
     }
   }
 

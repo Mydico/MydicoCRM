@@ -344,7 +344,7 @@ const EditOrder = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      dispatch(removePermission());
+      // dispatch(removePermission());
       history.goBack();
     }
   }, [initialState.updatingSuccess]);

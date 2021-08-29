@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === 'dev') {
     roleBDConfig = {
         database: 'MydicoCRM',
         type: 'mysql',
-        host: '103.121.91.142',
+        host: '14.225.17.151',
         port: 3306,
         username: 'root',
         password: 'Dunghd@123',
@@ -70,7 +70,7 @@ if (process.env.NODE_ENV === 'dev') {
         name: 'default',
         type: 'mysql',
         database: 'MydicoCRM',
-        host: '103.121.91.142',
+        host: '14.225.17.151',
         port: 3306,
         username: 'root',
         password: 'Dunghd@123',

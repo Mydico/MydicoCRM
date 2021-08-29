@@ -10,7 +10,7 @@ export class ReportService {
   constructor(
     @InjectRepository(OrderRepository) private orderRepository: OrderRepository,
     @InjectRepository(OrderDetailsRepository) private orderDetailsRepository: OrderDetailsRepository,
-    @InjectRepository(CustomerRepository) private customerRepository: CustomerRepository,
+    @InjectRepository(CustomerRepository) private customerRepository: CustomerRepository
   ) {}
   async getOrderSaleReport(userId: string, filter = {}): Promise<any> {
     let queryString = '';
@@ -18,16 +18,36 @@ export class ReportService {
     if (filter['endDate'] && filter['startDate']) {
       queryString += `Order.createdDate  >= '${filter['startDate']}' AND  Order.createdDate <= '${filter['endDate']} 24:00:00'`;
     }
-    // WAITING = 'WAITING',
-    // APPROVED = 'APPROVED',
-    // CANCEL = 'CANCEL',
-    // CREATED = "CREATED",
-    // DELETED = 'DELETED',
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .select('COUNT(*)', 'count')
-      .cache(3*3600)
+      .cache(3 * 3600)
       .where(`Order.sale = ${userId} and Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`);
+    if (queryString) {
+      queryBuilder.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
+    }
+    return await queryBuilder.getRawOne();
+  }
+  async getOrderSaleReportForManager(departmentVisible: string[], filter = {}): Promise<any> {
+    let queryString = '';
+
+    if (filter['endDate'] && filter['startDate']) {
+      queryString += `Order.createdDate  >= '${filter['startDate']}' AND  Order.createdDate <= '${filter['endDate']} 24:00:00'`;
+    }
+
+    const queryBuilder = this.orderRepository
+      .createQueryBuilder('Order')
+      .select('COUNT(*)', 'count')
+      .cache(3 * 3600)
+      .where(
+        `Order.department IN ${JSON.stringify(departmentVisible)
+          .replace('[', '(')
+          .replace(']', ')')} and Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`
+      );
     if (queryString) {
       queryBuilder.andWhere(
         new Brackets(sqb => {
@@ -45,9 +65,9 @@ export class ReportService {
       },
       cache: 3 * 3600
     });
-    let andQueryString = ''
+    let andQueryString = '';
     if (listCustomer.length > 0) {
-      andQueryString += ` OrderDetails.order IN ${JSON.stringify(listCustomer.map(item => item.id ))
+      andQueryString += ` OrderDetails.order IN ${JSON.stringify(listCustomer.map(item => item.id))
         .replace('[', '(')
         .replace(']', ')')}`;
     }
@@ -58,7 +78,7 @@ export class ReportService {
       .leftJoin('OrderDetails.product', 'product')
       .groupBy('OrderDetails.productId')
       .where(andQueryString)
-      .cache(3*3600)
+      .cache(3 * 3600)
       .orderBy('sum(OrderDetails.quantity)', 'DESC')
       .limit(10);
     return await queryBuilder.getRawMany();
@@ -72,9 +92,9 @@ export class ReportService {
       },
       cache: 3 * 3600
     });
-    let andQueryString = ''
+    let andQueryString = '';
     if (listCustomer.length > 0) {
-      andQueryString += ` Order.customer IN ${JSON.stringify(listCustomer.map(item => item.id ))
+      andQueryString += ` Order.customer IN ${JSON.stringify(listCustomer.map(item => item.id))
         .replace('[', '(')
         .replace(']', ')')}`;
     }
@@ -84,7 +104,7 @@ export class ReportService {
       .addSelect('Sum(Order.real_money)', 'sum')
       .leftJoin('Order.customer', 'customer')
       .where(andQueryString)
-      .cache(3*3600)
+      .cache(3 * 3600)
       .groupBy('Order.customer')
       .orderBy('sum(Order.real_money)', 'DESC')
       .limit(10);

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { socket } from './App';
 
 const initialState = {
   sidebarShow: 'responsive',
@@ -6,7 +7,6 @@ const initialState = {
   darkMode: false,
   toaster: []
 };
-
 const slice = createSlice({
   name: 'app',
   initialState: initialState,

@@ -12,7 +12,7 @@ const TheHeaderDropdownTasks = () => {
           {itemsCount}
         </CBadge>
       </CDropdownToggle>
-      <CDropdownMenu placement="bottom-end" className="pt-0">
+      <CDropdownMenu placement="bottom-end" className="pt-0"  style={{ height: '500px', overflowY: 'scroll' }}>
         <CDropdownItem header tag="div" className="text-center" color="light">
           <strong>You have {itemsCount} pending tasks</strong>
         </CDropdownItem>

@@ -216,10 +216,7 @@ export class OrderService {
   }
 
   async save(order: Order, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Order | undefined> {
-    const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_sale_${isEmployee ? currentUser.id : -1}`;
-
-    await this.orderRepository.removeCache([cacheKeyBuilder, 'Order']);
-
+    await this.orderRepository.removeCache(['order']);
     const count = await this.orderRepository
       .createQueryBuilder('order')
       .select('DISTINCT()')
