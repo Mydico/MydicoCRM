@@ -26,8 +26,8 @@ export class BillService {
     private readonly departmentService: DepartmentService,
 
     @Inject(forwardRef(() => OrderService))
-    private readonly orderService: OrderService,
-  ) { }
+    private readonly orderService: OrderService
+  ) {}
 
   async findById(id: string): Promise<Bill | undefined> {
     const options = { relations: relationshipNames };
@@ -57,7 +57,9 @@ export class BillService {
         .replace(']', ')')}`;
     }
     if (req.query['endDate'] && req.query['startDate']) {
-      queryString += ` ${queryString.length === 0 ? "" : " AND "}  Bill.createdDate  >= '${req['startDate']}' AND  Bill.createdDate <= '${req['endDate']} 24:00:00'`;
+      queryString += ` ${queryString.length === 0 ? '' : ' AND '}  Bill.createdDate  >= '${req['startDate']}' AND  Bill.createdDate <= '${
+        req['endDate']
+      } 24:00:00'`;
     }
     const queryBuilder = this.billRepository
       .createQueryBuilder('Bill')
@@ -66,8 +68,7 @@ export class BillService {
       .leftJoinAndSelect('order.orderDetails', 'orderDetails')
       .leftJoinAndSelect('orderDetails.product', 'product')
       .where(queryString)
-
-      .orderBy('Bill.createdDate')
+      .orderBy(`Bill.${'createdDate'}`, 'DESC')
       .skip(pageRequest.page * pageRequest.size)
       .take(pageRequest.size);
     if (filterString) {
@@ -110,9 +111,8 @@ export class BillService {
       default:
         break;
     }
-    const cacheKeyBuilder = `get_orders_department}`;
 
-    await this.billRepository.removeCache([cacheKeyBuilder, 'Order']);
+    await this.billRepository.removeCache(['order']);
     return await this.save(bill);
   }
 

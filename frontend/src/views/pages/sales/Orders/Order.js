@@ -248,9 +248,9 @@ const Order = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
+      dispatch(reset());
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
       dispatch(getOrder(params));
-      dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
 

@@ -170,9 +170,8 @@ const Bill = props => {
         tel: item.customer?.tel,
         quantity: item.order?.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0) || 0,
         total:
-          item.order?.orderDetails
-            ?.reduce((sum, current) => sum + current.priceTotal, 0)
-            .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || 0,
+          item.order? item.order.realMoney
+            .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) : 0,
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });

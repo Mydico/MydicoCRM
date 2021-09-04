@@ -29,6 +29,7 @@ const slice = createSlice({
     reset(state) {
       state.initialState.orderDetails = []
       state.initialState.loading = false;
+      orderAdapter.setAll(state, []);
       state.initialState.updatingSuccess = false;
     },
     orderAddOne: orderAdapter.addOne,

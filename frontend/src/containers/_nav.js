@@ -9,8 +9,31 @@ export default [
     icon: <CIcon name="cil-speedometer" customClasses="c-sidebar-nav-icon" />,
     badge: {
       color: 'info',
-      text: 'NEW',
+      text: 'Mới',
     },
+  },
+  {
+    _tag: 'CSidebarNavDropdown',
+    name: 'Báo cáo',
+    route: '/report',
+    icon: 'cil-report-slash',
+    _children: [
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Tổng quan',
+        to: '/report',
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Nhóm sản phẩm',
+        to: '/product-groups',
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Thương hiệu',
+        to: '/product-brands',
+      },
+    ],
   },
   {
     _tag: 'CSidebarNavTitle',
@@ -38,7 +61,7 @@ export default [
     _tag: 'CSidebarNavDropdown',
     name: 'Quản lý khách hàng',
     route: '/customers',
-    icon: 'cil-puzzle',
+    icon: 'cil-user',
     _children: [
       {
         _tag: 'CSidebarNavItem',

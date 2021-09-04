@@ -170,7 +170,7 @@ const CreateOrder = props => {
         return;
       }
     });
-    if(selectedPromotion && selectedPromotion.type === 'LONGTERM' && !selectedPromotionItem){
+    if (selectedPromotion && selectedPromotion.type === 'LONGTERM' && !selectedPromotionItem) {
       alert('Bạn phải chọn doanh số');
       return;
     }
@@ -298,7 +298,11 @@ const CreateOrder = props => {
     ).then(numberOfQuantityInStore => {
       if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
         copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
-        if (numberOfQuantityInStore?.payload[0] && numberOfQuantityInStore?.payload[0]?.quantity < 100 && copyArr[index].quantity > numberOfQuantityInStore?.payload[0]?.quantity ) {
+        if (
+          numberOfQuantityInStore?.payload[0] &&
+          numberOfQuantityInStore?.payload[0]?.quantity < 100 &&
+          copyArr[index].quantity > numberOfQuantityInStore?.payload[0]?.quantity
+        ) {
           copyArr[index].quantity = numberOfQuantityInStore?.payload[0]?.quantity;
         }
         setProductList(copyArr);
@@ -354,7 +358,7 @@ const CreateOrder = props => {
 
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = [...productList];
-    copyArr[index].reducePercent = target.value > 100 ? 100 : Number(target.value).toString();
+    copyArr[index].reducePercent = target.value > 100 ? 100 : target.value === '' ? 0 : Number(target.value).toString();
     copyArr[index].priceTotal =
       copyArr[index].priceReal * copyArr[index].quantity -
       (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
