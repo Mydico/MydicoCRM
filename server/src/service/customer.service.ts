@@ -9,6 +9,7 @@ import { DepartmentService } from './department.service';
 import { TransactionService } from './transaction.service';
 import { getDates } from './utils/helperFunc';
 import { checkCodeContext } from './utils/normalizeString';
+import Transaction from '../domain/transaction.entity';
 
 const relationshipNames = [];
 relationshipNames.push('status');
@@ -281,6 +282,12 @@ export class CustomerService {
   }
 
   async update(customer: Customer, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Customer | undefined> {
+    await this.transactionRepository
+      .createQueryBuilder()
+      .update(Transaction)
+      .set({ customerCode: customer.code, customerName: customer.name })
+      .where('customerId = :id', { id: customer.id })
+      .execute();
     return await this.save(customer, departmentVisible, isEmployee, currentUser);
   }
 
