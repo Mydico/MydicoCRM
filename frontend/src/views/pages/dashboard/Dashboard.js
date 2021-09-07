@@ -51,6 +51,7 @@ const Dashboard = () => {
   const [bestCustomer, setBestCustomer] = useState([]);
   const { account } = useSelector(userSafeSelector);
   const [mode, setMode] = useState('week');
+  const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   const getData = (startDate, endDate) => {
     dispatch(getIncomeDashboard({ userId: account.id, startDate, endDate })).then(data => {
@@ -89,6 +90,12 @@ const Dashboard = () => {
       }
     });
   };
+
+  useEffect(() => {
+    if (date.endDate && date.startDate) {
+      getData(date.startDate, date.endDate);
+    }
+  }, [date]);
 
   useEffect(() => {
     const today = moment();
@@ -161,7 +168,7 @@ const Dashboard = () => {
           </CCol>
         </CFormGroup>
       </CFormGroup>
-      <WidgetsDropdown />
+      <WidgetsDropdown date={date} />
       <CCard>
         <CCardBody>
           <CRow>
