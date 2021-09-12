@@ -219,8 +219,9 @@ export class StoreInputService {
                     const incomeItem = new IncomeDashboard();
                     incomeItem.amount = entity.realMoney;
                     incomeItem.departmentId = entity.department.id;
+                    incomeItem.branchId = entity.customer?.branch?.id;
                     incomeItem.type = DashboardType.RETURN;
-                    incomeItem.userId = entity.customer.sale.id;
+                    incomeItem.saleId = entity.customer.sale.id;
                     await this.incomeDashboardService.save(incomeItem);
                 }
             } else {
@@ -263,15 +264,15 @@ export class StoreInputService {
                 quantity: item.quantity - totalProduct > 0 ? item.quantity - totalProduct : 0,
             };
         });
-        const merged = productInStore.reduce((previousValue, currentValue) => {
-            const sum = previousValue.find(e => e.product.id === currentValue.product.id);
-            if (!sum) {
-              previousValue.push(Object.assign({}, currentValue));
-            } else {
-              sum.quantity += currentValue.quantity;
-            }
-            return previousValue;
-          }, []);
+        // const merged = productInStore.reduce((previousValue, currentValue) => {
+        //     const sum = previousValue.find(e => e.product.id === currentValue.product.id);
+        //     if (!sum) {
+        //       previousValue.push(Object.assign({}, currentValue));
+        //     } else {
+        //       sum.quantity += currentValue.quantity;
+        //     }
+        //     return previousValue;
+        //   }, []);
         await this.productQuantityService.saveMany(productInStore);
         if (entity.storeTransfer) {
             let arrDetails = [];

@@ -22,8 +22,8 @@ export class IncomeDashboardService {
         return await this.incomeDashboardRepository.findOne(options);
     }
 
-    async findAndCount(options: FindManyOptions<IncomeDashboard>): Promise<[IncomeDashboard[], number]> {
-        return await this.incomeDashboardRepository.findAndCount(options);
+    async findAndCount(options: FindManyOptions<IncomeDashboard>): Promise<IncomeDashboard[]> {
+        return await this.incomeDashboardRepository.find(options);
     }
 
     async save(incomeDashboard: IncomeDashboard): Promise<IncomeDashboard | undefined> {

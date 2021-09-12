@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle } from '@coreui/react';
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CDataTable, CPagination } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
@@ -9,13 +9,16 @@ import moment from 'moment';
 import Select, { components } from 'react-select';
 import CIcon from '@coreui/icons-react';
 import _ from 'lodash';
-import ReportStatistic from '../../../views/components/report-statistic/ReportStatistic';
+import ReportStatistic from '../../components/report-statistic/ReportStatistic';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
 import { getBranch } from '../user/UserBranch/branch.api';
-import { getUser } from '../user/UserList/user.api';
+import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
-import { getTop10Customer, getTop10Product, getTop10sale } from './report.api';
+import {
+  getCustomerReport,
+  getCustomerSummaryReport,
+} from './report.api';
 
 moment.locale('vi');
 const controlStyles = {
@@ -31,65 +34,68 @@ const ControlComponent = props => {
     </div>
   );
 };
-const topList = [
-  {
-    label: '10',
-    value: 10
-  },
-  {
-    label: '20',
-    value: 20
-  },
-  {
-    label: '30',
-    value: 30
-  },
-  {
-    label: '40',
-    value: 40
-  }
-];
+
 const { selectAll } = globalizedBranchSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
-
-const Report = () => {
+const fields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'customer_code', label: 'Mã nhân viên', _style: { width: '10%' }, filter: false },
+  { key: 'customer_name', label: 'Tên', _style: { width: '10%' }, filter: false },
+  { key: 'realMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
+  { key: 'totalMoney', label: 'Doanh số', _style: { width: '15%' }, filter: false }
+];
+const CustomerReport = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const branches = useSelector(selectAll);
   const users = useSelector(selectUserAll);
-
+  const [activePage, setActivePage] = useState(1);
+  const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({});
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
   const [user, setUser] = useState(null);
-  const [top10Sale, setTop10Sale] = useState([]);
-  const [top10Customer, setTop10Customer] = useState([]);
   const [top10Product, setTop10Product] = useState([]);
+  const [numOfProduct, setNumOfProduct] = useState(0);
+  const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(getBranch());
     dispatch(getUser());
-    getTop10();
   }, []);
 
+  useEffect(() => {
+    getTop10(filter);
+  }, [activePage, size]);
+
   const getTop10 = filter => {
-    dispatch(getTop10sale(filter)).then(data => {
-      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        setTop10Sale(data.payload);
-      }
-    });
-    dispatch(getTop10Product(filter)).then(data => {
-      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+    dispatch(getCustomerReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
+      if (data && data.payload) {
         setTop10Product(data.payload);
       }
     });
-    dispatch(getTop10Customer(filter)).then(data => {
-      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        setTop10Customer(data.payload);
+    delete filter['page'];
+    delete filter['size'];
+    delete filter['sort'];
+
+    dispatch(getCustomerSummaryReport(filter)).then(data => {
+      if (data && data.payload) {
+        setNumOfProduct(data.payload.count);
+        // setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));
       }
     });
+    // dispatch(getProductReport(filter)).then(data => {
+    //   if (data && data.payload) {
+    //     setTop10Product(data.payload);
+    //   }
+    // });
   };
 
   useEffect(() => {
@@ -124,6 +130,10 @@ const Report = () => {
         ...filter,
         sale: user.id
       });
+      getTop10({
+        ...filter,
+        sale: user.id
+      });
     }
   }, [user]);
 
@@ -141,13 +151,13 @@ const Report = () => {
 
   const debouncedSearchUser = _.debounce(value => {
     dispatch(
-      getUser({
+      getExactUser({
         page: 0,
         size: 50,
         sort: 'createdDate,DESC',
-        login: value,
-        firstName: value,
-        lastName: value,
+        code: value,
+        department: department?.id,
+        branch: branch?.id,
         dependency: true
       })
     );
@@ -159,15 +169,14 @@ const Report = () => {
     }
   };
 
-  const memoTop10Sale = React.useMemo(() => top10Sale, [top10Sale]);
-  const memoTop10Customer = React.useMemo(() => top10Customer, [top10Customer]);
-  const memoTop10Product = React.useMemo(() => top10Product, [top10Product]);
+  // const memoTop10Sale = React.useMemo(() => top10Sale, [top10Sale]);
+  // const memoTop10Customer = React.useMemo(() => top10Customer, [top10Customer]);
+  const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
 
   return (
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          {/* <CCardHeader>React-Dates</CCardHeader> */}
           <CCardBody>
             <DateRangePicker
               startDate={date.startDate}
@@ -258,90 +267,81 @@ const Report = () => {
             </CRow>
           </CCardBody>
         </CCard>
-        <ReportStatistic filter={filter} />
+        <CRow sm={12} md={12}>
+          <CCol sm="12" lg="12">
+            <CWidgetBrand
+              // rightHeader={numOfPriceProduct}
+              // rightFooter="Doanh thu thuần"
+              leftHeader={numOfProduct}
+              leftFooter="Tổng khách hàng"
+              color="gradient-primary"
+            >
+              <CIcon name="cil3d" height="76" className="my-4" />
+            </CWidgetBrand>
+          </CCol>
+        </CRow>
         <CCard>
           <CCardHeader>
-            <CCardTitle> Top 10 nhân viên</CCardTitle>
+            <CCardTitle>Danh sách sản phẩm</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-              <thead className="thead-light">
-                <tr>
-                  <th>Mã nhân viên</th>
-                  <th>Tên</th>
-                  <th>Doanh số</th>
-                </tr>
-              </thead>
-              <tbody>
-                {memoTop10Sale.map((item, index) => (
-                  <tr>
-                    <td>
-                      <div>{item.code}</div>
-                    </td>
-                    <td>
-                      <div>{`${item.lastName || ''} ${item.firstName || ''}`}</div>
-                    </td>
-                    <td>
-                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <CDataTable
+              items={memoTop10Product}
+              fields={fields}
+              columnFilter
+              itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+              itemsPerPage={size}
+              hover
+              sorter
+              noItemsView={{
+                noResults: 'Không tìm thấy kết quả',
+                noItems: 'Không có dữ liệu'
+              }}
+              loading={initialState.loading}
+              onPaginationChange={val => setSize(val)}
+              // onColumnFilterChange={onFilterColumn}
+              scopedSlots={{
+                order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+                name: (item, index) => (
+                  <td>
+                    <div>{`${item.sale_lastName || ''} ${item.sale_firstName || ''}`}</div>
+                  </td>
+                ),
+                realMoney: (item, index) => (
+                  <td>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
+                  </td>
+                ),
+                totalMoney: (item, index) => (
+                  <td>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalMoney)}</div>
+                  </td>
+                )
+              }}
+            />
+            <CPagination
+              activePage={activePage}
+              pages={Math.floor(top10Product[1] / size) + 1}
+              onActivePageChange={i => setActivePage(i)}
+            />
           </CCardBody>
-        </CCard>
-        <CCard>
-          <CCardHeader>
-            <CCardTitle> Top 10 sản phẩm bán chạy nhất</CCardTitle>
-          </CCardHeader>
-          <CCardBody>
+          {/* <CCardBody>
             <table className="table table-hover table-outline mb-0 d-none d-sm-table">
               <thead className="thead-light">
                 <tr>
-                  <th>Mã sản phẩm</th>
                   <th>Tên sản phẩm</th>
                   <th>Số lượng bán</th>
+                  <th>Doanh số</th>
                 </tr>
               </thead>
               <tbody>
                 {memoTop10Product.map((item, index) => (
                   <tr>
                     <td>
-                      <div>{item.code}</div>
+                      <div>{item.product_name}</div>
                     </td>
                     <td>
-                      <div>{item.name}</div>
-                    </td>
-                    <td>
-                      <div>{item.sum}</div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CCardBody>
-        </CCard>
-        <CCard>
-          <CCardHeader>
-            <CCardTitle> Top 10 khách hàng có doanh số cao nhất</CCardTitle>
-          </CCardHeader>
-          <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-              <thead className="thead-light">
-                <tr>
-                  <th>Mã khách hàng</th>
-                  <th>Tên khách hàng</th>
-                  <th>Doanh thu</th>
-                </tr>
-              </thead>
-              <tbody>
-                {memoTop10Customer.map((item, index) => (
-                  <tr key={index}>
-                    <td>
-                      <div>{item.code}</div>
-                    </td>
-                    <td>
-                      <div>{item.name}</div>
+                      <div>{item.count}</div>
                     </td>
                     <td>
                       <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
@@ -350,11 +350,11 @@ const Report = () => {
                 ))}
               </tbody>
             </table>
-          </CCardBody>
+          </CCardBody> */}
         </CCard>
       </CCol>
     </CRow>
   );
 };
 
-export default Report;
+export default CustomerReport;

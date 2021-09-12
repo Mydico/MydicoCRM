@@ -25,14 +25,29 @@ export default [
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'Nhóm sản phẩm',
-        to: '/product-groups',
+        name: 'Theo chi nhánh',
+        to: '/department-report',
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'Thương hiệu',
-        to: '/product-brands',
+        name: 'Theo sản phẩm',
+        to: '/product-report',
       },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Theo nhân viên',
+        to: '/sale-report',
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Theo khách hàng',
+        to: '/customer-report',
+      },
+      // {
+      //   _tag: 'CSidebarNavItem',
+      //   name: 'Thương hiệu',
+      //   to: '/product-brands',
+      // },
     ],
   },
   {

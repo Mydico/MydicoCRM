@@ -40,12 +40,7 @@ export class UserService {
     async filterExact(options: FindManyOptions<User>, filter = {}): Promise<[User[], number]> {
         options.cache = 3600000;
         let queryString = '';
-        const length = Object.keys(filter).length;
-        Object.keys(filter).forEach((item, index) => {
-          if (item === 'branch') return;
-          if (item === 'department') return;
-          queryString += `User.${item} like '%${filter[item]}%' ${length - 2 === index+1 ? '' : 'OR '}`;
-        });
+  
         let andQueryString = '1=1 ';
     
         if (filter['department']) {
@@ -54,6 +49,13 @@ export class UserService {
         if (filter['branch']) {
           andQueryString += ` AND User.branch = ${filter['branch']}`;
         }
+        delete filter['branch']
+        delete filter['department']
+        const length = Object.keys(filter).length;
+
+        Object.keys(filter).forEach((item, index) => {
+          queryString += `User.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'OR '}`;
+        });
         const queryBuilder = this.userRepository
           .createQueryBuilder('User')
           .leftJoinAndSelect('User.branch', 'branch')

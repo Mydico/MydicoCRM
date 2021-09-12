@@ -22,6 +22,15 @@ export const getTreeDepartment = createAsyncThunk('api/departments/tree', async 
   }
 });
 
+export const getChildTreeDepartmentByUser = createAsyncThunk('api/departments/childtree/byuser', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/departments/allchild/byuser');
+    return { data: result.data };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const getChildTreeDepartment = createAsyncThunk('api/departments/childtree', async (params, thunkAPI) => {
   try {
     const result = await axios.get('api/departments/allchild/' + params.id);

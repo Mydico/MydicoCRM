@@ -51,6 +51,7 @@
     "eureka-js-client": "4.5.0",
     "express-list-endpoints": "^5.0.0",
     "faker": "^5.1.0",
+    "fast-memoize": "^2.5.2",
     "fastify-compress": "^3.4.2",
     "fastify-multer": "^2.0.2",
     "fastify-multipart": "^4.0.7",

@@ -21,6 +21,7 @@ import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../s
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { Like } from 'typeorm';
+import { User } from '../../domain/user.entity';
 
 @Controller('api/departments')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -53,6 +54,18 @@ export class DepartmentController {
     const department = new Department();
     department.id = id;
     return res.send(await this.departmentService.findAllFlatChild(department));
+  }
+
+  @Get('/allchild/byuser')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The found record',
+    type: Department
+  })
+  async getAllChildTreeAndExternalByUser(@Req() req: Request, @Res() res): Promise<Department[]> {
+    const currentUser = req.user as User;
+    return res.send(await this.departmentService.findAllFlatChild(currentUser.department));
   }
 
   @Get('/')

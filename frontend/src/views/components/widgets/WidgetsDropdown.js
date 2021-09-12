@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CWidgetDropdown, CRow, CCol } from '@coreui/react/lib';
 import ChartLineSimple from '../charts/ChartLineSimple';
-import { getDebtDashboard, getIncomeDashboard, getOrderSale } from '../../pages/dashboard/dashboard.api';
+import { getOrderSale, getSumDebtDashboard, getSumIncomeDashboard } from '../../pages/dashboard/dashboard.api';
 import { useDispatch, useSelector } from 'react-redux';
 import { userSafeSelector } from '../../../views/pages/login/authenticate.reducer';
 import { DashboardType } from '../../pages/dashboard/Dashboard';
@@ -32,20 +32,11 @@ const WidgetsDropdown = props => {
   }, [date])
 
   const getData = (startDate, endDate) => {
-    console.log(startDate, endDate);
-    dispatch(getIncomeDashboard({ userId: account.id, startDate, endDate })).then(data => {
-      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        const sum = data.payload.reduce((curr, prev) => {
-          if (prev.type === DashboardType.ORDER) {
-            return curr + Number(prev.amount);
-          } else if (prev.type === DashboardType.RETURN) {
-            return curr - Number(prev.amount);
-          } else {
-            return Number(curr);
-          }
-        }, 0);
-        setIncomePoint(memoizedGetPoint(data.payload));
-        setIncomeTotal(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sum));
+    dispatch(getSumIncomeDashboard({ userId: account.id, startDate, endDate })).then(data => {
+      if (data && data.payload) {
+
+        // setIncomePoint(memoizedGetPoint(data.payload));
+        setIncomeTotal(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));
       }
     });
     dispatch(getOrderSale({ userId: account.id, startDate, endDate })).then(data => {
@@ -53,17 +44,10 @@ const WidgetsDropdown = props => {
         setTotal(data.payload.count);
       }
     });
-    dispatch(getDebtDashboard({ userId: account.id, startDate, endDate })).then(data => {
-      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        const sum = data.payload.reduce((curr, prev) => {
-          if (prev.type === DashboardType.DEBT) {
-            return curr + Number(prev.amount);
-          } else {
-            return curr - Number(prev.amount);
-          }
-        }, 0);
-        setDebtPoint(memoizedGetPoint(data.payload));
-        setDebt(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sum));
+    dispatch(getSumDebtDashboard({ userId: account.id, startDate, endDate })).then(data => {
+      if (data && data.payload) {
+        // setDebtPoint(memoizedGetPoint(data.payload));
+        setDebt(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));
       }
     });
   };

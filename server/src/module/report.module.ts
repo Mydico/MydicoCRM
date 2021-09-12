@@ -7,9 +7,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderRepository } from '../repository/order.repository';
 import { OrderDetailsRepository } from '../repository/order-details.repository';
 import { CustomerRepository } from '../repository/customer.repository';
+import { IncomeDashboardRepository } from '../repository/income-dashboard.repository';
+import { DebtDashboardRepository } from '../repository/debt-dashboard.repository';
 
 @Module({
-  imports: [CacheModule.register(),TypeOrmModule.forFeature([OrderRepository, OrderDetailsRepository, CustomerRepository]), DepartmentModule,OrderModule],
+  imports: [CacheModule.register(),TypeOrmModule.forFeature([OrderRepository, OrderDetailsRepository, CustomerRepository, IncomeDashboardRepository, DebtDashboardRepository]), DepartmentModule,OrderModule],
   controllers: [ReportController],
   providers: [ReportService],
   exports: [ReportService]

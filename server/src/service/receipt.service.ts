@@ -136,8 +136,9 @@ export class ReceiptService {
       const incomeItem = new IncomeDashboard();
       incomeItem.amount = entity.money;
       incomeItem.departmentId = entity.department.id;
+      incomeItem.branchId = entity.sale.branch?.id;
       incomeItem.type = DashboardType.DEBT;
-      incomeItem.userId = entity.customer.sale.id;
+      incomeItem.saleId = entity.customer.sale.id;
       await this.incomeDashboardService.save(incomeItem);
     }
     return await this.receiptRepository.save(receipt);

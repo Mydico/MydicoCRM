@@ -104,8 +104,11 @@ async function bootstrap(): Promise<void> {
   }
   setupSwagger(app);
 
-  await app.listen(port, () => {});
+  await app.listen(port, (err) => {
+    logger.error(`${err}`);
+  })
   logger.log(`Application listening on port ${port}`);
+
   // const permissionServices = app.get(PermissionService);
   // const permissionTypeServices = app.get(PermissionTypeService);
   // await permissionServices.clear();

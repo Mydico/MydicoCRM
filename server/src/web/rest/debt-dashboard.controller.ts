@@ -24,6 +24,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 import { Between, Equal, In } from 'typeorm';
 import { User } from '../../domain/user.entity';
 import { DepartmentService } from '../../service/department.service';
+import { memoizedTransformData, memoizedSumData, memoizedSumDebtData } from '../../utils/helper/permission-normalization';
 
 @Controller('api/debt-dashboards')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -63,16 +64,70 @@ export class DebtDashboardController {
         departmentVisible.push(req.query['departmentId']);
       }
       where['departmentId'] = In(departmentVisible);
-      delete where["userId"]
+      delete where['userId'];
     }
 
     if (req.query.startDate && req.query.endDate) {
       where['createdDate'] = Between(req.query.startDate, req.query.endDate);
     }
-    const [results, count] = await this.debtDashboardService.findAndCount({
+    const results = await this.debtDashboardService.findAndCount({
       where,
       cache: 3 * 3600
     });
-    return res.send(results);
+    const sum = memoizedTransformData(results).reduce((curr, prev) => {
+      let sum = 0;
+      if (prev.type === 'ORDER') {
+        sum = +Number(prev.amount);
+      } else if (prev.type === 'RETURN') {
+        sum = -Number(prev.amount);
+      } else {
+        sum = 0;
+      }
+      return (curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(sum)), curr;
+    }, {});
+    return res.send(sum);
+  }
+
+  @Get('/sum')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: DebtDashboard
+  })
+  async getSum(@Req() req: Request, @Res() res): Promise<DebtDashboard[]> {
+    const filter = {};
+    const currentUser = req.user as User;
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'startDate' && item !== 'endDate') {
+        filter[item] = req.query[item];
+      }
+    });
+    const where = {
+      ...filter
+    };
+    if (!isEmployee) {
+      let departmentVisible: any = [];
+
+      if (currentUser.department) {
+        departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        departmentVisible = departmentVisible.map(item => item.id);
+      } else {
+        departmentVisible.push(req.query['departmentId']);
+      }
+      where['departmentId'] = In(departmentVisible);
+      delete where['userId'];
+    }
+
+    if (req.query.startDate && req.query.endDate) {
+      where['createdDate'] = Between(req.query.startDate, req.query.endDate);
+    }
+    const results = await this.debtDashboardService.findAndCount({
+      where,
+      cache: 3 * 3600
+    });
+    const sum = memoizedSumDebtData(results);
+    return res.send({ sum });
   }
 }

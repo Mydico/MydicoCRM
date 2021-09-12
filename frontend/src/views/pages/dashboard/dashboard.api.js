@@ -9,9 +9,26 @@ export const getIncomeDashboard = createAsyncThunk('api/income-dashboards', asyn
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+export const getSumIncomeDashboard = createAsyncThunk('api/income-dashboards/sum', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/income-dashboards/sum', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const getDebtDashboard = createAsyncThunk('api/debt-dashboards', async (params, thunkAPI) => {
   try {
     const result = await axios.get('api/debt-dashboards', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+export const getSumDebtDashboard = createAsyncThunk('api/debt-dashboards/sum', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/debt-dashboards/sum', { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

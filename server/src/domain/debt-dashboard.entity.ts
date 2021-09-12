@@ -9,9 +9,9 @@ import { TransactionType } from './enumeration/transaction-type';
  */
 @Entity('debt_dashboard')
 export default class DebtDashboard extends BaseEntity {
-    @Column({ type: 'integer', name: 'user_id', nullable: true })
+    @Column({ type: 'integer', name: 'sale_id', nullable: true })
     @Index()
-    userId: string;
+    saleId: string;
 
     @Column({ type: 'simple-enum', name: 'type', enum: DashboardType, default: DashboardType.DEBT })
     @Index()
@@ -24,6 +24,10 @@ export default class DebtDashboard extends BaseEntity {
     @Column({  name: 'entityId', nullable: true })
     @Index()
     entityId: string;
+
+    @Column({  name: 'branchId', nullable: true })
+    @Index()
+    branchId: string;
 
     @Column({  name: 'departmentId', nullable: true })
     @Index()

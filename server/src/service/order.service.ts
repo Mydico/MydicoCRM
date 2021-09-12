@@ -277,8 +277,9 @@ export class OrderService {
         const incomeItem = new IncomeDashboard();
         incomeItem.amount = foundedOrder.realMoney;
         incomeItem.departmentId = foundedOrder.department.id;
+        incomeItem.branchId = foundedOrder.branch.id;
         incomeItem.type = DashboardType.ORDER;
-        incomeItem.userId = foundedOrder.sale.id || null;
+        incomeItem.saleId = foundedOrder.sale.id || null;
         await this.incomeDashboardService.save(incomeItem);
       }
     }
