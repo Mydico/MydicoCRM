@@ -2,6 +2,7 @@ import loadable from '@loadable/component'
 import CustomerReport from './views/pages/report/CustomerReport';
 import DepartmentReport from './views/pages/report/DepartmentReport';
 import ProductReport from './views/pages/report/ProductReport';
+import PromotionReport from './views/pages/report/PromotionReport';
 import Report from './views/pages/report/Report';
 import SaleReport from './views/pages/report/SaleReport';
 
@@ -116,7 +117,7 @@ const routes = [
   {path: '/product-report', exact: true, name: 'Báo cáo theo sản phẩm', component: ProductReport},
   {path: '/sale-report', exact: true, name: 'Báo cáo theo nhân viên', component: SaleReport},
   {path: '/customer-report', exact: true, name: 'Báo cáo theo sản phẩm', component: CustomerReport},
-  
+  {path: '/promotion-report', exact: true, name: 'Báo cáo theo chương trình', component: PromotionReport},
   {path: '/change-password', exact: true, name: 'Đổi mật khẩu', component: ChangePassword},
   {path: '/edit-profile', exact: true, name: 'Đổi thông tin cá nhân', component: EditUserProfile},
   {path: '/dashboard', name: 'Thống kê', component: Dashboard},

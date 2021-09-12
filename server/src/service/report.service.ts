@@ -382,4 +382,44 @@ export class ReportService {
     const result = await queryBuilder.getRawMany();
     return [result, count.length];
   }
+
+  async getPromotionSummary(filter): Promise<any> {
+    let queryString = queryBuilderFunc('Customer', filter);
+    const queryBuilder = this.customerRepository.manager.connection
+      .createQueryBuilder()
+      .addSelect('count(*)', 'count')
+      .from(Customer,'Customer')
+      .where(queryString)
+      .cache(3 * 3600);
+    return await queryBuilder.getRawOne();
+  }
+
+  async getPromotionReport(options, filter): Promise<any> {
+    let queryString = queryBuilderFunc('Order', filter);
+    const queryBuilder = this.orderRepository
+      .createQueryBuilder('Order')
+      .select(['customer.code', 'customer.name'])
+      .addSelect('SUM(Order.realMoney)', 'realMoney')
+      .addSelect('SUM(Order.totalMoney)', 'totalMoney')
+      .leftJoin('Order.customer', 'customer')
+      .leftJoin('Order.sale', 'sale')
+      .where(queryString)
+      .groupBy('Order.customerId')
+      .orderBy(`realMoney`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .offset(options.skip)
+      .limit(options.take)
+      .cache(3 * 3600);
+
+    const count = await this.orderRepository
+      .createQueryBuilder('Order')
+      .select('count(*)','count')
+      .where(queryString)
+      .groupBy('Order.customerId')
+      .leftJoin('Order.customer', 'customer')
+      .leftJoin('Order.sale', 'sale')
+      .cache(3 * 3600)
+      .getRawMany();
+    const result = await queryBuilder.getRawMany();
+    return [result, count.length];
+  }
 }

@@ -16,7 +16,7 @@ export default [
     _tag: 'CSidebarNavDropdown',
     name: 'Báo cáo',
     route: '/report',
-    icon: 'cil-report-slash',
+    icon: 'cil-clipboard',
     _children: [
       {
         _tag: 'CSidebarNavItem',
@@ -43,11 +43,11 @@ export default [
         name: 'Theo khách hàng',
         to: '/customer-report',
       },
-      // {
-      //   _tag: 'CSidebarNavItem',
-      //   name: 'Thương hiệu',
-      //   to: '/product-brands',
-      // },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Theo chương trình',
+        to: '/promotion-report',
+      },
     ],
   },
   {
