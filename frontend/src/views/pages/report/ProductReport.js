@@ -62,7 +62,8 @@ const ProductReport = () => {
   const [filter, setFilter] = useState({
     page: activePage - 1,
     size,
-    sort: 'createdDate,DESC'
+    sort: 'createdDate,DESC',
+    dependency: true
   });
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();

@@ -18,12 +18,54 @@ import CIcon from '@coreui/icons-react/lib/CIcon';;
 // sidebar nav config
 import navigation from './_nav';
 import {setSidebarShow} from '../App.reducer';
-
+const ReportMenu =   {
+  _tag: 'CSidebarNavDropdown',
+  name: 'Báo cáo',
+  route: '/report',
+  icon: 'cil-clipboard',
+  _children: [
+    {
+      _tag: 'CSidebarNavItem',
+      name: 'Tổng quan',
+      to: '/report',
+    },
+    {
+      _tag: 'CSidebarNavItem',
+      name: 'Theo chi nhánh',
+      to: '/department-report',
+    },
+    {
+      _tag: 'CSidebarNavItem',
+      name: 'Theo sản phẩm',
+      to: '/product-report',
+    },
+    {
+      _tag: 'CSidebarNavItem',
+      name: 'Theo nhân viên',
+      to: '/sale-report',
+    },
+    {
+      _tag: 'CSidebarNavItem',
+      name: 'Theo khách hàng',
+      to: '/customer-report',
+    },
+    {
+      _tag: 'CSidebarNavItem',
+      name: 'Theo chương trình',
+      to: '/promotion-report',
+    },
+  ],
+}
 const TheSidebar = () => {
   const dispatch = useDispatch();
   const show = useSelector((state) => state.app.sidebarShow);
-  const { isAuthenticated, sessionHasBeenFetched, account } = useSelector(state => state.authentication);
+  const { account } = useSelector(state => state.authentication);
+  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const isManager = account.roles.filter(item => item.authority === 'MANAGER').length > 0;
+  if(isAdmin || isManager){
+    navigation.splice(1, 0, ReportMenu);
 
+  }
   return (
     <CSidebar
       show={show}

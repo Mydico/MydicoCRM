@@ -103,7 +103,7 @@ const computedItems = items => {
       ...item,
       approverName: item.approverName || '',
       storeTransferName: item.storeTransferName || '',
-      createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+      createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
     };
   });
 };

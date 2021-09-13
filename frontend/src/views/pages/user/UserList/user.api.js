@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const getUser = createAsyncThunk('api/users', async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
+export const getUser = createAsyncThunk('api/users', async (params = { page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }, thunkAPI) => {
   try {
     const result = await axios.get('api/users', { params: params });
     return { data: result.data, total: result.headers['x-total-count'] };

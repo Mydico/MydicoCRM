@@ -32,7 +32,7 @@ const WidgetsDropdown = props => {
   }, [date])
 
   const getData = (startDate, endDate) => {
-    dispatch(getSumIncomeDashboard({ userId: account.id, startDate, endDate })).then(data => {
+    dispatch(getSumIncomeDashboard({ saleId: account.id, startDate, endDate })).then(data => {
       if (data && data.payload) {
 
         // setIncomePoint(memoizedGetPoint(data.payload));
@@ -44,7 +44,7 @@ const WidgetsDropdown = props => {
         setTotal(data.payload.count);
       }
     });
-    dispatch(getSumDebtDashboard({ userId: account.id, startDate, endDate })).then(data => {
+    dispatch(getSumDebtDashboard({ saleId: account.id, startDate, endDate })).then(data => {
       if (data && data.payload) {
         // setDebtPoint(memoizedGetPoint(data.payload));
         setDebt(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));

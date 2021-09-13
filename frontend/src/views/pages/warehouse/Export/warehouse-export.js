@@ -124,7 +124,7 @@ const WarehouseImport = props => {
         storeTransferName: item.storeTransferName || '',
         store: item.storeName || '',
         approverName: item.approverName || '',
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+        createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
       };
     });
   };

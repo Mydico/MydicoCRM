@@ -79,7 +79,7 @@ const computedItems = items => {
       sale: item.sale?.code || '',
       createdBy: item.createdBy || '',
       approver: item.approver?.login || '',
-      createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+      createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
     };
   });
 };
@@ -104,7 +104,7 @@ const computedExcelItems = items => {
       customer: item.customer?.name || '',
       sale: item.sale?.code || '',
       approver: item.approver?.login || '',
-      createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+      createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
       status: mappingStatus[item.status],
     };
   });

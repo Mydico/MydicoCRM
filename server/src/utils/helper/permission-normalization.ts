@@ -43,6 +43,7 @@ export const permissionDescriptionNormalize = (splitedEndpoint, isType) => {
 };
 
 export const queryBuilderFunc = (entity, filter = {}) => {
+  delete filter['dependency']
   let query = '';
   Object.keys(filter).forEach((key, index) => {
     if (key === 'startDate' || key === 'endDate') return;

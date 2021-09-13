@@ -6,9 +6,6 @@ import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import _ from 'lodash';
-
-import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
-import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getDepartmentReport, getTop10Customer, getTop10Product, getTop10sale } from './report.api';
 import { CChartBar, CChartDoughnut } from '@coreui/react-chartjs';
 import { getRandomColor } from '../../../shared/utils/helper';
@@ -17,7 +14,7 @@ import { getRandomColor } from '../../../shared/utils/helper';
 const DepartmentReport = () => {
   const dispatch = useDispatch();
 
-  const [filter, setFilter] = useState(null);
+  const [filter, setFilter] = useState({dependency: true});
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();
   const [departmentReport, setDepartmentReport] = useState([]);

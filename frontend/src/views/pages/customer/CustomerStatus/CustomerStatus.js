@@ -73,8 +73,6 @@ const CustomerStatus = props => {
     }
   };
 
-  const csvContent = customerStatuses.map(item => Object.values(item).join(',')).join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateCustomer = () => {
     history.push(`${props.match.url}/new`);
   };

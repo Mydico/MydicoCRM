@@ -58,7 +58,7 @@ const Report = () => {
   const branches = useSelector(selectAll);
   const users = useSelector(selectUserAll);
 
-  const [filter, setFilter] = useState({});
+  const [filter, setFilter] = useState({dependency: true});
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);

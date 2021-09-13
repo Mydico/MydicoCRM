@@ -56,7 +56,7 @@ const PromotionReport = () => {
   const users = useSelector(selectUserAll);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const [filter, setFilter] = useState({});
+  const [filter, setFilter] = useState({dependency: true});
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);

@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const getBranch = createAsyncThunk(
     'api/branches',
-    async (params = {page: 0, size: 50, sort: 'createdDate,DESC'}, thunkAPI) => {
+    async (params = {page: 0, size: 50, sort: 'createdDate,DESC', dependency: true}, thunkAPI) => {
       try {
         const result = await axios.get('api/branches', {params: params});
         return {data: result.data, total: result.headers['x-total-count']};

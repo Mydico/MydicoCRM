@@ -54,7 +54,7 @@ const Dashboard = () => {
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   const getData = (startDate, endDate) => {
-    dispatch(getIncomeDashboard({ userId: account.id, startDate, endDate })).then(data => {
+    dispatch(getIncomeDashboard({ saleId: account.id, startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         const sum = memoizedTransformData(data.payload).reduce((curr, prev) => {
           let sum = 0;
@@ -70,7 +70,7 @@ const Dashboard = () => {
         setIncomeTotal(sum);
       }
     });
-    dispatch(getDebtDashboard({ userId: account.id, startDate, endDate })).then(data => {
+    dispatch(getDebtDashboard({ saleId: account.id, startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         const sum = memoizedTransformData(data.payload).reduce(
           (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),

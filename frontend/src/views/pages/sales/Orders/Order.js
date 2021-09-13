@@ -104,7 +104,7 @@ const fields = [
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%', maxWidth: 200 }, filter: false },
   { key: 'total', label: 'Tiền Thanh toán', _style: { width: '10%' }, filter: false },
-  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'status', label: 'Trạng thái', filter: false },
   {
     key: 'action',
@@ -186,13 +186,15 @@ const Order = props => {
   }, [activePage, size]);
 
   const computedItems = items => {
+  
     return items.map(item => {
+      console.log(moment(item.createdDate).format('HH:mm DD-MM-YYYY'))
       return {
         ...item,
         customerName: item.customer?.name,
         createdBy: item.createdBy || '',
         quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+        createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
         total: Number(item.realMoney)?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''
       };
     });
@@ -209,8 +211,6 @@ const Order = props => {
     setDetails(newDetails);
   };
 
-  const csvContent = orders.map(item => Object.values(item).join(',')).join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
   const toCreateOrder = () => {
     const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     localStorage.setItem('params', JSON.stringify(params));
@@ -559,7 +559,7 @@ const Order = props => {
       return {
         ...item,
         order: (activePage - 1) * size + index + 1,
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY'),
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY HH:mm'),
         quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
         total: item.totalMoney,
         status: mappingStatus[item.status]
@@ -666,7 +666,7 @@ const Order = props => {
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </Td>
             ),
-            createdDate: item => <Td>{item.createdDate.substr(0, 10)}</Td>,
+            createdDate: item => <Td>{item.createdDate}</Td>,
 
             show_details: item => {
               return (
@@ -721,7 +721,7 @@ const Order = props => {
                         <div>Loại khách hàng: {item?.promotion?.customerType?.name}</div>
                       </CCol>
                     </CRow>
-                    <Table striped responsive>
+                    <Table striped="true" responsive="true">
                       <Thead>
                         <Tr>
                           <Th className="center">#</Th>

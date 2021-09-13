@@ -15,10 +15,7 @@ import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
-import {
-  getCustomerReport,
-  getCustomerSummaryReport,
-} from './report.api';
+import { getCustomerReport, getCustomerSummaryReport } from './report.api';
 
 moment.locale('vi');
 const controlStyles = {
@@ -56,7 +53,7 @@ const CustomerReport = () => {
   const users = useSelector(selectUserAll);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const [filter, setFilter] = useState({});
+  const [filter, setFilter] = useState({ dependency: true });
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);

@@ -71,8 +71,7 @@ const ProductBrand = props => {
         return 'primary';
     }
   };
-  const csvContent = productBrandss.map(item => Object.values(item).join(',')).join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
+
   const toCreateCustomer = () => {
     history.push(`${props.match.url}/new`);
   };
@@ -105,9 +104,7 @@ const ProductBrand = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CButton color="primary" className="mb-2" href={csvCode} download="customertypes.csv" target="_blank">
-          Tải excel (.csv)
-        </CButton>
+
         <CDataTable
           items={productBrandss}
           fields={fields}
