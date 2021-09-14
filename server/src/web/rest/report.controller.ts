@@ -59,6 +59,10 @@ export class ReportController {
       } else {
         departmentVisible.push(req.query['departmentId']);
       }
+      const isBranchManager = currentUser.roles.filter(item => item.authority === RoleType.BRANCH_MANAGER).length > 0;
+      if (isBranchManager) {
+        filter['branch'] = currentUser.branch.id;
+      }
       return res.send(await this.reportService.getOrderSaleReportForManager(departmentVisible, filter));
     } else {
       return res.send(await this.reportService.getOrderSaleReport(req.query['userId'], filter));
@@ -71,11 +75,8 @@ export class ReportController {
     description: 'List all records'
   })
   async getBest10ProductSale(@Req() req: Request, @Res() res): Promise<any> {
-    if (req.query['saleId']) {
-      return res.send(await this.reportService.getTop10BestSaleProduct(req.query['saleId']));
-    } else {
-      throw new HttpException('Không thể xử lý dữ liệu', HttpStatus.UNPROCESSABLE_ENTITY);
-    }
+    const filter = await this.buildFilter(req);
+    return res.send(await this.reportService.getTop10BestSaleProduct(filter));
   }
 
   @Get('/best-customer')
@@ -84,11 +85,8 @@ export class ReportController {
     description: 'List all records'
   })
   async getBest10Customer(@Req() req: Request, @Res() res): Promise<any> {
-    if (req.query['saleId']) {
-      return res.send(await this.reportService.getTop10BestCustomer(req.query['saleId']));
-    } else {
-      throw new HttpException('Không thể xử lý dữ liệu', HttpStatus.UNPROCESSABLE_ENTITY);
-    }
+    const filter = await this.buildFilter(req);
+    return res.send(await this.reportService.getTop10BestCustomer(filter));
   }
 
   @Get('/order')
@@ -97,20 +95,7 @@ export class ReportController {
     description: 'List all records'
   })
   async getOrder(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getOrderReport(filter));
   }
 
@@ -120,20 +105,7 @@ export class ReportController {
     description: 'List all records'
   })
   async getNewCustomer(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getNewCustomerReport(filter));
   }
 
@@ -143,20 +115,7 @@ export class ReportController {
     description: 'List all records'
   })
   async getDebt(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getDebt(filter));
   }
 
@@ -166,20 +125,8 @@ export class ReportController {
     description: 'List all records'
   })
   async getIncome(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
+    console.log(filter)
     return res.send(await this.reportService.getIncome(filter));
   }
 
@@ -189,20 +136,7 @@ export class ReportController {
     description: 'List all records'
   })
   async getDepartment(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getSaleReportByDepartment(filter));
   }
 
@@ -212,20 +146,7 @@ export class ReportController {
     description: 'List all records'
   })
   async getTop10sale(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getTop10Sale(filter));
   }
 
@@ -235,20 +156,7 @@ export class ReportController {
     description: 'List all records'
   })
   async getTop10product(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getTop10Product(filter));
   }
 
@@ -258,20 +166,7 @@ export class ReportController {
     description: 'List all records'
   })
   async getTop10customer(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getTop10Customer(filter));
   }
 
@@ -281,20 +176,7 @@ export class ReportController {
     description: 'List all records'
   })
   async countTotalProduct(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getSumProductQuantity(filter));
   }
 
@@ -304,20 +186,7 @@ export class ReportController {
     description: 'List all records'
   })
   async countTotalPriceProduct(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getSumIncomeForProductReport(filter));
   }
 
@@ -336,20 +205,7 @@ export class ReportController {
     delete req.query['page'];
     delete req.query['size'];
     delete req.query['sort'];
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getProductReport(options, filter));
   }
 
@@ -368,20 +224,7 @@ export class ReportController {
     delete req.query['page'];
     delete req.query['size'];
     delete req.query['sort'];
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getSaleReport(options, filter));
   }
 
@@ -391,20 +234,7 @@ export class ReportController {
     description: 'List all records'
   })
   async getSummarySaleReport(@Req() req: Request, @Res() res): Promise<any> {
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getSaleSummary(filter));
   }
 
@@ -423,20 +253,7 @@ export class ReportController {
     delete req.query['page'];
     delete req.query['size'];
     delete req.query['sort'];
-    const filter = {};
-    let departmentVisible: any = [];
-    const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
-    }
-    delete req.query['department'];
-    Object.keys(req.query).forEach(async key => {
-      filter[key] = req.query[key];
-    });
-    filter['department'] = departmentVisible;
+    const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getCustomerReport(options, filter));
   }
 
@@ -446,20 +263,106 @@ export class ReportController {
     description: 'List all records'
   })
   async getSummaryCustomerReport(@Req() req: Request, @Res() res): Promise<any> {
+    const filter = await this.buildFilterForReport(req);
+    return res.send(await this.reportService.getCustomerSummary(filter));
+  }
+
+  @Get('/promotion-report')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getPromotionReport(@Req() req: Request, @Res() res): Promise<any> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const options = {
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder()
+    };
+    delete req.query['page'];
+    delete req.query['size'];
+    delete req.query['sort'];
+    const filter = await this.buildFilterForReport(req);
+    return res.send(await this.reportService.getPromotionReport(options, filter));
+  }
+
+  // select count(*) from (select customerId from `order` group by customerId) as totals
+
+  @Get('/promotion-imcome-report')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getSummaryPromotionReport(@Req() req: Request, @Res() res): Promise<any> {
+    const filter = await this.buildFilterForReport(req);
+    return res.send(await this.reportService.getPromotionPrice(filter));
+  }
+
+  @Get('/promotion-customer-report')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getCustomerPromotionReport(@Req() req: Request, @Res() res): Promise<any> {
+    const filter = await this.buildFilterForReport(req);
+    return res.send(await this.reportService.getPromotionCustomer(filter));
+  }
+
+  async buildFilter(req): Promise<any> {
+    const filter = {};
+    Object.keys(req.query).forEach(item => {
+      if (item === 'saleId') {
+        filter['sale'] = req.query['saleId'];
+      } else {
+        filter[item] = req.query[item];
+      }
+    });
+    const currentUser = req.user as User;
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+
+    if (!isEmployee) {
+      let departmentVisible: any = [];
+
+      if (currentUser.department) {
+        departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        departmentVisible = departmentVisible.map(item => item.id);
+      } else {
+        departmentVisible.push(req.query['departmentId']);
+      }
+      filter['department'] = departmentVisible;
+      const isBranchManager = currentUser.roles.filter(item => item.authority === RoleType.BRANCH_MANAGER).length > 0;
+      if (isBranchManager) {
+        filter['branch'] = currentUser.branch.id;
+      }
+      delete filter['sale'];
+    }
+    return filter;
+  }
+
+  async buildFilterForReport(req): Promise<any> {
     const filter = {};
     let departmentVisible: any = [];
     const currentUser = req.user as User;
-    if (!req.query['department'] && currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    } else {
-      departmentVisible.push(req.query['department']);
+    const isBranchManager = currentUser.roles.filter(item => item.authority === RoleType.BRANCH_MANAGER).length > 0;
+    if (!isBranchManager) {
+      if (!req.query['department'] && currentUser.department) {
+        departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        departmentVisible = departmentVisible.map(item => item.id);
+      } else if (isBranchManager) {
+        departmentVisible.push(req.query['department']);
+      }
+    }else {
+      departmentVisible.push(currentUser.department.id);
     }
+
     delete req.query['department'];
     Object.keys(req.query).forEach(async key => {
       filter[key] = req.query[key];
     });
     filter['department'] = departmentVisible;
-    return res.send(await this.reportService.getCustomerSummary(filter));
+    if (isBranchManager) {
+      filter['branch'] = currentUser.branch.id;
+    }
+    return filter;
   }
 }

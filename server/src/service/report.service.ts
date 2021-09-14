@@ -169,7 +169,7 @@ export class ReportService {
   }
 
   async getOrderSaleReportForManager(departmentVisible: string[], filter = {}): Promise<any> {
-    let queryString = '';
+    let queryString = queryBuilderFunc('Order', filter);
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .select('COUNT(*)', 'count')
@@ -188,27 +188,32 @@ export class ReportService {
     }
     return await queryBuilder.getRawOne();
   }
-  async getTop10BestSaleProduct(saleId): Promise<any> {
+  async getTop10BestSaleProduct(filter): Promise<any> {
     // select sum(quantity), productId, p.code,p.name from order_details join product p on p.id = order_details.productId group by productId ORDER BY sum(quantity) DESC limit 10
-    const listCustomer = await this.orderRepository.find({
-      where: {
-        sale: saleId
-      },
-      cache: 3 * 3600
-    });
-    let andQueryString = '';
-    if (listCustomer.length > 0) {
-      andQueryString += ` OrderDetails.order IN ${JSON.stringify(listCustomer.map(item => item.id))
-        .replace('[', '(')
-        .replace(']', ')')}`;
+    let queryString = queryBuilderFunc('order', filter);
+    if (filter['saleId']) {
+      const listCustomer = await this.orderRepository.find({
+        where: {
+          sale: filter['saleId']
+        },
+        cache: 3 * 3600
+      });
+    
+      if (listCustomer.length > 0) {
+        queryString += ` AND OrderDetails.order IN ${JSON.stringify(listCustomer.map(item => item.id))
+          .replace('[', '(')
+          .replace(']', ')')}`;
+      }
     }
+
     const queryBuilder = this.orderDetailsRepository
       .createQueryBuilder('OrderDetails')
       .select(['product.code, product.name'])
       .addSelect('Sum(OrderDetails.quantity)', 'sum')
       .leftJoin('OrderDetails.product', 'product')
+      .leftJoin('OrderDetails.order', 'order')
       .groupBy('OrderDetails.productId')
-      .where(andQueryString)
+      .where(queryString)
       .cache(3 * 3600)
       .orderBy('sum(OrderDetails.quantity)', 'DESC')
       .limit(10);
@@ -216,25 +221,29 @@ export class ReportService {
   }
 
   //select c.code, c.contact_name, c.contact_name, sum(real_money) from `order` left join customer c on `order`.customerId = c.id where  customerId in (select id from customer where customer.saleId = 14) group by customerId order by sum(real_money) desc limit 10
-  async getTop10BestCustomer(saleId): Promise<any> {
-    const listCustomer = await this.customerRepository.find({
-      where: {
-        sale: saleId
-      },
-      cache: 3 * 3600
-    });
-    let andQueryString = '';
-    if (listCustomer.length > 0) {
-      andQueryString += ` Order.customer IN ${JSON.stringify(listCustomer.map(item => item.id))
-        .replace('[', '(')
-        .replace(']', ')')}`;
+  async getTop10BestCustomer(filter): Promise<any> {
+    let queryString = queryBuilderFunc('Order', filter);
+    if (filter['saleId']) {
+      const listCustomer = await this.customerRepository.find({
+        where: {
+          sale: filter['saleId']
+        },
+        cache: 3 * 3600
+      });
+      if (listCustomer.length > 0) {
+        queryString += ` Order.customer IN ${JSON.stringify(listCustomer.map(item => item.id))
+          .replace('[', '(')
+          .replace(']', ')')}`;
+      }
     }
+
+
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .select(['customer.code, customer.name'])
       .addSelect('Sum(Order.real_money)', 'sum')
       .leftJoin('Order.customer', 'customer')
-      .where(andQueryString)
+      .where(queryString)
       .cache(3 * 3600)
       .groupBy('Order.customer')
       .orderBy('sum(Order.real_money)', 'DESC')
@@ -294,7 +303,7 @@ export class ReportService {
 
     const count = await this.orderDetailsRepository
       .createQueryBuilder('OrderDetails')
-      .select('count(*)','count')
+      .select('count(*)', 'count')
       .where(queryString)
       .groupBy('OrderDetails.productId')
       .leftJoin('OrderDetails.order', 'order')
@@ -310,7 +319,7 @@ export class ReportService {
       .createQueryBuilder()
       .addSelect('SUM(Order.realMoney)', 'sum')
       .addSelect('SUM(Order.totalMoney)', 'count')
-      .from(Order,'Order')
+      .from(Order, 'Order')
       .where(queryString)
       .cache(3 * 3600);
     return await queryBuilder.getRawOne();
@@ -333,7 +342,7 @@ export class ReportService {
 
     const count = await this.orderRepository
       .createQueryBuilder('Order')
-      .select('count(*)','count')
+      .select('count(*)', 'count')
       .where(queryString)
       .groupBy('Order.saleId')
       .leftJoin('Order.sale', 'sale')
@@ -348,7 +357,7 @@ export class ReportService {
     const queryBuilder = this.customerRepository.manager.connection
       .createQueryBuilder()
       .addSelect('count(*)', 'count')
-      .from(Customer,'Customer')
+      .from(Customer, 'Customer')
       .where(queryString)
       .cache(3 * 3600);
     return await queryBuilder.getRawOne();
@@ -372,7 +381,7 @@ export class ReportService {
 
     const count = await this.orderRepository
       .createQueryBuilder('Order')
-      .select('count(*)','count')
+      .select('count(*)', 'count')
       .where(queryString)
       .groupBy('Order.customerId')
       .leftJoin('Order.customer', 'customer')
@@ -383,14 +392,31 @@ export class ReportService {
     return [result, count.length];
   }
 
-  async getPromotionSummary(filter): Promise<any> {
-    let queryString = queryBuilderFunc('Customer', filter);
-    const queryBuilder = this.customerRepository.manager.connection
-      .createQueryBuilder()
-      .addSelect('count(*)', 'count')
-      .from(Customer,'Customer')
+  async getPromotionPrice(filter): Promise<any> {
+    let queryString = queryBuilderFunc('Order', filter);
+    const queryBuilder = this.orderRepository
+      .createQueryBuilder('Order')
+      .select('sum(Order.realMoney)', 'sum')
       .where(queryString)
       .cache(3 * 3600);
+    return await queryBuilder.getRawOne();
+  }
+
+  //select count(*) from (select customerId from `order` group by customerId) as totals
+  async getPromotionCustomer(filter): Promise<any> {
+    let queryString = queryBuilderFunc('Order', filter);
+
+    const queryBuilder = this.customerRepository.manager.connection
+      .createQueryBuilder()
+      .select('count(*)', 'count')
+      .from(qb => {
+        return qb
+          .select('Order.customerId')
+          .from(Order, 'Order')
+          .where(queryString)
+          .groupBy('Order.customerId');
+      }, 'totals');
+    return await queryBuilder.getRawOne();
     return await queryBuilder.getRawOne();
   }
 
@@ -412,7 +438,7 @@ export class ReportService {
 
     const count = await this.orderRepository
       .createQueryBuilder('Order')
-      .select('count(*)','count')
+      .select('count(*)', 'count')
       .where(queryString)
       .groupBy('Order.customerId')
       .leftJoin('Order.customer', 'customer')

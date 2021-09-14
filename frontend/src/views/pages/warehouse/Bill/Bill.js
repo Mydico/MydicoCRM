@@ -159,7 +159,11 @@ const Bill = props => {
   const bills = useSelector(selectAll);
   const users = useSelector(selectUserAll);
   useEffect(() => {
-    dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    if (date.endDate && date.startDate) {
+      params = { ...params, ...date };
+    }
+    dispatch(getBill(params));
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
@@ -188,8 +192,7 @@ const Bill = props => {
     setDetails(newDetails);
   };
 
-  const csvContent = bills.map(item => Object.values(item).join(',')).join('\n');
-  const csvCode = 'data:text/csv;charset=utf-8,SEP=,%0A' + encodeURIComponent(csvContent);
+
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {

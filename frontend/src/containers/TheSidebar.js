@@ -1,5 +1,5 @@
-import React from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   CCreateElement,
   CSidebar,
@@ -7,18 +7,16 @@ import {
   CSidebarNav,
   CSidebarNavDivider,
   CSidebarNavTitle,
-
-
   CSidebarMinimizer,
   CSidebarNavDropdown,
-  CSidebarNavItem,
+  CSidebarNavItem
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 
 // sidebar nav config
 import navigation from './_nav';
-import {setSidebarShow} from '../App.reducer';
-const ReportMenu =   {
+import { setSidebarShow } from '../App.reducer';
+const ReportMenu = {
   _tag: 'CSidebarNavDropdown',
   name: 'Báo cáo',
   route: '/report',
@@ -27,50 +25,52 @@ const ReportMenu =   {
     {
       _tag: 'CSidebarNavItem',
       name: 'Tổng quan',
-      to: '/report',
+      to: '/report'
     },
     {
       _tag: 'CSidebarNavItem',
       name: 'Theo chi nhánh',
-      to: '/department-report',
+      to: '/department-report'
     },
     {
       _tag: 'CSidebarNavItem',
       name: 'Theo sản phẩm',
-      to: '/product-report',
+      to: '/product-report'
     },
     {
       _tag: 'CSidebarNavItem',
       name: 'Theo nhân viên',
-      to: '/sale-report',
+      to: '/sale-report'
     },
     {
       _tag: 'CSidebarNavItem',
       name: 'Theo khách hàng',
-      to: '/customer-report',
+      to: '/customer-report'
     },
     {
       _tag: 'CSidebarNavItem',
       name: 'Theo chương trình',
-      to: '/promotion-report',
-    },
-  ],
-}
+      to: '/promotion-report'
+    }
+  ]
+};
 const TheSidebar = () => {
   const dispatch = useDispatch();
-  const show = useSelector((state) => state.app.sidebarShow);
+  const show = useSelector(state => state.app.sidebarShow);
   const { account } = useSelector(state => state.authentication);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
-  const isManager = account.roles.filter(item => item.authority === 'MANAGER').length > 0;
-  if(isAdmin || isManager){
-    navigation.splice(1, 0, ReportMenu);
-
-  }
+  const isManager = account.roles.filter(item => item.authority.includes('MANAGER')).length > 0;
+  useEffect(() => {
+    if (isAdmin || isManager) {
+      if (navigation.filter(item => item.name == 'Báo cáo').length > 0) return;
+      navigation.splice(1, 0, ReportMenu);
+    }
+  }, [])
   return (
     <CSidebar
       show={show}
       unfoldable
-      onShowChange={(val) => {
+      onShowChange={val => {
         dispatch(setSidebarShow(val));
       }}
     >
@@ -85,7 +85,7 @@ const TheSidebar = () => {
             CSidebarNavDivider,
             CSidebarNavDropdown,
             CSidebarNavItem,
-            CSidebarNavTitle,
+            CSidebarNavTitle
           }}
         />
 

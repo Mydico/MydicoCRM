@@ -49,6 +49,8 @@ const fields = [
 const CustomerReport = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
+  const { account } = useSelector(state => state.authentication);
+
   const branches = useSelector(selectAll);
   const users = useSelector(selectUserAll);
   const [activePage, setActivePage] = useState(1);
@@ -153,8 +155,8 @@ const CustomerReport = () => {
         size: 50,
         sort: 'createdDate,DESC',
         code: value,
-        department: department?.id,
-        branch: branch?.id,
+        department: department?.id || account.department.id,
+        branch: branch?.id || account.branch.id,
         dependency: true
       })
     );

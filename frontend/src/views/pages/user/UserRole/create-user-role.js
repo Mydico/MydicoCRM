@@ -35,7 +35,8 @@ export const mappingStatus = {
 const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
 
 const mapping = {
-  MANAGER: 'Quản lý',
+  MANAGER: 'Quản lý chi nhánh',
+  BRANCH_MANAGER: 'Quản lý phòng ban',
   EMPLOYEE: 'Nhân viên'
 };
 const CreateRole = () => {
@@ -47,7 +48,8 @@ const CreateRole = () => {
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
   const [authorities, setAuthorities] = useState([
     { name: 'EMPLOYEE', label: 'Nhân viên' },
-    { name: 'MANAGER', label: 'Quản lý' }
+    { name: 'MANAGER', label: 'Quản lý chi nhánh' },
+    { name: 'BRANCH_MANAGER', label: 'Quản lý phòng ban' }
   ]);
   const initialValues = {
     name: ''

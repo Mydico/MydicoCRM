@@ -117,7 +117,11 @@ export class DebtDashboardController {
         departmentVisible.push(req.query['departmentId']);
       }
       where['departmentId'] = In(departmentVisible);
-      delete where['userId'];
+      const isBranchManager = currentUser.roles.filter(item => item.authority === RoleType.BRANCH_MANAGER).length > 0;
+      if(isBranchManager){
+        where['branchId'] = currentUser.branch.id
+      }
+      delete where['saleId'];
     }
 
     if (req.query.startDate && req.query.endDate) {

@@ -12,7 +12,7 @@ import _ from 'lodash';
 import ReportStatistic from '../../../views/components/report-statistic/ReportStatistic';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
 import { getBranch } from '../user/UserBranch/branch.api';
-import { getUser } from '../user/UserList/user.api';
+import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getTop10Customer, getTop10Product, getTop10sale } from './report.api';
@@ -55,6 +55,8 @@ const { selectAll: selectUserAll } = globalizedUserSelectors;
 const Report = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
+  const { account } = useSelector(state => state.authentication);
+
   const branches = useSelector(selectAll);
   const users = useSelector(selectUserAll);
 
@@ -141,13 +143,13 @@ const Report = () => {
 
   const debouncedSearchUser = _.debounce(value => {
     dispatch(
-      getUser({
+      getExactUser({
         page: 0,
         size: 50,
         sort: 'createdDate,DESC',
-        login: value,
-        firstName: value,
-        lastName: value,
+        code: value,
+        department: department?.id || account.department.id,
+        branch: branch?.id || account.branch.id,
         dependency: true
       })
     );

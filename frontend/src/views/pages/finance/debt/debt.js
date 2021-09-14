@@ -38,12 +38,12 @@ const fields = [
 const excelFields = [
   {
     key: 'order',
-    label: 'STT',
+    label: 'STT'
   },
   { key: 'customerCode', label: 'Mã khách hàng', _style: { width: '20%' } },
   { key: 'customerName', label: 'Tên khách hàng', _style: { width: '15%' } },
   { key: 'debt', label: 'Tổng nợ', _style: { width: '10%' }, filter: false },
-  { key: 'saleName', label: 'Nhân viên quản lý', _style: { width: '15%' } },
+  { key: 'saleName', label: 'Nhân viên quản lý', _style: { width: '15%' } }
 ];
 // const computedExcelItems = items => {
 //   return items.map((item, index) => {
@@ -96,7 +96,11 @@ const Debt = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getCustomerDebts({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    if (date.endDate && date.startDate) {
+      params = { ...params, ...date };
+    }
+    dispatch(getCustomerDebts(params));
     window.scrollTo(0, 100);
   }, [activePage, size]);
 

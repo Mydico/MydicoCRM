@@ -9,16 +9,16 @@ import moment from 'moment';
 import Select, { components } from 'react-select';
 import CIcon from '@coreui/icons-react';
 import _ from 'lodash';
-import ReportStatistic from '../../components/report-statistic/ReportStatistic';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
 import { getBranch } from '../user/UserBranch/branch.api';
-import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
-import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import {
   getCustomerReport,
-  getCustomerSummaryReport,
+  getPromotionCustomer,
+  getPromotionIncome,
 } from './report.api';
+import { getPromotion } from '../sales/Promotion/promotion.api';
+import { globalizedPromotionSelectors } from '../sales/Promotion/promotion.reducer';
 
 moment.locale('vi');
 const controlStyles = {
@@ -36,7 +36,7 @@ const ControlComponent = props => {
 };
 
 const { selectAll } = globalizedBranchSelectors;
-const { selectAll: selectUserAll } = globalizedUserSelectors;
+const { selectAll: selectPromotionAll } = globalizedPromotionSelectors;
 const fields = [
   {
     key: 'order',
@@ -52,8 +52,11 @@ const fields = [
 const PromotionReport = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
+  const { account } = useSelector(state => state.authentication);
+
   const branches = useSelector(selectAll);
-  const users = useSelector(selectUserAll);
+  const promotions = useSelector(selectPromotionAll);
+
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({dependency: true});
@@ -61,14 +64,14 @@ const PromotionReport = () => {
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
-  const [user, setUser] = useState(null);
+  const [promotion, setPromotion] = useState(null);
   const [top10Product, setTop10Product] = useState([]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(getBranch());
-    dispatch(getUser());
+    dispatch(getPromotion());
   }, []);
 
   useEffect(() => {
@@ -85,17 +88,16 @@ const PromotionReport = () => {
     delete filter['size'];
     delete filter['sort'];
 
-    dispatch(getCustomerSummaryReport(filter)).then(data => {
+    dispatch(getPromotionCustomer(filter)).then(data => {
       if (data && data.payload) {
         setNumOfProduct(data.payload.count);
-        // setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));
       }
     });
-    // dispatch(getProductReport(filter)).then(data => {
-    //   if (data && data.payload) {
-    //     setTop10Product(data.payload);
-    //   }
-    // });
+    dispatch(getPromotionIncome(filter)).then(data => {
+      if (data && data.payload) {
+        setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));
+      }
+    });
   };
 
   useEffect(() => {
@@ -125,17 +127,17 @@ const PromotionReport = () => {
   }, [branch]);
 
   useEffect(() => {
-    if (user) {
+    if (promotion) {
       setFilter({
         ...filter,
-        sale: user.id
+        promotion: promotion.id
       });
       getTop10({
         ...filter,
-        sale: user.id
+        promotion: promotion.id
       });
     }
-  }, [user]);
+  }, [promotion]);
 
   useEffect(() => {
     if (date.startDate && date.endDate) {
@@ -149,23 +151,21 @@ const PromotionReport = () => {
     }
   }, [date]);
 
-  const debouncedSearchUser = _.debounce(value => {
+  const debouncedSearchPromotion = _.debounce(value => {
     dispatch(
-      getExactUser({
+      getPromotion({
         page: 0,
         size: 50,
         sort: 'createdDate,DESC',
-        code: value,
-        department: department?.id,
-        branch: branch?.id,
+        name: value,
         dependency: true
       })
     );
   }, 300);
 
-  const onSearchUser = value => {
+  const onSearchPromotion = value => {
     if (value) {
-      debouncedSearchUser(value);
+      debouncedSearchPromotion(value);
     }
   };
 
@@ -244,23 +244,23 @@ const PromotionReport = () => {
               </CCol>
               <CCol sm={4} md={4}>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Nhân viên" /> }}
+                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Chương trình bán hàng" /> }}
                   isSearchable
                   name="user"
                   onChange={e => {
-                    setUser(e?.value || null);
+                    setPromotion(e?.value || null);
                   }}
                   value={{
-                    value: user,
-                    label: user?.code
+                    value: promotion,
+                    label: promotion?.name
                   }}
                   isClearable={true}
                   openMenuOnClick={false}
-                  onInputChange={onSearchUser}
-                  placeholder="Chọn Nhân viên"
-                  options={users.map(item => ({
+                  onInputChange={onSearchPromotion}
+                  placeholder="Chọn chương trình"
+                  options={promotions.map(item => ({
                     value: item,
-                    label: item.code
+                    label: item.name
                   }))}
                 />
               </CCol>
@@ -270,8 +270,8 @@ const PromotionReport = () => {
         <CRow sm={12} md={12}>
           <CCol sm="12" lg="12">
             <CWidgetBrand
-              // rightHeader={numOfPriceProduct}
-              // rightFooter="Doanh thu thuần"
+              rightHeader={numOfPriceProduct}
+              rightFooter="Doanh thu thuần"
               leftHeader={numOfProduct}
               leftFooter="Tổng khách hàng"
               color="gradient-primary"

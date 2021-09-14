@@ -65,6 +65,8 @@ export class DepartmentController {
   })
   async getAllChildTreeAndExternalByUser(@Req() req: Request, @Res() res): Promise<Department[]> {
     const currentUser = req.user as User;
+    const isBranchManager = currentUser.roles.filter(item => item.authority === RoleType.BRANCH_MANAGER).length > 0;
+    if(isBranchManager) return res.send([currentUser.department])
     return res.send(await this.departmentService.findAllFlatChild(currentUser.department));
   }
 

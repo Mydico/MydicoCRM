@@ -125,3 +125,27 @@ export const getCustomerSummaryReport = createAsyncThunk('api/reports/customer-s
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+export const getPromotionReport = createAsyncThunk('api/reports/promotion-report', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/promotion-report', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+export const getPromotionCustomer = createAsyncThunk('api/reports/customer-promotion', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/promotion-customer-report', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+export const getPromotionIncome = createAsyncThunk('api/reports/promotion-income-report', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/promotion-imcome-report', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

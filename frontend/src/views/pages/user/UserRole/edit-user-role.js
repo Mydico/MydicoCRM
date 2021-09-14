@@ -48,7 +48,8 @@ const EditUserRole = props => {
   const [initValues, setInitValues] = useState(null);
   const [authorities, setAuthorities] = useState([
     { name: 'EMPLOYEE', label: 'Nhân viên' },
-    { name: 'MANAGER', label: 'Quản lý' }
+    { name: 'MANAGER', label: 'Quản lý chi nhánh' },
+    { name: 'BRANCH_MANAGER', label: 'Quản lý phòng ban' }
   ]);
   useEffect(() => {
     setInitValues(userRoles);

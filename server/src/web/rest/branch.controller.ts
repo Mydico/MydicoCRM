@@ -20,6 +20,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import { User } from '../../domain/user.entity';
 
 @Controller('api/branches')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -40,6 +41,9 @@ export class BranchController {
     })
     async getAll(@Req() req: Request, @Res() res): Promise<Branch[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+        const currentUser = req.user as User;
+        const isBranchManager = currentUser.roles.filter(item => item.authority === RoleType.BRANCH_MANAGER).length > 0;
+        if(isBranchManager) return res.send([currentUser.branch]);
         const [results, count] = await this.branchService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,

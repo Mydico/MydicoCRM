@@ -5,5 +5,6 @@ export enum RoleType {
     ADMIN = 'ROLE_ADMIN',
     ANONYMOUS = 'ROLE_ANONYMOUS',
     MANAGER = 'MANAGER',
+    BRANCH_MANAGER = 'BRANCH_MANAGER',
     EMPLOYEE = 'EMPLOYEE'
 }

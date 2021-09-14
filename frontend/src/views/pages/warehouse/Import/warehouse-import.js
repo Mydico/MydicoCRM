@@ -159,7 +159,11 @@ const WarehouseImport = props => {
   }, []);
 
   useEffect(() => {
-    dispatch(getWarehouseImport({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    if (date.endDate && date.startDate) {
+      params = { ...params, ...date };
+    }
+    dispatch(getWarehouseImport(params));
     window.scrollTo(0, 100);
   }, [activePage, size]);
 

@@ -15,7 +15,8 @@ const mappingStatus = {
   DELETED: 'ĐÃ XÓA'
 };
 const mapping = {
-  MANAGER: 'Quản lý',
+  MANAGER: 'Quản lý chi nhánh',
+  BRANCH_MANAGER: 'Quản lý phòng ban',
   EMPLOYEE: 'Nhân viên'
 };
 const UserRole = props => {

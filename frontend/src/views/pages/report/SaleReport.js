@@ -15,10 +15,7 @@ import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
-import {
-  getSaleReport,
-  getSaleSummaryReport,
-} from './report.api';
+import { getSaleReport, getSaleSummaryReport } from './report.api';
 
 moment.locale('vi');
 const controlStyles = {
@@ -52,11 +49,13 @@ const fields = [
 const SaleReport = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
+  const { account } = useSelector(state => state.authentication);
+
   const branches = useSelector(selectAll);
   const users = useSelector(selectUserAll);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const [filter, setFilter] = useState({});
+  const [filter, setFilter] = useState({ dependency: true });
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
@@ -156,8 +155,8 @@ const SaleReport = () => {
         size: 50,
         sort: 'createdDate,DESC',
         code: value,
-        department: department?.id,
-        branch: branch?.id,
+        department: department?.id || account.department.id,
+        branch: branch?.id || account.branch.id,
         dependency: true
       })
     );

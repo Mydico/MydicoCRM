@@ -181,6 +181,9 @@ const Order = props => {
       setActivePage(params.page + 1);
       localStorage.removeItem('params');
     }
+    if (date.endDate && date.startDate) {
+      params = { ...params, ...date };
+    }
     dispatch(getOrder(params));
     window.scrollTo(0, 100);
   }, [activePage, size]);
@@ -188,7 +191,6 @@ const Order = props => {
   const computedItems = items => {
   
     return items.map(item => {
-      console.log(moment(item.createdDate).format('HH:mm DD-MM-YYYY'))
       return {
         ...item,
         customerName: item.customer?.name,

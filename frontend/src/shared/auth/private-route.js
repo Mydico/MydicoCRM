@@ -12,7 +12,7 @@ export const PrivateRouteComponent = ({ component: Component, ...rest }) => {
 
     const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
     const isWhiteList = whiteList.includes(props.location.pathname);
-    const isManager = account.roles.filter(item => item.authority === 'MANAGER').length > 0;
+    const isManager = account.roles.filter(item => item.authority.includes('MANAGER')).length > 0;
     const isHasPermission =
       isManager && props.location.pathname.includes('report') ||
       account.role.filter(item => item.method === 'GET' && item.entity.includes(props.location.pathname)).length > 0 ||
