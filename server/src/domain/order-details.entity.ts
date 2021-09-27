@@ -34,6 +34,10 @@ export default class OrderDetails extends BaseEntity {
     @Index()
     priceTotal: number;
 
+    @Column({ type: 'bigint', name: 'reduce', nullable: true })
+    @Index()
+    reduce: number;
+
     @Column({ type: 'float', name: 'reduce_percent', nullable: true })
     @Index()
     reducePercent: number;

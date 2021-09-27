@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CCardGroup } from '@coreui/react';
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CCardGroup, CLink } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
@@ -9,19 +9,16 @@ import _ from 'lodash';
 import { getDepartmentReport, getTop10Customer, getTop10Product, getTop10sale } from './report.api';
 import { CChartBar, CChartDoughnut } from '@coreui/react-chartjs';
 import { getRandomColor } from '../../../shared/utils/helper';
+import { useHistory } from 'react-router';
 
-
-const DepartmentReport = () => {
+const DepartmentReport = (props) => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const [filter, setFilter] = useState({dependency: true});
+  const [filter, setFilter] = useState({ dependency: true });
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();
   const [departmentReport, setDepartmentReport] = useState([]);
-
-  useEffect(() => {
-    getData();
-  }, []);
 
   const getData = filter => {
     dispatch(getDepartmentReport(filter)).then(data => {
@@ -48,6 +45,11 @@ const DepartmentReport = () => {
       getData(filter);
     }
   }, [filter]);
+
+  const onDetail = (department) => () => {
+    const href = `${props.match.url}/${department.department_id}/detail`;
+    history.push({ pathname: href,state: department })
+  }
 
   const memoDepartmentReport = React.useMemo(() => departmentReport, [departmentReport]);
 
@@ -77,9 +79,7 @@ const DepartmentReport = () => {
         </CCard>
         <CCardGroup columns className="cols-2">
           <CCard>
-            <CCardHeader>
-              Thống kê theo văn phòng
-            </CCardHeader>
+            <CCardHeader>Thống kê mã chi nhánh</CCardHeader>
             <CCardBody>
               <CChartBar
                 datasets={[
@@ -104,7 +104,7 @@ const DepartmentReport = () => {
               <CChartDoughnut
                 datasets={[
                   {
-                    backgroundColor:  memoDepartmentReport.map(item => getRandomColor()),
+                    backgroundColor: memoDepartmentReport.map(item => getRandomColor()),
                     data: memoDepartmentReport.map(item => item.sum)
                   }
                 ]}
@@ -128,20 +128,40 @@ const DepartmentReport = () => {
                 <tr>
                   <th>Mã nhân viên</th>
                   <th>Tên</th>
-                  <th>Doanh số</th>
+                  <th>Doanh thu</th>
+                  <th>Trả lại</th>
+                  <th>Doanh thu thuần</th>
+                  <th>Chiết khấu</th>
+                  <th>Số đơn hàng</th>
                 </tr>
               </thead>
               <tbody>
                 {memoDepartmentReport.map((item, index) => (
-                  <tr>
+                  <tr key={index}>
                     <td>
                       <div>{item.code}</div>
                     </td>
                     <td>
-                      <div>{item.name}</div>
+                      <div>
+                        <CLink onClick={onDetail(item)} target="_blank">
+                          {item.name}
+                        </CLink>
+                      </div>
+                    </td>
+                    <td>
+                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.total)}</div>
+                    </td>
+                    <td>
+                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
                     </td>
                     <td>
                       <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
+                    </td>
+                    <td>
+                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.reduce)}</div>
+                    </td>
+                    <td>
+                      <div>{item.count}</div>
                     </td>
                   </tr>
                 ))}

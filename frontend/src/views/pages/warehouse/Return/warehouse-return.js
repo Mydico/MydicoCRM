@@ -4,7 +4,7 @@ import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, 
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getWarehouseReturn, updateWarehouseStatusImport } from '../Import/warehouse-import.api.js';
-import { globalizedWarehouseImportSelectors, reset } from '../Import/warehouse-import.reducer.js';
+import { globalizedWarehouseImportSelectors, reset, fetching } from '../Import/warehouse-import.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { WarehouseImportStatus, WarehouseImportType } from './contants.js';
 import { confirmAlert } from 'react-confirm-alert'; // Import
@@ -178,11 +178,13 @@ const WarehouseImport = props => {
   };
 
   const rejectTicket = bill => () => {
+    dispatch(fetching());
     const data = { id: bill.id, status: WarehouseImportStatus.REJECTED, action: 'cancel' };
     dispatch(updateWarehouseStatusImport(data));
   };
 
   const approveTicket = bill => () => {
+    dispatch(fetching());
     const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, action: 'approve' };
     dispatch(updateWarehouseStatusImport(data));
   };
@@ -328,13 +330,7 @@ const WarehouseImport = props => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-
-
-
           onPaginationChange={val => setSize(val)}
-
-
-
           onColumnFilterChange={onFilterColumn}
           columnFilterSlot={{
             status: (

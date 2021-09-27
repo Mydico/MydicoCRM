@@ -4,6 +4,7 @@ import { Brackets, FindManyOptions, FindOneOptions, In } from 'typeorm';
 import Store from '../domain/store.entity';
 import { StoreRepository } from '../repository/store.repository';
 import { Request, Response } from 'express';
+import { generateCacheKey } from './utils/helperFunc';
 
 const relationshipNames = [];
 relationshipNames.push('department');
@@ -39,10 +40,8 @@ export class StoreService {
         .replace('[', '(')
         .replace(']', ')')}`;
     }
-    const cacheKeyBuilder = `get_Stores_department_${departmentVisible.join(',')}_endDate_${filter['endDate'] || ''}startDate${filter[
-      'startDate'
-    ] || ''}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Store.${Object.keys(options.order)[0] ||
-      'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+    const cacheKeyBuilder = generateCacheKey(departmentVisible, null, false, filter, options, 'store');
+
     const queryBuilder = this.storeRepository
       .createQueryBuilder('Store')
       .leftJoinAndSelect('Store.department', 'department')

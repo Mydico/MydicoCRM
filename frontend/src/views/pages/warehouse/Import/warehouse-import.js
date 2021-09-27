@@ -4,7 +4,7 @@ import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, 
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getWarehouseImport, updateWarehouseStatusImport } from './warehouse-import.api.js';
-import { globalizedWarehouseImportSelectors, reset } from './warehouse-import.reducer.js';
+import { globalizedWarehouseImportSelectors, reset, fetching } from './warehouse-import.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { WarehouseImportStatus, WarehouseImportType } from './contants.js';
 import { confirmAlert } from 'react-confirm-alert'; // Import
@@ -82,7 +82,7 @@ export const fieldsExcelWarehouse = [
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'approverName', label: 'Người duyệt', _style: { width: '10%' } },
-  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } }
 ];
 
 const getBadge = status => {
@@ -103,7 +103,7 @@ const computedItems = items => {
       ...item,
       approverName: item.approverName || '',
       storeTransferName: item.storeTransferName || '',
-      createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
+      createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY')
     };
   });
 };
@@ -124,10 +124,10 @@ const computedItems = items => {
 // ];
 
 export const computedExcelItemsWarehouse = items => {
-  return items.map((item,index) => {
+  return items.map((item, index) => {
     return {
       ...item,
-      order: index+1,
+      order: index + 1,
       approverName: item.approverName || '',
       storeTransferName: item.storeTransferName || '',
       status: mappingStatus[item.status],
@@ -146,7 +146,7 @@ const WarehouseImport = props => {
   const history = useHistory();
   const paramRef = useRef(null);
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
-
+  const [loadingIndex, setLoadingIndex] = useState(-1);
   useEffect(() => {
     if (date.endDate && date.startDate) {
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
@@ -194,7 +194,7 @@ const WarehouseImport = props => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
     }
   }, 300);
 
@@ -202,14 +202,14 @@ const WarehouseImport = props => {
     if (value) debouncedSearchColumn(value);
   };
 
-  const alertFunc = (item, message, operation) => {
+  const alertFunc = (item, index, message, operation) => {
     confirmAlert({
       title: 'Xác nhận',
       message: message,
       buttons: [
         {
           label: 'Đồng ý',
-          onClick: operation(item)
+          onClick: operation(item, index)
         },
         {
           label: 'Hủy'
@@ -218,17 +218,19 @@ const WarehouseImport = props => {
     });
   };
 
-  const rejectTicket = bill => () => {
+  const rejectTicket = (bill, index) => () => {
+    dispatch(fetching());
     const data = { id: bill.id, status: WarehouseImportStatus.REJECTED, action: 'cancel' };
     dispatch(updateWarehouseStatusImport(data));
   };
 
-  const approveTicket = bill => () => {
+  const approveTicket = (bill, index) => () => {
+    dispatch(fetching());
     const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, action: 'approve' };
     dispatch(updateWarehouseStatusImport(data));
   };
 
-  const renderButtonStatus = item => {
+  const renderButtonStatus = (item, index) => {
     switch (item.status) {
       case WarehouseImportStatus.APPROVED:
       case WarehouseImportStatus.REJECTED:
@@ -254,7 +256,7 @@ const WarehouseImport = props => {
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/approve').length > 0) && (
               <CButton
                 onClick={() => {
-                  alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu nhập kho này không', approveTicket);
+                  alertFunc(item, index, 'Bạn có chắc chắn muốn duyệt phiếu nhập kho này không', approveTicket);
                 }}
                 color="success"
                 variant="outline"
@@ -269,7 +271,7 @@ const WarehouseImport = props => {
               (isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/cancel').length > 0) && (
                 <CButton
                   onClick={() => {
-                    alertFunc(item, 'Bạn có chắc chắn muốn từ chối phiếu nhập kho này không', rejectTicket);
+                    alertFunc(item, index, 'Bạn có chắc chắn muốn từ chối phiếu nhập kho này không', rejectTicket);
                   }}
                   color="danger"
                   variant="outline"
@@ -289,7 +291,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getWarehouseImport(params));
       dispatch(reset());
     }
@@ -395,7 +397,7 @@ const WarehouseImport = props => {
               </td>
             ),
             type: item => <td>{mappingType[item.type]}</td>,
-            action: item => {
+            action: (item, index) => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
             },
             show_details: item => {

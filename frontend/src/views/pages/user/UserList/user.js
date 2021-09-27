@@ -177,13 +177,13 @@ const User = props => {
   };
 
   const toCreateUser = () => {
-    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
     localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/new`);
   };
 
   const toEditUser = userId => {
-    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
     localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/${userId}/edit`);
   };
@@ -193,7 +193,7 @@ const User = props => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value ,...date }));
     }
   }, 300);
 

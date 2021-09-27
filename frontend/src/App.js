@@ -44,7 +44,6 @@ export const App = () => {
   const [fade, setFade] = useState(true);
   const [toasts, setToasts] = useState([]);
   const history = useHistory();
-  console.log(history);
 
   useEffect(() => {
     dispatch(getSession());
@@ -61,27 +60,6 @@ export const App = () => {
       if (res.departmentVisible.includes(account.department.id)) {
         const params = { page: 0, size: 50, sort: 'createdDate,DESC' };
         dispatch(getOrder(params));
-        const toast = { position, autohide: autohide && autohideValue, closeButton, fade, content: '', data: {} };
-        if (
-          res.status === OrderStatus.WAITING &&
-          account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/approve').length > 0
-        ) {
-          toast.content = `Có đơn hàng mới. Mã ${res.code}. Vui lòng kiểm tra và duyệt đơn hàng`;
-        } else if (
-          res.status === OrderStatus.APPROVED &&
-          account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/create-cod').length > 0
-        ) {
-          toast.content = `Đơn hàng ${res.code} đã được duyệt. Vui lòng tạo vận đơn hoặc chỉnh sửa nếu cần`;
-        } else if (res.status === OrderStatus.CANCEL) {
-          toast.content = `Đơn hàng ${res.code} đã bị hủy`;
-        } else if (res.status === OrderStatus.DELETED) {
-          toast.content = `Đơn hàng ${res.code} đã được xóa`;
-        }
-        
-        if (toast.content.length > 0) {
-          toast.data = res
-          dispatch(setToatsList(toast));
-        }
       }
     }
   };
@@ -89,19 +67,6 @@ export const App = () => {
   const toOrder = () => {
     document.location.href = '/orders';
   };
-
-  useEffect(() => {
-    setToasts(toaster);
-  }, [toaster]);
-
-  const toasters = (() => {
-    const arr = toasts.length > 0 ? [toasts[toasts.length - 1]] : [];
-    return arr.reduce((toasters, toast) => {
-      toasters[toast.position] = toasters[toast.position] || [];
-      toasters[toast.position].push(toast);
-      return toasters;
-    }, {});
-  })();
 
   return (
     <BrowserRouter>
@@ -115,18 +80,6 @@ export const App = () => {
           <PrivateRoute path="/" component={TheLayout} />
         </Switch>
       </React.Suspense>
-      {Object.keys(toasters).map(toasterKey => (
-        <CToaster position={toasterKey} key={'toaster' + toasterKey} onClick={toOrder}>
-          {toasters[toasterKey].map((toast, key) => {
-            return (
-              <CToast color="primary" key={'toast' + key} show={true} autohide={toast.autohide} fade={toast.fade}>
-                <CToastHeader closeButton={toast.closeButton}>Thông báo</CToastHeader>
-                <CToastBody>{toast.content}</CToastBody>
-              </CToast>
-            );
-          })}
-        </CToaster>
-      ))}
     </BrowserRouter>
   );
 };

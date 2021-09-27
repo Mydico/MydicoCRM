@@ -2,22 +2,22 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { editSelfOrder, getOrder, updateStatusOrder } from './order.api';
-import { fetching, globalizedOrdersSelectors, reset } from './order.reducer';
+import { editSelfOrder, getOrder, updateStatusOrder } from '../sales/Orders/order.api';
+import { fetching, globalizedOrdersSelectors, reset } from '../sales/Orders/order.reducer';
 import { useHistory } from 'react-router-dom';
-import { OrderStatus } from './order-status';
+import { OrderStatus } from '../sales/Orders/order-status';
 import moment from 'moment';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import { userSafeSelector, addPermission } from '../../login/authenticate.reducer.js';
+import { userSafeSelector, addPermission } from '../login/authenticate.reducer.js';
 import _ from 'lodash';
 import { CFormGroup, CInput, CLabel, CTextarea } from '@coreui/react';
 import Select from 'react-select';
-import AdvancedTable from '../../../components/table/AdvancedTable';
-import { Td, Table, Thead, Th, Tr, Tbody } from '../../../components/super-responsive-table';
+import AdvancedTable from '../../components/table/AdvancedTable';
+import { Td, Table, Thead, Th, Tr, Tbody } from '../../components/super-responsive-table';
 import { useMediaQuery } from 'react-responsive';
-import Download from '../../../components/excel/DownloadExcel.js';
-import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
+import Download from '../../components/excel/DownloadExcel.js';
+import { memoizedGetCityName, memoizedGetDistrictName } from '../../../shared/utils/helper.js';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -105,13 +105,7 @@ const fields = [
   { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%', maxWidth: 200 }, filter: false },
   { key: 'total', label: 'Tiền Thanh toán', _style: { width: '10%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
-  { key: 'status', label: 'Trạng thái', filter: false },
-  {
-    key: 'action',
-    label: 'Hành động',
-    _style: { minWidth: 400 },
-    filter: false
-  }
+  { key: 'status', label: 'Trạng thái', filter: false }
 ];
 
 const excelFields = [
@@ -145,7 +139,7 @@ const getBadge = status => {
       return 'primary';
   }
 };
-const Order = props => {
+const OrderHistory = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.order);
   const [activePage, setActivePage] = useState(1);
@@ -163,7 +157,15 @@ const Order = props => {
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        saleId: props.match.params.id,
+        dependency: true,
+        ...paramRef.current,
+        ...date
+      };
       dispatch(getOrder(params));
     }
   }, [date]);
@@ -175,7 +177,14 @@ const Order = props => {
 
   useEffect(() => {
     const localParams = localStorage.getItem('params');
-    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    let params = {
+      page: activePage - 1,
+      size,
+      saleId: props.match.params.id,
+      dependency: true,
+      sort: 'createdDate,DESC',
+      ...paramRef.current
+    };
     if (localParams) {
       params = JSON.parse(localParams);
       setActivePage(params.page + 1);
@@ -189,7 +198,6 @@ const Order = props => {
   }, [activePage, size]);
 
   const computedItems = items => {
-  
     return items.map(item => {
       return {
         ...item,
@@ -213,19 +221,15 @@ const Order = props => {
     setDetails(newDetails);
   };
 
-  const toCreateOrder = () => {
-    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
-    localStorage.setItem('params', JSON.stringify(params));
-    history.push(`${props.match.url}/new`);
-  };
-
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
+      dispatch(
+        getOrder({ page: 0, size: size, saleId: props.match.params.id, dependency: true, sort: 'createdDate,DESC', ...value, ...date })
+      );
     }
   }, 300);
 
@@ -233,31 +237,24 @@ const Order = props => {
     if (value) debouncedSearchColumn(value);
   };
 
-  const toEditOrder = typeId => {
-    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
-    localStorage.setItem('params', JSON.stringify(params));
-    history.push(`${props.match.url}/${typeId}/edit`);
-  };
-
-  const toSeeBill = item => {
-    history.push({
-      pathname: `${props.match.url}/print`,
-      state: {
-        item
-      }
-    });
-  };
-
   useEffect(() => {
     if (initialState.updatingSuccess) {
       dispatch(reset());
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      const params = {
+        page: activePage - 1,
+        size,
+        saleId: props.match.params.id,
+        dependency: true,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        ...date
+      };
       dispatch(getOrder(params));
     }
   }, [initialState.updatingSuccess]);
 
   const approveOrder = order => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const newOrder = {
       id: order.id,
       status: OrderStatus.APPROVED,
@@ -268,7 +265,7 @@ const Order = props => {
   };
 
   const cancelOrder = order => {
-    dispatch(fetching())
+    dispatch(fetching());
     const newOrder = {
       id: order.id,
       status: OrderStatus.CANCEL,
@@ -285,7 +282,7 @@ const Order = props => {
   };
 
   const deleteOrder = order => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const newOrder = {
       id: order.id,
       status: OrderStatus.DELETED,
@@ -296,7 +293,7 @@ const Order = props => {
   };
 
   const createCodOrder = order => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const newOrder = {
       id: order.id,
       status: OrderStatus.CREATE_COD,
@@ -378,181 +375,181 @@ const Order = props => {
       ]
     });
   };
-  const renderButtonStatus = item => {
-    switch (item.status) {
-      case OrderStatus.WAITING:
-        return (
-          <CRow>
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/approve').length > 0) && (
-              <CButton
-                onClick={event => {
-                  event.stopPropagation();
-                  approveAlert(item);
-                }}
-                color="success"
-                variant="outline"
-                shape="square"
-                size="sm"
-                className="mr-1"
-              >
-                DUYỆT ĐƠN HÀNG
-              </CButton>
-            )}
-            {(isAdmin ||
-              item.createdBy === account.login ||
-              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
-              <CButton
-                onClick={event => {
-                  event.stopPropagation();
-                  cancelAlert(item);
-                }}
-                color="danger"
-                variant="outline"
-                shape="square"
-                size="sm"
-                className="mr-1"
-              >
-                HỦY ĐƠN HÀNG
-              </CButton>
-            )}
-            {(item.createdBy === account.login ||
-              isAdmin ||
-              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
-              <CButton
-                onClick={event => {
-                  event.stopPropagation();
-                  dispatch(addPermission({ method: 'PUT', entity: '/api/orders', isSelf: true }));
-                  toEditOrder(item.id);
-                }}
-                color="warning"
-                variant="outline"
-                shape="square"
-                className="mr-1"
-                size="sm"
-              >
-                <CIcon name="cil-pencil" />
-                CHỈNH SỬA
-              </CButton>
-            )}
-          </CRow>
-        );
-      case OrderStatus.APPROVED:
-        return (
-          <CRow>
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/create-cod').length > 0) && (
-              <CButton
-                onClick={event => {
-                  event.stopPropagation();
-                  codAlert(item);
-                }}
-                color="primary"
-                variant="outline"
-                shape="square"
-                size="sm"
-                className="mr-1"
-              >
-                TẠO VẬN ĐƠN
-              </CButton>
-            )}
-            {(isAdmin || account.branch?.allow) && (
-              <CButton
-                onClick={event => {
-                  event.stopPropagation();
-                  toEditOrder(item.id);
-                }}
-                color="warning"
-                variant="outline"
-                shape="square"
-                size="sm"
-                className="mr-1"
-              >
-                <CIcon name="cil-pencil" />
-                CHỈNH SỬA
-              </CButton>
-            )}
-            {(isAdmin || account.branch?.allow) && (
-              <CButton
-                onClick={event => {
-                  event.stopPropagation();
-                  cancelAlert(item);
-                }}
-                color="danger"
-                variant="outline"
-                shape="square"
-                size="sm"
-                className="mr-1"
-              >
-                HỦY ĐƠN HÀNG
-              </CButton>
-            )}
-          </CRow>
-        );
-      case OrderStatus.CREATE_COD:
-        return (
-          <CButton
-            color="info"
-            variant="outline"
-            shape="square"
-            size="sm"
-            onClick={event => {
-              event.stopPropagation();
-              toSeeBill(item);
-            }}
-          >
-            XEM VẬN ĐƠN
-          </CButton>
-        );
-      case OrderStatus.CANCEL:
-        return (
-          <CRow>
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders' && !rol.isSelf).length > 0) && (
-              <CButton
-                onClick={event => {
-                  event.stopPropagation();
-                  toEditOrder(item.id);
-                }}
-                color="warning"
-                variant="outline"
-                shape="square"
-                size="sm"
-                className="mr-1"
-              >
-                <CIcon name="cil-pencil" />
-                CHỈNH SỬA
-              </CButton>
-            )}
-            <CButton
-              onClick={event => {
-                event.stopPropagation();
-                deleteAlert(item);
-              }}
-              color="secondary"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              XÓA ĐƠN
-            </CButton>
-          </CRow>
-        );
-      default:
-        return (
-          <CButton
-            color="info"
-            variant="outline"
-            shape="square"
-            size="sm"
-            onClick={event => {
-              event.stopPropagation();
-              toSeeBill(item);
-            }}
-          >
-            XEM VẬN ĐƠN
-          </CButton>
-        );
-    }
-  };
+  //   const renderButtonStatus = item => {
+  //     switch (item.status) {
+  //       case OrderStatus.WAITING:
+  //         return (
+  //           <CRow>
+  //             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/approve').length > 0) && (
+  //               <CButton
+  //                 onClick={event => {
+  //                   event.stopPropagation();
+  //                   approveAlert(item);
+  //                 }}
+  //                 color="success"
+  //                 variant="outline"
+  //                 shape="square"
+  //                 size="sm"
+  //                 className="mr-1"
+  //               >
+  //                 DUYỆT ĐƠN HÀNG
+  //               </CButton>
+  //             )}
+  //             {(isAdmin ||
+  //               item.createdBy === account.login ||
+  //               account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
+  //               <CButton
+  //                 onClick={event => {
+  //                   event.stopPropagation();
+  //                   cancelAlert(item);
+  //                 }}
+  //                 color="danger"
+  //                 variant="outline"
+  //                 shape="square"
+  //                 size="sm"
+  //                 className="mr-1"
+  //               >
+  //                 HỦY ĐƠN HÀNG
+  //               </CButton>
+  //             )}
+  //             {(item.createdBy === account.login ||
+  //               isAdmin ||
+  //               account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
+  //               <CButton
+  //                 onClick={event => {
+  //                   event.stopPropagation();
+  //                   dispatch(addPermission({ method: 'PUT', entity: '/api/orders', isSelf: true }));
+  //                   toEditOrder(item.id);
+  //                 }}
+  //                 color="warning"
+  //                 variant="outline"
+  //                 shape="square"
+  //                 className="mr-1"
+  //                 size="sm"
+  //               >
+  //                 <CIcon name="cil-pencil" />
+  //                 CHỈNH SỬA
+  //               </CButton>
+  //             )}
+  //           </CRow>
+  //         );
+  //       case OrderStatus.APPROVED:
+  //         return (
+  //           <CRow>
+  //             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/create-cod').length > 0) && (
+  //               <CButton
+  //                 onClick={event => {
+  //                   event.stopPropagation();
+  //                   codAlert(item);
+  //                 }}
+  //                 color="primary"
+  //                 variant="outline"
+  //                 shape="square"
+  //                 size="sm"
+  //                 className="mr-1"
+  //               >
+  //                 TẠO VẬN ĐƠN
+  //               </CButton>
+  //             )}
+  //             {(isAdmin || account.branch?.allow) && (
+  //               <CButton
+  //                 onClick={event => {
+  //                   event.stopPropagation();
+  //                   toEditOrder(item.id);
+  //                 }}
+  //                 color="warning"
+  //                 variant="outline"
+  //                 shape="square"
+  //                 size="sm"
+  //                 className="mr-1"
+  //               >
+  //                 <CIcon name="cil-pencil" />
+  //                 CHỈNH SỬA
+  //               </CButton>
+  //             )}
+  //             {(isAdmin || account.branch?.allow) && (
+  //               <CButton
+  //                 onClick={event => {
+  //                   event.stopPropagation();
+  //                   cancelAlert(item);
+  //                 }}
+  //                 color="danger"
+  //                 variant="outline"
+  //                 shape="square"
+  //                 size="sm"
+  //                 className="mr-1"
+  //               >
+  //                 HỦY ĐƠN HÀNG
+  //               </CButton>
+  //             )}
+  //           </CRow>
+  //         );
+  //       case OrderStatus.CREATE_COD:
+  //         return (
+  //           <CButton
+  //             color="info"
+  //             variant="outline"
+  //             shape="square"
+  //             size="sm"
+  //             onClick={event => {
+  //               event.stopPropagation();
+  //               toSeeBill(item);
+  //             }}
+  //           >
+  //             XEM VẬN ĐƠN
+  //           </CButton>
+  //         );
+  //       case OrderStatus.CANCEL:
+  //         return (
+  //           <CRow>
+  //             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders' && !rol.isSelf).length > 0) && (
+  //               <CButton
+  //                 onClick={event => {
+  //                   event.stopPropagation();
+  //                   toEditOrder(item.id);
+  //                 }}
+  //                 color="warning"
+  //                 variant="outline"
+  //                 shape="square"
+  //                 size="sm"
+  //                 className="mr-1"
+  //               >
+  //                 <CIcon name="cil-pencil" />
+  //                 CHỈNH SỬA
+  //               </CButton>
+  //             )}
+  //             <CButton
+  //               onClick={event => {
+  //                 event.stopPropagation();
+  //                 deleteAlert(item);
+  //               }}
+  //               color="secondary"
+  //               variant="outline"
+  //               shape="square"
+  //               size="sm"
+  //               className="mr-1"
+  //             >
+  //               XÓA ĐƠN
+  //             </CButton>
+  //           </CRow>
+  //         );
+  //       default:
+  //         return (
+  //           <CButton
+  //             color="info"
+  //             variant="outline"
+  //             shape="square"
+  //             size="sm"
+  //             onClick={event => {
+  //               event.stopPropagation();
+  //               toSeeBill(item);
+  //             }}
+  //           >
+  //             XEM VẬN ĐƠN
+  //           </CButton>
+  //         );
+  //     }
+  //   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
@@ -571,7 +568,7 @@ const Order = props => {
         status: mappingStatus[item.status]
       };
     });
-  },[]);
+  }, []);
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(orders), [orders]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(orders), [orders]);
 
@@ -579,11 +576,6 @@ const Order = props => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách đơn hàng
-        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/orders').length > 0) && (
-          <CButton color="success" variant="outline" className="ml-3" onClick={toCreateOrder}>
-            <CIcon name="cil-plus" /> Thêm mới
-          </CButton>
-        )}
       </CCardHeader>
       <CCardBody>
         <Download data={memoExcelListed} headers={excelFields} name={'order'} />
@@ -690,13 +682,6 @@ const Order = props => {
                   >
                     <CIcon name="cilZoom" />
                   </CButton>
-                </Td>
-              );
-            },
-            action: item => {
-              return (
-                <Td className="py-2 d-flex flex-row" style={{ minHeight: 40, minWidth: isMobile ? 200 : 400 }}>
-                  {renderButtonStatus(item)}
                 </Td>
               );
             },
@@ -880,4 +865,4 @@ const Order = props => {
   );
 };
 
-export default Order;
+export default OrderHistory;

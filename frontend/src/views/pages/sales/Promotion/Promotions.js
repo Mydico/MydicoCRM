@@ -189,6 +189,7 @@ const Promotion = props => {
             noItems: 'Không có dữ liệu'
           }}
           // loading
+          loading={initialState.loading}
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{

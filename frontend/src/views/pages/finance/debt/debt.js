@@ -115,7 +115,7 @@ const Debt = props => {
       dispatch(getCustomerDebtsTotalDebit(value)).then(resp => {
         setTotal(Number(resp.payload.data.sum));
       });
-      dispatch(getCustomerDebts({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getCustomerDebts({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
     }
   }, 300);
 

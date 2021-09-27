@@ -3,7 +3,7 @@ import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, 
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCustomer, getCustomerStatus, getCustomerType } from '../customer.api.js';
+import { getCustomer, getCustomerStatus, getCustomerType, syncCustomer } from '../customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Td } from 'react-super-responsive-table';
@@ -111,6 +111,7 @@ const Customer = props => {
   const customers = useSelector(selectAll);
 
   useEffect(() => {
+    dispatch(syncCustomer())
     dispatch(reset());
     dispatch(getCustomerType({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));

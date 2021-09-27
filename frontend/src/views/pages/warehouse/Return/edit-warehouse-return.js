@@ -151,9 +151,12 @@ const EditWarehouseReturn = props => {
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
   }, 300);
 
-  const onSearchProduct = value => {
-    if (value) {
+  const onSearchProduct = (value, action) => {
+    if (action.action === "input-change" &&  value) {
       debouncedSearchProduct(value);
+    }
+    if (action.action === "input-blur") {
+      debouncedSearchProduct("");
     }
   };
 
@@ -172,8 +175,13 @@ const EditWarehouseReturn = props => {
     );
   }, 300);
 
-  const onSearchCustomer = value => {
-    debouncedSearchCustomer(value);
+  const onSearchCustomer = (value, action) => {
+    if (action.action === "input-change" &&  value) {
+      debouncedSearchCustomer(value);
+    }
+    if (action.action === "input-blur") {
+      debouncedSearchCustomer("");
+    }
   };
 
   const onChangeReducePercent = ({ target }, index) => {

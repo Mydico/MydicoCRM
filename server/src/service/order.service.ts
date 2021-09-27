@@ -20,6 +20,7 @@ import { CustomerService } from './customer.service';
 import { User } from '../domain/user.entity';
 import { EventsGateway } from '../module/provider/events.gateway';
 import { DepartmentService } from './department.service';
+import { generateCacheKey } from './utils/helperFunc';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -68,12 +69,10 @@ export class OrderService {
     isEmployee: boolean,
     currentUser: User
   ): Promise<[Order[], number]> {
-    let queryString = '';
-    Object.keys(filter).forEach((item, index) => {
-      if (item === 'endDate' || item === 'startDate' || item === 'status') return;
-      queryString += `Order.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
-    });
+    const cacheKeyBuilder = generateCacheKey(departmentVisible,currentUser,isEmployee,filter,options,'order');
+
     let andQueryString = '';
+    let queryString = '';
 
     if (departmentVisible.length > 0) {
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '} Order.department IN ${JSON.stringify(departmentVisible)
@@ -88,6 +87,13 @@ export class OrderService {
     if (filter['status']) {
       queryString += ` Order.status  = '${filter['status']}' `;
     }
+    delete filter['startDate']
+    delete filter['endDate']
+    delete filter['status']
+    Object.keys(filter).forEach((item, index) => {
+      queryString += `Order.${item} ${item === 'saleId' ? '=' :'like'}  ${item === 'saleId' ? filter[item] : '\'%'+filter[item]+'%\''}  ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+    });
+
     if (isEmployee) {
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.sale = ${currentUser.id}`;
     }
@@ -99,11 +105,7 @@ export class OrderService {
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '} Order.branch is NULL `;
     }
     andQueryString += ` AND Order.status <> 'DELETED'`;
-    const cacheKeyBuilder = `get_orders_department_${departmentVisible.join(',')}_branch_${
-      currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
-    }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Order.${Object.keys(
-      options.order
-    )[0] || 'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .leftJoinAndSelect('Order.customer', 'customer')

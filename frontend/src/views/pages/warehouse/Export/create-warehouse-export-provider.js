@@ -140,9 +140,12 @@ const CreateWarehouseExportProvider = () => {
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
   }, 300);
 
-  const onSearchProduct = value => {
-    if (value) {
+  const onSearchProduct = (value, action) => {
+    if (action.action === "input-change" &&  value) {
       debouncedSearchProduct(value);
+    }
+    if (action.action === "input-blur") {
+      debouncedSearchProduct("");
     }
   };
 

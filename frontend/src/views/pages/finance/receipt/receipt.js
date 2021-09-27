@@ -7,7 +7,7 @@ import { getReceipt, updateReceiptStatus } from './receipt.api.js';
 import { useHistory } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import { globalizedReceiptsSelectors, reset } from './receipt.reducer.js';
+import { fetching, globalizedReceiptsSelectors, reset } from './receipt.reducer.js';
 import { ReceiptStatus } from './constant.js';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
@@ -160,7 +160,7 @@ const Receipt = props => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
     }
   }, 300);
 
@@ -170,7 +170,7 @@ const Receipt = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current , ...date };
       dispatch(getReceipt(params));
       dispatch(reset());
     }
@@ -189,11 +189,13 @@ const Receipt = props => {
   };
 
   const rejectTicket = receipt => () => {
+    dispatch(fetching())
     const data = { id: receipt.id, status: ReceiptStatus.REJECTED, action: 'cancel' };
     dispatch(updateReceiptStatus(data));
   };
 
   const approveTicket = receipt => () => {
+    dispatch(fetching())
     const data = { id: receipt.id, status: ReceiptStatus.APPROVED, action: 'approve' };
     dispatch(updateReceiptStatus(data));
   };

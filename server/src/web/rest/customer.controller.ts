@@ -207,13 +207,7 @@ export class CustomerController {
     customer.branch = currentUser.branch;
     customer.sale = currentUser;
     customer.saleName = currentUser.login;
-    let departmentVisible: any = [];
-    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-    if (currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    }
-    const created = await this.customerService.save(customer, departmentVisible, isEmployee, currentUser);
+    const created = await this.customerService.save(customer);
     HeaderUtil.addEntityCreatedHeaders(res, 'Customer', created.id);
     return res.send(created);
   }
@@ -226,15 +220,8 @@ export class CustomerController {
     type: Customer
   })
   async put(@Req() req: Request, @Res() res: Response, @Body() customer: Customer): Promise<Response> {
-    const currentUser = req.user as User;
-    let departmentVisible: any = [];
-    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-    if (currentUser.department) {
-      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-      departmentVisible = departmentVisible.map(item => item.id);
-    }
     HeaderUtil.addEntityUpdatedHeaders(res, 'Customer', customer.id);
-    return res.send(await this.customerService.update(customer, departmentVisible, isEmployee, currentUser));
+    return res.send(await this.customerService.update(customer));
   }
 
   @Put('/many')
@@ -260,4 +247,18 @@ export class CustomerController {
     const toDelete = await this.customerService.findById(id);
     return await this.customerService.delete(toDelete);
   }
+
+  @Get('/sync')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 204,
+    description: 'The record has been successfully deleted.'
+  })
+  async sync(@Res() res: Response, @Param('id') id: string): Promise<Customer> {
+    HeaderUtil.addEntityDeletedHeaders(res, 'Customer', id);
+    await this.customerService.syncToFastwork();
+    return null;
+  }
+
+  
 }

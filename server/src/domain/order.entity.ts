@@ -12,6 +12,7 @@ import Bill from './bill.entity';
 import Department from './department.entity';
 import { User } from './user.entity';
 import Branch from './branch.entity';
+import StoreInput from './store-input.entity';
 
 /**
  * A Order.
@@ -48,6 +49,9 @@ export default class Order extends BaseEntity {
 
   @ManyToOne(type => Branch)
   branch?: Branch;
+
+  @ManyToOne(type => StoreInput)
+  storeInput?: StoreInput;
 
   @ManyToOne(type => PromotionItem, {  onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   promotionItem?: PromotionItem;

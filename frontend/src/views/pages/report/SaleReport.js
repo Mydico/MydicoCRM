@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CDataTable, CPagination } from '@coreui/react';
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CDataTable, CPagination, CLink } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
@@ -16,6 +16,8 @@ import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getSaleReport, getSaleSummaryReport } from './report.api';
+import Download from './../../components/excel/DownloadExcel';
+import { useHistory } from 'react-router';
 
 moment.locale('vi');
 const controlStyles = {
@@ -23,15 +25,6 @@ const controlStyles = {
   padding: '5px',
   color: 'black'
 };
-const ControlComponent = props => {
-  return (
-    <div style={controlStyles}>
-      {<p>{props.title}</p>}
-      <components.Control {...props} />
-    </div>
-  );
-};
-
 const { selectAll } = globalizedBranchSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
 const fields = [
@@ -43,13 +36,30 @@ const fields = [
   },
   { key: 'sale_code', label: 'Mã nhân viên', _style: { width: '10%' }, filter: false },
   { key: 'name', label: 'Tên', _style: { width: '10%' }, filter: false },
-  { key: 'realMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
-  { key: 'totalMoney', label: 'Doanh số', _style: { width: '15%' }, filter: false }
+  { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+  { key: 'reduce', label: 'Chiết khấu', _style: { width: '15%' }, filter: false },
+  { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
+  { key: 'totalMoney', label: 'Doanh thu ', _style: { width: '15%' }, filter: false }
 ];
-const SaleReport = () => {
+
+const excelFields = [
+  {
+    key: 'order',
+    label: 'STT',
+    filter: false
+  },
+  { key: 'sale_code', label: 'Mã nhân viên', _style: { width: '10%' }, filter: false },
+  { key: 'name', label: 'Tên', _style: { width: '10%' }, filter: false },
+  { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+  { key: 'reduce', label: 'Chiết khấu', _style: { width: '15%' }, filter: false },
+  { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
+  { key: 'totalMoney', label: 'Doanh thu ', _style: { width: '15%' }, filter: false }
+];
+const SaleReport = (props) => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
+  const history = useHistory();
 
   const branches = useSelector(selectAll);
   const users = useSelector(selectUserAll);
@@ -75,6 +85,16 @@ const SaleReport = () => {
   }, [activePage, size]);
 
   const getTop10 = filter => {
+    dispatch(
+      getExactUser({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        department: department?.id,
+        branch: branch?.id,
+        dependency: true
+      })
+    );
     dispatch(getSaleReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
       if (data && data.payload) {
         setTop10Product(data.payload);
@@ -103,20 +123,12 @@ const SaleReport = () => {
         ...filter,
         department: department.id
       });
-      getTop10({
-        ...filter,
-        department: department.id
-      });
     }
   }, [department]);
 
   useEffect(() => {
     if (branch) {
       setFilter({
-        ...filter,
-        branch: branch.id
-      });
-      getTop10({
         ...filter,
         branch: branch.id
       });
@@ -129,12 +141,12 @@ const SaleReport = () => {
         ...filter,
         sale: user.id
       });
-      getTop10({
-        ...filter,
-        sale: user.id
-      });
     }
   }, [user]);
+
+  useEffect(() => {
+    getTop10(filter);
+  }, [filter]);
 
   useEffect(() => {
     if (date.startDate && date.endDate) {
@@ -162,14 +174,34 @@ const SaleReport = () => {
     );
   }, 300);
 
-  const onSearchUser = value => {
-    if (value) {
+  const onSearchUser = (value, action) => {
+    if (action.action === 'input-change' && value) {
       debouncedSearchUser(value);
+    }
+    if (action.action === 'input-blur') {
+      debouncedSearchUser('');
     }
   };
 
-  // const memoTop10Sale = React.useMemo(() => top10Sale, [top10Sale]);
-  // const memoTop10Customer = React.useMemo(() => top10Customer, [top10Customer]);
+  const renderLink = item => {
+    return (
+      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-histories/${item.sale_id}` })} target="_blank">
+        {item.sale_code}
+      </CLink>
+    );
+  };
+
+  const computedExcelItems = React.useCallback(items => {
+    return items || [].map((item, index) => {
+      return {
+        ...item,
+        order: index + 1,
+      };
+    });
+  },[]); 
+
+  const memoExcelComputedItems = React.useCallback(items => computedExcelItems(top10Product[0]), [top10Product[0]]);
+  const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
   const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
 
   return (
@@ -199,8 +231,8 @@ const SaleReport = () => {
           <CCardBody>
             <CRow sm={12} md={12}>
               <CCol sm={4} md={4}>
+                <p>Chi nhánh</p>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Chi nhánh" /> }}
                   isSearchable
                   name="department"
                   onChange={e => {
@@ -220,12 +252,11 @@ const SaleReport = () => {
                 />
               </CCol>
               <CCol sm={4} md={4}>
+                <p>Phòng ban</p>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Phòng ban" /> }}
                   isSearchable
                   name="branch"
                   onChange={e => {
-                    console.log(e.value);
                     setBranch(e?.value || null);
                   }}
                   value={{
@@ -242,8 +273,8 @@ const SaleReport = () => {
                 />
               </CCol>
               <CCol sm={4} md={4}>
+                <p>Nhân viên</p>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Nhân viên" /> }}
                   isSearchable
                   name="user"
                   onChange={e => {
@@ -281,9 +312,11 @@ const SaleReport = () => {
         </CRow>
         <CCard>
           <CCardHeader>
-            <CCardTitle>Danh sách sản phẩm</CCardTitle>
+            <CCardTitle>Danh sách nhân viên</CCardTitle>
           </CCardHeader>
           <CCardBody>
+          <Download data={memoExcelListed} headers={excelFields} name={'product_report'} />
+
             <CDataTable
               items={memoTop10Product}
               fields={fields}
@@ -301,6 +334,12 @@ const SaleReport = () => {
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+                
+                sale_code: (item, index) => (
+                  <td>
+                    <div>{renderLink(item)}</div>
+                  </td>
+                ),
                 name: (item, index) => (
                   <td>
                     <div>{`${item.sale_lastName || ''} ${item.sale_firstName || ''}`}</div>
@@ -309,6 +348,16 @@ const SaleReport = () => {
                 realMoney: (item, index) => (
                   <td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
+                  </td>
+                ),
+                reduce: (item, index) => (
+                  <td>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.reduce)}</div>
+                  </td>
+                ),
+                return: (item, index) => (
+                  <td>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
                   </td>
                 ),
                 totalMoney: (item, index) => (

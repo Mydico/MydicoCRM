@@ -46,8 +46,8 @@ const fields = [
   },
   { key: 'customer_code', label: 'Mã nhân viên', _style: { width: '10%' }, filter: false },
   { key: 'customer_name', label: 'Tên', _style: { width: '10%' }, filter: false },
-  { key: 'realMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
-  { key: 'totalMoney', label: 'Doanh số', _style: { width: '15%' }, filter: false }
+  { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+  { key: 'totalMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false }
 ];
 const PromotionReport = () => {
   const dispatch = useDispatch();
@@ -106,10 +106,7 @@ const PromotionReport = () => {
         ...filter,
         department: department.id
       });
-      getTop10({
-        ...filter,
-        department: department.id
-      });
+
     }
   }, [department]);
 
@@ -119,10 +116,7 @@ const PromotionReport = () => {
         ...filter,
         branch: branch.id
       });
-      getTop10({
-        ...filter,
-        branch: branch.id
-      });
+
     }
   }, [branch]);
 
@@ -132,12 +126,13 @@ const PromotionReport = () => {
         ...filter,
         promotion: promotion.id
       });
-      getTop10({
-        ...filter,
-        promotion: promotion.id
-      });
+
     }
   }, [promotion]);
+
+  useEffect(() => {
+    getTop10(filter);
+  }, [filter]);
 
   useEffect(() => {
     if (date.startDate && date.endDate) {
@@ -163,9 +158,12 @@ const PromotionReport = () => {
     );
   }, 300);
 
-  const onSearchPromotion = value => {
-    if (value) {
+  const onSearchPromotion = (value, action) => {
+    if (action.action === "input-change" &&  value) {
       debouncedSearchPromotion(value);
+    }
+    if (action.action === "input-blur") {
+      debouncedSearchPromotion("");
     }
   };
 
@@ -200,8 +198,8 @@ const PromotionReport = () => {
           <CCardBody>
             <CRow sm={12} md={12}>
               <CCol sm={4} md={4}>
+                <p>Chi nhánh</p>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Chi nhánh" /> }}
                   isSearchable
                   name="department"
                   onChange={e => {
@@ -221,12 +219,11 @@ const PromotionReport = () => {
                 />
               </CCol>
               <CCol sm={4} md={4}>
+                <p>Phòng ban</p>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Phòng ban" /> }}
                   isSearchable
                   name="branch"
                   onChange={e => {
-                    console.log(e.value);
                     setBranch(e?.value || null);
                   }}
                   value={{

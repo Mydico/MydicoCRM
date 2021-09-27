@@ -104,9 +104,12 @@ const CreateWarehouse = () => {
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
   }, 300);
 
-  const onSearchProduct = value => {
-    if (value) {
+  const onSearchProduct = (value, action) => {
+    if (action.action === "input-change" &&  value) {
       debouncedSearchProduct(value);
+    }
+    if (action.action === "input-blur") {
+      debouncedSearchProduct("");
     }
   };
 
@@ -125,8 +128,13 @@ const CreateWarehouse = () => {
     );
   }, 300);
 
-  const onSearchCustomer = value => {
-    debouncedSearchCustomer(value);
+  const onSearchCustomer = (value, action) => {
+    if (action.action === "input-change" &&  value) {
+      debouncedSearchCustomer(value);
+    }
+    if (action.action === "input-blur") {
+      debouncedSearchCustomer("");
+    }
   };
 
   const onSelectCustomer = ({ value }) => {
@@ -323,7 +331,73 @@ const CreateWarehouse = () => {
                 </CRow>
               </CCardBody>
             </CCard>
+            <CCard className="card-accent-primary">
+              <CCardHeader>
+                <CCardTitle>Thông tin khách hàng</CCardTitle>
+              </CCardHeader>
 
+              <CCardBody>
+                <CFormGroup>
+                  <CRow className="mb-3">
+                    <CCol sm={8}>
+                      <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
+                      <Select
+                        name="customer"
+                        onInputChange={onSearchCustomer}
+                        onChange={item => {
+                          setFieldValue('customer', item.value);
+                          onSelectCustomer(item);
+                        }}
+                        options={customers.map(item => ({
+                          value: item,
+                          label: `[${item.code}] ${item.name} ${item.address}`
+                        }))}
+                      />
+                    </CCol>
+                  </CRow>
+                  <FormFeedback className="d-block">{errors.customer}</FormFeedback>
+                </CFormGroup>
+
+                <CRow>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Mã khách hàng:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.code}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Họ tên:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Số điện thoại:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.tel}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Chi nhánh:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.department?.name}</dd>
+                    </dl>
+                  </CCol>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Địa chỉ:</dt>
+                      <dd className="col-sm-9">{selectedCustomer?.address}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Thành phố:</dt>
+                      <dd className="col-sm-9">{memoizedGetCityName(selectedCustomer?.city)}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Quận huyện:</dt>
+                      <dd className="col-sm-9">{memoizedGetDistrictName(selectedCustomer?.district)}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Nhân viên phụ trách: </dt>
+                      <dd className="col-sm-9">{selectedCustomer?.sale?.login}</dd>
+                    </dl>
+                  </CCol>
+                </CRow>
+              </CCardBody>
+            </CCard>
             <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
               <CIcon name={'cilArrowCircleRight'} className="mr-2" />
               Thêm sản phẩm

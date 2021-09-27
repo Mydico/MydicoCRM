@@ -4,7 +4,7 @@ import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, 
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getWarehouseExport, updateWarehouseImport, updateWarehouseStatusImport } from '../Import/warehouse-import.api.js';
-import { globalizedWarehouseImportSelectors, reset } from '../Import/warehouse-import.reducer.js';
+import { fetching, globalizedWarehouseImportSelectors, reset } from '../Import/warehouse-import.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { WarehouseImportStatus, WarehouseImportType } from './contants.js';
 import { confirmAlert } from 'react-confirm-alert'; // Import
@@ -162,7 +162,7 @@ const WarehouseImport = props => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getWarehouseExport({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getWarehouseExport({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
     }
   }, 300);
 
@@ -187,11 +187,13 @@ const WarehouseImport = props => {
   };
 
   const rejectTicket = bill => () => {
+    dispatch(fetching())
     const data = { id: bill.id, status: WarehouseImportStatus.REJECTED, action: 'cancel' };
     dispatch(updateWarehouseStatusImport(data));
   };
 
   const approveTicket = bill => () => {
+    dispatch(fetching())
     const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, action: 'approve' };
     dispatch(updateWarehouseStatusImport(data));
   };
@@ -266,7 +268,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }; 
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date }; 
       dispatch(getWarehouseExport(params));
       dispatch(reset());
     }

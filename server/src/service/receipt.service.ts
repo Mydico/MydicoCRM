@@ -49,10 +49,7 @@ export class ReceiptService {
     currentUser: User
   ): Promise<[Receipt[], number]> {
     let queryString = '';
-    Object.keys(filter).forEach((item, index) => {
-      if (item === 'endDate' || item === 'startDate') return;
-      queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
-    });
+
     let andQueryString = '';
 
     if (departmentVisible.length > 0) {
@@ -73,7 +70,11 @@ export class ReceiptService {
     } else {
       andQueryString += ` ${andQueryString.length === 0? "":" AND "}  AND Receipt.branch is NULL `;
     }
-
+    delete filter['startDate']
+    delete filter['endDate']
+    Object.keys(filter).forEach((item, index) => {
+      queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+    });
     const queryBuilder = this.receiptRepository
       .createQueryBuilder('Receipt')
       .leftJoinAndSelect('Receipt.customer', 'customer')

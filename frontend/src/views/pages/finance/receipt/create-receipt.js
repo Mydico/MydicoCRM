@@ -106,8 +106,13 @@ const CreateReceipt = () => {
     );
   }, 300);
 
-  const onSearchCustomer = value => {
-    debouncedSearchCustomer(value);
+  const onSearchCustomer = (value, action) => {
+    if (action.action === "input-change" &&  value) {
+      debouncedSearchCustomer(value);
+    }
+    if (action.action === "input-blur") {
+      debouncedSearchCustomer("");
+    }
   };
 
   return (

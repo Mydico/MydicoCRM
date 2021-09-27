@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpService, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/domain/user.entity';
 import { TransactionRepository } from '../repository/transaction.repository';
@@ -7,9 +7,17 @@ import Customer from '../domain/customer.entity';
 import { CustomerRepository } from '../repository/customer.repository';
 import { DepartmentService } from './department.service';
 import { TransactionService } from './transaction.service';
-import { getDates } from './utils/helperFunc';
+import { generateCacheKey, getDates, memoizedGetDistrictName, memoizedGetCityName } from './utils/helperFunc';
 import { checkCodeContext } from './utils/normalizeString';
 import Transaction from '../domain/transaction.entity';
+import { OrderRepository } from '../repository/order.repository';
+import { ReceiptRepository } from '../repository/receipt.repository';
+import { StoreInputRepository } from '../repository/store-input.repository';
+import { BillRepository } from '../repository/bill.repository';
+import Receipt from '../domain/receipt.entity';
+import StoreInput from '../domain/store-input.entity';
+import Bill from '../domain/bill.entity';
+import Order from '../domain/order.entity';
 
 const relationshipNames = [];
 relationshipNames.push('status');
@@ -24,7 +32,12 @@ export class CustomerService {
 
   constructor(
     @InjectRepository(CustomerRepository) private customerRepository: CustomerRepository,
-    @InjectRepository(TransactionRepository) private transactionRepository: TransactionRepository
+    @InjectRepository(TransactionRepository) private transactionRepository: TransactionRepository,
+    @InjectRepository(TransactionRepository) private orderRepository: OrderRepository,
+    @InjectRepository(TransactionRepository) private receiptRepository: ReceiptRepository,
+    @InjectRepository(TransactionRepository) private storeInputRepository: StoreInputRepository,
+    @InjectRepository(TransactionRepository) private billRepository: BillRepository,
+    private httpService: HttpService
   ) {}
 
   async findById(id: string): Promise<Customer | undefined> {
@@ -109,11 +122,13 @@ export class CustomerService {
     if (filter['sale']) {
       andQueryString += ` AND Customer.sale = ${filter['sale']}`;
     }
-    const cacheKeyBuilder = `filter_customers_department_${JSON.stringify(departmentVisible)}_branch_${
-      currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
-    }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Customer.${Object.keys(
-      options.order
-    )[0] || 'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+    const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, filter, options, 'customer');
+
+    // const cacheKeyBuilder = `filter_customers_department_${JSON.stringify(departmentVisible)}_branch_${
+    //   currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
+    // }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Customer.${Object.keys(
+    //   options.order
+    // )[0] || 'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
 
     if (currentUser.branch) {
       if (!currentUser.branch.seeAll) {
@@ -202,12 +217,7 @@ export class CustomerService {
     if (isEmployee) {
       andQueryString += ` AND Customer.sale = ${currentUser.id}`;
     }
-
-    const cacheKeyBuilder = `get_customers_department_${andQueryString}_${JSON.stringify(departmentVisible)}_branch_${
-      currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
-    }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_Customer.${Object.keys(
-      options.order
-    )[0] || 'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+    const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, filter, options, 'customer');
 
     if (currentUser.branch) {
       if (!currentUser.branch.seeAll) {
@@ -256,9 +266,8 @@ export class CustomerService {
     return result;
   }
 
-  async save(customer: Customer, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Customer | undefined> {
-    const cacheKeyBuilder = `get_customers_department_${JSON.stringify(departmentVisible)}_sale_${isEmployee ? currentUser.id : -1}`;
-    await this.customerRepository.removeCache([cacheKeyBuilder, 'Customer']);
+  async save(customer: Customer): Promise<Customer | undefined> {
+    await this.customerRepository.removeCache(['customer']);
     if (customer.id) {
       const foundedCustomer = await this.customerRepository.findOne({
         code: customer.code
@@ -273,27 +282,107 @@ export class CustomerService {
       }
       const result = await this.customerRepository.save(tempCustomer);
       return result;
+    } else {
+      this.httpService.post('https://api.fastwork.vn:6001/v1/customer?tokenkey=fb5aef467aa3dabe6f079993df63fe78', {
+        customer_name: customer.name,
+        customer_address: customer.address,
+        customer_tel: customer.tel,
+        customer_email: '',
+        customer_note: '',
+        customer_city: memoizedGetCityName(customer.city),
+        customer_district: memoizedGetDistrictName(customer.district),
+        customer_type: customer.type.name,
+        customer_group: '',
+        customer_source: '',
+        customer_scale: '',
+        customer_field: '',
+        contact_name: customer.contactName,
+        contact_address: customer.address,
+        contact_tel: customer.tel,
+        contact_email: '',
+        contact_title: '',
+        contact_vocative: ''
+      });
     }
     const foundedCustomer = await this.customerRepository.find({
       code: Like(`%${customer.code}%`)
     });
     const newCustomer = checkCodeContext(customer, foundedCustomer);
+
     return await this.customerRepository.save(newCustomer);
   }
 
-  async update(customer: Customer, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Customer | undefined> {
+  async syncToFastwork() {
+    const foundedCustomer = await this.customerRepository.find({
+      relations: relationshipNames
+    });
+    const promise = foundedCustomer.forEach( async customer => {
+      const data = {
+        customer_name: customer.name,
+        customer_address: customer.address,
+        customer_tel: customer.tel,
+        customer_email: '',
+        customer_note: '',
+        customer_city: memoizedGetCityName(customer.city),
+        customer_district: memoizedGetDistrictName(customer.district),
+        customer_type: customer.type.name,
+        customer_group: '',
+        customer_source: '',
+        customer_scale: '',
+        customer_field: '',
+        customer_assign: [`${customer.sale.code}@mydico.vn`],
+        contact_name: customer.contactName,
+        contact_address: customer.address,
+        contact_tel: customer.tel,
+        contact_email: '',
+        contact_title: '',
+        contact_vocative: ''
+      };
+      const result = this.httpService.post('https://api.fastwork.vn:6010/v1/customer?tokenkey=fb5aef467aa3dabe6f079993df63fe78', data);
+      const resp = await result.toPromise();
+      console.log(resp)
+    });
+    // Promise.all(promise)
+    //   .then(resp => console.log(resp))
+    //   .catch(e => console.log(e));
+  }
+
+  async update(customer: Customer): Promise<Customer | undefined> {
     await this.transactionRepository
       .createQueryBuilder()
       .update(Transaction)
       .set({ customerCode: customer.code, customerName: customer.name })
       .where('customerId = :id', { id: customer.id })
       .execute();
-    return await this.save(customer, departmentVisible, isEmployee, currentUser);
+    await this.orderRepository
+      .createQueryBuilder()
+      .update(Order)
+      .set({ customerName: customer.name })
+      .where('customerId = :id', { id: customer.id })
+      .execute();
+    await this.billRepository
+      .createQueryBuilder()
+      .update(Bill)
+      .set({ customerName: customer.name })
+      .where('customerId = :id', { id: customer.id })
+      .execute();
+    await this.storeInputRepository
+      .createQueryBuilder()
+      .update(StoreInput)
+      .set({ customerName: customer.name })
+      .where('customerId = :id', { id: customer.id })
+      .execute();
+    await this.receiptRepository
+      .createQueryBuilder()
+      .update(Receipt)
+      .set({ customerName: customer.name })
+      .where('customerId = :id', { id: customer.id })
+      .execute();
+    return await this.save(customer);
   }
 
   async saveMany(customers: Customer[]): Promise<Customer[] | undefined> {
-    const cacheKeyBuilder = `get_customers_department`;
-    await this.customerRepository.removeCache([cacheKeyBuilder, 'Customer']);
+    await this.customerRepository.removeCache(['customer']);
     // select max(id) as ids from transaction where saleId in(4,1) group by saleId
     const getTransIds = this.transactionRepository
       .createQueryBuilder('Transaction')

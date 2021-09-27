@@ -49,12 +49,12 @@ export const queryBuilderFunc = (entity, filter = {}) => {
     if (key === 'startDate' || key === 'endDate') return;
     if (Array.isArray(filter[key])) {
       if (filter[key].length > 0) {
-        query += `${query.length === 0 ? '' : 'AND'} ${entity}.${key}Id IN ${JSON.stringify(filter[key])
+        query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${JSON.stringify(filter[key])
           .replace('[', '(')
           .replace(']', ')')}`;
       }
     } else {
-      query += `${query.length === 0 ? '' : 'AND'} ${entity}.${key}Id = ${filter[key]} `;
+      query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id = ${filter[key]} `;
     }
   });
   if (filter['endDate'] && filter['startDate']) {

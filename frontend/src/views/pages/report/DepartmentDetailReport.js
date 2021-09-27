@@ -11,67 +11,27 @@ import CIcon from '@coreui/icons-react';
 import _ from 'lodash';
 import ReportStatistic from '../../../views/components/report-statistic/ReportStatistic';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
-import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
-import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
-import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getTop10Customer, getTop10Product, getTop10sale } from './report.api';
 
 moment.locale('vi');
-const controlStyles = {
-  borderRadius: '1px solid black',
-  padding: '5px',
-  color: 'black'
-};
-const ControlComponent = props => {
-  return (
-    <div style={controlStyles}>
-      {<p>{props.title}</p>}
-      <components.Control {...props} />
-    </div>
-  );
-};
-const { selectAll } = globalizedBranchSelectors;
-const { selectAll: selectUserAll } = globalizedUserSelectors;
 
-const Report = () => {
+const DepartmentDetailReport = (props) => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
-  const { account } = useSelector(state => state.authentication);
-  const selectRef = React.useCallback(node => {
-    node.focus();
-  }, []);
 
-  const branches = useSelector(selectAll);
-  const users = useSelector(selectUserAll);
-
-  const [filter, setFilter] = useState({ dependency: true });
+  const [filter, setFilter] = useState({ dependency: true, department: props.match.params.id });
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();
-  const [branch, setBranch] = useState(null);
-  const [department, setDepartment] = useState(null);
-  const [user, setUser] = useState(null);
+  const [department, setDepartment] = useState(props.location.state);
   const [top10Sale, setTop10Sale] = useState([]);
   const [top10Customer, setTop10Customer] = useState([]);
   const [top10Product, setTop10Product] = useState([]);
   useEffect(() => {
-    dispatch(getChildTreeDepartmentByUser());
-    dispatch(getBranch());
-    dispatch(getUser());
-    getTop10();
+    getTop10(filter);
   }, []);
 
   const getTop10 = filter => {
-    dispatch(
-      getExactUser({
-        page: 0,
-        size: 50,
-        sort: 'createdDate,DESC',
-        department: department?.id,
-        branch: branch?.id,
-        dependency: true
-      })
-    );
     dispatch(getTop10sale(filter)).then(data => {
       if (data && Array.isArray(data.payload)) {
         setTop10Sale(data.payload);
@@ -90,38 +50,6 @@ const Report = () => {
   };
 
   useEffect(() => {
-    if (department) {
-      setFilter({
-        ...filter,
-        department: department.id
-      });
-    }
-  }, [department]);
-
-  useEffect(() => {
-    if (branch) {
-      setFilter({
-        ...filter,
-        branch: branch.id
-      });
-
-    }
-  }, [branch]);
-
-  useEffect(() => {
-    getTop10(filter);
-  }, [filter]);
-
-  useEffect(() => {
-    if (user) {
-      setFilter({
-        ...filter,
-        sale: user.id
-      });
-    }
-  }, [user]);
-
-  useEffect(() => {
     if (date.startDate && date.endDate) {
       setFilter({
         ...filter,
@@ -133,28 +61,6 @@ const Report = () => {
     }
   }, [date]);
 
-  const debouncedSearchUser = _.debounce(value => {
-    dispatch(
-      getExactUser({
-        page: 0,
-        size: 50,
-        sort: 'createdDate,DESC',
-        code: value,
-        department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
-        dependency: true
-      })
-    );
-  }, 300);
-
-  const onSearchUser = (value, action) => {
-    if (action.action === "input-change" &&  value) {
-      debouncedSearchUser(value);
-    }
-    if (action.action === "input-blur") {
-      debouncedSearchUser("");
-    }
-  };
 
   const memoTop10Sale = React.useMemo(() => top10Sale, [top10Sale]);
   const memoTop10Customer = React.useMemo(() => top10Customer, [top10Customer]);
@@ -164,7 +70,7 @@ const Report = () => {
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          {/* <CCardHeader>React-Dates</CCardHeader> */}
+          <CCardHeader><CCardTitle>{department?.name || ''}</CCardTitle></CCardHeader>
           <CCardBody>
             <DateRangePicker
               startDate={date.startDate}
@@ -201,54 +107,12 @@ const Report = () => {
                   }}
                   isClearable={true}
                   openMenuOnClick={false}
+                  isDisabled={true}
                   placeholder="Chọn Chi nhánh"
-                  options={initialState.allChild.map(item => ({
-                    value: item,
-                    label: item.name
-                  }))}
-                />
-              </CCol>
-              <CCol sm={4} md={4}>
-                <p>Phòng ban</p>
-                <Select
-                  isSearchable
-                  name="branch"
-                  onChange={e => {
-                    setBranch(e?.value || null);
-                  }}
-                  value={{
-                    value: branch,
-                    label: branch?.name
-                  }}
-                  isClearable={true}
-                  openMenuOnClick={false}
-                  placeholder="Chọn Phòng ban"
-                  options={branches.map(item => ({
-                    value: item,
-                    label: item.name
-                  }))}
-                />
-              </CCol>
-              <CCol sm={4} md={4}>
-                <p>Nhân viên</p>
-                <Select
-                  isSearchable
-                  name="user"
-                  onChange={e => {
-                    setUser(e?.value || null);
-                  }}
-                  value={{
-                    value: user,
-                    label: user?.code
-                  }}
-                  isClearable={true}
-                  openMenuOnClick={false}
-                  onInputChange={onSearchUser}
-                  placeholder="Chọn Nhân viên"
-                  options={users.map(item => ({
-                    value: item,
-                    label: item.code
-                  }))}
+                  // options={department?.map(item => ({
+                  //   value: item,
+                  //   label: item.name
+                  // }))}
                 />
               </CCol>
             </CRow>
@@ -353,4 +217,4 @@ const Report = () => {
   );
 };
 
-export default Report;
+export default DepartmentDetailReport;

@@ -11,6 +11,7 @@ import StoreInputDetails from './store-input-details.entity';
 import { StoreImportType } from './enumeration/store-import-type';
 import Provider from './provider.entity';
 import Department from './department.entity';
+import Order from './order.entity';
 
 /**
  * A StoreInput.
@@ -65,6 +66,9 @@ export default class StoreInput extends BaseEntity {
 
     @OneToMany(type => StoreInputDetails, other => other.storeInput)
     storeInputDetails? : StoreInputDetails[];
+
+    @OneToMany(type => Order, other => other.storeInput)
+    orders? : Order[];
 
     @ManyToOne(type => Store)
     store?: Store;

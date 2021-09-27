@@ -38,7 +38,7 @@ export class TransactionService {
     return await this.transactionRepository.findOne(options);
   }
 
-  async findManyByfields(options: FindOneOptions<Transaction>): Promise<[Transaction[] ,number]> {
+  async findManyByfields(options: FindOneOptions<Transaction>): Promise<[Transaction[], number]> {
     return await this.transactionRepository.findAndCount(options);
   }
 
@@ -49,12 +49,13 @@ export class TransactionService {
     allowToSeeAll: boolean,
     currentUser: User
   ): Promise<[Transaction[], number]> {
-    let queryString = '1=1 ';
-    Object.keys(filter).forEach((item, index) => {
-      if (item === 'endDate' || item === 'startDate') return;
-      const specialCharacter = filter[item].includes('_') ? filter[item].replace('_', '\\_') : filter[item];
-      queryString += `AND Transaction.${item} like '%${specialCharacter}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
-    });
+    let queryString = '1=1';
+    let andQueryString = '';
+    // Object.keys(filter).forEach((item, index) => {
+    //   if (item === 'endDate' || item === 'startDate') return;
+    //   const specialCharacter = filter[item].includes('_') ? filter[item].replace('_', '\\_') : filter[item];
+    //   queryString += `AND Transaction.${item} like '%${specialCharacter}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+    // });
 
     if (departmentVisible.length > 0) {
       queryString += ` AND Transaction.department IN ${JSON.stringify(departmentVisible)
@@ -76,11 +77,20 @@ export class TransactionService {
         }
       }
     }
+    delete filter['startDate'];
+    delete filter['endDate'];
+    Object.keys(filter).forEach((item, index) => {
+      const specialCharacter = filter[item].includes('_') ? filter[item].replace('_', '\\_') : filter[item];
+      andQueryString += ` Transaction.${item} like '%${specialCharacter}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+    });
     const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select('SUM(Transaction.total_money)-SUM(Transaction.collect_money)-SUM(Transaction.refund_money)', 'sum')
       .where(queryString);
 
+    if (andQueryString) {
+      queryBuilder.andWhere(andQueryString);
+    }
     return await queryBuilder.getRawOne();
   }
 
@@ -98,10 +108,6 @@ export class TransactionService {
     currentUser: User
   ): Promise<[Transaction[], number]> {
     let queryString = '';
-    Object.keys(filter).forEach((item, index) => {
-      if (item === 'endDate' || item === 'startDate') return;
-      queryString += `Transaction.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
-    });
     let andQueryString = ' ';
 
     if (departmentVisible.length > 0) {
@@ -124,7 +130,11 @@ export class TransactionService {
         }
       }
     }
-
+    delete filter['startDate'];
+    delete filter['endDate'];
+    Object.keys(filter).forEach((item, index) => {
+      queryString += ` Transaction.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : ' AND '}`;
+    });
     const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select(['Transaction.customerId, Transaction.customerName, Transaction.customerCode, Transaction.saleName'])

@@ -90,7 +90,7 @@ const CreateOrder = props => {
   const [isSelectProItem, setIsSelectProItem] = useState(false);
   const [showProductPromotion, setShowProductPromotion] = useState(false);
   useEffect(() => {
-    dispatch(getCustomer({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, saleId: account.id  }));
     dispatch(getWarehouse({ dependency: true }));
     const existOrder = localStorage.getItem('order');
     try {
@@ -138,8 +138,13 @@ const CreateOrder = props => {
     );
   }, 300);
 
-  const onSearchCustomer = value => {
-    debouncedSearchCustomer(value);
+  const onSearchCustomer = (value, action) => {
+    if (action.action === 'input-change' && value) {
+      debouncedSearchCustomer(value);
+    }
+    if (action.action === 'input-blur') {
+      debouncedSearchCustomer('');
+    }
   };
 
   const debouncedSearchPromotion = _.debounce(value => {
@@ -219,9 +224,10 @@ const CreateOrder = props => {
     };
     // copyArr[index].priceReal = Number(value.price);
     // copyArr[index].product = value;
-    if (selectedPromotion && selectedPromotion.type === 'LONGTERM') {
-      if (selectedPromotionItem) {
-        data.reducePercent = selectedPromotionItem.reducePercent;
+    if (selectedPromotionItem && selectedPromotion.type === 'LONGTERM') {
+      const founded = selectedPromotionItem.productGroup.filter(item => item.id === value.productGroup.id)
+      if(founded.length > 0){
+        data.reducePercent = selectedPromotionItem.reducePercent || 0;
       }
     }
     setProductList([...copyArr, data]);
@@ -283,7 +289,7 @@ const CreateOrder = props => {
     );
   }, 300);
 
-  const onSearchProduct = value => {
+  const onSearchProduct = (value, action) => {
     if (value) {
       debouncedSearchProduct(value);
     }
@@ -317,7 +323,10 @@ const CreateOrder = props => {
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = Number(target.value).toString();
-    copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
+    copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
+    copyArr[index].priceTotal =
+      copyArr[index].priceReal * copyArr[index].quantity -
+      (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     if (Array.isArray(promotionState.promotionProducts) && promotionState.promotionProducts.length > 0) {
       const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
       if (founded.length > 0) {
@@ -352,16 +361,20 @@ const CreateOrder = props => {
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].priceReal = Number(target.value.replace(/\D/g, ''));
-    copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
+    copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
+    copyArr[index].priceTotal =
+      copyArr[index].priceReal * copyArr[index].quantity -
+      (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     setProductList(copyArr);
   };
 
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = [...productList];
-    copyArr[index].reducePercent = target.value > 100 ? 100 : target.value === '' ? 0 : Number(target.value).toString();
+    copyArr[index].reducePercent = target.value === '' ? 0 : target.value > 100 ? 100 :  Number(target.value).toString();
+    copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     copyArr[index].priceTotal =
       copyArr[index].priceReal * copyArr[index].quantity -
-      (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
+      (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     setProductList(copyArr);
   };
 
@@ -514,7 +527,7 @@ const CreateOrder = props => {
                         <CLabel htmlFor="lastName">Chọn doanh số</CLabel>
                         <Select
                           onChange={item => {
-                            setSelectedPromotionItem(true);
+                            setSelectedPromotionItem(item.value);
                             setFieldValue('promotionItem', item.value);
                           }}
                           name="promotion"

@@ -126,7 +126,6 @@ export class ReportController {
   })
   async getIncome(@Req() req: Request, @Res() res): Promise<any> {
     const filter = await this.buildFilterForReport(req);
-    console.log(filter)
     return res.send(await this.reportService.getIncome(filter));
   }
 
@@ -264,7 +263,18 @@ export class ReportController {
   })
   async getSummaryCustomerReport(@Req() req: Request, @Res() res): Promise<any> {
     const filter = await this.buildFilterForReport(req);
+    if(filter['customer']) return res.send(null);
     return res.send(await this.reportService.getCustomerSummary(filter));
+  }
+
+  @Get('/customer-price-report')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getSummaryPriceReport(@Req() req: Request, @Res() res): Promise<any> {
+    const filter = await this.buildFilterForReport(req);
+    return res.send(await this.reportService.getCustomerPriceSummary(filter));
   }
 
   @Get('/promotion-report')
@@ -348,7 +358,7 @@ export class ReportController {
       if (!req.query['department'] && currentUser.department) {
         departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
         departmentVisible = departmentVisible.map(item => item.id);
-      } else if (isBranchManager) {
+      } else {
         departmentVisible.push(req.query['department']);
       }
     }else {

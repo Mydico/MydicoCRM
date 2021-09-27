@@ -72,9 +72,12 @@ const CreateDebt = () => {
     );
   }, 300);
 
-  const onSearchCustomer = value => {
-    if (value) {
+  const onSearchCustomer = (value, action) => {
+    if (action.action === "input-change" &&  value) {
       debouncedSearchCustomer(value);
+    }
+    if (action.action === "input-blur") {
+      debouncedSearchCustomer("");
     }
   };
 

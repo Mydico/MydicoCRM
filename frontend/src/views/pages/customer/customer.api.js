@@ -163,3 +163,11 @@ export const getBranches = createAsyncThunk('api/customer/branches', async (para
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+export const syncCustomer = createAsyncThunk('api/customer/sync', async (params = {page: 0, size: 20, sort: 'name,asc'}, thunkAPI) => {
+  try {
+    const result = await axios.get('api/customers/sync');
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

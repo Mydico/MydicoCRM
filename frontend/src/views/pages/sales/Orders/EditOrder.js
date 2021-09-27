@@ -229,14 +229,18 @@ const EditOrder = props => {
         size: 20,
         sort: 'createdDate,DESC',
         name: value,
+        code: value,
         dependency: true
       })
     );
   }, 300);
 
-  const onSearchProduct = value => {
-    if (value) {
+  const onSearchProduct = (value, action) => {
+    if (action.action === "input-change" &&  value) {
       debouncedSearchProduct(value);
+    }
+    if (action.action === "input-blur") {
+      debouncedSearchProduct("");
     }
   };
 

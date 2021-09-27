@@ -34,7 +34,7 @@ const fields = [
   },
   { key: 'storeName', label: 'Tên kho', _style: { width: '10%' } },
   { key: 'productName', label: 'Tên sản phẩm', _style: { width: '15%' } },
-  { key: 'volume', label: 'Dung tích', _style: { width: '15%' }, filter: false },
+  { key: 'volume', label: 'Dung tích', _style: { width: '15%' } },
   { key: 'type', label: 'Hình thức', _style: { width: '15%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false }

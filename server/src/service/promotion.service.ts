@@ -53,17 +53,19 @@ export class PromotionService {
     async save(promotion: Promotion): Promise<Promotion | undefined> {
         const saved = await this.promotionRepository.save(promotion);
         if (promotion.id) {
-            const productList = await this.promotionProductService.findManyByfields({ where: { promotion: saved.id } });
-            await this.promotionProductService.deleteMany(productList);
-            if (Array.isArray(promotion.promotionProduct)) {
-                const promoteProduct = promotion.promotionProduct.map(item => ({ ...item, promotion: saved }));
-                await this.promotionProductService.saveList(promoteProduct);
-            }
-            const promotionItemList = await this.promotionItemService.findManyByfields({ where: { promotion: saved.id } });
-            await this.promotionItemService.deleteMany(promotionItemList);
-            if (Array.isArray(promotion.promotionItems)) {
-                const promoteItems = promotion.promotionItems.map(item => ({ ...item, promotion: saved }));
-                await this.promotionItemService.saveList(promoteItems);
+            if(saved.type === PromotionType.SHORTTERM){
+                const productList = await this.promotionProductService.findManyByfields({ where: { promotion: saved.id } });
+                await this.promotionProductService.deleteMany(productList);
+                if (Array.isArray(promotion.promotionProduct)) {
+                    const promoteProduct = promotion.promotionProduct.map(item => ({ ...item, promotion: saved }));
+                    await this.promotionProductService.saveList(promoteProduct);
+                }
+            }else {
+                // const promotionItemList = await this.promotionItemService.findManyByfields({ where: { promotion: saved.id } });
+                // // await this.promotionItemService.deleteMany(promotionItemList);
+                if (Array.isArray(promotion.promotionItems) &&  promotion.promotionItems.length > 0) {
+                    await this.promotionItemService.saveList(promotion.promotionItems);
+                }
             }
         }
 

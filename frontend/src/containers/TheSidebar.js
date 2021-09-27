@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   CCreateElement,
@@ -12,9 +12,10 @@ import {
   CSidebarNavItem
 } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
+import { userSafeSelector } from '../views/pages/login/authenticate.reducer.js';
 
 // sidebar nav config
-import navigation from './_nav';
+import navigationList from './_nav';
 import { setSidebarShow } from '../App.reducer';
 const ReportMenu = {
   _tag: 'CSidebarNavDropdown',
@@ -57,15 +58,18 @@ const ReportMenu = {
 const TheSidebar = () => {
   const dispatch = useDispatch();
   const show = useSelector(state => state.app.sidebarShow);
-  const { account } = useSelector(state => state.authentication);
+  const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const isManager = account.roles.filter(item => item.authority.includes('MANAGER')).length > 0;
+  const [navigation, setNavigation] = useState(navigationList)
   useEffect(() => {
     if (isAdmin || isManager) {
       if (navigation.filter(item => item.name == 'Báo cáo').length > 0) return;
-      navigation.splice(1, 0, ReportMenu);
+      const copiedArr =[...navigation]
+      copiedArr.splice(1, 0, ReportMenu)
+      setNavigation(copiedArr);
     }
-  }, [])
+  }, [account])
   return (
     <CSidebar
       show={show}

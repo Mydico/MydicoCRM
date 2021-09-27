@@ -15,12 +15,8 @@ export class OrderDTO extends BaseDTO {
 
     customerId: number;
 
-    @MaxLength(255)
-
-    customerName: string;
 
     @MaxLength(255)
-
     customerTel: string;
 
 

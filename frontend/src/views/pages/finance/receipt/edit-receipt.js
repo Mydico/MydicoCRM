@@ -70,9 +70,14 @@ const EditReceipt = props => {
       );
     }, 300)
 
-  const onSearchCustomer = value => {
-    debouncedSearchCustomer(value);
-  };
+    const onSearchCustomer = (value, action) => {
+      if (action.action === "input-change" &&  value) {
+        debouncedSearchCustomer(value);
+      }
+      if (action.action === "input-blur") {
+        debouncedSearchCustomer("");
+      }
+    };
 
   useEffect(() => {
     dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));

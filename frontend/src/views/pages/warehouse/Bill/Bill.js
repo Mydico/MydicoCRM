@@ -20,7 +20,7 @@ import {
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBill, updateBill, updateTransporterBill } from './bill.api';
-import { globalizedBillsSelectors, reset } from './bill.reducer';
+import { fetching, globalizedBillsSelectors, reset } from './bill.reducer';
 import { useHistory } from 'react-router-dom';
 import { Table } from 'reactstrap';
 import { BillStatus } from './bill-status';
@@ -34,6 +34,7 @@ import { userSafeSelector } from '../../login/authenticate.reducer';
 import _ from 'lodash';
 import { CFormGroup, CInput } from '@coreui/react';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
+import { DateRangePicker } from 'react-dates';
 
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
@@ -136,12 +137,20 @@ const Bill = props => {
   const [modal, setModal] = useState(false);
   const paramRef = useRef(null);
   const dispatch = useDispatch();
+  const [focused, setFocused] = React.useState();
   const history = useHistory();
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
+      };
       dispatch(getBill(params));
     }
   }, [date]);
@@ -173,9 +182,7 @@ const Bill = props => {
         ...item,
         tel: item.customer?.tel,
         quantity: item.order?.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0) || 0,
-        total:
-          item.order? item.order.realMoney
-            .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) : 0,
+        total: item.order ? item.order.realMoney.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) : 0,
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
@@ -192,15 +199,13 @@ const Bill = props => {
     setDetails(newDetails);
   };
 
-
-
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getBill({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getBill({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
     }
   }, 300);
 
@@ -215,23 +220,26 @@ const Bill = props => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       setModal(false);
-      dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+      dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current, ...date }));
       window.scrollTo(0, 100);
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
 
   const approveBill = bill => () => {
+    dispatch(fetching())
     const data = { id: bill.id, status: BillStatus.APPROVED, action: 'approve', order: bill.order };
     dispatch(updateBill(data));
   };
 
   const rejectBill = bill => () => {
+    dispatch(fetching())
     const data = { id: bill.id, status: BillStatus.REJECTED, action: 'cancel', order: bill.order };
     dispatch(updateBill(data));
   };
 
   const shippingBill = bill => () => {
+    dispatch(fetching())
     dispatch(
       updateBill({
         id: bill.id,
@@ -243,6 +251,7 @@ const Bill = props => {
   };
 
   const successBill = bill => () => {
+    dispatch(fetching())
     dispatch(
       updateBill({
         id: bill.id,
@@ -259,6 +268,7 @@ const Bill = props => {
   };
 
   const deleteBill = bill => () => {
+    dispatch(fetching())
     const data = { id: bill.id, status: BillStatus.DELETED, action: 'delete', order: bill.order };
     dispatch(updateBill(data));
   };
@@ -470,9 +480,12 @@ const Bill = props => {
     );
   }, 300);
 
-  const onSearchUser = value => {
-    if (value) {
+  const onSearchUser = (value, action) => {
+    if (action.action === "input-change" &&  value) {
       debouncedSearchUser(value);
+    }
+    if (action.action === "input-blur") {
+      debouncedSearchUser("");
     }
   };
 
@@ -487,32 +500,78 @@ const Bill = props => {
           <CIcon name="cil-plus" /> Thêm mới
         </CButton> */}
       </CCardHeader>
+
       <CCardBody>
-        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+        <CCard>
+          <CCardBody>
+            <DateRangePicker
+              startDate={date.startDate}
+              minDate="01-01-2000"
+              startDateId="startDate"
+              endDate={date.endDate}
+              endDateId="endDate"
+              onDatesChange={value => setDate(value)}
+              focusedInput={focused}
+              isOutsideRange={() => false}
+              startDatePlaceholderText="Từ ngày"
+              endDatePlaceholderText="Đến ngày"
+              onFocusChange={focusedInput => setFocused(focusedInput)}
+              orientation="horizontal"
+              block={false}
+              openDirection="down"
+            />
+            {/* <CRow md="12" sm="12">
+              <CRow md="6" sm="6">
+                <CCol md="4" sm="4">
+                  <CCol md="4" sm="4">
+                    <CLabel htmlFor="date-input">Từ ngày</CLabel>
+                  </CCol>
+                  <CCol md="4" sm="4">
+                    <CInput
+                      type="date"
+                      id="date-input"
+                      onChange={e =>
+                        setDate({
+                          ...date,
+                          startDate: e.target.value
+                        })
+                      }
+                      name="date-input"
+                      placeholder="date"
+                    />
+                  </CCol>
+                </CCol>
+                <CCol md="6" sm="6">
+                  <CCol md="4" sm="4">
+                    <CLabel htmlFor="date-input">Đến ngày</CLabel>
+                  </CCol>
+                  <CCol md="4" sm="4">
+                    <CInput
+                      type="date"
+                      id="date-input"
+                      onChange={e =>
+                        setDate({
+                          ...date,
+                          startDate: e.target.value
+                        })
+                      }
+                      name="date-input"
+                      placeholder="date"
+                    />
+                  </CCol>
+                </CCol>
+              </CRow>
+              <CRow md="6" sm="6" />
+            </CRow> */}
+          </CCardBody>
+        </CCard>
+
+        {/* <CFormGroup row xs="6" md="6" lg="6" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>
               <CLabel htmlFor="date-input">Từ ngày</CLabel>
             </CCol>
-            <CCol xs="12" md="9" lg="12">
-              <CInput
-                type="date"
-                id="date-input"
-                onChange={e =>
-                  setDate({
-                    ...date,
-                    startDate: e.target.value
-                  })
-                }
-                name="date-input"
-                placeholder="date"
-              />
-            </CCol>
-          </CFormGroup>
-          <CFormGroup row className="ml-3">
-            <CCol>
-              <CLabel htmlFor="date-input">Đến ngày</CLabel>
-            </CCol>
-            <CCol xs="12" md="9" lg="12">
+            <CCol xs="3" md="3" lg="3">
               <CInput
                 type="date"
                 id="date-input"
@@ -527,7 +586,7 @@ const Bill = props => {
               />
             </CCol>
           </CFormGroup>
-        </CFormGroup>
+        </CFormGroup> */}
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -541,7 +600,7 @@ const Bill = props => {
             noItems: 'Không có dữ liệu'
           }}
           // loading
-
+          loading={initialState.loading}
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
           columnFilterSlot={{
@@ -604,7 +663,7 @@ const Bill = props => {
                         </div>
                         <div>{item?.customer?.address || ''}</div>
                         <div>{`${memoizedGetDistrictName(item?.customer?.district)}, ${memoizedGetCityName(item?.customer?.city)}`}</div>
-                        <div>Địa chỉ: {item?.customer?.tel || ''}</div>
+                        <div>Địa chỉ: {item?.customer?.address || ''}</div>
                         <div>Phone: {item?.customer?.tel || ''}</div>
                       </CCol>
                     </CRow>

@@ -15,7 +15,10 @@ import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
-import { getCustomerReport, getCustomerSummaryReport } from './report.api';
+import { getCustomerPriceReport, getCustomerReport, getCustomerSummaryReport } from './report.api';
+import { filterCustomerNotToStore } from '../customer/customer.api';
+import { getCustomerType } from '../customer/CustomerType/customer-type.api';
+import { globalizedcustomerTypeSelectors } from '../customer/CustomerType/customer-type.reducer';
 
 moment.locale('vi');
 const controlStyles = {
@@ -32,8 +35,7 @@ const ControlComponent = props => {
   );
 };
 
-const { selectAll } = globalizedBranchSelectors;
-const { selectAll: selectUserAll } = globalizedUserSelectors;
+
 const fields = [
   {
     key: 'order',
@@ -41,11 +43,17 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
-  { key: 'customer_code', label: 'Mã nhân viên', _style: { width: '10%' }, filter: false },
+  { key: 'customer_code', label: 'Mã khách hàng', _style: { width: '10%' }, filter: false },
   { key: 'customer_name', label: 'Tên', _style: { width: '10%' }, filter: false },
-  { key: 'realMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
-  { key: 'totalMoney', label: 'Doanh số', _style: { width: '15%' }, filter: false }
+  { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+  { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
+  { key: 'debt', label: 'Công nợ', _style: { width: '15%' }, filter: false },
+  { key: 'totalMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false }
 ];
+
+const { selectAll } = globalizedBranchSelectors;
+const { selectAll: selectUserAll } = globalizedUserSelectors;
+const { selectAll: selectCustomerTypeAll } = globalizedcustomerTypeSelectors;
 const CustomerReport = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
@@ -53,6 +61,7 @@ const CustomerReport = () => {
 
   const branches = useSelector(selectAll);
   const users = useSelector(selectUserAll);
+  const userTypes = useSelector(selectCustomerTypeAll);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({ dependency: true });
@@ -60,14 +69,33 @@ const CustomerReport = () => {
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
+  const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
+  const [customer, setCustomer] = useState(null);
   const [top10Product, setTop10Product] = useState([]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
+  const [filteredCustomer, setFilteredCustomer] = useState([]);
+
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(getBranch());
     dispatch(getUser());
+    dispatch(getCustomerType());
+    dispatch(
+      filterCustomerNotToStore({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        department: department?.id || account.department.id,
+        branch: branch?.id || account.branch.id,
+        dependency: true
+      })
+    ).then(resp => {
+      if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
+        setFilteredCustomer(resp.payload.data);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -75,6 +103,16 @@ const CustomerReport = () => {
   }, [activePage, size]);
 
   const getTop10 = filter => {
+    dispatch(
+      getExactUser({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        department: department?.id,
+        branch: branch?.id,
+        dependency: true
+      })
+    );
     dispatch(getCustomerReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
       if (data && data.payload) {
         setTop10Product(data.payload);
@@ -85,25 +123,20 @@ const CustomerReport = () => {
     delete filter['sort'];
 
     dispatch(getCustomerSummaryReport(filter)).then(data => {
-      if (data && data.payload) {
-        setNumOfProduct(data.payload.count);
-        // setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));
+      if (data) {
+        setNumOfProduct(data.payload?.count || 0);
       }
     });
-    // dispatch(getProductReport(filter)).then(data => {
-    //   if (data && data.payload) {
-    //     setTop10Product(data.payload);
-    //   }
-    // });
+    dispatch(getCustomerPriceReport(filter)).then(data => {
+      if (data) {
+        setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.realMoney || 0));
+      }
+    });
   };
 
   useEffect(() => {
     if (department) {
       setFilter({
-        ...filter,
-        department: department.id
-      });
-      getTop10({
         ...filter,
         department: department.id
       });
@@ -116,10 +149,6 @@ const CustomerReport = () => {
         ...filter,
         branch: branch.id
       });
-      getTop10({
-        ...filter,
-        branch: branch.id
-      });
     }
   }, [branch]);
 
@@ -129,12 +158,32 @@ const CustomerReport = () => {
         ...filter,
         sale: user.id
       });
-      getTop10({
-        ...filter,
-        sale: user.id
-      });
     }
   }, [user]);
+
+  useEffect(() => {
+    if (customer) {
+      setFilter({
+        ...filter,
+        customer: customer.id
+      });
+    }
+  }, [customer]);
+
+  useEffect(() => {
+    if (userType) {
+      setFilter({
+        ...filter,
+        type: userType.id
+      });
+    }
+  }, [userType]);
+
+  useEffect(() => {
+    if(Object.keys(filter).length > 1){
+      getTop10(filter);
+    }
+  }, [filter]);
 
   useEffect(() => {
     if (date.startDate && date.endDate) {
@@ -162,9 +211,40 @@ const CustomerReport = () => {
     );
   }, 300);
 
-  const onSearchUser = value => {
-    if (value) {
+  const onSearchUser = (value, action) => {
+    if (action.action === 'input-change' && value) {
       debouncedSearchUser(value);
+    }
+    if (action.action === 'input-blur') {
+      debouncedSearchUser('');
+    }
+  };
+
+  const debouncedSearchCustomer = _.debounce(value => {
+    dispatch(
+      filterCustomerNotToStore({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        code: value,
+        address: value,
+        department: department?.id || account.department.id,
+        branch: branch?.id || account.branch.id,
+        dependency: true
+      })
+    ).then(resp => {
+      if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
+        setFilteredCustomer(resp.payload.data);
+      }
+    });
+  }, 300);
+
+  const onSearchCustomer = (value, action) => {
+    if (action.action === 'input-change' && value) {
+      debouncedSearchCustomer(value);
+    }
+    if (action.action === 'input-blur') {
+      debouncedSearchCustomer('');
     }
   };
 
@@ -198,9 +278,9 @@ const CustomerReport = () => {
         <CCard>
           <CCardBody>
             <CRow sm={12} md={12}>
-              <CCol sm={4} md={4}>
+              <CCol sm={3} md={3}>
+                <p>Chi nhánh</p>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Chi nhánh" /> }}
                   isSearchable
                   name="department"
                   onChange={e => {
@@ -219,13 +299,12 @@ const CustomerReport = () => {
                   }))}
                 />
               </CCol>
-              <CCol sm={4} md={4}>
+              <CCol sm={3} md={3}>
+                <p>Phòng ban</p>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Phòng ban" /> }}
                   isSearchable
                   name="branch"
                   onChange={e => {
-                    console.log(e.value);
                     setBranch(e?.value || null);
                   }}
                   value={{
@@ -241,9 +320,9 @@ const CustomerReport = () => {
                   }))}
                 />
               </CCol>
-              <CCol sm={4} md={4}>
+              <CCol sm={3} md={3}>
+                <p>Nhân viên</p>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Nhân viên" /> }}
                   isSearchable
                   name="user"
                   onChange={e => {
@@ -263,14 +342,59 @@ const CustomerReport = () => {
                   }))}
                 />
               </CCol>
+              <CCol sm={3} md={3}>
+                <Select
+                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Khách hàng" /> }}
+                  isSearchable
+                  name="user"
+                  onChange={e => {
+                    setCustomer(e?.value || null);
+                  }}
+                  value={{
+                    value: user,
+                    label: user?.code
+                  }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  onInputChange={onSearchCustomer}
+                  placeholder="Chọn khách hàng"
+                  options={filteredCustomer.map(item => ({
+                    value: item,
+                    label: item.code
+                  }))}
+                />
+              </CCol>
+            </CRow>
+            <CRow sm={12} md={12}>
+              <CCol sm={3} md={3}>
+                <p>Loại khách hàng</p>
+                <Select
+                  isSearchable
+                  name="userType"
+                  onChange={e => {
+                    setUserType(e?.value || null);
+                  }}
+                  value={{
+                    value: userType,
+                    label: userType?.name
+                  }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  placeholder="Chọn khách hàng"
+                  options={userTypes.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
+              </CCol>
             </CRow>
           </CCardBody>
         </CCard>
         <CRow sm={12} md={12}>
           <CCol sm="12" lg="12">
             <CWidgetBrand
-              // rightHeader={numOfPriceProduct}
-              // rightFooter="Doanh thu thuần"
+              rightHeader={numOfPriceProduct}
+              rightFooter="Doanh thu thuần"
               leftHeader={numOfProduct}
               leftFooter="Tổng khách hàng"
               color="gradient-primary"
@@ -281,7 +405,7 @@ const CustomerReport = () => {
         </CRow>
         <CCard>
           <CCardHeader>
-            <CCardTitle>Danh sách sản phẩm</CCardTitle>
+            <CCardTitle>Danh sách khách hàng</CCardTitle>
           </CCardHeader>
           <CCardBody>
             <CDataTable
@@ -309,6 +433,16 @@ const CustomerReport = () => {
                 realMoney: (item, index) => (
                   <td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
+                  </td>
+                ),
+                debt: (item, index) => (
+                  <td>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.debt)}</div>
+                  </td>
+                ),
+                return: (item, index) => (
+                  <td>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
                   </td>
                 ),
                 totalMoney: (item, index) => (

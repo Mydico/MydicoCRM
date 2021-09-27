@@ -18,6 +18,7 @@ import IncomeDashboard from '../domain/income-dashboard.entity';
 import { DashboardType } from '../domain/enumeration/dashboard-type';
 import { IncomeDashboardService } from './income-dashboard.service';
 import { User } from '../domain/user.entity';
+import { generateCacheKey } from './utils/helperFunc';
 
 const relationshipNames = [];
 relationshipNames.push('approver');
@@ -127,8 +128,8 @@ export class StoreInputService {
         if(isEmployee && type.includes("RETURN")){
             andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.sale = ${currentUser.id} `;
         }
-        const cacheKeyBuilder = `get_StoreInputs_department_${departmentVisible.join(',')}_endDate_${filter['endDate'] || ''}startDate${filter['startDate'] || ''}_type_${type}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}_StoreInput.${Object.keys(options.order)[0] ||
-            'createdDate'}_${options.order[Object.keys(options.order)[0]] || 'DESC'}`;
+        const cacheKeyBuilder = generateCacheKey(departmentVisible,currentUser,isEmployee,{...filter,type},options,'StoreInputs');
+        console.log(cacheKeyBuilder)
         const queryBuilder = this.storeInputRepository
             .createQueryBuilder('StoreInput')
             .leftJoinAndSelect('StoreInput.approver', 'approver')
@@ -144,6 +145,7 @@ export class StoreInputService {
             .orderBy(`StoreInput.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
             .take(options.take);
+            const countCacheKeyBuilder = generateCacheKey(departmentVisible,currentUser,isEmployee,{...filter,type},options,'StoreInputs_count');
 
         const count = this.storeInputRepository
             .createQueryBuilder('StoreInput')
@@ -152,7 +154,7 @@ export class StoreInputService {
             .skip(options.skip)
             .take(options.take)
             .cache(
-                `cache_count_get_StoreInputs_department_${JSON.stringify(departmentVisible)}_type_${type}_filter_${JSON.stringify(filter)}`
+                countCacheKeyBuilder
             );
         if (queryString) {
             queryBuilder.andWhere(
@@ -192,6 +194,7 @@ export class StoreInputService {
     }
 
     async save(storeInput: StoreInput): Promise<StoreInput | undefined> {
+        await this.storeInputRepository.removeCache(['StoreInputs']);
         if (Array.isArray(storeInput.storeInputDetails)) {
             await this.storeInputDetailsService.saveMany(storeInput.storeInputDetails);
         }

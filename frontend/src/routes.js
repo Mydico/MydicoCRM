@@ -1,5 +1,6 @@
 import loadable from '@loadable/component'
 import CustomerReport from './views/pages/report/CustomerReport';
+import DepartmentDetailReport from './views/pages/report/DepartmentDetailReport';
 import DepartmentReport from './views/pages/report/DepartmentReport';
 import ProductReport from './views/pages/report/ProductReport';
 import PromotionReport from './views/pages/report/PromotionReport';
@@ -11,6 +12,9 @@ const EditUserProfile = loadable(() => import('./views/pages/user/UserList/edit-
 
 const Invoice = loadable(() => import('./views/pages/Invoicing/Invoice'));
 const PrintBill = loadable(() => import('./views/pages/warehouse/Bill/PrintBill'));
+
+const OrderHistory = loadable(() => import('./views/pages/report/OrderHistory'));
+
 
 const Dashboard = loadable(() => import('./views/pages/dashboard/Dashboard'));
 const Customer = loadable(() => import('./views/pages/customer/CustomerList/Customer'));
@@ -114,8 +118,10 @@ const routes = [
   {path: '/', exact: true, name: 'Trang chủ', component: Dashboard},
   {path: '/report', exact: true, name: 'Báo cáo', component: Report},
   {path: '/department-report', exact: true, name: 'Báo cáo theo chi nhánh', component: DepartmentReport},
+  {path: '/department-report/:id/detail',name: 'Báo cáo theo chi nhánh', component: DepartmentDetailReport},
   {path: '/product-report', exact: true, name: 'Báo cáo theo sản phẩm', component: ProductReport},
   {path: '/sale-report', exact: true, name: 'Báo cáo theo nhân viên', component: SaleReport},
+  {path: '/sale-report/order-histories/:id', exact: true, name: 'Báo cáo', component: OrderHistory},
   {path: '/customer-report', exact: true, name: 'Báo cáo theo sản phẩm', component: CustomerReport},
   {path: '/promotion-report', exact: true, name: 'Báo cáo theo chương trình', component: PromotionReport},
   {path: '/change-password', exact: true, name: 'Đổi mật khẩu', component: ChangePassword},
