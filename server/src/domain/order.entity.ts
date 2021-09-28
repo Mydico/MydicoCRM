@@ -50,8 +50,8 @@ export default class Order extends BaseEntity {
   @ManyToOne(type => Branch)
   branch?: Branch;
 
-  @ManyToOne(type => StoreInput)
-  storeInput?: StoreInput;
+  // @ManyToOne(type => StoreInput)
+  // storeInput?: StoreInput;
 
   @ManyToOne(type => PromotionItem, {  onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   promotionItem?: PromotionItem;

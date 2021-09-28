@@ -248,17 +248,17 @@ export class CustomerController {
     return await this.customerService.delete(toDelete);
   }
 
-  @Get('/sync')
-  @Roles(RoleType.USER)
-  @ApiResponse({
-    status: 204,
-    description: 'The record has been successfully deleted.'
-  })
-  async sync(@Res() res: Response, @Param('id') id: string): Promise<Customer> {
-    HeaderUtil.addEntityDeletedHeaders(res, 'Customer', id);
-    await this.customerService.syncToFastwork();
-    return null;
-  }
+  // @Get('/sync')
+  // @Roles(RoleType.USER)
+  // @ApiResponse({
+  //   status: 204,
+  //   description: 'The record has been successfully deleted.'
+  // })
+  // async sync(@Res() res: Response, @Param('id') id: string): Promise<Customer> {
+  //   HeaderUtil.addEntityDeletedHeaders(res, 'Customer', id);
+  //   await this.customerService.syncToFastwork();
+  //   return null;
+  // }
 
   
 }

@@ -12,6 +12,9 @@ import { StoreImportType } from './enumeration/store-import-type';
 import Provider from './provider.entity';
 import Department from './department.entity';
 import Order from './order.entity';
+import Promotion from './promotion.entity';
+import PromotionItem from './promotion-item.entity';
+import Branch from './branch.entity';
 
 /**
  * A StoreInput.
@@ -52,6 +55,9 @@ export default class StoreInput extends BaseEntity {
     @ManyToOne(type => Department)
     department? : Department;
 
+    @ManyToOne(type => Branch)
+    branch? : Branch;
+
     @ManyToOne(type => User, user => user.storeInput)
     approver?: User;
 
@@ -67,8 +73,12 @@ export default class StoreInput extends BaseEntity {
     @OneToMany(type => StoreInputDetails, other => other.storeInput)
     storeInputDetails? : StoreInputDetails[];
 
-    @OneToMany(type => Order, other => other.storeInput)
-    orders? : Order[];
+    @ManyToOne(type => Promotion)
+    promotion? : Promotion;
+
+    @ManyToOne(type => PromotionItem)
+    promotionItem? : PromotionItem;
+
 
     @ManyToOne(type => Store)
     store?: Store;

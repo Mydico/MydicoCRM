@@ -34,16 +34,6 @@ export const socket = io('http://mydicocrm.vn:8083', { transports: ['websocket']
 
 export const App = () => {
   const dispatch = useDispatch();
-  // const account = useSelector(state => state.authentication.account);
-
-  const toaster = useSelector(state => state.app.toaster);
-  const [position, setPosition] = useState('top-right');
-  const [autohide, setAutohide] = useState(true);
-  const [autohideValue, setAutohideValue] = useState(5000);
-  const [closeButton, setCloseButton] = useState(true);
-  const [fade, setFade] = useState(true);
-  const [toasts, setToasts] = useState([]);
-  const history = useHistory();
 
   useEffect(() => {
     dispatch(getSession());

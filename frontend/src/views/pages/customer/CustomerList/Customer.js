@@ -111,7 +111,7 @@ const Customer = props => {
   const customers = useSelector(selectAll);
 
   useEffect(() => {
-    dispatch(syncCustomer())
+    // dispatch(syncCustomer())
     dispatch(reset());
     dispatch(getCustomerType({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));

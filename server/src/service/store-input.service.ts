@@ -33,6 +33,9 @@ relationshipNames.push('storeTransfer.department');
 relationshipNames.push('provider');
 relationshipNames.push('store.department');
 relationshipNames.push('department');
+relationshipNames.push('promotion');
+relationshipNames.push('promotion.promotionItems');
+relationshipNames.push('promotionItem');
 
 @Injectable()
 export class StoreInputService {

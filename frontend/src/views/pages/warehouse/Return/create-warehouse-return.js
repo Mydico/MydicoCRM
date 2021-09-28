@@ -39,6 +39,9 @@ import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import { blockInvalidChar, memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
+import { globalizedPromotionSelectors } from '../../sales/Promotion/promotion.reducer';
+import { CCollapse } from '@coreui/react';
+import { getPromotion } from '../../sales/Promotion/promotion.api';
 
 const validationSchema = function(values) {
   return Yup.object().shape({
@@ -50,12 +53,17 @@ const validationSchema = function(values) {
 const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
 const { selectAll: selectAllProduct } = globalizedProductSelectors;
 const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
+const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
+
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
-
+export const mappingType = {
+  SHORTTERM: 'Ngắn hạn',
+  LONGTERM: 'Dài hạn'
+};
 const CreateWarehouse = () => {
   const { initialState } = useSelector(state => state.warehouseImport);
   const { account } = useSelector(userSafeSelector);
@@ -66,10 +74,13 @@ const CreateWarehouse = () => {
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
   const [productList, setProductList] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedPromotion, setSelectedPromotion] = useState(null);
+  const [selectedPromotionItem, setSelectedPromotionItem] = useState(null);
 
   const warehouses = useSelector(selectAllWarehouse);
   const products = useSelector(selectAllProduct);
   const customers = useSelector(selectAllCustomer);
+  const promotions = useSelector(selectAllPromotion);
 
   const initialValues = {
     note: ''
@@ -96,6 +107,7 @@ const CreateWarehouse = () => {
     values.type = WarehouseImportType.RETURN;
     values.department = { id: selectedCustomer.department?.id || null };
     values.sale = selectedCustomer.sale;
+    values.branch = selectedCustomer.branch;
     dispatch(fetching());
     dispatch(creatingWarehouseReturn(values));
   };
@@ -134,6 +146,13 @@ const CreateWarehouse = () => {
     }
     if (action.action === "input-blur") {
       debouncedSearchCustomer("");
+    }
+  };
+
+  const onSelectPromotion = ({ value }) => {
+    const arr = promotions.filter(customer => customer.id === value);
+    if (arr.length === 1) {
+      setSelectedPromotion(arr[0]);
     }
   };
 
@@ -201,6 +220,36 @@ const CreateWarehouse = () => {
         }
       ]
     });
+  };
+
+  useEffect(() => {
+    if (selectedCustomer) {
+      dispatch(
+        getPromotion({ isLock: 0, page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, customerType: selectedCustomer?.type?.id })
+      );
+    }
+  }, [selectedCustomer]);
+
+  const debouncedSearchPromotion = _.debounce(value => {
+    if (selectedCustomer) {
+      dispatch(
+        getPromotion({
+          isLock: 0,
+          page: 0,
+          size: 50,
+          name: value,
+          sort: 'createdDate,DESC',
+          dependency: true,
+          customerType: selectedCustomer?.type?.id
+        })
+      );
+    }
+  }, 300);
+
+  const onSearchPromition = value => {
+    if(value){
+      debouncedSearchPromotion(value);
+    }
   };
 
   return (
@@ -331,71 +380,79 @@ const CreateWarehouse = () => {
                 </CRow>
               </CCardBody>
             </CCard>
-            <CCard className="card-accent-primary">
+            <CCard className="card-accent-info">
               <CCardHeader>
-                <CCardTitle>Thông tin khách hàng</CCardTitle>
+                <CCardTitle className="text-primary">Chương trình khuyến mại</CCardTitle>
               </CCardHeader>
-
               <CCardBody>
                 <CFormGroup>
                   <CRow className="mb-3">
-                    <CCol sm={8}>
-                      <CLabel htmlFor="lastName">Chọn khách hàng</CLabel>
+                    <CCol sm={4}>
+                      <CLabel htmlFor="lastName">Chọn chương trình bán hàng</CLabel>
                       <Select
-                        name="customer"
-                        onInputChange={onSearchCustomer}
+                        onInputChange={onSearchPromition}
                         onChange={item => {
-                          setFieldValue('customer', item.value);
-                          onSelectCustomer(item);
+                          setFieldValue('promotion', { id: item.value, name: item.label });
+                          setFieldValue('promotionItem', null);
+                          onSelectPromotion(item);
                         }}
-                        options={customers.map(item => ({
-                          value: item,
-                          label: `[${item.code}] ${item.name} ${item.address}`
+                        value={{
+                          value: values.promotion?.id,
+                          label: values.promotion?.name
+                        }}
+                        name="promotion"
+                        options={promotions.map(item => ({
+                          value: item.id,
+                          label: `${item.name}`
                         }))}
                       />
                     </CCol>
                   </CRow>
-                  <FormFeedback className="d-block">{errors.customer}</FormFeedback>
+                  <FormFeedback className="d-block">{errors.promotion}</FormFeedback>
                 </CFormGroup>
-
                 <CRow>
                   <CCol lg="6">
                     <dl className="row">
-                      <dt className="col-sm-3">Mã khách hàng:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.code}</dd>
+                      <dt className="col-sm-3">Tên chương trình:</dt>
+                      <dd className="col-sm-9">{selectedPromotion?.name}</dd>
                     </dl>
                     <dl className="row">
-                      <dt className="col-sm-3">Họ tên:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.name}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Số điện thoại:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.tel}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Chi nhánh:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.department?.name}</dd>
+                      <dt className="col-sm-3">Ngày bắt đầu:</dt>
+                      <dd className="col-sm-9">{selectedPromotion?.startTime}</dd>
                     </dl>
                   </CCol>
                   <CCol lg="6">
                     <dl className="row">
-                      <dt className="col-sm-3">Địa chỉ:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.address}</dd>
+                      <dt className="col-sm-3">Ngày kết thúc:</dt>
+                      <dd className="col-sm-9">{selectedPromotion?.endTime}</dd>
                     </dl>
                     <dl className="row">
-                      <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{memoizedGetCityName(selectedCustomer?.city)}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{memoizedGetDistrictName(selectedCustomer?.district)}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Nhân viên phụ trách: </dt>
-                      <dd className="col-sm-9">{selectedCustomer?.sale?.login}</dd>
+                      <dt className="col-sm-3">Loại chương trình:</dt>
+                      <dd className="col-sm-9">{mappingType[selectedPromotion?.type]}</dd>
                     </dl>
                   </CCol>
                 </CRow>
+                {selectedPromotion?.type === 'LONGTERM' && (
+                  <CFormGroup>
+                    <CRow className="mb-3">
+                      <CCol sm={4}>
+                        <CLabel htmlFor="lastName">Chọn doanh số</CLabel>
+                        <Select
+                          onChange={item => {
+                            setSelectedPromotionItem(item.value);
+                            setFieldValue('promotionItem', item.value);
+                          }}
+                          name="promotion"
+                          options={selectedPromotion.promotionItems?.map(item => ({
+                            value: item,
+                            label: `${item.name}`
+                          }))}
+                        />
+                      </CCol>
+                    </CRow>
+                    {!selectedPromotionItem && <FormFeedback className="d-block">Bạn phải chọn doanh số</FormFeedback>}
+                  </CFormGroup>
+                )}
               </CCardBody>
             </CCard>
             <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>

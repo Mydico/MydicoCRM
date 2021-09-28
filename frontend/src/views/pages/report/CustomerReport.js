@@ -35,7 +35,6 @@ const ControlComponent = props => {
   );
 };
 
-
 const fields = [
   {
     key: 'order',
@@ -180,7 +179,7 @@ const CustomerReport = () => {
   }, [userType]);
 
   useEffect(() => {
-    if(Object.keys(filter).length > 1){
+    if (Object.keys(filter).length > 1) {
       getTop10(filter);
     }
   }, [filter]);
@@ -278,7 +277,7 @@ const CustomerReport = () => {
         <CCard>
           <CCardBody>
             <CRow sm={12} md={12}>
-              <CCol sm={3} md={3}>
+              <CCol sm={4} md={4}>
                 <p>Chi nhánh</p>
                 <Select
                   isSearchable
@@ -299,7 +298,7 @@ const CustomerReport = () => {
                   }))}
                 />
               </CCol>
-              <CCol sm={3} md={3}>
+              <CCol sm={4} md={4}>
                 <p>Phòng ban</p>
                 <Select
                   isSearchable
@@ -320,7 +319,7 @@ const CustomerReport = () => {
                   }))}
                 />
               </CCol>
-              <CCol sm={3} md={3}>
+              <CCol sm={4} md={4}>
                 <p>Nhân viên</p>
                 <Select
                   isSearchable
@@ -342,17 +341,19 @@ const CustomerReport = () => {
                   }))}
                 />
               </CCol>
-              <CCol sm={3} md={3}>
+            </CRow>
+            <CRow sm={12} md={12} className="mt-2">
+              <CCol sm={4} md={4}>
+                <p>Khách hàng</p>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Khách hàng" /> }}
                   isSearchable
                   name="user"
                   onChange={e => {
                     setCustomer(e?.value || null);
                   }}
                   value={{
-                    value: user,
-                    label: user?.code
+                    value: customer,
+                    label: customer?.code
                   }}
                   isClearable={true}
                   openMenuOnClick={false}
@@ -364,9 +365,7 @@ const CustomerReport = () => {
                   }))}
                 />
               </CCol>
-            </CRow>
-            <CRow sm={12} md={12}>
-              <CCol sm={3} md={3}>
+              <CCol sm={4} md={4}>
                 <p>Loại khách hàng</p>
                 <Select
                   isSearchable

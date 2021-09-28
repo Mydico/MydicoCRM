@@ -12,31 +12,15 @@ import _ from 'lodash';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
 import { getBranch } from '../user/UserBranch/branch.api';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
-import {
-  getCustomerReport,
-  getPromotionCustomer,
-  getPromotionIncome,
-} from './report.api';
+import { getCustomerReport, getPromotionCustomer, getPromotionIncome, getPromotionReport } from './report.api';
 import { getPromotion } from '../sales/Promotion/promotion.api';
 import { globalizedPromotionSelectors } from '../sales/Promotion/promotion.reducer';
+import { filterCustomerNotToStore } from '../customer/customer.api';
+import { getExactUser } from '../user/UserList/user.api';
+import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 
 moment.locale('vi');
-const controlStyles = {
-  borderRadius: '1px solid black',
-  padding: '5px',
-  color: 'black'
-};
-const ControlComponent = props => {
-  return (
-    <div style={controlStyles}>
-      {<p>{props.title}</p>}
-      <components.Control {...props} />
-    </div>
-  );
-};
 
-const { selectAll } = globalizedBranchSelectors;
-const { selectAll: selectPromotionAll } = globalizedPromotionSelectors;
 const fields = [
   {
     key: 'order',
@@ -47,8 +31,15 @@ const fields = [
   { key: 'customer_code', label: 'Mã nhân viên', _style: { width: '10%' }, filter: false },
   { key: 'customer_name', label: 'Tên', _style: { width: '10%' }, filter: false },
   { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+  { key: 'reduce', label: 'Chiết khấu', _style: { width: '15%' }, filter: false },
+  { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
   { key: 'totalMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false }
 ];
+
+const { selectAll } = globalizedBranchSelectors;
+const { selectAll: selectPromotionAll } = globalizedPromotionSelectors;
+const { selectAll: selectUserAll } = globalizedUserSelectors;
+
 const PromotionReport = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
@@ -56,18 +47,25 @@ const PromotionReport = () => {
 
   const branches = useSelector(selectAll);
   const promotions = useSelector(selectPromotionAll);
+  const users = useSelector(selectUserAll);
 
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const [filter, setFilter] = useState({dependency: true});
+  const [filter, setFilter] = useState({ dependency: true });
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
   const [promotion, setPromotion] = useState(null);
+  const [promotionItem, setPromotionItem] = useState(null);
+
   const [top10Product, setTop10Product] = useState([]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
+  const [filteredCustomer, setFilteredCustomer] = useState([]);
+  const [user, setUser] = useState(null);
+  const [customer, setCustomer] = useState(null);
+
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(getBranch());
@@ -79,7 +77,8 @@ const PromotionReport = () => {
   }, [activePage, size]);
 
   const getTop10 = filter => {
-    dispatch(getCustomerReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
+    
+    dispatch(getPromotionReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
       if (data && data.payload) {
         setTop10Product(data.payload);
       }
@@ -106,7 +105,6 @@ const PromotionReport = () => {
         ...filter,
         department: department.id
       });
-
     }
   }, [department]);
 
@@ -116,7 +114,6 @@ const PromotionReport = () => {
         ...filter,
         branch: branch.id
       });
-
     }
   }, [branch]);
 
@@ -126,12 +123,14 @@ const PromotionReport = () => {
         ...filter,
         promotion: promotion.id
       });
-
     }
   }, [promotion]);
 
   useEffect(() => {
-    getTop10(filter);
+    if(Object.keys(filter).length > 1){
+      getTop10(filter);
+
+    }
   }, [filter]);
 
   useEffect(() => {
@@ -159,14 +158,64 @@ const PromotionReport = () => {
   }, 300);
 
   const onSearchPromotion = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchPromotion(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchPromotion("");
+    if (action.action === 'input-blur') {
+      debouncedSearchPromotion('');
     }
   };
 
+  const debouncedSearchUser = _.debounce(value => {
+    dispatch(
+      getExactUser({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        code: value,
+        department: department?.id || account.department.id,
+        branch: branch?.id || account.branch.id,
+        dependency: true
+      })
+    );
+  }, 300);
+
+  const onSearchUser = (value, action) => {
+    if (action.action === 'input-change' && value) {
+      debouncedSearchUser(value);
+    }
+    if (action.action === 'input-blur') {
+      debouncedSearchUser('');
+    }
+  };
+
+  const debouncedSearchCustomer = _.debounce(value => {
+    dispatch(
+      filterCustomerNotToStore({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        code: value,
+        address: value,
+        department: department?.id || account.department.id,
+        branch: branch?.id || account.branch.id,
+        dependency: true
+      })
+    ).then(resp => {
+      if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
+        setFilteredCustomer(resp.payload.data);
+      }
+    });
+  }, 300);
+
+  const onSearchCustomer = (value, action) => {
+    if (action.action === 'input-change' && value) {
+      debouncedSearchCustomer(value);
+    }
+    if (action.action === 'input-blur') {
+      debouncedSearchCustomer('');
+    }
+  };
   // const memoTop10Sale = React.useMemo(() => top10Sale, [top10Sale]);
   // const memoTop10Customer = React.useMemo(() => top10Customer, [top10Customer]);
   const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
@@ -240,8 +289,53 @@ const PromotionReport = () => {
                 />
               </CCol>
               <CCol sm={4} md={4}>
+                <p>Khách hàng</p>
                 <Select
-                  components={{ Control: inputProps => <ControlComponent {...inputProps} title="Chương trình bán hàng" /> }}
+                  isSearchable
+                  name="branch"
+                  onChange={e => {
+                    setCustomer(e?.value || null);
+                  }}
+                  value={{
+                    value: customer,
+                    label: customer?.name
+                  }}
+                  onInputChange={onSearchCustomer}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  placeholder="Chọn khách hàng"
+                  options={filteredCustomer.map(item => ({
+                    value: item,
+                    label: item.code
+                  }))}
+                />
+              </CCol>
+            </CRow>
+            <CRow className="mt-2">
+              <CCol sm={4} md={4}>
+                <p>Nhân viên</p>
+                <Select
+                  name="user"
+                  onChange={e => {
+                    setUser(e?.value || null);
+                  }}
+                  value={{
+                    value: user,
+                    label: user?.code
+                  }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  onInputChange={onSearchUser}
+                  placeholder="Chọn chương trình"
+                  options={users.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
+              </CCol>
+              <CCol sm={4} md={4}>
+                <p>Chương trình bán hàng</p>
+                <Select
                   isSearchable
                   name="user"
                   onChange={e => {
@@ -259,6 +353,30 @@ const PromotionReport = () => {
                     value: item,
                     label: item.name
                   }))}
+                />
+              </CCol>
+              <CCol sm={4} md={4}>
+                <p>Doanh số</p>
+                <Select
+                  isSearchable
+                  name="user"
+                  onChange={e => {
+                    setPromotionItem(e?.value || null);
+                  }}
+                  value={{
+                    value: promotionItem,
+                    label: promotionItem?.name
+                  }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  placeholder="Chọn chương trình"
+                  options={
+                    (promotion?.promotionItems ||
+                    []).map(item => ({
+                      value: item,
+                      label: item.name
+                    }))
+                  }
                 />
               </CCol>
             </CRow>
@@ -279,7 +397,7 @@ const PromotionReport = () => {
         </CRow>
         <CCard>
           <CCardHeader>
-            <CCardTitle>Danh sách sản phẩm</CCardTitle>
+            <CCardTitle>Danh sách nhân viên</CCardTitle>
           </CCardHeader>
           <CCardBody>
             <CDataTable
@@ -307,6 +425,16 @@ const PromotionReport = () => {
                 realMoney: (item, index) => (
                   <td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
+                  </td>
+                ),
+                return: (item, index) => (
+                  <td>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
+                  </td>
+                ),
+                reduce: (item, index) => (
+                  <td>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.reduce)}</div>
                   </td>
                 ),
                 totalMoney: (item, index) => (

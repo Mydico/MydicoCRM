@@ -283,7 +283,7 @@ export class CustomerService {
       const result = await this.customerRepository.save(tempCustomer);
       return result;
     } else {
-      this.httpService.post('https://api.fastwork.vn:6001/v1/customer?tokenkey=fb5aef467aa3dabe6f079993df63fe78', {
+      const result = this.httpService.post('https://api.fastwork.vn:6010/v1/customer?tokenkey=fb5aef467aa3dabe6f079993df63fe78', {
         customer_name: customer.name,
         customer_address: customer.address,
         customer_tel: customer.tel,
@@ -296,13 +296,18 @@ export class CustomerService {
         customer_source: '',
         customer_scale: '',
         customer_field: '',
+        customer_code: customer.code,
         contact_name: customer.contactName,
         contact_address: customer.address,
         contact_tel: customer.tel,
+        customer_assign: [`${customer.sale.code}@mydico`],
         contact_email: '',
         contact_title: '',
-        contact_vocative: ''
+        contact_vocative: '',
+        customer_created: customer.createdBy
       });
+      await result.toPromise().catch(e => console.log(e));
+
     }
     const foundedCustomer = await this.customerRepository.find({
       code: Like(`%${customer.code}%`)
@@ -312,40 +317,41 @@ export class CustomerService {
     return await this.customerRepository.save(newCustomer);
   }
 
-  async syncToFastwork() {
-    const foundedCustomer = await this.customerRepository.find({
-      relations: relationshipNames
-    });
-    const promise = foundedCustomer.forEach( async customer => {
-      const data = {
-        customer_name: customer.name,
-        customer_address: customer.address,
-        customer_tel: customer.tel,
-        customer_email: '',
-        customer_note: '',
-        customer_city: memoizedGetCityName(customer.city),
-        customer_district: memoizedGetDistrictName(customer.district),
-        customer_type: customer.type.name,
-        customer_group: '',
-        customer_source: '',
-        customer_scale: '',
-        customer_field: '',
-        customer_assign: [`${customer.sale.code}@mydico.vn`],
-        contact_name: customer.contactName,
-        contact_address: customer.address,
-        contact_tel: customer.tel,
-        contact_email: '',
-        contact_title: '',
-        contact_vocative: ''
-      };
-      const result = this.httpService.post('https://api.fastwork.vn:6010/v1/customer?tokenkey=fb5aef467aa3dabe6f079993df63fe78', data);
-      const resp = await result.toPromise();
-      console.log(resp)
-    });
-    // Promise.all(promise)
-    //   .then(resp => console.log(resp))
-    //   .catch(e => console.log(e));
-  }
+  // async syncToFastwork() {
+  //   const foundedCustomer = await this.customerRepository.find({
+  //     relations: relationshipNames
+  //   });
+  //   const promise = foundedCustomer.forEach( async customer => {
+  //     const data = {
+  //       customer_name: customer.name,
+  //       customer_address: customer.address,
+  //       customer_tel: customer.tel,
+  //       customer_email: '',
+  //       customer_note: '',
+  //       customer_city: memoizedGetCityName(customer.city),
+  //       customer_district: memoizedGetDistrictName(customer.district),
+  //       customer_type: customer.type.name,
+  //       customer_group: '',
+  //       customer_source: '',
+  //       customer_scale: '',
+  //       customer_field: '',
+  //       customer_code: customer.code,
+  //       customer_assign: [`${customer.sale.code}@mydico`],
+  //       contact_name: customer.contactName,
+  //       contact_address: customer.address,
+  //       contact_tel: customer.tel,
+  //       contact_email: '',
+  //       contact_title: '',
+  //       contact_vocative: ''
+  //     };
+  //     const result = this.httpService.post('https://api.fastwork.vn:6010/v1/customer?tokenkey=fb5aef467aa3dabe6f079993df63fe78', data);
+  //     const resp = await result.toPromise().catch(e => console.log(e));
+  //     console.log(resp)
+  //   });
+  //   // Promise.all(promise)
+  //   //   .then(resp => console.log(resp))
+  //   //   .catch(e => console.log(e));
+  // }
 
   async update(customer: Customer): Promise<Customer | undefined> {
     await this.transactionRepository

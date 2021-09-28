@@ -425,7 +425,7 @@ export class ReportService {
       .select(['customer.saleId'])
       .addSelect('SUM(StoreInput.realMoney)', 'return')
       .where(queryString)
-      .where("customer.saleId IN (:saleIds)", { saleIds: saleId })
+      .where("customer.saleId IN (:saleIds)", { saleIds: saleId.length > 0? saleId: '' })
       .leftJoin('StoreInput.customer', 'customer')
       .groupBy('StoreInput.customerId')
       .cache(3 * 3600)
@@ -478,7 +478,7 @@ export class ReportService {
     const queryBuilder = this.orderRepository.manager.connection
       .createQueryBuilder()
       .from(Order, 'Order')
-      .select(['customer.code', 'customer.name'])
+      .select(['customer.id','customer.code', 'customer.name'])
       .addSelect('SUM(Order.realMoney)', 'realMoney')
       .addSelect('SUM(Order.totalMoney)', 'totalMoney')
       .leftJoin('Order.customer', 'customer')
@@ -488,6 +488,7 @@ export class ReportService {
       .offset(options.skip)
       .limit(options.take)
       .cache(3 * 3600);
+    const result = await queryBuilder.getRawMany();
 
     const count = await this.orderRepository
       .createQueryBuilder('Order')
@@ -499,18 +500,21 @@ export class ReportService {
       .leftJoin('Order.sale', 'sale')
       .cache(3 * 3600)
       .getRawMany();
-
+    const customerId = result.map(item => item.customer_id);
     queryString = queryBuilderFunc('StoreInput', filter);
     queryString = queryString.replace('StoreInput.typeId','customer.typeId')
 
     const storeInputQueryBuilder = this.storeInputRepository
       .createQueryBuilder('StoreInput')
-      .select('Sum(StoreInput.real_money)', 'return')
+      .select(['customer.id'])
+      .addSelect('Sum(StoreInput.real_money)', 'return')
       .leftJoin('StoreInput.customer', 'customer')
       .leftJoin('customer.type', 'type')
       .where(queryString)
+      .where("StoreInput.customerId IN (:saleIds)", { saleIds: customerId.length > 0? customerId: '' })
       .cache(3 * 3600)
       .groupBy('StoreInput.customerId');
+      const returnMoney = await storeInputQueryBuilder.getRawMany();
 
     queryString = queryBuilderFunc('Transaction', filter);
     queryString = queryString.replace('Transaction.typeId','customer.typeId')
@@ -523,18 +527,34 @@ export class ReportService {
       .leftJoin('Transaction.customer', 'customer')
       .leftJoin('customer.type', 'type')
       .where(queryString)
+      .where("Transaction.customerId IN (:saleIds)", { saleIds: customerId.length > 0? customerId: '' })
       .groupBy('Transaction.customerId')
       .orderBy(`MAX(Transaction.${Object.keys(options.order)[0] || 'createdDate'})`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .offset(options.skip)
       .limit(options.take)
       .cache(3 * 3600);
-    const result = await queryBuilder.getRawMany();
-    const returnMoney = await storeInputQueryBuilder.getRawMany();
     const debt = await transactionQueryBuilder.getRawMany();
-    const report = result.map((item, index) => {
-      return { ...item, ...returnMoney[index], ...debt[index] };
-    });
-    return [report, count.length];
+
+    const finalArray =  result.map(item => {
+      const founded = returnMoney.filter(returnItem => returnItem.customer_id === item.customer_id)
+      const final = {
+        ...item,
+        return: 0,
+        debt: 0
+      }
+      if(founded.length > 0){
+        final.return = founded[0].return
+        
+      }
+      const foundedTransactions = debt.filter(returnItem => returnItem.customer_id === item.customer_id)
+      if(foundedTransactions.length > 0){
+        final.debt = founded[0].debt
+        
+      }
+      return final
+    })
+
+    return [finalArray, count.length];
   }
 
   async getPromotionPrice(filter): Promise<any> {
@@ -568,19 +588,21 @@ export class ReportService {
     let queryString = queryBuilderFunc('Order', filter);
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
-      .select(['customer.code', 'customer.name'])
+      .select(['customer.id', 'customer.code', 'customer.name'])
       .addSelect('SUM(Order.realMoney)', 'realMoney')
       .addSelect('SUM(Order.totalMoney)', 'totalMoney')
+      .addSelect('SUM(Order.reduceMoney)', 'reduce')
       .leftJoin('Order.customer', 'customer')
       .leftJoin('Order.sale', 'sale')
+      .leftJoin('Order.promotion', 'promotion')
+      .leftJoin('Order.promotionItem', 'promotionItem')
       .where(queryString)
       .groupBy('Order.customerId')
       .orderBy(`realMoney`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .offset(options.skip)
       .limit(options.take)
       .cache(3 * 3600);
-
-    const count = await this.orderRepository
+      const count = await this.orderRepository
       .createQueryBuilder('Order')
       .select('count(*)', 'count')
       .where(queryString)
@@ -589,7 +611,36 @@ export class ReportService {
       .leftJoin('Order.sale', 'sale')
       .cache(3 * 3600)
       .getRawMany();
-    const result = await queryBuilder.getRawMany();
-    return [result, count.length];
+      const result = await queryBuilder.getRawMany();
+      const customerId = result.map(item => item.customer_id);
+      queryString = queryBuilderFunc('StoreInput', filter);  
+      const returnBuilder = await this.storeInputRepository
+        .createQueryBuilder('StoreInput')
+        .select(['customer.id'])
+        .addSelect('Sum(StoreInput.real_money)', 'return')
+        .leftJoin('StoreInput.customer', 'customer')
+        .leftJoin('StoreInput.promotion', 'promotion')
+        .leftJoin('StoreInput.promotionItem', 'promotionItem')
+        .leftJoin('StoreInput.sale', 'sale')
+        .where(queryString)
+        .where("StoreInput.customerId IN (:saleIds)", { saleIds: customerId.length > 0? customerId: '' })
+        .cache(3 * 3600)
+        .groupBy('StoreInput.customerId')
+        .getRawMany();
+
+        const finalArray =  result.map(item => {
+          const final = {
+            ...item,
+            return: 0
+          }
+          const founded = returnBuilder.filter(returnItem => returnItem.customer_id === item.customer_id)
+          if(founded.length > 0){
+            final.return = founded[0].return
+            
+          }
+          return final
+        })
+
+    return [finalArray, count.length];
   }
 }

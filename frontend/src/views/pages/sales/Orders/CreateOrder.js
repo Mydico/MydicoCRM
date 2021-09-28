@@ -164,7 +164,9 @@ const CreateOrder = props => {
   }, 300);
 
   const onSearchPromition = value => {
-    debouncedSearchPromotion(value);
+    if(value){
+      debouncedSearchPromotion(value);
+    }
   };
 
   const onSubmit = (values, {}) => {
@@ -482,6 +484,7 @@ const CreateOrder = props => {
                         onInputChange={onSearchPromition}
                         onChange={item => {
                           setFieldValue('promotion', { id: item.value, name: item.label });
+                          setFieldValue('promotionItem', null);
                           onSelectPromotion(item);
                         }}
                         value={{

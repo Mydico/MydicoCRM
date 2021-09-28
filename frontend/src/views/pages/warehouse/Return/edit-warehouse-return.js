@@ -44,6 +44,9 @@ const validationSchema = function() {
 
 import { validate } from '../../../../shared/utils/normalize';
 import { blockInvalidChar, memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
+import { getPromotion } from '../../sales/Promotion/promotion.api';
+import { globalizedPromotionSelectors } from '../../sales/Promotion/promotion.reducer';
+import { mappingType } from './create-warehouse-return';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -55,6 +58,7 @@ const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
 const { selectAll: selectAllProduct } = globalizedProductSelectors;
 const { selectById } = globalizedWarehouseImportSelectors;
 const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
+const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
 
 const EditWarehouseReturn = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
@@ -66,10 +70,14 @@ const EditWarehouseReturn = props => {
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
   const [initValuesState, setInitValuesState] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedPromotion, setSelectedPromotion] = useState(null);
+  const [selectedPromotionItem, setSelectedPromotionItem] = useState(null);
 
   const warehouses = useSelector(selectAllWarehouse);
   const products = useSelector(selectAllProduct);
   const customers = useSelector(selectAllCustomer);
+  const promotions = useSelector(selectAllPromotion);
+
   const warehouseImport = useSelector(state => selectById(state, props.match.params.id));
 
   const [productList, setProductList] = useState([]);
@@ -95,6 +103,8 @@ const EditWarehouseReturn = props => {
       setInitValuesState(warehouseImport);
       setSelectedWarehouse(warehouseImport.store);
       setSelectedCustomer(warehouseImport.customer);
+      setSelectedPromotion(warehouseImport.promotion);
+      setSelectedPromotionItem(warehouseImport.promotionItem);
       setProductList(Array.isArray(warehouseImport.storeInputDetails) ? warehouseImport.storeInputDetails : []);
     }
   }, [warehouseImport]);
@@ -193,6 +203,13 @@ const EditWarehouseReturn = props => {
     setProductList(copyArr);
   };
 
+  const onSelectPromotion = ({ value }) => {
+    const arr = promotions.filter(customer => customer.id === value);
+    if (arr.length === 1) {
+      setSelectedPromotion(arr[0]);
+    }
+  };
+
   useEffect(() => {
     if (initialState.updatingSuccess) {
       history.goBack();
@@ -213,6 +230,36 @@ const EditWarehouseReturn = props => {
         }
       ]
     });
+  };
+
+  useEffect(() => {
+    if (selectedCustomer) {
+      dispatch(
+        getPromotion({ isLock: 0, page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, customerType: selectedCustomer?.type?.id })
+      );
+    }
+  }, [selectedCustomer]);
+
+  const debouncedSearchPromotion = _.debounce(value => {
+    if (selectedCustomer) {
+      dispatch(
+        getPromotion({
+          isLock: 0,
+          page: 0,
+          size: 50,
+          name: value,
+          sort: 'createdDate,DESC',
+          dependency: true,
+          customerType: selectedCustomer?.type?.id
+        })
+      );
+    }
+  }, 300);
+
+  const onSearchPromition = value => {
+    if(value){
+      debouncedSearchPromotion(value);
+    }
   };
 
   return (
@@ -354,6 +401,85 @@ const EditWarehouseReturn = props => {
                     </dl>
                   </CCol>
                 </CRow>
+              </CCardBody>
+            </CCard>
+            <CCard className="card-accent-info">
+              <CCardHeader>
+                <CCardTitle className="text-primary">Chương trình khuyến mại</CCardTitle>
+              </CCardHeader>
+              <CCardBody>
+                <CFormGroup>
+                  <CRow className="mb-3">
+                    <CCol sm={4}>
+                      <CLabel htmlFor="lastName">Chọn chương trình bán hàng</CLabel>
+                      <Select
+                        onInputChange={onSearchPromition}
+                        onChange={item => {
+                          setFieldValue('promotion', { id: item.value, name: item.label });
+                          setFieldValue('promotionItem', null);
+                          onSelectPromotion(item);
+                        }}
+                        value={{
+                          value: selectedPromotion?.id,
+                          label: selectedPromotion?.name
+                        }}
+                        name="promotion"
+                        options={promotions.map(item => ({
+                          value: item.id,
+                          label: `${item.name}`
+                        }))}
+                      />
+                    </CCol>
+                  </CRow>
+                  <FormFeedback className="d-block">{errors.promotion}</FormFeedback>
+                </CFormGroup>
+                <CRow>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Tên chương trình:</dt>
+                      <dd className="col-sm-9">{selectedPromotion?.name}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Ngày bắt đầu:</dt>
+                      <dd className="col-sm-9">{selectedPromotion?.startTime}</dd>
+                    </dl>
+                  </CCol>
+                  <CCol lg="6">
+                    <dl className="row">
+                      <dt className="col-sm-3">Ngày kết thúc:</dt>
+                      <dd className="col-sm-9">{selectedPromotion?.endTime}</dd>
+                    </dl>
+                    <dl className="row">
+                      <dt className="col-sm-3">Loại chương trình:</dt>
+                      <dd className="col-sm-9">{mappingType[selectedPromotion?.type]}</dd>
+                    </dl>
+                  </CCol>
+                </CRow>
+                {selectedPromotion?.type === 'LONGTERM' && (
+                  <CFormGroup>
+                    <CRow className="mb-3">
+                      <CCol sm={4}>
+                        <CLabel htmlFor="lastName">Chọn doanh số</CLabel>
+                        <Select
+                          onChange={item => {
+                            setSelectedPromotionItem(item.value);
+                            setFieldValue('promotionItem', item.value);
+                          }}
+                          name="promotion"
+                          value={{
+                            value: selectedPromotionItem?.id,
+                            label: selectedPromotionItem?.name
+                          }}
+                          options={selectedPromotion.promotionItems?.map(item => ({
+                            value: item,
+                            label: `${item.name}`
+                          }))}
+                        />
+                      </CCol>
+                    </CRow>
+                    {!selectedPromotionItem && <FormFeedback className="d-block">Bạn phải chọn doanh số</FormFeedback>}
+                  </CFormGroup>
+                )}
               </CCardBody>
             </CCard>
             <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>

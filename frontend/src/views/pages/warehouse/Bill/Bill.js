@@ -182,7 +182,7 @@ const Bill = props => {
         ...item,
         tel: item.customer?.tel,
         quantity: item.order?.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0) || 0,
-        total: item.order ? item.order.realMoney.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) : 0,
+        total: item.order ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.order.realMoney) : 0,
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
@@ -629,7 +629,6 @@ const Bill = props => {
               </td>
             ),
             createdDate: item => <td>{item.createdDate.substr(0, 10)}</td>,
-
             show_details: item => {
               return (
                 <td className="py-2 d-flex">
