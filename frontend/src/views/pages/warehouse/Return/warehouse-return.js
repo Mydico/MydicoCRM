@@ -97,11 +97,11 @@ const WarehouseImport = props => {
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
-    if(date.endDate && date.startDate){
+    if (date.endDate && date.startDate) {
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getWarehouseReturn(params));
     }
-  }, [date])
+  }, [date]);
   useEffect(() => {
     dispatch(reset());
   }, []);
@@ -135,7 +135,6 @@ const WarehouseImport = props => {
     setDetails(newDetails);
   };
 
-
   const toCreateWarehouseReturn = () => {
     history.push(`${props.match.url}/new`);
   };
@@ -147,18 +146,18 @@ const WarehouseImport = props => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const debouncedSearchColumn =  _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if (!value[key]) delete value[key];
-        });
-        paramRef.current = value;
-        dispatch(getWarehouseReturn({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300)
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getWarehouseReturn({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }
+  }, 300);
 
   const onFilterColumn = value => {
-    if(value) debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const alertFunc = (item, message, operation) => {
@@ -192,6 +191,23 @@ const WarehouseImport = props => {
   const renderButtonStatus = item => {
     switch (item.status) {
       case WarehouseImportStatus.APPROVED:
+        return (
+          <CRow>
+            <CButton
+              onClick={() => {
+                toEditWarehouseReturn(item.id);
+              }}
+              color="warning"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              <CIcon name="cil-pencil" />
+              CHỈNH SỬA
+            </CButton>
+          </CRow>
+        );
       case WarehouseImportStatus.REJECTED:
         return null;
       case WarehouseImportStatus.WAITING:
@@ -252,7 +268,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }; 
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
       dispatch(getWarehouseReturn(params));
       dispatch(reset());
     }
@@ -337,11 +353,12 @@ const WarehouseImport = props => {
               <div style={{ minWidth: 200 }}>
                 <Select
                   onChange={item => {
-                   onFilterColumn({ ...paramRef.current, status: item?.value || ''  });
+                    onFilterColumn({ ...paramRef.current, status: item?.value || '' });
                   }}
                   maxMenuHeight="200"
                   placeholder="Chọn trạng thái"
-                  isClearable                  options={statusList.map(item => ({
+                  isClearable
+                  options={statusList.map(item => ({
                     value: item.value,
                     label: item.label
                   }))}

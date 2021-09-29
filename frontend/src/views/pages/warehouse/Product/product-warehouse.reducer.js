@@ -24,7 +24,6 @@ export const productWarehousesAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
   selectId: (productWarehouse) => productWarehouse.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => a.product.name.localeCompare(b.product.name),
 });
 
 const slice = createSlice({
@@ -38,6 +37,9 @@ const slice = createSlice({
       state.initialState.loading = false;
       productWarehousesAdapter.removeAll(state)
       state.initialState.updatingSuccess = false;
+    },
+    swap(state, action) {
+      productWarehousesAdapter.setAll(state, action.payload)
     },
     productWarehousesAddOne: productWarehousesAdapter.addOne,
     productWarehousesAddMany: productWarehousesAdapter.addMany,
@@ -83,6 +85,6 @@ const slice = createSlice({
 });
 
 export default slice.reducer;
-export const {fetching, reset} = slice.actions;
+export const {fetching, reset, swap} = slice.actions;
 
 export const globalizedProductWarehouseSelectors = productWarehousesAdapter.getSelectors((state) => state.productWarehouse);

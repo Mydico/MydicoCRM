@@ -24,13 +24,13 @@ import { currencyMask } from '../../../components/currency-input/currency-input'
 import MaskedInput from 'react-text-mask';
 import Select from 'react-select';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
-import { filterCustomer, getCustomer } from '../../customer/customer.api';
+import { filterCustomer } from '../../customer/customer.api';
 import { globalizedPromotionSelectors } from '../Promotion/promotion.reducer';
 import { getPromotion } from '../Promotion/promotion.api';
 import { globalizedWarehouseSelectors } from '../../warehouse/Warehouse/warehouse.reducer';
 import { getWarehouse } from '../../warehouse/Warehouse/warehouse.api';
 import { getDetailProductPromotion } from '../Promotion/promotion.api';
-import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
+import { globalizedProductWarehouseSelectors, swap } from '../../warehouse/Product/product-warehouse.reducer';
 import { filterProductInStore, getProductInstore, getProductWarehouse } from '../../warehouse/Product/product-warehouse.api';
 import { FormFeedback, Table } from 'reactstrap';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
@@ -60,6 +60,7 @@ const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
 const { selectAll: selectAllProductInWarehouse } = globalizedProductWarehouseSelectors;
 const CreateOrder = props => {
   const { initialState: promotionState } = useSelector(state => state.promotion);
+
   const { account } = useSelector(userSafeSelector);
 
   const initialValues = {
@@ -90,7 +91,7 @@ const CreateOrder = props => {
   const [isSelectProItem, setIsSelectProItem] = useState(false);
   const [showProductPromotion, setShowProductPromotion] = useState(false);
   useEffect(() => {
-    dispatch(getCustomer({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, saleId: account.id  }));
+    dispatch(filterCustomer({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, sale: account.id  }));
     dispatch(getWarehouse({ dependency: true }));
     const existOrder = localStorage.getItem('order');
     try {
@@ -214,7 +215,12 @@ const CreateOrder = props => {
     }
   };
 
-  const onSelectedProduct = ({ value }) => {
+  const onSelectedProduct = ({ value, index }) => {
+    const tempArr = [...productInWarehouses]
+    const tempVar = tempArr[0]
+    tempArr[0] = tempArr[index]
+    tempArr[index] = tempVar
+    dispatch(swap(tempArr))
     const copyArr = [...productList];
     const data = {
       product: value,
@@ -748,7 +754,8 @@ const CreateOrder = props => {
                     menuPortalTarget={document.body}
                     className="mt-3"
                     placeholder="Chọn sản phẩm"
-                    options={productInWarehouses.map(item => ({
+                    options={productInWarehouses.map((item, index) => ({
+                      index,
                       value: item.product,
                       label: `[${item.product?.code}]-${item.product.name}-${item.product.volume}`
                     }))}
