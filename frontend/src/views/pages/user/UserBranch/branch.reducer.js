@@ -65,6 +65,6 @@ const slice = createSlice({
 });
 
 export default slice.reducer;
-export const { fetching, reset } = slice.actions;
+export const { fetching, reset, branchRemove } = slice.actions;
 
 export const globalizedBranchSelectors = branchAdapter.getSelectors(state => state.branch);

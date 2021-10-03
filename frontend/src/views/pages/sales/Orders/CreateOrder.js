@@ -291,7 +291,7 @@ const CreateOrder = props => {
         size: 50,
         sort: 'createdDate,DESC',
         name: value,
-        code: value,
+        // code: value,
         dependency: true
       })
     );

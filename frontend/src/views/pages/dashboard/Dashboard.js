@@ -21,6 +21,7 @@ import { getStyle, hexToRgba } from '@coreui/utils';
 import { userSafeSelector } from '../login/authenticate.reducer.js';
 import { CCardTitle, CFormGroup, CInput, CLabel } from '@coreui/react';
 import memoize from 'fast-memoize';
+import { DateRangePicker } from 'react-dates';
 
 const WidgetsDropdown = lazy(() => import('../../components/widgets/WidgetsDropdown.js'));
 const brandSuccess = getStyle('success') || '#4dbd74';
@@ -51,7 +52,8 @@ const Dashboard = () => {
   const [bestCustomer, setBestCustomer] = useState([]);
   const { account } = useSelector(userSafeSelector);
   const [mode, setMode] = useState('week');
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
+  const [focused, setFocused] = React.useState();
 
   const getData = (startDate, endDate) => {
     dispatch(getIncomeDashboard({ saleId: account.id, startDate, endDate })).then(data => {
@@ -79,12 +81,12 @@ const Dashboard = () => {
         setDebt(sum);
       }
     });
-    dispatch(getBestProductSale({ saleId: account.id })).then(data => {
+    dispatch(getBestProductSale({ saleId: account.id, startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         setBestSaleProduct(data.payload);
       }
     });
-    dispatch(getBestCustomer({ saleId: account.id })).then(data => {
+    dispatch(getBestCustomer({ saleId: account.id, startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         setBestCustomer(data.payload);
       }
@@ -93,7 +95,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      getData(date.startDate, date.endDate);
+      getData(date.startDate.format('YYYY-MM-DD'), date.endDate.format('YYYY-MM-DD'));
     }
   }, [date]);
 
@@ -128,8 +130,28 @@ const Dashboard = () => {
 
   return (
     <>
-      <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
-        <CFormGroup row>
+      <CCard>
+          {/* <CCardHeader>React-Dates</CCardHeader> */}
+          <CCardBody>
+            <DateRangePicker
+              startDate={date.startDate}
+              minDate="01-01-2000"
+              startDateId="startDate"
+              endDate={date.endDate}
+              endDateId="endDate"
+              onDatesChange={value => setDate(value)}
+              focusedInput={focused}
+              isOutsideRange={() => false}
+              startDatePlaceholderText="Từ ngày"
+              endDatePlaceholderText="Đến ngày"
+              onFocusChange={focusedInput => setFocused(focusedInput)}
+              orientation="horizontal"
+              block={false}
+              openDirection="down"
+            />
+          </CCardBody>
+        </CCard>
+        {/* <CFormGroup row>
           <CCol>
             <CLabel htmlFor="date-input">Từ ngày</CLabel>
           </CCol>
@@ -137,12 +159,13 @@ const Dashboard = () => {
             <CInput
               type="date"
               id="date-input"
-              onChange={e =>
+              onChange={e =>{
+                console.log(e.target.value)
                 setDate({
                   ...date,
                   startDate: e.target.value
                 })
-              }
+              }}
               name="date-input"
               placeholder="date"
             />
@@ -166,8 +189,7 @@ const Dashboard = () => {
               placeholder="date"
             />
           </CCol>
-        </CFormGroup>
-      </CFormGroup>
+        </CFormGroup> */}
       <WidgetsDropdown date={date} />
       <CCard>
         <CCardBody>

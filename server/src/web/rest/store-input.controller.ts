@@ -191,7 +191,7 @@ export class StoreInputController {
         storeInput.createdBy = currentUser.login;
         storeInput.storeName = storeInput.store.name;
         storeInput.storeTransferName = storeInput.storeTransfer.name;
-        const created = await this.storeInputService.save(storeInput);
+        const created = await this.storeInputService.save(storeInput,currentUser);
         HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
         return res.send(created);
     }
@@ -209,7 +209,7 @@ export class StoreInputController {
         storeInput.createdBy = currentUser.login;
         storeInput.customerName = storeInput.customer.name;
         storeInput.storeName = storeInput.store.name;
-        const created = await this.storeInputService.save(storeInput);
+        const created = await this.storeInputService.save(storeInput, currentUser);
         HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
         return res.send(created);
     }
@@ -226,9 +226,21 @@ export class StoreInputController {
         const currentUser = req.user as User;
         storeInput.createdBy = currentUser.login;
         storeInput.storeName = storeInput.store.name;
-        const created = await this.storeInputService.save(storeInput);
+        const created = await this.storeInputService.save(storeInput,currentUser);
         HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
         return res.send(created);
+    }
+
+    @Put('/return/update')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'The record has been successfully updated.',
+        type: StoreInput,
+    })
+    async updateReturn(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+        HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
+        return res.send(await this.storeInputService.updateReturn(storeInput));
     }
 
     @Put('/export/approve')
@@ -259,8 +271,8 @@ export class StoreInputController {
         HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
         if (storeInput.status === StoreImportStatus.APPROVED) {
             const currentUser = req.user as User;
-            storeInput.approver = currentUser;
-            storeInput.approverName = currentUser.login;
+            // storeInput.approver = currentUser;
+            // storeInput.approverName = currentUser.login;
         }
         return res.send(await this.storeInputService.update(storeInput));
     }

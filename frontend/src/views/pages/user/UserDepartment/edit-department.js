@@ -25,6 +25,8 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { branchRemove, globalizedBranchSelectors } from '../UserBranch/branch.reducer';
+import { getBranch } from '../UserBranch/branch.api';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -32,7 +34,8 @@ export const mappingStatus = {
   DELETED: 'ĐÃ XÓA'
 };
 const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
-const { selectAll: selectAllDepartment, selectById } = globalizedDepartmentSelectors;
+const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
+const { selectAll: selectAllBranch } = globalizedBranchSelectors;
 
 const EditDepartment = props => {
   const { initialState } = useSelector(state => state.department);
@@ -47,9 +50,11 @@ const EditDepartment = props => {
 
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const departments = useSelector(selectAllDepartment);
+  const branches = useSelector(selectAllBranch);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
   const [initValues, setInitValues] = useState(null);
   const [external, setExternal] = useState([]);
+  const [selectedBranches, setSelectedBranches] = useState([]);
 
   useEffect(() => {
     if (initialState.detail) {
@@ -67,14 +72,25 @@ const EditDepartment = props => {
           label: departments.filter(depart => depart.id === item)[0]?.name || ''
         }));
         setExternal(arrWithLabel);
+        const arrBranchesWithLabel = initialState.detail.branches.map(item => {
+          dispatch(branchRemove(item.id));
+
+          return {
+            value: item,
+            label: item.name
+          };
+        });
+        setSelectedBranches(arrBranchesWithLabel);
       } catch {
         setExternal([]);
+        setSelectedBranches([]);
       }
     }
   }, [departments]);
 
   useEffect(() => {
     dispatch(getDepartment({ page: 0, size: 200, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getBranch({ page: 0, size: 200, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDetailDepartment({ id: props.match.params.id, dependency: true }));
     dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     return () => {
@@ -88,6 +104,8 @@ const EditDepartment = props => {
     values = JSON.parse(JSON.stringify(values));
     values.permissionGroups = selectedGroupPermission;
     values.externalChild = external ? JSON.stringify(external.map(item => item.value)) : '[]';
+    values.branches = selectedBranches?.map(item => item.value) || [];
+
     dispatch(fetching());
     dispatch(updateDepartment(values));
   };
@@ -197,6 +215,20 @@ const EditDepartment = props => {
                     placeholder="Chọn chi nhánh"
                     options={departments.map(item => ({
                       value: item.id,
+                      label: item.name
+                    }))}
+                  />
+                </CFormGroup>
+                <CFormGroup>
+                  <CLabel htmlFor="login">Phòng ban</CLabel>
+                  <Select
+                    name="branches"
+                    onChange={setSelectedBranches}
+                    isMulti
+                    value={selectedBranches}
+                    placeholder="Chọn phòng ban"
+                    options={branches.map(item => ({
+                      value: item,
                       label: item.name
                     }))}
                   />

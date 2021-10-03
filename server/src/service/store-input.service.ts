@@ -118,21 +118,20 @@ export class StoreInputService {
         let andQueryString = '';
 
         if (departmentVisible.length > 0) {
-            andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.department IN ${JSON.stringify(departmentVisible)
+            andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} StoreInput.department IN ${JSON.stringify(departmentVisible)
                 .replace('[', '(')
                 .replace(']', ')')}`;
         }
         if (filter['endDate'] && filter['startDate']) {
-            andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.createdDate  >= '${filter['startDate']}' AND StoreInput.createdDate <= '${filter['endDate']} 24:00:00'`;
+            andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} StoreInput.createdDate  >= '${filter['startDate']}' AND StoreInput.createdDate <= '${filter['endDate']} 23:59:59'`;
         }
         if (type.length > 0) {
-            andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.type like '%${type}%' `;
+            andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} StoreInput.type like '%${type}%' `;
         }
-        if(isEmployee && type.includes("RETURN")){
-            andQueryString += ` ${andQueryString.length === 0? "":" AND "} StoreInput.sale = ${currentUser.id} `;
+        if (isEmployee && type.includes("RETURN")) {
+            andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} StoreInput.sale = ${currentUser.id} `;
         }
-        const cacheKeyBuilder = generateCacheKey(departmentVisible,currentUser,isEmployee,{...filter,type},options,'StoreInputs');
-        console.log(cacheKeyBuilder)
+        const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, { ...filter, type }, options, 'StoreInputs');
         const queryBuilder = this.storeInputRepository
             .createQueryBuilder('StoreInput')
             .leftJoinAndSelect('StoreInput.approver', 'approver')
@@ -148,7 +147,7 @@ export class StoreInputService {
             .orderBy(`StoreInput.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
             .take(options.take);
-            const countCacheKeyBuilder = generateCacheKey(departmentVisible,currentUser,isEmployee,{...filter,type},options,'StoreInputs_count');
+        const countCacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, { ...filter, type }, options, 'StoreInputs_count');
 
         const count = this.storeInputRepository
             .createQueryBuilder('StoreInput')
@@ -196,20 +195,34 @@ export class StoreInputService {
         return await this.storeInputRepository.findAndCount(options);
     }
 
-    async save(storeInput: StoreInput): Promise<StoreInput | undefined> {
+    async save(storeInput: StoreInput, currentUser: User = null): Promise<StoreInput | undefined> {
         await this.storeInputRepository.removeCache(['StoreInputs']);
-        if (Array.isArray(storeInput.storeInputDetails)) {
-            await this.storeInputDetailsService.saveMany(storeInput.storeInputDetails);
+        // if (Array.isArray(storeInput.storeInputDetails)) {
+        //     await this.storeInputDetailsService.saveMany(storeInput.storeInputDetails);
+        // }
+
+        if (!storeInput.id) {
+            const count = await this.storeInputRepository
+                .createQueryBuilder('storeInput')
+                .select('DISTINCT()')
+                .where(`storeInput.code like '%${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}%'`)
+                .getCount();
+            storeInput.code = `${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}-${count + 1}`;
         }
         return await this.storeInputRepository.save(storeInput);
     }
 
+    async updateReturn(storeInput: StoreInput): Promise<StoreInput | undefined> {
+        return await this.save(storeInput);
+
+    }
     async update(storeInput: StoreInput): Promise<StoreInput | undefined> {
+
         const entity = await this.findById(storeInput.id);
 
-        if (entity.status === StoreImportStatus.APPROVED && storeInput.status === StoreImportStatus.APPROVED) {
-            throw new HttpException('Phiếu này đã được duyệt', HttpStatus.UNPROCESSABLE_ENTITY);
-        }
+        // if (entity.status === StoreImportStatus.APPROVED && storeInput.status === StoreImportStatus.APPROVED) {
+        //     throw new HttpException('Phiếu này đã được duyệt', HttpStatus.UNPROCESSABLE_ENTITY);
+        // }
         if (storeInput.status === StoreImportStatus.APPROVED) {
             const arrProduct = entity.storeInputDetails.map(item => item.product.id);
             const founded = await this.productQuantityService.findByfields({
@@ -248,7 +261,7 @@ export class StoreInputService {
         transaction.customerName = entity.customer.name;
         transaction.sale = entity.customer.sale || null;
         transaction.saleName = entity.customer.sale?.code || null;
-        transaction.branch= entity.customer.branch;
+        transaction.branch = entity.customer.branch;
         transaction.department = entity.department;
         transaction.storeInput = entity;
         transaction.refundMoney = entity.realMoney;
@@ -323,12 +336,12 @@ export class StoreInputService {
         const merged = total.reduce((previousValue, currentValue) => {
             const sum = previousValue.find(e => e.product.id === currentValue.product.id);
             if (!sum) {
-              previousValue.push(Object.assign({}, currentValue));
+                previousValue.push(Object.assign({}, currentValue));
             } else {
-              sum.quantity += currentValue.quantity;
+                sum.quantity += currentValue.quantity;
             }
             return previousValue;
-          }, []);
+        }, []);
         await this.productQuantityService.saveMany(merged);
     }
 

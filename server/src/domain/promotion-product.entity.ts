@@ -18,10 +18,10 @@ export default class PromotionProduct extends BaseEntity {
     @Index()
     gift?: number;
 
-    @ManyToOne(type => Product)
+    @ManyToOne(type => Product, { createForeignKeyConstraints: false })
     product?: Product;
 
-    @ManyToOne(type => Promotion)
+    @ManyToOne(type => Promotion, { createForeignKeyConstraints: false })
     promotion?: Promotion;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

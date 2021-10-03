@@ -29,7 +29,7 @@ export default class ProductGroup extends BaseEntity {
     @OneToMany(type => PromotionItem, other => other.productGroup)
     promotionItem? : PromotionItem[];
 
-    @ManyToOne(type => ProductBrand)
+    @ManyToOne(type => ProductBrand, { createForeignKeyConstraints: false })
     productBrand: ProductBrand;
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

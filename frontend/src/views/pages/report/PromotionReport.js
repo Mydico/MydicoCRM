@@ -52,7 +52,7 @@ const PromotionReport = () => {
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({ dependency: true });
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
@@ -68,16 +68,61 @@ const PromotionReport = () => {
 
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
-    dispatch(getBranch());
     dispatch(getPromotion());
   }, []);
 
   useEffect(() => {
-    getTop10(filter);
+    if (Object.keys(filter).length > 1) {
+      getTop10(filter);
+    }
   }, [activePage, size]);
 
+  // useEffect(() => {
+  //   dispatch(
+  //     getExactUser({
+  //       page: 0,
+  //       size: 50,
+  //       sort: 'createdDate,DESC',
+  //       code: '',
+  //       department: department?.id || account.department.id,
+  //       branch: branch?.id || account.branch.id,
+  //       dependency: true
+  //     })
+  //   );
+  //   dispatch(
+  //     filterCustomerNotToStore({
+  //       page: 0,
+  //       size: 50,
+  //       sort: 'createdDate,DESC',
+  //       department: department?.id || account.department.id,
+  //       branch: branch?.id || account.branch.id,
+  //       dependency: true
+  //     })).then(resp => {
+  //       if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
+  //         setFilteredCustomer(resp.payload.data);
+  //       }
+  //     });
+  // }, [department, branch])
+
+  const getCustomer = (department, branch, sale) => {
+    dispatch(
+      filterCustomerNotToStore({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        department: department,
+        branch: branch,
+        sale: sale,
+        dependency: true
+      })
+    ).then(resp => {
+      if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
+        setFilteredCustomer(resp.payload.data);
+      }
+    });
+  };
+
   const getTop10 = filter => {
-    
     dispatch(getPromotionReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
       if (data && data.payload) {
         setTop10Product(data.payload);
@@ -99,37 +144,96 @@ const PromotionReport = () => {
     });
   };
 
+  const reset = () => {
+    setBranch(null);
+    setUser(null);
+    setCustomer(null);
+  };
   useEffect(() => {
+    reset();
+    setFilter({
+      ...filter,
+      department: department?.id,
+      branch: null,
+      user: null,
+      customer: null
+    });
     if (department) {
-      setFilter({
-        ...filter,
-        department: department.id
-      });
+      dispatch(getBranch({ department: department.id, dependency: true }));
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          dependency: true
+        })
+      );
+      getCustomer(department?.id, null, null);
     }
   }, [department]);
 
   useEffect(() => {
+    setUser(null);
+    setFilter({
+      ...filter,
+      branch: branch?.id,
+      user: null,
+      customer: null
+    });
+
     if (branch) {
-      setFilter({
-        ...filter,
-        branch: branch.id
-      });
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          branch: branch?.id || account.branch.id,
+          dependency: true
+        })
+      );
+      getCustomer(department?.id, branch?.id, null);
     }
   }, [branch]);
 
   useEffect(() => {
-    if (promotion) {
-      setFilter({
-        ...filter,
-        promotion: promotion.id
-      });
+    setFilter({
+      ...filter,
+      sale: user?.id,
+      customer: null
+    });
+    if (user) {
+      getCustomer(department?.id, branch?.id, user?.id);
     }
+  }, [user]);
+
+  useEffect(() => {
+    setFilter({
+      ...filter,
+      customer: customer?.id
+    });
+  }, [customer]);
+
+  useEffect(() => {
+    setPromotionItem(null)
+    setFilter({
+      ...filter,
+      promotion: promotion?.id,
+      promotionItem: null
+    });
   }, [promotion]);
 
   useEffect(() => {
-    if(Object.keys(filter).length > 1){
-      getTop10(filter);
+    setFilter({
+      ...filter,
+      promotionItem: promotionItem?.id
+    });
+  }, [promotionItem]);
 
+  useEffect(() => {
+    if (Object.keys(filter).length > 1) {
+      getTop10(filter);
     }
   }, [filter]);
 
@@ -289,6 +393,29 @@ const PromotionReport = () => {
                 />
               </CCol>
               <CCol sm={4} md={4}>
+                <p>Nhân viên</p>
+                <Select
+                  name="user"
+                  onChange={e => {
+                    setUser(e?.value || null);
+                  }}
+                  value={{
+                    value: user,
+                    label: user?.code
+                  }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  onInputChange={onSearchUser}
+                  placeholder="Chọn nhân viên"
+                  options={users.map(item => ({
+                    value: item,
+                    label: item.code
+                  }))}
+                />
+              </CCol>
+            </CRow>
+            <CRow className="mt-2">
+              <CCol sm={4} md={4}>
                 <p>Khách hàng</p>
                 <Select
                   isSearchable
@@ -307,29 +434,6 @@ const PromotionReport = () => {
                   options={filteredCustomer.map(item => ({
                     value: item,
                     label: item.code
-                  }))}
-                />
-              </CCol>
-            </CRow>
-            <CRow className="mt-2">
-              <CCol sm={4} md={4}>
-                <p>Nhân viên</p>
-                <Select
-                  name="user"
-                  onChange={e => {
-                    setUser(e?.value || null);
-                  }}
-                  value={{
-                    value: user,
-                    label: user?.code
-                  }}
-                  isClearable={true}
-                  openMenuOnClick={false}
-                  onInputChange={onSearchUser}
-                  placeholder="Chọn chương trình"
-                  options={users.map(item => ({
-                    value: item,
-                    label: item.name
                   }))}
                 />
               </CCol>
@@ -370,13 +474,10 @@ const PromotionReport = () => {
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn chương trình"
-                  options={
-                    (promotion?.promotionItems ||
-                    []).map(item => ({
-                      value: item,
-                      label: item.name
-                    }))
-                  }
+                  options={(promotion?.promotionItems || []).map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
                 />
               </CCol>
             </CRow>

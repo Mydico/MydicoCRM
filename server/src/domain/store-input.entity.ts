@@ -30,14 +30,14 @@ export default class StoreInput extends BaseEntity {
     @Index()
     status?: StoreImportStatus;
 
-    @ManyToOne(type => Customer, customer => customer.storeInput)
+    @ManyToOne(type => Customer, { createForeignKeyConstraints: false })
     customer?: Customer;
 
     @Column({ name: 'customer_name', length: 255, nullable: true })
     @Index()
     customerName?: string;
 
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { createForeignKeyConstraints: false })
     sale?: User;
 
     @Column({ type: 'bigint', name: 'total_money', nullable: true })
@@ -52,13 +52,13 @@ export default class StoreInput extends BaseEntity {
     @Index()
     reduceMoney?: number;
 
-    @ManyToOne(type => Department)
+    @ManyToOne(type => Department, { createForeignKeyConstraints: false })
     department? : Department;
 
-    @ManyToOne(type => Branch)
+    @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
     branch? : Branch;
 
-    @ManyToOne(type => User, user => user.storeInput)
+    @ManyToOne(type => User, { createForeignKeyConstraints: false })
     approver?: User;
 
     @Column({ name: 'approver_name', length: 255, nullable: true })
@@ -69,32 +69,35 @@ export default class StoreInput extends BaseEntity {
     @Index()
     note?: string;
 
+    @Column({ name: 'code', length: 255, nullable: true })
+    @Index()
+    code?: string;
 
-    @OneToMany(type => StoreInputDetails, other => other.storeInput)
+    @OneToMany(type => StoreInputDetails, other => other.storeInput, { cascade: ['insert', 'update'] })
     storeInputDetails? : StoreInputDetails[];
 
-    @ManyToOne(type => Promotion)
+    @ManyToOne(type => Promotion, { createForeignKeyConstraints: false })
     promotion? : Promotion;
 
-    @ManyToOne(type => PromotionItem)
+    @ManyToOne(type => PromotionItem, { createForeignKeyConstraints: false })
     promotionItem? : PromotionItem;
 
 
-    @ManyToOne(type => Store)
+    @ManyToOne(type => Store, { createForeignKeyConstraints: false })
     store?: Store;
 
     @Column({ name: 'store_name', length: 255, nullable: true })
     @Index()
     storeName?: string;
 
-    @ManyToOne(type => Provider)
+    @ManyToOne(type => Provider, { createForeignKeyConstraints: false })
     provider?: Provider;
 
     @Column({ name: 'provider_name', length: 255, nullable: true })
     @Index()
     providerName?: string;
 
-    @ManyToOne(type => Store)
+    @ManyToOne(type => Store, { createForeignKeyConstraints: false })
     storeTransfer?: Store;
 
     @Column({ name: 'store_transfer_name', length: 255, nullable: true })

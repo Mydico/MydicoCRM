@@ -60,7 +60,7 @@ export const queryBuilderFunc = (entity, filter = {}) => {
   if (filter['endDate'] && filter['startDate']) {
     query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']}' AND  ${entity}.createdDate <= '${
       filter['endDate']
-    } 24:00:00'`;
+    } 23:59:59'`;
   }
   return query;
 };

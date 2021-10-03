@@ -17,7 +17,7 @@ import OrderDetails from './order-details.entity';
 @Entity('product')
 export default class Product extends BaseEntity {
     @Column({ name: 'name', length: 255 })
-    @Index()
+    @Index({fulltext : true})
     name: string;
 
     @Column({ name: 'image', nullable: true, type: 'text' })
@@ -28,16 +28,11 @@ export default class Product extends BaseEntity {
     desc: string;
 
     @Column({ name: 'code', length: 255, nullable: true, unique: true })
-    @Index()
     code: string;
 
     @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
     @Index()
     status: ProductStatus;
-
-    @Column({ name: 'barcode', length: 255, nullable: true, default: '' })
-    @Index()
-    barcode: string;
     /**
    * Giá gốc của sản phẩm tính theo đơn vị của sản phẩm
    */
@@ -63,10 +58,10 @@ export default class Product extends BaseEntity {
     @Index()
     agentPrice: number;
 
-    @ManyToOne(type => ProductGroup, productGroup => productGroup.product)
+    @ManyToOne(type => ProductGroup, { createForeignKeyConstraints: false })
     productGroup?: ProductGroup;
 
-    @ManyToOne(type => ProductBrand)
+    @ManyToOne(type => ProductBrand, { createForeignKeyConstraints: false })
     productBrand: ProductBrand;
 
     @OneToMany(type => PromotionProduct, other => other.product)

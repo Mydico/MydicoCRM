@@ -36,6 +36,7 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'storeName', label: 'Tên kho xuất', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
   { key: 'storeTransferName', label: 'Xuất đến', _style: { width: '10%' } },
@@ -70,6 +71,7 @@ const fieldsDetail = [
     _style: { width: '1%' },
     filter: false
   },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'productName', label: 'Tên sản phẩm', _style: { width: '10%' } },
   { key: 'unit', label: 'Đơn vị', _style: { width: '10%' } },
   { key: 'volume', label: 'Dung tích', _style: { width: '10%' } },
@@ -374,6 +376,7 @@ const WarehouseImport = props => {
             action: item => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
             },
+            code: (item, index) => <td>{item.code || ""}</td>,
             show_details: item => {
               return (
                 <td className="py-2 d-flex">

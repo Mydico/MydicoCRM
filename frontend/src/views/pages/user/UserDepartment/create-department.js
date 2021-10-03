@@ -13,6 +13,8 @@ import Select from 'react-select';
 import { globalizedPermissionGroupsSelectors } from '../UserPermission/permission.reducer';
 import { getPermissionGroups } from '../UserPermission/permission.api';
 import { validate } from '../../../../shared/utils/normalize';
+import { getBranch } from '../UserBranch/branch.api';
+import { globalizedBranchSelectors } from '../UserBranch/branch.reducer';
 
 const validationSchema = function() {
   return Yup.object().shape({
@@ -32,15 +34,18 @@ export const mappingStatus = {
 };
 const { selectAll: selectAllPermissionGroups } = globalizedPermissionGroupsSelectors;
 const { selectAll: selectAllDepartments } = globalizedDepartmentSelectors;
+const { selectAll: selectAllBranch } = globalizedBranchSelectors;
+
 const CreateDepartment = () => {
   const { initialState } = useSelector(state => state.department);
+  const branches = useSelector(selectAllBranch);
 
   const dispatch = useDispatch();
   const history = useHistory();
   const [external, setExternal] = useState([])
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const departments = useSelector(selectAllDepartments);
-
+  const [selectedBranches, setSelectedBranches] = useState([]);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
 
   const initialValues = {
@@ -49,6 +54,7 @@ const CreateDepartment = () => {
   };
 
   useEffect(() => {
+    dispatch(getBranch({ page: 0, size: 200, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getPermissionGroups({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDepartment({ page: 0, size: 200, sort: 'createdDate,DESC', dependency: true }));
     return () => {
@@ -60,6 +66,8 @@ const CreateDepartment = () => {
   const onSubmit = (values, { resetForm }) => {
     values.permissionGroups = selectedGroupPermission;
     values.externalChild = JSON.stringify(external.map(item => item.value))
+    values.branches = selectedBranches.map(item => item.value);
+
     dispatch(fetching());
     dispatch(creatingDepartment(values));
   };
@@ -157,8 +165,20 @@ const CreateDepartment = () => {
                   }))}
                 />
               </CFormGroup>
-              {/* <Select name="form-field-name2" value={value} options={states} onChange={setValue} isMulti /> */}
               <CFormGroup>
+                  <CLabel htmlFor="login">Phòng ban</CLabel>
+                  <Select
+                    name="branches"
+                    onChange={setSelectedBranches}
+                    isMulti
+                    value={selectedBranches}
+                    placeholder="Chọn phòng ban"
+                    options={branches.map(item => ({
+                      value: item,
+                      label: item.name
+                    }))}
+                  />
+                </CFormGroup>              <CFormGroup>
                 <CLabel htmlFor="userName">Nhóm quyền</CLabel>
                 <Select
                   name="department"

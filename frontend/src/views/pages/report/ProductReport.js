@@ -14,11 +14,7 @@ import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
-import {
-  getCountTotalPriceProduct,
-  getCountTotalProduct,
-  getProductReport,
-} from './report.api';
+import { getCountTotalPriceProduct, getCountTotalProduct, getProductReport } from './report.api';
 import { filterProduct } from '../product/ProductList/product.api';
 import { globalizedProductSelectors } from '../product/ProductList/product.reducer';
 import Download from './../../components/excel/DownloadExcel';
@@ -82,24 +78,19 @@ const ProductReport = () => {
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({
-    page: activePage - 1,
-    size,
-    sort: 'createdDate,DESC',
     dependency: true
   });
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
   const [user, setUser] = useState(null);
   const [product, setProduct] = useState(null);
-  const [top10Product, setTop10Product] = useState([[],0]);
+  const [top10Product, setTop10Product] = useState([[], 0]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
-    dispatch(getBranch());
-    dispatch(getUser());
     dispatch(filterProduct());
   }, []);
 
@@ -113,19 +104,19 @@ const ProductReport = () => {
   }, [activePage, size]);
 
   const getTop10 = (filter = {}) => {
-    dispatch(
-      getExactUser({
-        page: 0,
-        size: 50,
-        sort: 'createdDate,DESC',
-        department: department?.id,
-        branch: branch?.id,
-        dependency: true
-      })
-    );
-    delete filter['page'];
-    delete filter['size'];
-    delete filter['sort'];
+    // dispatch(
+    //   getExactUser({
+    //     page: 0,
+    //     size: 50,
+    //     sort: 'createdDate,DESC',
+    //     department: department?.id || account.department.id,
+    //     branch: branch?.id || account.branch.id,
+    //     dependency: true
+    //   })
+    // );
+    // delete filter['page'];
+    // delete filter['size'];
+    // delete filter['sort'];
     dispatch(getCountTotalProduct(filter)).then(data => {
       if (data && data.payload) {
         setNumOfProduct(data.payload.count || 0);
@@ -142,50 +133,77 @@ const ProductReport = () => {
     //   }
     // });
   };
-
+  const reset = () => {
+    setBranch(null);
+    setUser(null);
+  };
   useEffect(() => {
+    reset();
+    setFilter({
+      ...filter,
+      department: department?.id,
+      branch: null,
+      user: null
+    });
     if (department) {
-      setFilter({
-        ...filter,
-        department: department.id
-      });
+      dispatch(getBranch({ department: department.id, dependency: true }));
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          dependency: true
+        })
+      );
     }
   }, [department]);
 
   useEffect(() => {
+    setUser(null);
+    setFilter({
+      ...filter,
+      branch: branch?.id,
+      user: null
+    });
+
     if (branch) {
-      setFilter({
-        ...filter,
-        branch: branch.id
-      });
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          branch: branch?.id || account.branch.id,
+          dependency: true
+        })
+      );
     }
   }, [branch]);
 
   useEffect(() => {
-    if (user) {
-      setFilter({
-        ...filter,
-        sale: user.id
-      });
-    }
+    setFilter({
+      ...filter,
+      sale: user?.id
+    });
   }, [user]);
 
   useEffect(() => {
-    if (product) {
-      setFilter({
-        ...filter,
-        product: product.id
-      });
-    }
+    setFilter({
+      ...filter,
+      product: product?.id
+    });
   }, [product]);
 
   useEffect(() => {
-    getTop10(filter);
-    dispatch(getProductReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
-      if (data && data.payload) {
-        setTop10Product(data.payload);
-      }
-    });
+    if (Object.keys(filter).length > 1) {
+      getTop10(filter);
+      dispatch(getProductReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
+        if (data && data.payload) {
+          setTop10Product(data.payload);
+        }
+      });
+    }
   }, [filter]);
 
   useEffect(() => {
@@ -215,11 +233,11 @@ const ProductReport = () => {
   }, 300);
 
   const onSearchUser = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchUser(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchUser("");
+    if (action.action === 'input-blur') {
+      debouncedSearchUser('');
     }
   };
 
@@ -228,25 +246,28 @@ const ProductReport = () => {
   }, 300);
 
   const onSearchProduct = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchProduct(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchProduct("");
+    if (action.action === 'input-blur') {
+      debouncedSearchProduct('');
     }
   };
 
   const computedExcelItems = React.useCallback(items => {
-    return items || [].map((item, index) => {
-      return {
-        ...item,
-        order: index + 1,
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY HH:mm'),
-        quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
-        total: item.totalMoney,
-      };
-    });
-  },[]);  
+    return (
+      items ||
+      [].map((item, index) => {
+        return {
+          ...item,
+          order: index + 1,
+          createdDate: moment(item.createdDate).format('DD-MM-YYYY HH:mm'),
+          quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
+          total: item.totalMoney
+        };
+      })
+    );
+  }, []);
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(top10Product[0]), [top10Product[0]]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
   const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
@@ -277,7 +298,7 @@ const ProductReport = () => {
         <CCard>
           <CCardBody>
             <CRow sm={12} md={12}>
-              <CCol sm={3} md={3}>
+              <CCol sm={4} md={4}>
                 <p>Chi nhánh</p>
                 <Select
                   isSearchable
@@ -298,7 +319,7 @@ const ProductReport = () => {
                   }))}
                 />
               </CCol>
-              <CCol sm={3} md={3}>
+              <CCol sm={4} md={4}>
                 <p>Phòng ban</p>
                 <Select
                   isSearchable
@@ -319,7 +340,7 @@ const ProductReport = () => {
                   }))}
                 />
               </CCol>
-              <CCol sm={3} md={3}>
+              <CCol sm={4} md={4}>
                 <p>Nhân viên</p>
                 <Select
                   isSearchable
@@ -341,7 +362,9 @@ const ProductReport = () => {
                   }))}
                 />
               </CCol>
-              <CCol sm={3} md={3}>
+            </CRow>
+            <CRow className="mt-2">
+              <CCol sm={4} md={4}>
                 <p>Sản phẩm</p>
                 <Select
                   isSearchable
@@ -384,7 +407,7 @@ const ProductReport = () => {
             <CCardTitle>Danh sách sản phẩm</CCardTitle>
           </CCardHeader>
           <CCardBody>
-          <Download data={memoExcelListed} headers={excelFields} name={'product_report'} />
+            <Download data={memoExcelListed} headers={excelFields} name={'product_report'} />
 
             <CDataTable
               items={memoTop10Product}
@@ -422,7 +445,7 @@ const ProductReport = () => {
                   <td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
                   </td>
-                ),
+                )
               }}
             />
             <CPagination

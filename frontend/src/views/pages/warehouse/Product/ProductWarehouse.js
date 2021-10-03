@@ -3,11 +3,12 @@ import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, 
 import _ from 'lodash';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getProductWarehouse } from './product-warehouse.api.js';
+import { getCountProductWarehouse, getProductWarehouse } from './product-warehouse.api.js';
 import { globalizedProductWarehouseSelectors, reset } from './product-warehouse.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import Download from '../../../components/excel/DownloadExcel';
+import { CCardTitle, CLabel } from '@coreui/react';
 
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -25,11 +26,10 @@ const fields = [
   },
   { key: 'code', label: 'Mã sản phẩm', _style: { width: '10%' } },
   { key: 'name', label: 'Tên sản phẩm', _style: { width: '15%' } },
-  { key: 'volume', label: 'Dung tích', _style: { width: '15%' }, filter: false },
+  { key: 'volume', label: 'Dung tích', _style: { width: '15%' } },
   { key: 'storeName', label: 'Tên kho', _style: { width: '15%' } },
   { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false }
 ];
-
 
 const getBadge = status => {
   switch (status) {
@@ -52,6 +52,7 @@ const ProductWarehouse = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [total, setTotal] = useState(0);
   const paramRef = useRef();
   useEffect(() => {
     dispatch(reset());
@@ -60,6 +61,9 @@ const ProductWarehouse = props => {
   useEffect(() => {
     dispatch(reset());
     dispatch(getProductWarehouse({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    dispatch(getCountProductWarehouse({ dependency: true, ...paramRef.current })).then(resp => {
+      setTotal(Number(resp.payload.data.count));
+    });
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
@@ -88,24 +92,25 @@ const ProductWarehouse = props => {
     setDetails(newDetails);
   };
 
-
-
   const toEditProductWarehouse = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
-  const debouncedSearchColumn =  _.debounce(value => {
-      if (Object.keys(value).length > 0) {
-        Object.keys(value).forEach(key => {
-          if (!value[key]) delete value[key];
-        });
-        paramRef.current = value;
-        dispatch(getProductWarehouse({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      }
-    }, 300)
+  const debouncedSearchColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      Object.keys(value).forEach(key => {
+        if (!value[key]) delete value[key];
+      });
+      paramRef.current = value;
+      dispatch(getProductWarehouse({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getCountProductWarehouse({ dependency: true,  ...value })).then(resp => {
+        setTotal(Number(resp.payload.data.count));
+      });
+    }
+  }, 300);
 
   const onFilterColumn = value => {
-    if(value) debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
@@ -114,11 +119,16 @@ const ProductWarehouse = props => {
   return (
     <CCard>
       <CCardHeader>
-        <CIcon name="cil-grid" /> Danh sách sản phẩm
+        <CCardTitle>
+          <CIcon name="cil-grid" /> Danh sách sản phẩm trong kho
+        </CCardTitle>
       </CCardHeader>
       <CCardBody>
-      <Download data={memoListed} headers={fields} name={'order'} />
-
+        <Download data={memoListed} headers={fields} name={'order'} />
+        <CRow className="ml-0 mt-4">
+          <CLabel>Tổng sản phẩm:</CLabel>
+          <strong>{`\u00a0\u00a0${total}`}</strong>
+        </CRow>
         <CDataTable
           items={memoListed}
           fields={fields}

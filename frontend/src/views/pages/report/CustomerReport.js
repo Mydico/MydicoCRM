@@ -64,7 +64,7 @@ const CustomerReport = () => {
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({ dependency: true });
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
@@ -78,16 +78,20 @@ const CustomerReport = () => {
 
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
-    dispatch(getBranch());
-    dispatch(getUser());
+    // dispatch(getBranch());
+    // dispatch(getUser());
     dispatch(getCustomerType());
+  }, []);
+
+  const getCustomer = (department, branch, sale) => {
     dispatch(
       filterCustomerNotToStore({
         page: 0,
         size: 50,
         sort: 'createdDate,DESC',
-        department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
+        department: department,
+        branch: branch,
+        sale: sale,
         dependency: true
       })
     ).then(resp => {
@@ -95,23 +99,23 @@ const CustomerReport = () => {
         setFilteredCustomer(resp.payload.data);
       }
     });
-  }, []);
+  };
 
   useEffect(() => {
     getTop10(filter);
   }, [activePage, size]);
 
   const getTop10 = filter => {
-    dispatch(
-      getExactUser({
-        page: 0,
-        size: 50,
-        sort: 'createdDate,DESC',
-        department: department?.id,
-        branch: branch?.id,
-        dependency: true
-      })
-    );
+    // dispatch(
+    //   getExactUser({
+    //     page: 0,
+    //     size: 50,
+    //     sort: 'createdDate,DESC',
+    //     department: department?.id || account.department.id,
+    //     branch: branch?.id || account.branch.id,
+    //     dependency: true
+    //   })
+    // );
     dispatch(getCustomerReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
       if (data && data.payload) {
         setTop10Product(data.payload);
@@ -133,49 +137,82 @@ const CustomerReport = () => {
     });
   };
 
+  const reset = () => {
+    setBranch(null);
+    setUser(null);
+    setCustomer(null);
+  };
   useEffect(() => {
+    reset();
+    setFilter({
+      ...filter,
+      department: department?.id,
+      branch: null,
+      user: null,
+      customer: null
+    });
     if (department) {
-      setFilter({
-        ...filter,
-        department: department.id
-      });
+      dispatch(getBranch({ department: department.id, dependency: true }));
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          dependency: true
+        })
+      );
+      getCustomer(department.id, null, null);
     }
   }, [department]);
 
   useEffect(() => {
+    setUser(null);
+    setFilter({
+      ...filter,
+      branch: branch?.id,
+      user: null,
+      customer: null
+    });
+
     if (branch) {
-      setFilter({
-        ...filter,
-        branch: branch.id
-      });
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          branch: branch?.id || account.branch.id,
+          dependency: true
+        })
+      );
+      getCustomer(department.id, branch.id, null);
     }
   }, [branch]);
 
   useEffect(() => {
+    setFilter({
+      ...filter,
+      sale: user?.id,
+      customer: null
+    });
     if (user) {
-      setFilter({
-        ...filter,
-        sale: user.id
-      });
+      getCustomer(department.id, branch.id, user.id);
     }
   }, [user]);
 
   useEffect(() => {
-    if (customer) {
-      setFilter({
-        ...filter,
-        customer: customer.id
-      });
-    }
+    setFilter({
+      ...filter,
+      customer: customer?.id
+    });
   }, [customer]);
 
   useEffect(() => {
-    if (userType) {
-      setFilter({
-        ...filter,
-        type: userType.id
-      });
-    }
+    setFilter({
+      ...filter,
+      type: userType?.id
+    });
   }, [userType]);
 
   useEffect(() => {

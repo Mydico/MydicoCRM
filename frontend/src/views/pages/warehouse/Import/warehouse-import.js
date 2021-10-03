@@ -56,6 +56,7 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'storeName', label: 'Tên kho nhập', _style: { width: '10%' } },
   { key: 'storeTransferName', label: 'Xuất từ kho', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
@@ -400,6 +401,7 @@ const WarehouseImport = props => {
             action: (item, index) => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
             },
+            code: (item, index) => <td>{item.code || ""}</td>,
             show_details: item => {
               return (
                 <td className="py-2 d-flex">

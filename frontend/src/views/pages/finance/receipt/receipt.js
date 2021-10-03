@@ -3,7 +3,7 @@ import { CCardBody, CBadge, CButton, CDataTable, CCard, CCardHeader, CRow, CPagi
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getReceipt, updateReceiptStatus } from './receipt.api.js';
+import { getCountReceipt, getReceipt, updateReceiptStatus } from './receipt.api.js';
 import { useHistory } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
@@ -119,12 +119,16 @@ const Receipt = props => {
   const paramRef = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [total, setTotal] = useState(0);
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getReceipt(params));
+      dispatch(getCountReceipt({...paramRef.current, ...date, dependency: true })).then(resp => {
+        setTotal(Number(resp.payload.data.money));
+      });
     }
   }, [date]);
   useEffect(() => {
@@ -132,11 +136,14 @@ const Receipt = props => {
   }, []);
 
   useEffect(() => {
-    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, dependency: true }
     if (date.endDate && date.startDate) {
       params = { ...params, ...date };
     }
     dispatch(getReceipt(params));
+    dispatch(getCountReceipt(params)).then(resp => {
+      setTotal(Number(resp.payload.data.money));
+    });
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
@@ -160,7 +167,10 @@ const Receipt = props => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getReceipt({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
+      dispatch(getReceipt());
+      dispatch(getCountReceipt({ ...value, ...date, dependency: true })).then(resp => {
+        setTotal(Number(resp.payload.data.money));
+      });
     }
   }, 300);
 
@@ -170,8 +180,11 @@ const Receipt = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current , ...date };
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current , ...date, dependency: true };
       dispatch(getReceipt(params));
+      dispatch(getCountReceipt(params)).then(resp => {
+        setTotal(Number(resp.payload.data.money));
+      });
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
@@ -334,6 +347,10 @@ const Receipt = props => {
             </CCol>
           </CFormGroup>
         </CFormGroup>
+        <CRow className="ml-0 mt-4">
+          <CLabel>Tổng tiền:</CLabel>
+          <strong>{`\u00a0\u00a0${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}`}</strong>
+        </CRow>
         <CDataTable
           items={memoListed}
           fields={fields}

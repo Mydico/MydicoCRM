@@ -37,12 +37,19 @@ export default class Department extends BaseEntity {
     @TreeParent()
     parent?: Department;
 
-    @OneToMany(type => Store, store => store.department)
-    stores?: Store[];
+    // @OneToMany(type => Store, store => store.department)
+    // stores?: Store[];
 
-    @OneToMany(type => Order, store => store.department)
-    orders?: Store[];
+    // @OneToMany(type => Order, store => store.department)
+    // orders?: Store[];
 
+    @ManyToMany(type => Branch, store => store.departments)
+    @JoinTable({
+        name: 'department_branch',
+        joinColumn: { name: 'department_id', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'branch_id', referencedColumnName: 'id' },
+    })
+    branches?: Branch[];
 
     @ManyToMany(type => PermissionGroup, other => other.departments)
     permissionGroups?: PermissionGroup[];

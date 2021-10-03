@@ -66,7 +66,7 @@ const SaleReport = (props) => {
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({ dependency: true });
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
@@ -76,8 +76,6 @@ const SaleReport = (props) => {
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
-    dispatch(getBranch());
-    dispatch(getUser());
   }, []);
 
   useEffect(() => {
@@ -90,8 +88,8 @@ const SaleReport = (props) => {
         page: 0,
         size: 50,
         sort: 'createdDate,DESC',
-        department: department?.id,
-        branch: branch?.id,
+        department: department?.id || account.department.id,
+        branch: branch?.id || account.branch.id,
         dependency: true
       })
     );
@@ -117,35 +115,66 @@ const SaleReport = (props) => {
     // });
   };
 
+  const reset = () => {
+    setBranch(null);
+    setUser(null);
+  };
   useEffect(() => {
+    reset();
+    setFilter({
+      ...filter,
+      department: department?.id,
+      branch: null,
+      user: null
+    });
     if (department) {
-      setFilter({
-        ...filter,
-        department: department.id
-      });
+      dispatch(getBranch({ department: department.id, dependency: true }));
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          dependency: true
+        })
+      );
     }
   }, [department]);
 
   useEffect(() => {
+    setUser(null);
+    setFilter({
+      ...filter,
+      branch: branch?.id,
+      user: null
+    });
+
     if (branch) {
-      setFilter({
-        ...filter,
-        branch: branch.id
-      });
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          branch: branch?.id || account.branch.id,
+          dependency: true
+        })
+      );
     }
   }, [branch]);
 
   useEffect(() => {
-    if (user) {
-      setFilter({
-        ...filter,
-        sale: user.id
-      });
-    }
+    setFilter({
+      ...filter,
+      sale: user?.id
+    });
   }, [user]);
 
   useEffect(() => {
-    getTop10(filter);
+    if (Object.keys(filter).length > 1) {
+      getTop10(filter);
+    }
+   
   }, [filter]);
 
   useEffect(() => {
@@ -347,7 +376,7 @@ const SaleReport = (props) => {
                 ),
                 realMoney: (item, index) => (
                   <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney - item.return || 0)}</div>
                   </td>
                 ),
                 reduce: (item, index) => (

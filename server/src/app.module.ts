@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as path from 'path';
 import { AuthModule } from './module/auth.module';
 import { ormconfig, roleBDConfig } from './orm.config';
-import { CustomerTokenModule } from './module/customer-token.module';
 import { PromotionModule } from './module/promotion.module';
 import { BillModule } from './module/bill.module';
 import { CodlogModule } from './module/codlog.module';
@@ -21,19 +20,11 @@ import { ProductQuantityModule } from './module/product-quantity.module';
 import { PromotionCustomerLevelModule } from './module/promotion-customer-level.module';
 import { PromotionItemModule } from './module/promotion-item.module';
 import { ReceiptModule } from './module/receipt.module';
-import { ReportDateModule } from './module/report-date.module';
 import { StoreModule } from './module/store.module';
 import { StoreInputModule } from './module/store-input.module';
 import { StoreInputDetailsModule } from './module/store-input-details.module';
 import { TransactionModule } from './module/transaction.module';
-import { TransportModule } from './module/transport.module';
-import { TransportLogModule } from './module/transport-log.module';
-import { UserDeviceTokenModule } from './module/user-device-token.module';
-import { UserNotifyModule } from './module/user-notify.module';
 import { UserRoleModule } from './module/user-role.module';
-import { UserTeamModule } from './module/user-team.module';
-import { UserTypeModule } from './module/user-type.module';
-import { UserTokenModule } from './module/user-token.module';
 import { ProductBrandModule } from './module/product-brand.module';
 import { FileModule } from './module/file.module';
 import { RoleModule } from './module/role.module';
@@ -46,7 +37,6 @@ import { PermissionGroupHistoryModule } from './module/permission-group-history.
 import { PermissionGroupAssociateModule } from './module/permission-group-associate.module';
 import { StoreHistoryModule } from './module/store-history.module';
 import { ProviderModule } from './module/provider.module';
-import { CustomerDebitModule } from './module/customer-debit.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UserModule } from './module/user.module';
@@ -77,7 +67,6 @@ import { EventsModule } from './module/event.module';
         RoleModule.forRootAsync(roleBDConfig, path.join(__dirname, '/acl-model.conf')),
         AuthModule,
         TasksModule,
-        CustomerTokenModule,
         PromotionModule,
         OrderModule,
         ReportModule,
@@ -97,20 +86,12 @@ import { EventsModule } from './module/event.module';
         PromotionCustomerLevelModule,
         PromotionItemModule,
         ReceiptModule,
-        ReportDateModule,
         StoreModule,
         StoreInputModule,
         StoreInputDetailsModule,
         TransactionModule,
-        TransportModule,
-        TransportLogModule,
-        UserDeviceTokenModule,
         UserModule,
-        UserNotifyModule,
         UserRoleModule,
-        UserTeamModule,
-        UserTypeModule,
-        UserTokenModule,
         ProductBrandModule,
         PromotionProductModule,
         DepartmentModule,
@@ -121,7 +102,6 @@ import { EventsModule } from './module/event.module';
         PermissionGroupAssociateModule,
         StoreHistoryModule,
         ProviderModule,
-        CustomerDebitModule,
         IncomeDashboardModule,
         DebtDashboardModule,
         BranchModule,

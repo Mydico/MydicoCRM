@@ -14,27 +14,27 @@ import Department from './department.entity';
  */
 @Entity('bill')
 export default class Bill extends BaseEntity {
-    @ManyToOne(type => Customer, customer => customer.bill)
+    @ManyToOne(type => Customer, { createForeignKeyConstraints: false })
     customer: Customer;
 
     @Column({ name: 'customer_name', length: 255, nullable: true })
     @Index()
     customerName?: string;
 
-    @ManyToOne(type => User, user => user.bill)
+    @ManyToOne(type => User, { createForeignKeyConstraints: false })
     transporter: User;
 
     @Column({ name: 'transporter_name', length: 255, nullable: true })
     @Index()
     transporterName?: string;
 
-    @ManyToOne(type => Department)
+    @ManyToOne(type => Department, { createForeignKeyConstraints: false })
     department? : Department;
 
-    @ManyToOne(type => Order, order => order.bill)
+    @ManyToOne(type => Order, { createForeignKeyConstraints: false })
     order: Order;
 
-    @ManyToOne(type => Store, store => store.bill)
+    @ManyToOne(type => Store, { createForeignKeyConstraints: false })
     store: Store;
 
     /**

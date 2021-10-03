@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { creatingBranch, getBranch } from './branch.api';
 
 import { useHistory } from 'react-router-dom';
-import { fetching, globalizedBranchSelectors, reset } from './branch.reducer';
+import { fetching, globalizedBranchSelectors, reset, branchRemove } from './branch.reducer';
 import { Table } from 'reactstrap';
 import Select from 'react-select';
 import { globalizedPermissionGroupsSelectors } from '../UserPermission/permission.reducer';

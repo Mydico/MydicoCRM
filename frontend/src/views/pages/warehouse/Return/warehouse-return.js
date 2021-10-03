@@ -45,6 +45,7 @@ const fields = [
   },
   { key: 'storeName', label: 'Tên kho nhập', _style: { width: '10%' } },
   { key: 'customerName', label: 'Khách hàng', _style: { width: '10%' } },
+  { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
@@ -188,25 +189,41 @@ const WarehouseImport = props => {
     dispatch(updateWarehouseStatusImport(data));
   };
 
+  const toEditWarehouseReturnDetail = userId => {
+    history.push(`${props.match.url}/detail/${userId}/edit`);
+  };
+
   const renderButtonStatus = item => {
     switch (item.status) {
       case WarehouseImportStatus.APPROVED:
         return (
-          <CRow>
-            <CButton
-              onClick={() => {
-                toEditWarehouseReturn(item.id);
-              }}
-              color="warning"
-              variant="outline"
-              shape="square"
-              size="sm"
-              className="mr-1"
-            >
-              <CIcon name="cil-pencil" />
-              CHỈNH SỬA
-            </CButton>
-          </CRow>
+          <CButton
+            onClick={() => {
+              toEditWarehouseReturnDetail(item.id);
+            }}
+            color="warning"
+            variant="outline"
+            shape="square"
+            size="sm"
+            className="mr-1"
+          >
+            CHỈNH SỬA THÔNG TIN
+          </CButton>
+          // <CRow>
+          //   <CButton
+          //     onClick={() => {
+          //       toEditWarehouseReturn(item.id);
+          //     }}
+          //     color="warning"
+          //     variant="outline"
+          //     shape="square"
+          //     size="sm"
+          //     className="mr-1"
+          //   >
+          //     <CIcon name="cil-pencil" />
+          //     CHỈNH SỬA
+          //   </CButton>
+          // </CRow>
         );
       case WarehouseImportStatus.REJECTED:
         return null;
@@ -368,6 +385,7 @@ const WarehouseImport = props => {
           }}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+            code: (item, index) => <td>{item.code || ""}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>

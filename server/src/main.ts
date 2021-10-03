@@ -147,7 +147,6 @@ async function bootstrap(): Promise<void> {
   //             : PermissionStatus.PUBLIC,
   //                 description: `${foundedException.length > 0 ? '' : actionDesc[method]} ${desc}`,
   //             };
-
   //             permissionList.push(per);
   //             permissionTypeList.push(perType);
   //         });

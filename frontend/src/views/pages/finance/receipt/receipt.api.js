@@ -45,3 +45,12 @@ export const getReceipt = createAsyncThunk('api/receipts', async (params = { pag
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
+export const getCountReceipt = createAsyncThunk('api/receipts/count', async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
+  try {
+    const result = await axios.get('api/receipts/count', { params: params });
+    return { data: result.data };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

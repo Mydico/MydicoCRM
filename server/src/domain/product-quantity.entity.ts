@@ -12,30 +12,30 @@ import { ProductStatus } from './enumeration/product-status';
  */
 @Entity('product_quantity')
 export default class ProductQuantity extends BaseEntity {
-    @Column({ type: 'integer', name: 'quantity' })
-    @Index()
-    quantity: number;
+  @Column({ type: 'integer', name: 'quantity' })
+  @Index()
+  quantity: number;
 
-    @Column({  name: 'name' })
-    @Index()
-    name: string;
+  @Column({ name: 'name' })
+  @Index({ fulltext: true })
+  name: string;
 
-    @Column({  name: 'store_name' })
-    @Index()
-    storeName: string;
+  @Column({ name: 'store_name' })
+  @Index()
+  storeName: string;
 
-    @ManyToOne(type => Department)
-    department: Department;
+  @ManyToOne(type => Department, { createForeignKeyConstraints: false })
+  department: Department;
 
-    @ManyToOne(type => Store)
-    store: Store;
+  @ManyToOne(type => Store, { createForeignKeyConstraints: false })
+  store: Store;
 
-    @ManyToOne(type => Product)
-    product: Product;
+  @ManyToOne(type => Product, { createForeignKeyConstraints: false })
+  product: Product;
 
-    @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
-    @Index()
-    status?: ProductStatus;
+  @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
+  @Index()
+  status?: ProductStatus;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

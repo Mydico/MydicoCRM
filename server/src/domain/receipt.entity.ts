@@ -13,10 +13,10 @@ import { User } from './user.entity';
  */
 @Entity('receipt')
 export default class Receipt extends BaseEntity {
-    @ManyToOne(type => Customer, customer => customer.receipts)
+    @ManyToOne(type => Customer, { createForeignKeyConstraints: false })
     customer?: Customer;
 
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { createForeignKeyConstraints: false })
     sale?: User;
 
     @Column({ name: 'code', length: 255, nullable: true })
@@ -31,14 +31,14 @@ export default class Receipt extends BaseEntity {
     @Index()
     approverName: string;
 
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { createForeignKeyConstraints: false })
     approver?: User;
 
     @Column({ type: 'simple-enum', name: 'status', enum: ReceiptStatus, default: ReceiptStatus.WAITING })
     @Index()
     status: ReceiptStatus;
 
-    @ManyToOne(type => Branch)
+    @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
     branch?: Branch;
 
     @Column({ name: 'note', length: 255, nullable: true })
@@ -49,7 +49,7 @@ export default class Receipt extends BaseEntity {
     @Index()
     money: number;
 
-    @ManyToOne(type => Department)
+    @ManyToOne(type => Department, { createForeignKeyConstraints: false })
     department? : Department;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

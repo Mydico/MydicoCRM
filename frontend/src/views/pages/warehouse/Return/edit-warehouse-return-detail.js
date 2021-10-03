@@ -60,7 +60,7 @@ const { selectById } = globalizedWarehouseImportSelectors;
 const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
 
-const EditWarehouseReturn = props => {
+const EditWarehouseReturnDetail = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
   const { account } = useSelector(userSafeSelector);
 
@@ -120,7 +120,7 @@ const EditWarehouseReturn = props => {
     values.reduceMoney = productList.reduce((sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100, 0);
     values.type = WarehouseImportType.RETURN;
     dispatch(fetching());
-    dispatch(updateWarehouseReturn(values));
+    dispatch(updateCurrentWarehouseReturn(values));
   };
 
   const onChangeQuantity = ({ target }, index) => {
@@ -538,7 +538,7 @@ const EditWarehouseReturn = props => {
                               <MaskedInput
                                 mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
-                                value={item.product.price || 0}
+                                value={productList[index].price}
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
@@ -613,4 +613,4 @@ const EditWarehouseReturn = props => {
   );
 };
 
-export default EditWarehouseReturn;
+export default EditWarehouseReturnDetail;

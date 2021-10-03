@@ -8,6 +8,7 @@ import { checkCodeContext } from './utils/normalizeString';
 
 const relationshipNames = [];
 relationshipNames.push('permissionGroups');
+relationshipNames.push('branches');
 
 @Injectable()
 export class DepartmentService {

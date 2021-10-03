@@ -19,7 +19,7 @@ export default class ProductDetails extends BaseEntity {
     @Index()
     name: string;
 
-    @ManyToOne(type => Product)
+    @ManyToOne(type => Product, { createForeignKeyConstraints: false })
     product: Product;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

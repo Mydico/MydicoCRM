@@ -3,10 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, FindManyOptions, FindOneOptions, In } from 'typeorm';
 import ProductQuantity from '../domain/product-quantity.entity';
 import { ProductQuantityRepository } from '../repository/product-quantity.repository';
-import { Request, Response } from 'express';
-import { PageRequest } from '../domain/base/pagination.entity';
-import { User } from '../domain/user.entity';
-import { DepartmentService } from './department.service';
+import { queryBuilderFunc } from '../utils/helper/permission-normalization';
+import { generateCacheKey } from './utils/helperFunc';
 
 const relationshipNames = [];
 relationshipNames.push('store');
@@ -30,9 +28,86 @@ export class ProductQuantityService {
     return await this.productQuantityRepository.find(options);
   }
 
+  // async filter(filter = {}, options: FindManyOptions<ProductQuantity>): Promise<[ProductQuantity[], number]> {
+  //   let queryString = '';
+  //   Object.keys(filter).forEach((item, index) => {
+  //     // if(item === 'name'){
+  //     //   // const listWord = filter[item].split(" ");
+  //     //   // console.log(listWord);
+  //     //   // listWord.forEach((element, index) => {
+  //     //   //   queryString += `product.name like '%${element}%' ${listWord.length - 1 === index ? '' : 'OR '} `
+  //     //   // });
+  //     //   queryString += `MATCH(name) AGAINST ('${filter[item]}' IN BOOLEAN MODE)`
+  //     // }
+      
+  //     if (item === 'store') return;
+  //     if (item === 'status') return;
+  //     queryString += `product.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '} `;
+  //   });
+  //   const queryBuilder = this.productQuantityRepository
+  //     .createQueryBuilder('ProductQuantity')
+  //     .leftJoinAndSelect('ProductQuantity.product', 'product')
+  //     .leftJoinAndSelect('product.productBrand', 'productBrand')
+  //     .leftJoinAndSelect('product.productGroup', 'productGroup')
+  //     .where(`ProductQuantity.store = ${filter['store']} AND ProductQuantity.status = 'ACTIVE'`)
+  //     .orderBy(`ProductQuantity.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+  //     .skip(options.skip)
+  //     .take(options.take);
+  //   if (filter['store'] && queryString) {
+  //     queryBuilder.andWhere(
+  //       new Brackets(sqb => {
+  //         sqb.where(queryString);
+  //       })
+  //     );
+  //   }
+
+  //   const result = await queryBuilder.getManyAndCount();
+  //   return result;
+  // }
+
+  async countProduct(filter = {}, departmentVisible = [], options: FindManyOptions<ProductQuantity>): Promise<[ProductQuantity[], number]> {
+    let queryString = '';
+
+
+    if (departmentVisible.length > 0) {
+      queryString += `ProductQuantity.department IN ${JSON.stringify(departmentVisible)
+        .replace('[', '(')
+        .replace(']', ')')}`;
+    }
+
+    Object.keys(filter).forEach((item, index) => {
+      if (item === 'store') {
+        queryString += ` AND ProductQuantity.store = ${filter[item]} `;
+      } else if (item === 'code') {
+        queryString += ` AND product.code like '%${filter[item]}%' `;
+      } else if (item === 'volume') {
+          queryString += ` AND product.volume = ${filter[item]} `;
+      } else {
+        queryString += ` AND ProductQuantity.${item} like '%${filter[item]}%'`;
+      }
+    });
+    const count = this.productQuantityRepository
+    .createQueryBuilder('ProductQuantity')
+    .leftJoinAndSelect('ProductQuantity.product', 'product')
+    .select('sum(ProductQuantity.quantity)','count')
+    .where(queryString)
+
+    const result = await count.getRawOne();
+    return result;
+  }
+
   async filter(filter = {}, options: FindManyOptions<ProductQuantity>): Promise<[ProductQuantity[], number]> {
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
+      // if(item === 'name'){
+      //   // const listWord = filter[item].split(" ");
+      //   // console.log(listWord);
+      //   // listWord.forEach((element, index) => {
+      //   //   queryString += `product.name like '%${element}%' ${listWord.length - 1 === index ? '' : 'OR '} `
+      //   // });
+      //   queryString += `MATCH(name) AGAINST ('${filter[item]}' IN BOOLEAN MODE)`
+      // }
+      
       if (item === 'store') return;
       if (item === 'status') return;
       queryString += `product.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '} `;
@@ -65,6 +140,8 @@ export class ProductQuantityService {
         queryString += `AND ProductQuantity.store = ${filter[item]} `;
       } else if (item === 'code') {
         queryString += `AND product.code like '%${filter[item]}%' `;
+      } else if (item === 'volume') {
+        queryString += `AND product.volume = ${filter[item]} `;
       } else {
         queryString += ` AND ProductQuantity.${item} like '%${filter[item]}%'`;
       }

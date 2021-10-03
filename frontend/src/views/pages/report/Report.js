@@ -18,19 +18,6 @@ import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getTop10Customer, getTop10Product, getTop10sale } from './report.api';
 
 moment.locale('vi');
-const controlStyles = {
-  borderRadius: '1px solid black',
-  padding: '5px',
-  color: 'black'
-};
-const ControlComponent = props => {
-  return (
-    <div style={controlStyles}>
-      {<p>{props.title}</p>}
-      <components.Control {...props} />
-    </div>
-  );
-};
 const { selectAll } = globalizedBranchSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
 
@@ -38,15 +25,12 @@ const Report = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
-  const selectRef = React.useCallback(node => {
-    node.focus();
-  }, []);
 
   const branches = useSelector(selectAll);
   const users = useSelector(selectUserAll);
 
-  const [filter, setFilter] = useState({ dependency: true });
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const [filter, setFilter] = useState({ dependency: true, department: null, branch: null, user: null });
+  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
@@ -56,9 +40,7 @@ const Report = () => {
   const [top10Product, setTop10Product] = useState([]);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
-    dispatch(getBranch());
-    dispatch(getUser());
-    getTop10();
+    // getTop10();
   }, []);
 
   const getTop10 = filter => {
@@ -67,8 +49,8 @@ const Report = () => {
         page: 0,
         size: 50,
         sort: 'createdDate,DESC',
-        department: department?.id,
-        branch: branch?.id,
+        department: department?.id || account.department.id,
+        branch: branch?.id || account.branch.id,
         dependency: true
       })
     );
@@ -89,22 +71,47 @@ const Report = () => {
     });
   };
 
+  const reset = () => {
+    setBranch(null);
+    setUser(null);
+  };
+
   useEffect(() => {
+    reset();
+    setFilter({
+      ...filter,
+      department: department?.id,
+      branch: null,
+      user: null
+    });
     if (department) {
-      setFilter({
-        ...filter,
-        department: department.id
-      });
+      dispatch(getBranch({ department: department.id, dependency: true }));
+      dispatch(getExactUser({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        department: department?.id || account.department.id,
+        dependency: true
+      }))
     }
   }, [department]);
 
   useEffect(() => {
+    setUser(null);
+    setFilter({
+      ...filter,
+      branch: branch?.id,
+      user: null
+    });
     if (branch) {
-      setFilter({
-        ...filter,
-        branch: branch.id
-      });
-
+      dispatch(getExactUser({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        department: department?.id || account.department.id,
+        branch: branch?.id || account.branch.id,
+        dependency: true
+      }))
     }
   }, [branch]);
 
@@ -113,12 +120,10 @@ const Report = () => {
   }, [filter]);
 
   useEffect(() => {
-    if (user) {
-      setFilter({
-        ...filter,
-        sale: user.id
-      });
-    }
+    setFilter({
+      ...filter,
+      sale: user?.id
+    });
   }, [user]);
 
   useEffect(() => {
@@ -148,11 +153,11 @@ const Report = () => {
   }, 300);
 
   const onSearchUser = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchUser(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchUser("");
+    if (action.action === 'input-blur') {
+      debouncedSearchUser('');
     }
   };
 

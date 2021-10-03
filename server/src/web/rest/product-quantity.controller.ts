@@ -109,6 +109,36 @@ export class ProductQuantityController {
     return res.send(results);
   }
 
+  @Get('/count')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: ProductQuantity
+  })
+  async getAllCount(@Req() req: Request, @Res() res): Promise<Response> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter: any = {};
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        filter[item] = req.query[item];
+      }
+    });
+    const currentUser = req.user as User;
+    let departmentVisible = [];
+    if (currentUser.department) {
+        departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        departmentVisible = departmentVisible.map(item => item.id);
+        departmentVisible.push(currentUser.department.id);
+    }
+    const results = await this.productQuantityService.countProduct(filter, departmentVisible, {
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder()
+    });
+    return res.send(results);
+  }
+
   @Get('/')
   @Roles(RoleType.USER)
   @ApiResponse({

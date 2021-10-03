@@ -10,13 +10,14 @@ import { getDepartmentReport, getTop10Customer, getTop10Product, getTop10sale } 
 import { CChartBar, CChartDoughnut } from '@coreui/react-chartjs';
 import { getRandomColor } from '../../../shared/utils/helper';
 import { useHistory } from 'react-router';
+import moment from 'moment';
 
 const DepartmentReport = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
   const [filter, setFilter] = useState({ dependency: true });
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
   const [departmentReport, setDepartmentReport] = useState([]);
 

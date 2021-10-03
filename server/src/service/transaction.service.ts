@@ -65,7 +65,7 @@ export class TransactionService {
     if (filter['endDate'] && filter['startDate']) {
       queryString += ` AND Transaction.createdDate  >= '${filter['startDate']}' AND Transaction.createdDate <='${
         filter['endDate']
-      } 24:00:00'`;
+      } 23:59:59'`;
     }
     if (!allowToSeeAll) {
       if (isEmployee) {
@@ -118,7 +118,7 @@ export class TransactionService {
     if (filter['endDate'] && filter['startDate']) {
       andQueryString += ` AND Transaction.createdDate  >= '${filter['startDate']}' AND Transaction.createdDate <= '${
         filter['endDate']
-      } 24:00:00'`;
+      } 23:59:59'`;
     }
     if (!allowViewAll) {
       if (isEmployee) {
@@ -145,7 +145,7 @@ export class TransactionService {
       .addSelect('MAX(`Transaction`.`saleId`)', 'saleId')
       .addSelect('MAX(`Transaction`.`branchId`)', 'branchId')
       .where(andQueryString)
-      .groupBy('Transaction.customerId, Transaction.customerCode, Transaction.saleName')
+      .groupBy('Transaction.customerId, Transaction.customerName, Transaction.customerCode, Transaction.saleName')
       .orderBy(`MAX(Transaction.${Object.keys(options.order)[0] || 'createdDate'})`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);

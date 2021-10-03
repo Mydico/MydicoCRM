@@ -73,7 +73,7 @@ export default class Customer extends BaseEntity {
     @Index()
     social?: string;
 
-    @Column({ name: 'code', length: 256, unique: true, nullable: false })
+    @Column({ name: 'code', length: 256, nullable: false, unique: true })
     code: string;
 
     @Column({ name: 'contact_name', length: 256, nullable: true })
@@ -92,17 +92,17 @@ export default class Customer extends BaseEntity {
     @Index()
     earlyDebt?: number;
 
-    @OneToMany(type => Order, other => other.customer)
-    order? : Order[];
-
-    @OneToMany(type => Receipt, other => other.customer)
-    receipts? : Receipt[];
-
     @OneToMany(type => Bill, other => other.customer)
     bill? : Bill[];
 
     @OneToMany(type => StoreInput, other => other.customer)
     storeInput? : StoreInput[];
+
+    @OneToMany(type => Order, other => other.customer)
+    order? : Order[];
+
+    @OneToMany(type => Receipt, other => other.customer)
+    receipts? : Receipt[];
 
     @OneToMany(type => Transaction, other => other.customer)
     transaction? : Transaction[];
@@ -115,23 +115,23 @@ export default class Customer extends BaseEntity {
     @Index()
     district?: string;
 
-    @ManyToOne(type => Department)
+    @ManyToOne(type => Department, { createForeignKeyConstraints: false })
     department?: Department;
 
-    @ManyToOne(type => Branch)
+    @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
     branch?: Branch;
 
     @Column({ name: 'ward', length: 255, nullable: true })
     @Index()
     ward?: string;
 
-    @ManyToOne(type => CustomerStatus)
+    @ManyToOne(type => CustomerStatus, { createForeignKeyConstraints: false })
     status?: CustomerStatus;
 
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { createForeignKeyConstraints: false })
     sale?: User;
 
-    @ManyToOne(type => CustomerType)
+    @ManyToOne(type => CustomerType, { createForeignKeyConstraints: false })
     type?: CustomerType;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

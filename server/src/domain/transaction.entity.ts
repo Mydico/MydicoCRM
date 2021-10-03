@@ -18,19 +18,19 @@ import Department from './department.entity';
  */
 @Entity('transaction')
 export default class Transaction extends BaseEntity {
-    @ManyToOne(type => Customer)
+    @ManyToOne(type => Customer, { createForeignKeyConstraints: false })
     customer?: Customer;
 
-    @ManyToOne(type => Order)
+    @ManyToOne(type => Order, { createForeignKeyConstraints: false })
     order?: Order;
 
-    @ManyToOne(type => Store)
+    @ManyToOne(type => Store, { createForeignKeyConstraints: false })
     store?: Store;
 
-    @ManyToOne(type => StoreInput)
+    @ManyToOne(type => StoreInput, { createForeignKeyConstraints: false })
     storeInput?: StoreInput;
 
-    @ManyToOne(type => Bill)
+    @ManyToOne(type => Bill, { createForeignKeyConstraints: false })
     bill?: Bill;
 
     @Column({ name: 'sale_name', length: 500, nullable: true })
@@ -45,10 +45,10 @@ export default class Transaction extends BaseEntity {
     @Index()
     customerName?: string;
 
-    @ManyToOne(type => Branch)
+    @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
     branch? : Branch;
 
-    @ManyToOne(type => Department)
+    @ManyToOne(type => Department, { createForeignKeyConstraints: false })
     department? : Department;
 
     /**
@@ -62,7 +62,7 @@ export default class Transaction extends BaseEntity {
     @Index()
     note?: string;
 
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { createForeignKeyConstraints: false })
     sale?: User;
 
     @Column({ type: 'bigint', name: 'total_money', nullable: true, default: 0 })
@@ -95,7 +95,7 @@ export default class Transaction extends BaseEntity {
     /**
    * id phiếu thu
    */
-    @ManyToOne(type => Receipt)
+    @ManyToOne(type => Receipt, { createForeignKeyConstraints: false })
     receipt?: Receipt;
 
 

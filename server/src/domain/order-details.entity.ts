@@ -12,7 +12,7 @@ import Store from './store.entity';
 @Entity('order_details')
 export default class OrderDetails extends BaseEntity {
 
-    @ManyToOne(type => Product, promotion => promotion)
+    @ManyToOne(type => Product, promotion => promotion, { createForeignKeyConstraints: false })
     product: Product;
 
     @Column({ type: 'integer', name: 'quantity', nullable: true })
@@ -27,7 +27,7 @@ export default class OrderDetails extends BaseEntity {
     @Index()
     attachTo: number;
 
-    @ManyToOne(type => Store, store => store)
+    @ManyToOne(type => Store, store => store, { createForeignKeyConstraints: false })
     store: Store;
 
     @Column({ type: 'double', name: 'price_total', nullable: true })
@@ -47,7 +47,7 @@ export default class OrderDetails extends BaseEntity {
     priceReal: number;
 
 
-    @ManyToOne(type => Order)
+    @ManyToOne(type => Order, { createForeignKeyConstraints: false })
     order: Order;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

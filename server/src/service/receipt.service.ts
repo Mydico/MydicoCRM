@@ -41,6 +41,51 @@ export class ReceiptService {
     return await this.receiptRepository.findOne(options);
   }
 
+  async countReceipt(
+    filter,
+    departmentVisible = [],
+    isEmployee: boolean,
+    currentUser: User): Promise<Receipt> {
+    let queryString = '';
+    let andQueryString = '';
+    if (departmentVisible.length > 0) {
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.department IN ${JSON.stringify(departmentVisible)
+        .replace('[', '(')
+        .replace(']', ')')}`;
+    }
+    if (filter['endDate'] && filter['startDate']) {
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.createdDate  >= '${filter['startDate']}' AND Receipt.createdDate <= '${filter['endDate']} 23:59:59'`;
+    }
+    if (isEmployee) {
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.sale = ${currentUser.id}`;
+    }
+    if (currentUser.branch) {
+      if (!currentUser.branch.seeAll) {
+        andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.branch = ${currentUser.branch.id}`;
+      }
+    } else {
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  AND Receipt.branch is NULL `;
+    }
+    delete filter['startDate']
+    delete filter['endDate']
+    Object.keys(filter).forEach((item, index) => {
+      queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+    });
+    const count = this.receiptRepository
+    .createQueryBuilder('Receipt')
+    .select('sum(Receipt.money)','money')
+    .where(andQueryString)
+    if (queryString) {
+      count.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
+    }
+    const result = await count.getRawOne();
+    return result;
+  }
+
   async findAndCount(
     options: FindManyOptions<Receipt>,
     filter,
@@ -58,7 +103,7 @@ export class ReceiptService {
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.createdDate  >= '${filter['startDate']}' AND Receipt.createdDate <= '${filter['endDate']} 24:00:00'`;
+      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.createdDate  >= '${filter['startDate']}' AND Receipt.createdDate <= '${filter['endDate']} 23:59:59'`;
     }
     if (isEmployee) {
       andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.sale = ${currentUser.id}`;

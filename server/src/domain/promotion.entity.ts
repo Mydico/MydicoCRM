@@ -59,7 +59,7 @@ export default class Promotion extends BaseEntity {
     @OneToMany(type => PromotionProduct, other => other.promotion)
     promotionProduct? : PromotionProduct[];
 
-    @ManyToOne(type => CustomerType, other => other.promotion)
+    @ManyToOne(type => CustomerType, { createForeignKeyConstraints: false })
     customerType?: CustomerType;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

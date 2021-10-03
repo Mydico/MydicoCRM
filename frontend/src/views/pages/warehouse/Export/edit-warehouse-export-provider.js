@@ -296,7 +296,6 @@ const EditWarehouseExportProvider = props => {
                       <th>Sản phẩm</th>
                       <th>Đơn vị</th>
                       <th>Dung tích</th>
-                      <th>Giá</th>
                       <th>Số lượng</th>
                     </tr>
                   </thead>
@@ -326,7 +325,7 @@ const EditWarehouseExportProvider = props => {
                               <MaskedInput
                                 mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
-                                value={Number(item.price || item?.product?.price)}
+                                value={Number(item.price || item?.product?.price || 0)}
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }

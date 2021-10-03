@@ -41,7 +41,7 @@ export class User extends BaseEntity {
     @Index()
     activated: boolean;
 
-    @ManyToOne(type => Department)
+    @ManyToOne(type => Department, { createForeignKeyConstraints: false })
     mainDepartment?: Department;
 
     @ManyToMany(type => Authority)
@@ -60,17 +60,17 @@ export class User extends BaseEntity {
     })
     roles?: UserRole[];
 
-    @ManyToOne(type => Department)
+    @ManyToOne(type => Department, { createForeignKeyConstraints: false })
     department?: Department;
 
-    @ManyToOne(type => Branch)
+    @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
     branch?: Branch;
 
-    @OneToMany(type => Bill, other => other.transporter)
-    bill?: Bill[];
+    // @OneToMany(type => Bill, other => other.transporter)
+    // bill?: Bill[];
 
-    @OneToMany(type => StoreInput, other => other.approver)
-    storeInput?: StoreInput[];
+    // @OneToMany(type => StoreInput, other => other.approver)
+    // storeInput?: StoreInput[];
 
     @ManyToMany(type => PermissionGroup, other => other.users)
     permissionGroups?: PermissionGroup[];

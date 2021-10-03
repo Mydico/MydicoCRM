@@ -31,10 +31,10 @@ export default class StoreInputDetails extends BaseEntity {
   @Index()
   priceTotal?: number;
 
-  @ManyToOne(type => StoreInput)
+  @ManyToOne(type => StoreInput, { createForeignKeyConstraints: false })
   storeInput: StoreInput;
 
-  @ManyToOne(type => Product)
+  @ManyToOne(type => Product, { createForeignKeyConstraints: false })
   product: Product;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

@@ -1,7 +1,5 @@
 import Transaction from '../../domain/transaction.entity';
 import { Connection, EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
-import { HistoryConstants } from '../utils/history.constants';
-import CustomerDebit from '../../domain/customer-debit.entity';
 import DebtDashboard from '../../domain/debt-dashboard.entity';
 import { TransactionType } from '../../domain/enumeration/transaction-type';
 import { DashboardType } from '../../domain/enumeration/dashboard-type';

@@ -709,11 +709,11 @@ const Order = props => {
                       <CCol sm="4">
                         <h6 className="mb-3">Tới:</h6>
                         <div>
-                          <strong>{item?.customer.name}</strong>
+                          <strong>{item?.customer?.name}</strong>
                         </div>
                         <div>{item?.address}</div>
                         <div>{`${memoizedGetDistrictName(item?.customer?.district)}, ${memoizedGetCityName(item?.customer?.city)}`}</div>{' '}
-                        <div>Phone: {item?.customer.tel}</div>
+                        <div>Phone: {item?.customer?.tel}</div>
                       </CCol>
                       <CCol sm="4">
                         <h6 className="mb-3">Chương trình bán hàng:</h6>

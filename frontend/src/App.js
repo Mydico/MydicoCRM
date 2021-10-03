@@ -48,8 +48,10 @@ export const App = () => {
     let account = Storage.local.get(USER_INFO);
     if (account != null) {
       if (res.departmentVisible.includes(account.department.id)) {
-        const params = { page: 0, size: 50, sort: 'createdDate,DESC' };
-        dispatch(getOrder(params));
+        if (account.role.filter(rol => rol.method === 'GET' && rol.entity === '/api/orders').length > 0) {
+          const params = { page: 0, size: 50, sort: 'createdDate,DESC' };
+          dispatch(getOrder(params));
+        }
       }
     }
   };

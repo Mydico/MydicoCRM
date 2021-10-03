@@ -72,7 +72,7 @@ export const checkCodeContext = (entity, foundedEntity) => {
             }
         });
         if (founded.length > 0) {
-            const res = increment_alphanumeric_str(founded[founded.length - 1]);
+            const res = increment_alphanumeric_str(founded.sort()[founded.length-1]);
             entity.code = res;
         }
     }

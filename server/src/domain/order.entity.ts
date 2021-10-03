@@ -19,16 +19,16 @@ import StoreInput from './store-input.entity';
  */
 @Entity('order')
 export default class Order extends BaseEntity {
-  @ManyToOne(type => Customer, customer => customer.order)
+  @ManyToOne(type => Customer, { createForeignKeyConstraints: false })
   customer?: Customer;
 
   @Column({ name: 'customer_name', length: 255, nullable: true })
   customerName?: string;
 
-  @ManyToOne(type => Store, store => store.order)
+  @ManyToOne(type => Store, { createForeignKeyConstraints: false })
   store?: Store;
 
-  @ManyToOne(type => Department, department => department.orders)
+  @ManyToOne(type => Department, { createForeignKeyConstraints: false })
   department?: Department;
 
   @Column({ name: 'address', length: 255, nullable: true })
@@ -47,13 +47,13 @@ export default class Order extends BaseEntity {
   @Index()
   status?: OrderStatus;
 
-  @ManyToOne(type => Branch)
+  @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
   branch?: Branch;
 
   // @ManyToOne(type => StoreInput)
   // storeInput?: StoreInput;
 
-  @ManyToOne(type => PromotionItem, {  onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
+  @ManyToOne(type => PromotionItem, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT', createForeignKeyConstraints: false })
   promotionItem?: PromotionItem;
 
   /**
@@ -67,7 +67,7 @@ export default class Order extends BaseEntity {
   @Index()
   note?: string;
 
-  @ManyToOne(type => Promotion, promotion => promotion.orders)
+  @ManyToOne(type => Promotion, { createForeignKeyConstraints: false })
   promotion?: Promotion;
 
   @OneToMany(type => OrderDetails, orderDetails => orderDetails.order, { cascade: ['insert', 'update'] })
@@ -76,7 +76,7 @@ export default class Order extends BaseEntity {
   @OneToMany(type => Bill, bill => bill.order)
   bill?: Bill;
 
-  @ManyToOne(type => User)
+  @ManyToOne(type => User, { createForeignKeyConstraints: false })
   sale?: User;
 
   @Column({ type: 'bigint', name: 'real_money', nullable: true })

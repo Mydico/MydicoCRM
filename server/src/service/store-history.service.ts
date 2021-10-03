@@ -36,7 +36,7 @@ export class StoreHistoryService {
     if (filter['endDate'] && filter['startDate']) {
       andQueryString += ` AND StoreHistory.createdDate  >= '${filter['startDate']}' AND  StoreHistory.createdDate <= '${
         filter['endDate']
-      } 24:00:00'`;
+      } 23:59:59'`;
     }
     delete filter['startDate'];
     delete filter['endDate'];

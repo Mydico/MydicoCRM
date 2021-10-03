@@ -59,7 +59,7 @@ export class BillService {
     if (req.query['endDate'] && req.query['startDate']) {
       queryString += ` ${queryString.length === 0 ? '' : ' AND '}  Bill.createdDate  >= '${req.query['startDate']}' AND  Bill.createdDate <= '${
         req.query['endDate']
-      } 24:00:00'`;
+      } 23:59:59'`;
     }
     const queryBuilder = this.billRepository
       .createQueryBuilder('Bill')

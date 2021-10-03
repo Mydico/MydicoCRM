@@ -2,7 +2,6 @@
 import { Entity, Column, ManyToMany, Index} from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import Department from './department.entity';
-import { DepartmentStatus } from './enumeration/department-status';
 import PermissionGroup from './permission-group.entity';
 
 /**
@@ -34,5 +33,9 @@ export default class Branch extends BaseEntity {
     @ManyToMany(type => PermissionGroup, other => other.branches)
     permissionGroups?: PermissionGroup[];
 
+    @ManyToMany(type => Department, other => other.branches)
+    departments?: Department[];
+
+    
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

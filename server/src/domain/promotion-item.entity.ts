@@ -26,7 +26,7 @@ export default class PromotionItem extends BaseEntity {
     @Index()
     note: string;
 
-    @ManyToMany(type => ProductGroup, productGroup => productGroup.product)
+    @ManyToMany(type => ProductGroup)
     @JoinTable({
         name: 'promotion_item_product_group',
         joinColumn: { name: 'product_group_id', referencedColumnName: 'id' },
@@ -35,7 +35,7 @@ export default class PromotionItem extends BaseEntity {
     productGroup?: ProductGroup;
 
 
-    @ManyToOne(type => Promotion, promotion => promotion.promotionItems)
+    @ManyToOne(type => Promotion, { createForeignKeyConstraints: false })
     promotion?: Promotion;
 
 

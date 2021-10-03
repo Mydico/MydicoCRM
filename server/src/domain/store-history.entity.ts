@@ -28,13 +28,13 @@ export default class StoreHistory extends BaseEntity {
     @Index()
     type: StoreHistoryType;
 
-    @ManyToOne(type => Product)
+    @ManyToOne(type => Product, { createForeignKeyConstraints: false })
     product: Product;
 
-    @ManyToOne(type => Store)
+    @ManyToOne(type => Store, { createForeignKeyConstraints: false })
     store: Store;
 
-    @ManyToOne(type => Department)
+    @ManyToOne(type => Department, { createForeignKeyConstraints: false })
     department: Department;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

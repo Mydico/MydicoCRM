@@ -21,7 +21,7 @@ export const resourceDesc = {
     'orders': 'đơn hàng',
     'account': 'Tài khoản',
     'birthday': ' sinh nhật',
-
+    'update': 'cập nhật chi tiết',
     'reset-password': 'Xóa mật khẩu',
 
     'finish': 'hoàn thành',

@@ -11,6 +11,7 @@ import {
   creatingWarehouseReturn,
   updateWarehouseExport,
   updateWarehouseReturn,
+  updateCurrentWarehouseReturn,
 } from './warehouse-import.api';
 
 const initialState = {
@@ -130,7 +131,14 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
-
+    [updateCurrentWarehouseReturn.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
+    [updateCurrentWarehouseReturn.fulfilled]: (state, action) => {
+      state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
   },
 });
 

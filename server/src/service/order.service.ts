@@ -82,7 +82,7 @@ export class OrderService {
     if (filter['endDate'] && filter['startDate']) {
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.createdDate  >= '${
         filter['startDate']
-      }' AND  Order.createdDate <= '${filter['endDate']} 24:00:00'`;
+      }' AND  Order.createdDate <= '${filter['endDate']} 23:59:59'`;
     }
     if (filter['status']) {
       queryString += ` Order.status  = '${filter['status']}' `;
