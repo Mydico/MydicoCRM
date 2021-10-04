@@ -232,7 +232,18 @@ const SaleReport = (props) => {
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(top10Product[0]), [top10Product[0]]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
   const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
-
+  const sortItem = React.useCallback(
+    (info) => {
+      const {column, asc} = info
+      const copy = [...top10Product];
+      copy[0].sort((a, b) => {
+          if (asc) return a[column] - b[column];
+          else return b[column] - a[column];
+        });
+      setTop10Product(copy);
+    },
+    [top10Product[0]]
+  );
   return (
     <CRow>
       <CCol sm={12} md={12}>
@@ -353,7 +364,8 @@ const SaleReport = (props) => {
               itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
               itemsPerPage={size}
               hover
-              sorter
+              sorter={{external: true, resetable: true }}
+              onSorterValueChange={sortItem}
               noItemsView={{
                 noResults: 'Không tìm thấy kết quả',
                 noItems: 'Không có dữ liệu'
@@ -376,7 +388,7 @@ const SaleReport = (props) => {
                 ),
                 realMoney: (item, index) => (
                   <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney - item.return || 0)}</div>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney - (item.return || 0))}</div>
                   </td>
                 ),
                 reduce: (item, index) => (

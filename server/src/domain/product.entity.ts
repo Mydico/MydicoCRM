@@ -24,7 +24,7 @@ export default class Product extends BaseEntity {
     image: string;
 
     @Column({ name: 'description', length: 255, nullable: true, default: '' })
-    @Index()
+    @Index({ fulltext: true })
     desc: string;
 
     @Column({ name: 'code', length: 255, nullable: true, unique: true })
@@ -41,7 +41,7 @@ export default class Product extends BaseEntity {
     price: number;
 
     @Column({ type: 'integer', name: 'volume', default: 0 })
-    @Index()
+    @Index({ fulltext: true })
     volume: number;
 
     /**

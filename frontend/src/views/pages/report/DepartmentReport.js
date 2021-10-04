@@ -42,7 +42,7 @@ const DepartmentReport = (props) => {
   }, [date]);
 
   useEffect(() => {
-    if (filter) {
+    if (Object.keys(filter).length > 1) {
       getData(filter);
     }
   }, [filter]);
@@ -153,10 +153,10 @@ const DepartmentReport = (props) => {
                       <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.total)}</div>
                     </td>
                     <td>
-                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
+                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return || 0)}</div>
                     </td>
                     <td>
-                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
+                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum - (item.return || 0))}</div>
                     </td>
                     <td>
                       <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.reduce)}</div>

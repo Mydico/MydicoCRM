@@ -91,7 +91,7 @@ const CreateOrder = props => {
   const [isSelectProItem, setIsSelectProItem] = useState(false);
   const [showProductPromotion, setShowProductPromotion] = useState(false);
   useEffect(() => {
-    dispatch(filterCustomer({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, sale: account.id  }));
+    dispatch(filterCustomer({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, sale: account.id }));
     dispatch(getWarehouse({ dependency: true }));
     const existOrder = localStorage.getItem('order');
     try {
@@ -165,7 +165,7 @@ const CreateOrder = props => {
   }, 300);
 
   const onSearchPromition = value => {
-    if(value){
+    if (value) {
       debouncedSearchPromotion(value);
     }
   };
@@ -201,26 +201,20 @@ const CreateOrder = props => {
     // dispatch(creatingOrder(values));
   };
 
-  const onSelectCustomer = ({ value }) => {
-    const arr = customers.filter(customer => customer.id === value);
-    if (arr.length === 1) {
-      setSelectedCustomer(arr[0]);
-    }
+  const onSelectCustomer = item => {
+    setSelectedCustomer(item);
   };
 
-  const onSelectPromotion = ({ value }) => {
-    const arr = promotions.filter(customer => customer.id === value);
-    if (arr.length === 1) {
-      setSelectedPromotion(arr[0]);
-    }
+  const onSelectPromotion = item => {
+    setSelectedPromotion(item);
   };
 
   const onSelectedProduct = ({ value, index }) => {
-    const tempArr = [...productInWarehouses]
-    const tempVar = tempArr[0]
-    tempArr[0] = tempArr[index]
-    tempArr[index] = tempVar
-    dispatch(swap(tempArr))
+    const tempArr = [...productInWarehouses];
+    const tempVar = tempArr[0];
+    tempArr[0] = tempArr[index];
+    tempArr[index] = tempVar;
+    dispatch(swap(tempArr));
     const copyArr = [...productList];
     const data = {
       product: value,
@@ -233,8 +227,8 @@ const CreateOrder = props => {
     // copyArr[index].priceReal = Number(value.price);
     // copyArr[index].product = value;
     if (selectedPromotionItem && selectedPromotion.type === 'LONGTERM') {
-      const founded = selectedPromotionItem.productGroup.filter(item => item.id === value.productGroup.id)
-      if(founded.length > 0){
+      const founded = selectedPromotionItem.productGroup.filter(item => item.id === value.productGroup.id);
+      if (founded.length > 0) {
         data.reducePercent = selectedPromotionItem.reducePercent || 0;
       }
     }
@@ -291,7 +285,8 @@ const CreateOrder = props => {
         size: 50,
         sort: 'createdDate,DESC',
         name: value,
-        // code: value,
+        code: value,
+        volume: value,
         dependency: true
       })
     );
@@ -378,7 +373,7 @@ const CreateOrder = props => {
 
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = [...productList];
-    copyArr[index].reducePercent = target.value === '' ? 0 : target.value > 100 ? 100 :  Number(target.value).toString();
+    copyArr[index].reducePercent = target.value === '' ? 0 : target.value > 100 ? 100 : Number(target.value).toString();
     copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     copyArr[index].priceTotal =
       copyArr[index].priceReal * copyArr[index].quantity -
@@ -420,15 +415,15 @@ const CreateOrder = props => {
                         name="customer"
                         onInputChange={onSearchCustomer}
                         onChange={item => {
-                          setFieldValue('customer', { id: item.value, name: item.label });
-                          onSelectCustomer(item);
+                          setFieldValue('customer',  item.value);
+                          onSelectCustomer(item.value);
                         }}
                         value={{
-                          value: values.customer?.id,
+                          value: values.customer,
                           label: values.customer?.name
                         }}
                         options={customers.map(item => ({
-                          value: item.id,
+                          value: item,
                           label: `[${item.code}] ${item.name} ${item.address}`
                         }))}
                       />
@@ -489,9 +484,9 @@ const CreateOrder = props => {
                       <Select
                         onInputChange={onSearchPromition}
                         onChange={item => {
-                          setFieldValue('promotion', { id: item.value, name: item.label });
+                          setFieldValue('promotion', item.value);
                           setFieldValue('promotionItem', null);
-                          onSelectPromotion(item);
+                          onSelectPromotion(item.value);
                         }}
                         value={{
                           value: values.promotion?.id,
@@ -499,13 +494,13 @@ const CreateOrder = props => {
                         }}
                         name="promotion"
                         options={promotions.map(item => ({
-                          value: item.id,
+                          value: item,
                           label: `${item.name}`
                         }))}
                       />
                     </CCol>
                   </CRow>
-                  <FormFeedback className="d-block">{errors.promotion}</FormFeedback>
+                  {!selectedPromotion && <FormFeedback className="d-block">Chương trình bán hàng không để trống</FormFeedback>}
                 </CFormGroup>
                 <CRow>
                   <CCol lg="6">
@@ -883,7 +878,7 @@ const CreateOrder = props => {
                                     (sum, current) =>
                                       sum +
                                       (current.priceReal * current.quantity -
-                                        (current.priceReal * current.quantity * current.reducePercent) / 100),
+                                        (current.priceReal * current.quantity * current.reducePercent || 0) / 100),
                                     0
                                   )
                                   .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}

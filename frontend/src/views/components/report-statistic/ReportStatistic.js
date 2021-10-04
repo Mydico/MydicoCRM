@@ -10,31 +10,31 @@ const ReportStatistic = (props) => {
   const [numOfCustomer, setNumOfCustomer] = useState(0)
   const [sumOfIncome, setSumOfIncome] = useState(0)
   const [sumOfDebt, setSumOfDebt] = useState(0)
-  const getData = () => {
-    dispatch(getOrder(props.filter)).then(data => {
+  const getData = (filter) => {
+    dispatch(getOrder(filter)).then(data => {
       if (data && data.payload) {
         setNumOfOrder(data.payload.count);
       }
     });
-    dispatch(getNewCustomer(props.filter)).then(data => {
+    dispatch(getNewCustomer(filter)).then(data => {
         if (data && data.payload) {
             setNumOfCustomer(data.payload.count);
         }
       });
-      dispatch(getIncome(props.filter)).then(data => {
+      dispatch(getIncome(filter)).then(data => {
         if (data && data.payload) {
             setSumOfIncome(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));
         }
       });
-      dispatch(getDebt(props.filter)).then(data => {
+      dispatch(getDebt(filter)).then(data => {
         if (data && data.payload) {
             setSumOfDebt(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));
         }
       });
   };
   useEffect(() => {
-    getData();
-  }, [props]);
+    getData(props.filter);
+  }, [props.filter]);
   return (
     <CRow sm={12} md={12}>
       <CCol sm="6" lg="6">

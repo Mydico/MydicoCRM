@@ -107,6 +107,12 @@ export class ProductQuantityService {
       //   // });
       //   queryString += `MATCH(name) AGAINST ('${filter[item]}' IN BOOLEAN MODE)`
       // }
+
+      // return userRepository.createQueryBuilder().select()
+      // .where(`MATCH(fullName) AGAINST ('${searchQuery}' IN BOOLEAN MODE)`)
+      // .orWhere(`MATCH(username) AGAINST ('${searchQuery}' IN BOOLEAN MODE)`)
+      // .orWhere(`MATCH(description) AGAINST ('${searchQuery}' IN BOOLEAN MODE)`)
+      // .getMany();
       
       if (item === 'store') return;
       if (item === 'status') return;
@@ -118,6 +124,7 @@ export class ProductQuantityService {
       .leftJoinAndSelect('product.productBrand', 'productBrand')
       .leftJoinAndSelect('product.productGroup', 'productGroup')
       .where(`ProductQuantity.store = ${filter['store']} AND ProductQuantity.status = 'ACTIVE'`)
+      // .andWhere(`MATCH(ProductQuantity.name) AGAINST ('${filter['name'] || ''}' IN NATURAL LANGUAGE MODE)`)
       .orderBy(`ProductQuantity.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);

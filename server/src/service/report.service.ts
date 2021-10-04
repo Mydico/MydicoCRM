@@ -122,6 +122,7 @@ export class ReportService {
       .addSelect('count(Order.id)', 'count')
       .leftJoin('Order.department', 'department')
       .where(queryString)
+      .andWhere(`Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600)
       .groupBy('Order.department')
       .orderBy('sum(Order.real_money)', 'DESC');
@@ -131,6 +132,7 @@ export class ReportService {
       .createQueryBuilder('StoreInput')
       .select('Sum(StoreInput.real_money)', 'return')
       .where(queryString)
+      .andWhere(`StoreInput.status = 'APPROVED' and StoreInput.type = 'RETURN'`)
       .cache(3 * 3600)
       .groupBy('StoreInput.department');
     const returnMoney = await storeInputQueryBuilder.getRawMany();
@@ -150,6 +152,7 @@ export class ReportService {
       .addSelect('Sum(Order.real_money)', 'sum')
       .leftJoin('Order.sale', 'user')
       .where(queryString)
+      .andWhere(`Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600)
       .groupBy('Order.sale')
       .orderBy('sum(Order.real_money)', 'DESC')
@@ -170,6 +173,7 @@ export class ReportService {
       .leftJoin('OrderDetails.order', 'order')
       .groupBy('OrderDetails.productId')
       .where(queryString)
+      .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600)
       .orderBy('sum(OrderDetails.quantity)', 'DESC')
       .limit(10);
@@ -185,6 +189,7 @@ export class ReportService {
       .addSelect('Max(Order.customer)', 'customer')
       .leftJoin('Order.customer', 'customer')
       .where(queryString)
+      .andWhere(`Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600)
       .groupBy('Order.customer, customer.code, customer.name')
       .orderBy('sum(Order.real_money)', 'DESC')
@@ -238,6 +243,7 @@ export class ReportService {
       .leftJoin('OrderDetails.order', 'order')
       .groupBy('OrderDetails.productId')
       .where(queryString)
+      .andWhere(`  order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600)
       .orderBy('sum(OrderDetails.quantity)', 'DESC')
       .limit(10);
@@ -267,6 +273,7 @@ export class ReportService {
       .addSelect('Sum(Order.real_money)', 'sum')
       .leftJoin('Order.customer', 'customer')
       .where(queryString)
+      .andWhere(`Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600)
       .groupBy('Order.customer,customer.code,customer.name')
       .orderBy('sum(Order.real_money)', 'DESC')
@@ -287,6 +294,7 @@ export class ReportService {
       .where(queryString)
       .leftJoin('OrderDetails.order', 'order')
       .leftJoin('OrderDetails.product', 'product')
+      .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600);
     if (producQuery) {
       queryBuilder.andWhere(producQuery);
@@ -303,10 +311,11 @@ export class ReportService {
     let queryString = queryBuilderFunc('order', filter);
     const queryBuilder = this.orderDetailsRepository
       .createQueryBuilder('OrderDetails')
-      .select('SUM(OrderDetails.priceTotal)', 'count')
+      .select('SUM(OrderDetails.priceTotal * OrderDetails.quantity)', 'count')
       .where(queryString)
       .leftJoin('OrderDetails.order', 'order')
       .leftJoin('OrderDetails.product', 'product')
+      .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600);
     if (producQuery) {
       queryBuilder.andWhere(producQuery);
@@ -331,6 +340,7 @@ export class ReportService {
       .leftJoin('OrderDetails.order', 'order')
       .leftJoin('OrderDetails.product', 'product')
       .where(queryString)
+      .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .groupBy('OrderDetails.productId')
       .orderBy(`sum`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .offset(options.skip)
@@ -343,6 +353,7 @@ export class ReportService {
       .groupBy('OrderDetails.productId')
       .leftJoin('OrderDetails.order', 'order')
       .leftJoin('OrderDetails.product', 'product')
+      .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600);
     if (producQuery) {
       queryBuilder.andWhere(producQuery);
@@ -398,7 +409,7 @@ export class ReportService {
       .addSelect('SUM(StoreInput.realMoney)', 'return')
       .from(StoreInput, 'StoreInput')
       .where(queryString)
-      .andWhere(` StoreInput.status = 'APPROVED'`)
+      .andWhere(`StoreInput.status = 'APPROVED' and StoreInput.type = 'RETURN'`)
       .cache(3 * 3600)
       .getRawOne();
     queryBuilder.sum = queryBuilder.sum - returnBuilder.return;
@@ -429,6 +440,7 @@ export class ReportService {
       .where(queryString)
       .groupBy('Order.saleId')
       .leftJoin('Order.sale', 'sale')
+      .andWhere(`Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600)
       .getRawMany();
     queryString = queryBuilderFunc('StoreInput', filter);
@@ -437,8 +449,8 @@ export class ReportService {
       .createQueryBuilder('StoreInput')
       .select(['saleId'])
       .addSelect('SUM(StoreInput.realMoney)', 'return')
-      .where(queryString)
       .where('saleId IN (:saleIds)', { saleIds: saleId.length > 0 ? saleId : '' })
+      .andWhere(queryString)
       .andWhere(` StoreInput.status = 'APPROVED'`)
       .groupBy('StoreInput.saleId')
       .cache(3 * 3600)
@@ -479,6 +491,7 @@ export class ReportService {
       .leftJoin('Order.customer', 'customer')
       .leftJoin('customer.type', 'type')
       .where(queryString)
+      .andWhere(` Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .groupBy('Order.customerId')
       .cache(3 * 3600);
     return await queryBuilder.getRawOne();
@@ -496,6 +509,7 @@ export class ReportService {
       .leftJoin('Order.customer', 'customer')
       .leftJoin('customer.type', 'type')
       .where(queryString)
+      .andWhere(` Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .groupBy('Order.customerId, customer.code, customer.name, customer.id ')
       .offset(options.skip)
       .limit(options.take)
@@ -506,6 +520,7 @@ export class ReportService {
       .createQueryBuilder('Order')
       .select('count(*)', 'count')
       .where(queryString)
+      .andWhere(` Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .groupBy('Order.customerId')
       .leftJoin('Order.customer', 'customer')
       .leftJoin('customer.type', 'type')
@@ -522,8 +537,8 @@ export class ReportService {
       .addSelect('Sum(StoreInput.real_money)', 'return')
       .leftJoin('StoreInput.customer', 'customer')
       .leftJoin('customer.type', 'type')
-      .where(queryString)
       .where('StoreInput.customerId IN (:saleIds)', { saleIds: customerId.length > 0 ? customerId : '' })
+      .andWhere(queryString)
       .cache(3 * 3600)
       .groupBy('StoreInput.customerId');
     const returnMoney = await storeInputQueryBuilder.getRawMany();
@@ -572,6 +587,7 @@ export class ReportService {
       .createQueryBuilder('Order')
       .select('sum(Order.realMoney)', 'sum')
       .where(queryString)
+      .andWhere(` Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .cache(3 * 3600);
     return await queryBuilder.getRawOne();
   }
@@ -588,6 +604,7 @@ export class ReportService {
           .select('Order.customerId')
           .from(Order, 'Order')
           .where(queryString)
+          .andWhere(` Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
           .groupBy('Order.customerId');
       }, 'totals');
     return await queryBuilder.getRawOne();
@@ -606,6 +623,7 @@ export class ReportService {
       .leftJoin('Order.promotion', 'promotion')
       .leftJoin('Order.promotionItem', 'promotionItem')
       .where(queryString)
+      .andWhere(` Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .groupBy('Order.customerId, customer.id, customer.code, customer.name')
       .orderBy(`realMoney`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .offset(options.skip)
@@ -615,6 +633,7 @@ export class ReportService {
       .createQueryBuilder('Order')
       .select('count(*)', 'count')
       .where(queryString)
+      .andWhere(` Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .groupBy('Order.customerId')
       .leftJoin('Order.customer', 'customer')
       .leftJoin('Order.sale', 'sale')
@@ -623,6 +642,7 @@ export class ReportService {
     const result = await queryBuilder.getRawMany();
     const customerId = result.map(item => item.customer_id);
     queryString = queryBuilderFunc('StoreInput', filter);
+    console.log(queryString)
     const returnBuilder = await this.storeInputRepository
       .createQueryBuilder('StoreInput')
       .select(['customer.id'])
@@ -631,8 +651,9 @@ export class ReportService {
       .leftJoin('StoreInput.promotion', 'promotion')
       .leftJoin('StoreInput.promotionItem', 'promotionItem')
       .leftJoin('StoreInput.sale', 'sale')
-      .where(queryString)
       .where('StoreInput.customerId IN (:saleIds)', { saleIds: customerId.length > 0 ? customerId : '' })
+      .andWhere(queryString)
+      .andWhere(`StoreInput.status = 'APPROVED' and StoreInput.type = 'RETURN'`)
       .cache(3 * 3600)
       .groupBy('StoreInput.customerId')
       .getRawMany();

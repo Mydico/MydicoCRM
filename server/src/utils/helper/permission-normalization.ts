@@ -58,6 +58,12 @@ export const queryBuilderFunc = (entity, filter = {}) => {
     }
   });
   if (filter['endDate'] && filter['startDate']) {
+    if(entity === 'DebtDashboard'){
+      query += `  ${query.length > 0 ? 'AND' : ''}  ${entity}.createdDate <= '${
+        filter['endDate']
+      } 23:59:59'`;
+      return
+    }
     query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']}' AND  ${entity}.createdDate <= '${
       filter['endDate']
     } 23:59:59'`;

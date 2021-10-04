@@ -402,6 +402,7 @@ const WarehouseImport = props => {
                     <CDataTable
                       items={item.storeInputDetails.map(item => {
                         return {
+                          code: item.product?.code || '',
                           productName: item.product?.name || '',
                           unit: item.product?.unit || '',
                           volume: item.product?.volume || '',

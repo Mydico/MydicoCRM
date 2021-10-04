@@ -29,11 +29,11 @@ const Invoice = () => {
       invoice.totalMoney = invoice?.orderDetails.reduce((sum, current) => sum + current.priceReal * current.quantity, 0);
       invoice.realMoney = invoice?.orderDetails.reduce(
         (sum, current) =>
-          sum + (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
+          sum + (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent || 0) / 100),
         0
       );
       invoice.reduceMoney = invoice?.orderDetails.reduce(
-        (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100,
+        (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent || 0) / 100,
         0
       );
       dispatch(fetching());

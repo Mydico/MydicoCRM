@@ -21,7 +21,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { Between, Equal, In } from 'typeorm';
+import { Between, Equal, In, LessThan } from 'typeorm';
 import { User } from '../../domain/user.entity';
 import { DepartmentService } from '../../service/department.service';
 import { memoizedTransformData, memoizedSumData, memoizedSumDebtData } from '../../utils/helper/permission-normalization';
@@ -68,7 +68,7 @@ export class DebtDashboardController {
     }
 
     if (req.query.startDate && req.query.endDate) {
-      where['createdDate'] = Between(req.query.startDate, req.query.endDate);
+      where['createdDate'] = LessThan(req.query.endDate);
     }
     const results = await this.debtDashboardService.findAndCount({
       where,
@@ -125,7 +125,7 @@ export class DebtDashboardController {
     }
 
     if (req.query.startDate && req.query.endDate) {
-      where['createdDate'] = Between(req.query.startDate, req.query.endDate);
+      where['createdDate'] = LessThan(req.query.endDate);
     }
     const results = await this.debtDashboardService.findAndCount({
       where,

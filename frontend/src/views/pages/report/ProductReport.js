@@ -272,6 +272,21 @@ const ProductReport = () => {
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
   const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
 
+  const sortItem = React.useCallback(
+    (info) => {
+      const {column, asc} = info
+      const copy = [...top10Product];
+      console.log(info)
+      copy[0].sort((a, b) => {
+          if (asc) return a[column] - b[column];
+          else return b[column] - a[column];
+        });
+      console.log(copy)
+      setTop10Product(copy);
+    },
+    [top10Product[0]]
+  );
+
   return (
     <CRow>
       <CCol sm={12} md={12}>
@@ -416,19 +431,22 @@ const ProductReport = () => {
               itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
               itemsPerPage={size}
               hover
-              sorter
+              sorter={{external: true, resetable: true }}
               noItemsView={{
                 noResults: 'Không tìm thấy kết quả',
                 noItems: 'Không có dữ liệu'
               }}
               loading={initialState.loading}
               onPaginationChange={val => setSize(val)}
+              onSorterValueChange={sortItem}
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
                 sum: (item, index) => (
                   <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
+                    <div>
+                      {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum - (item.return || 0))}
+                    </div>
                   </td>
                 ),
                 reduce: (item, index) => (
@@ -443,7 +461,7 @@ const ProductReport = () => {
                 ),
                 return: (item, index) => (
                   <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return || 0)}</div>
                   </td>
                 )
               }}
