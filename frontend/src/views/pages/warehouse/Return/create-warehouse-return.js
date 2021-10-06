@@ -93,7 +93,7 @@ const CreateWarehouse = () => {
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, activated: true }));
   }, []);
 
   const onSubmit = (values, {}) => () => {
@@ -135,7 +135,8 @@ const CreateWarehouse = () => {
         name: value,
         address: value,
         contactName: value,
-        dependency: true
+        dependency: true,
+        activated: true
       })
     );
   }, 300);

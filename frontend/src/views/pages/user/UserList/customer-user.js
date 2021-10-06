@@ -197,7 +197,7 @@ const CustomerUser = props => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value,  dependency: true }));
+      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value,  dependency: true, activated: true }));
     }
   }, 300);
 

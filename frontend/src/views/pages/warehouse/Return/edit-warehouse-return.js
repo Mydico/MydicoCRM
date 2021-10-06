@@ -17,7 +17,12 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDetailWarehouseImport, updateCurrentWarehouseReturn, updateWarehouseImport, updateWarehouseReturn } from '../Import/warehouse-import.api';
+import {
+  getDetailWarehouseImport,
+  updateCurrentWarehouseReturn,
+  updateWarehouseImport,
+  updateWarehouseReturn
+} from '../Import/warehouse-import.api';
 import { currencyMask } from '../../../components/currency-input/currency-input';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
@@ -95,7 +100,7 @@ const EditWarehouseReturn = props => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, activated: true, activated: true }));
   }, []);
 
   useEffect(() => {
@@ -162,11 +167,11 @@ const EditWarehouseReturn = props => {
   }, 300);
 
   const onSearchProduct = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchProduct(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchProduct("");
+    if (action.action === 'input-blur') {
+      debouncedSearchProduct('');
     }
   };
 
@@ -180,17 +185,18 @@ const EditWarehouseReturn = props => {
         name: value,
         address: value,
         contactName: value,
-        dependency: true
+        dependency: true,
+        activated: true
       })
     );
   }, 300);
 
   const onSearchCustomer = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchCustomer(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchCustomer("");
+    if (action.action === 'input-blur') {
+      debouncedSearchCustomer('');
     }
   };
 
@@ -257,7 +263,7 @@ const EditWarehouseReturn = props => {
   }, 300);
 
   const onSearchPromition = value => {
-    if(value){
+    if (value) {
       debouncedSearchPromotion(value);
     }
   };

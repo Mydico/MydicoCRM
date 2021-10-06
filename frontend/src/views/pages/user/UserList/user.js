@@ -214,6 +214,16 @@ const User = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
+      dispatch(
+        getUser({
+          page: activePage - 1,
+          size: size,
+          sort: 'createdDate,DESC',
+          ...paramRef.current,
+          startDate: date.startDate?.format('YYYY-MM-DD'),
+          endDate: date.endDate?.format('YYYY-MM-DD')
+        })
+      );
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);

@@ -307,7 +307,6 @@ export class CustomerService {
         customer_created: customer.createdBy
       });
       await result.toPromise().catch(e => console.log(e));
-
     }
     const foundedCustomer = await this.customerRepository.find({
       code: Like(`%${customer.code}%`)
@@ -352,6 +351,11 @@ export class CustomerService {
   //   //   .then(resp => console.log(resp))
   //   //   .catch(e => console.log(e));
   // }
+
+  async updateStatus(customer: Customer): Promise<Customer | undefined> {
+    await this.customerRepository.removeCache(['customer']);
+    return await this.customerRepository.save(customer);
+  }
 
   async update(customer: Customer): Promise<Customer | undefined> {
     await this.transactionRepository

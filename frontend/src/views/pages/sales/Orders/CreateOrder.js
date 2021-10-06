@@ -92,7 +92,7 @@ const CreateOrder = props => {
   const [showProductPromotion, setShowProductPromotion] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   useEffect(() => {
-    dispatch(filterCustomer({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, sale: account.id }));
+    dispatch(filterCustomer({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, sale: account.id, activated: true }));
     dispatch(getWarehouse({ dependency: true }));
     const existOrder = localStorage.getItem('order');
     try {
@@ -135,7 +135,8 @@ const CreateOrder = props => {
         address: value,
         contactName: value,
         dependency: true,
-        sale: account.id
+        sale: account.id,
+        activated: true
       })
     );
   }, 300);

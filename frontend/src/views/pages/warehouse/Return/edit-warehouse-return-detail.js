@@ -95,7 +95,7 @@ const EditWarehouseReturnDetail = props => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, activated: true }));
   }, []);
 
   useEffect(() => {
@@ -180,7 +180,8 @@ const EditWarehouseReturnDetail = props => {
         name: value,
         address: value,
         contactName: value,
-        dependency: true
+        dependency: true,
+        activated: true
       })
     );
   }, 300);

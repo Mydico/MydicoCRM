@@ -212,6 +212,18 @@ export class CustomerController {
     return res.send(created);
   }
 
+  @Put('/status')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: Customer
+  })
+  async putStatus(@Req() req: Request, @Res() res: Response, @Body() customer: Customer): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'Customer', customer.id);
+    return res.send(await this.customerService.updateStatus(customer));
+  }
+
   @Put('/')
   @Roles(RoleType.USER)
   @ApiResponse({

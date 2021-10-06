@@ -303,7 +303,8 @@ const PromotionReport = () => {
         address: value,
         department: department?.id || account.department.id,
         branch: branch?.id || account.branch.id,
-        dependency: true
+        dependency: true,
+        activated: true
       })
     ).then(resp => {
       if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {

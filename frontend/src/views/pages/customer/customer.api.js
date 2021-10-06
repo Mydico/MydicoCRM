@@ -77,6 +77,15 @@ export const updateCustomer = createAsyncThunk('api/update/customers', async (bo
   }
 });
 
+export const updateCustomerStatus = createAsyncThunk('api/update/customers', async (body, thunkAPI) => {
+  try {
+    const result = await axios.put('api/customers/status', body);
+    return {data: result.data, headers: result.headers, statusCode: result.status};
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const updateManyCustomer = createAsyncThunk('api/update/customers/many', async (body, thunkAPI) => {
   try {
     const result = await axios.put('api/customers/many', body);

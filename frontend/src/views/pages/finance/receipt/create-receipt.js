@@ -47,7 +47,7 @@ const CreateReceipt = () => {
   };
 
   useEffect(() => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, activated: true }));
   }, []);
 
   const onSubmit = (values, { resetForm }) => () => {
@@ -101,7 +101,8 @@ const CreateReceipt = () => {
         name: value,
         address: value,
         contactName: value,
-        dependency: true
+        dependency: true,
+        activated: true
       })
     );
   }, 300);

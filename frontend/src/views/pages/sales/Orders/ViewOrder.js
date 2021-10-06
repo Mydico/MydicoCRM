@@ -78,7 +78,7 @@ const ViewOrder = props => {
               </tr>
             </thead>
             <tbody>
-              {invoice?.orderDetails.map((item, index) => {
+              {[...invoice?.orderDetails || []].reverse().map((item, index) => {
                 return (
                   <tr key={index}>
                     <td> {index + 1}</td>

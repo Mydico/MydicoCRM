@@ -181,6 +181,7 @@ const Bill = props => {
       return {
         ...item,
         tel: item.customer?.tel,
+        transporterName: item.transporterName || '',
         quantity: item.order?.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0) || 0,
         total: item.order ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.order.realMoney) : 0,
         createdDate: moment(item.createdDate).format('YYYY-MM-DD')
@@ -697,7 +698,7 @@ const Bill = props => {
                         </tr>
                       </thead>
                       <tbody>
-                        {item?.order?.orderDetails.map((item, index) => {
+                        {[...item?.order?.orderDetails || []].reverse().map((item, index) => {
                           return (
                             <tr key={index}>
                               <td> {(activePage - 1) * size + index + 1}</td>

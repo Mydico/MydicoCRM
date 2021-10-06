@@ -178,7 +178,6 @@ export class ReportService {
       .groupBy('StoreInput.saleId')
       .cache(3 * 3600)
       .getRawMany();
-    console.log(returnBuilder)
     const finalArray = result.map(item => {
       const final = {
         ...item,

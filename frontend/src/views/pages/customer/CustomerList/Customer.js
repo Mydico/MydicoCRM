@@ -3,7 +3,7 @@ import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, 
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCustomer, getCustomerStatus, getCustomerType, syncCustomer } from '../customer.api.js';
+import { getCustomer, getCustomerStatus, getCustomerType, syncCustomer, updateCustomer, updateCustomerStatus } from '../customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../customer.reducer.js';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Td } from 'react-super-responsive-table';
@@ -11,7 +11,7 @@ import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
-import { CInput, CLabel } from '@coreui/react';
+import { CInput, CLabel, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import AdvancedTable from '../../../components/table/AdvancedTable';
 import Select from 'react-select';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
@@ -34,6 +34,7 @@ const fields = [
   { key: 'saleName', label: 'Nhân viên quản lý', _style: { minWidth: 150 } },
   { key: 'typeName', label: 'Loại khách hàng', filter: false },
   { key: 'department', label: 'Chi nhánh', filter: false },
+  { key: 'activated', label: 'Trạng thái', filter: false },
   {
     key: 'show_details',
     label: 'Thao tác',
@@ -65,13 +66,13 @@ const fieldExcel = [
 
 const getBadge = status => {
   switch (status) {
-    case 'Active':
+    case true:
       return 'success';
     case 'Inactive':
       return 'secondary';
     case 'Pending':
       return 'warning';
-    case 'Banned':
+    case false:
       return 'danger';
     default:
       return 'primary';
@@ -109,7 +110,8 @@ const Customer = props => {
   const history = useHistory();
   const departments = useSelector(selectAllDepartment);
   const customers = useSelector(selectAll);
-
+  const selectedPro = useRef({ id: null, activated: true });
+  const [primary, setPrimary] = useState(false);
   useEffect(() => {
     // dispatch(syncCustomer())
     dispatch(reset());
@@ -182,11 +184,30 @@ const Customer = props => {
     if (value) debouncedSearchColumn(value);
   };
 
+  const lockUser = () => {
+    dispatch(updateCustomerStatus({ id: selectedPro.current.id, activated: !selectedPro.current.activated }));
+    setPrimary(false);
+  };
+
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(customers), [customers]);
 
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(items), [customers]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(customers), [customers]);
+
+  useEffect(() => {
+    if (initialState.updatingSuccess) {
+      dispatch(
+        getCustomer({
+          page: activePage - 1,
+          size: size,
+          sort: 'createdDate,DESC',
+          ...paramRef.current,
+        })
+      );
+      dispatch(reset());
+    }
+  }, [initialState.updatingSuccess]);
 
   return (
     <CCard>
@@ -262,6 +283,11 @@ const Customer = props => {
                 <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
               </Td>
             ),
+            activated: item => (
+              <td>
+                <CBadge color={getBadge(item.activated)}>{item.activated ? 'Đang hoạt động' : 'Không hoạt động'}</CBadge>
+              </td>
+            ),
             show_details: item => {
               return (
                 <Td className="d-flex py-2">
@@ -284,11 +310,25 @@ const Customer = props => {
                     variant="outline"
                     shape="square"
                     size="sm"
+                    className="mr-3"
                     onClick={() => {
                       toggleDetails(item.id);
                     }}
                   >
                     <CIcon name="cil-user" />
+                  </CButton>
+                  <CButton
+                    color="primary"
+                    variant="outline"
+                    shape="square"
+                    size="sm"
+                    onClick={event => {
+                      event.stopPropagation();
+                      selectedPro.current = { id: item.id, activated: item.activated, login: item.login };
+                      setPrimary(!primary);
+                    }}
+                  >
+                    <CIcon name={!item.activated ? 'cilLockLocked' : 'cilLockUnlocked'} />
                   </CButton>
                 </Td>
               );
@@ -360,6 +400,20 @@ const Customer = props => {
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
+      <CModal show={primary} onClose={() => setPrimary(!primary)} color="primary">
+        <CModalHeader closeButton>
+          <CModalTitle>Khóa khách hàng</CModalTitle>
+        </CModalHeader>
+        <CModalBody>{`Bạn có chắc chắn muốn ${!selectedPro.current.activated ? 'mở khóa' : 'khóa'} khách hàng này không?`}</CModalBody>
+        <CModalFooter>
+          <CButton color="primary" onClick={lockUser}>
+            Đồng ý
+          </CButton>
+          <CButton color="secondary" onClick={() => setPrimary(!primary)}>
+            Hủy
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </CCard>
   );
 };

@@ -113,9 +113,9 @@ const EditOrder = props => {
       setSelectedWarehouse(order.store);
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
       if (Array.isArray(order.orderDetails)) {
-        const productArr = JSON.parse(JSON.stringify(order.orderDetails));
+        const productArr = JSON.parse(JSON.stringify(order.orderDetails)).reverse();
         setProductList(productArr)
-        const copyArr = [...productArr].reverse()
+        const copyArr = [...productArr]
         if (order.orderDetails.length > 0) {
           dispatch(
             getProductWarehouseByField({

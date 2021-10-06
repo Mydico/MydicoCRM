@@ -53,7 +53,7 @@ const CreateDebt = () => {
   const customers = useSelector(selectAllCustomer);
 
   useEffect(() => {
-    dispatch(getCustomer({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true, activated: true }));
   }, []);
 
   const debouncedSearchCustomer = _.debounce(value => {
@@ -67,7 +67,8 @@ const CreateDebt = () => {
         address: value,
         contactName: value,
         dependency: true,
-        sale: account.id
+        sale: account.id,
+        activated: true
       })
     );
   }, 300);

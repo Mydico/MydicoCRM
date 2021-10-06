@@ -196,20 +196,20 @@ const WarehouseImport = props => {
   const renderButtonStatus = item => {
     switch (item.status) {
       case WarehouseImportStatus.APPROVED:
-        return (
-          <CButton
-            onClick={() => {
-              toEditWarehouseReturnDetail(item.id);
-            }}
-            color="warning"
-            variant="outline"
-            shape="square"
-            size="sm"
-            className="mr-1"
-          >
-            CHỈNH SỬA THÔNG TIN
-          </CButton>
-        );
+        // return (
+        //   <CButton
+        //     onClick={() => {
+        //       toEditWarehouseReturnDetail(item.id);
+        //     }}
+        //     color="warning"
+        //     variant="outline"
+        //     shape="square"
+        //     size="sm"
+        //     className="mr-1"
+        //   >
+        //     CHỈNH SỬA THÔNG TIN
+        //   </CButton>
+        // );
       case WarehouseImportStatus.REJECTED:
         return null;
       case WarehouseImportStatus.WAITING:

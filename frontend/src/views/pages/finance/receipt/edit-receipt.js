@@ -66,6 +66,7 @@ const EditReceipt = props => {
           address: value,
           contactName: value,
           dependency: true,
+          activated: true
         })
       );
     }, 300)
@@ -80,7 +81,7 @@ const EditReceipt = props => {
     };
 
   useEffect(() => {
-    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getCustomer({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, activated: true }));
     dispatch(getDetailReceipt({ id: props.match.params.id, dependency: true }));
   }, []);
 
