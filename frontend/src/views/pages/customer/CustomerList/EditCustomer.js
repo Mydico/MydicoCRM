@@ -178,7 +178,7 @@ const EditCustomer = props => {
                       required
                       onChange={async e => {
                         await handleChange(e);
-                        renderCustomerCode();
+                        // renderCustomerCode();
                       }}
                       onBlur={handleBlur}
                       value={values.name}
@@ -309,7 +309,7 @@ const EditCustomer = props => {
                       name="type"
                       onChange={async item => {
                         await setFieldValue('type', item.value);
-                        renderCustomerCode();
+                        // renderCustomerCode();
                       }}
                       value={{
                         value: values.type,
@@ -329,7 +329,7 @@ const EditCustomer = props => {
                       name="department"
                       onChange={async item => {
                         await setFieldValue('department', item.value);
-                        renderCustomerCode();
+                        // renderCustomerCode();
                       }}
                       value={{
                         value: values.department,

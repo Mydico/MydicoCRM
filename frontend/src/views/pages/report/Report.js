@@ -270,7 +270,7 @@ const Report = () => {
                 <tr>
                   <th>Mã nhân viên</th>
                   <th>Tên</th>
-                  <th>Doanh số</th>
+                  <th>Doanh thu thuần</th>
                 </tr>
               </thead>
               <tbody>

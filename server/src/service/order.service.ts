@@ -205,7 +205,9 @@ export class OrderService {
       const itemFounded = merged.filter(origin => origin.product.id === item.product.id);
       return {
         ...item,
-        quantity: item.quantity - itemFounded[0].quantity
+        quantity: item.quantity - itemFounded[0].quantity,
+        entity: 'ORDER',
+        entityId: order.id,
       };
     });
     const checkExistInStore = productQuantityExported.filter(item => item.quantity < 0);

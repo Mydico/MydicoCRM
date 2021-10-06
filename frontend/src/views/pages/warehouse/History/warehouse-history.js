@@ -8,6 +8,8 @@ import { globalizedStoreHistorySelectors, reset } from './warehouse-history.redu
 import { CSVLink } from 'react-csv';
 import moment from 'moment';
 import Download from '../../../components/excel/DownloadExcel.js';
+import { CLink } from '@coreui/react';
+import { useHistory } from 'react-router';
 
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
@@ -37,7 +39,8 @@ const fields = [
   { key: 'volume', label: 'Dung tích', _style: { width: '15%' } },
   { key: 'type', label: 'Hình thức', _style: { width: '15%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
-  { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false }
+  { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false },
+  { key: 'source', label: 'Nguồn gốc', _style: { width: '15%' }, filter: false }
 ];
 const excelFields = [
   {
@@ -52,13 +55,13 @@ const excelFields = [
   { key: 'storeName', label: 'Tên kho', _style: { width: '10%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false }
 ];
-const StoreHistory = () => {
+const StoreHistory = (props) => {
   const { initialState } = useSelector(state => state.storeHistory);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const storeHistorys = useSelector(selectAll);
-
+  const history = useHistory()
   const paramRef = useRef(null);
 
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
@@ -125,6 +128,25 @@ const StoreHistory = () => {
         type: mappingStatus[item.type]
       };
     });
+  };
+
+  const renderLink = item => {
+    if(!item.entityId) return;
+    let link = '';
+    let href = '';
+    if (item.entity === 'ORDER') {
+      link = `Đơn hàng ${item.entityId}`;
+      href = `orders/${item.entityId}/detail`;
+    } else {
+      link = `Phiếu kho ${item.entityId}`;
+      href = `store-inputs/${item.entityId}/detail`;
+    }
+
+    return (
+      <CLink onClick={() => document.location.href = href } target="_blank">
+        {link}
+      </CLink>
+    );
   };
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(storeHistorys), [storeHistorys]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(storeHistorys), [storeHistorys]);
@@ -197,7 +219,8 @@ const StoreHistory = () => {
               <td>
                 <CBadge color={getBadge(item.type)}>{mappingStatus[item.type]}</CBadge>
               </td>
-            )
+            ),
+            source: item => <td>{renderLink(item)}</td>
           }}
         />
         <CPagination

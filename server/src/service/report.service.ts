@@ -130,25 +130,32 @@ export class ReportService {
 
     const storeInputQueryBuilder = this.storeInputRepository
       .createQueryBuilder('StoreInput')
-      .select('Sum(StoreInput.real_money)', 'return')
+      .select('StoreInput.department')
+      .addSelect('Sum(StoreInput.real_money)', 'return')
       .where(queryString)
       .andWhere(`StoreInput.status = 'APPROVED' and StoreInput.type = 'RETURN'`)
       .cache(3 * 3600)
       .groupBy('StoreInput.department');
     const returnMoney = await storeInputQueryBuilder.getRawMany();
     const reportDeprtment = await queryBuilder.getRawMany();
-    const report = reportDeprtment.map((item, index) => {
-      return { ...item, ...returnMoney[index] };
+    const report = reportDeprtment.map(item => {
+      const index = returnMoney.findIndex(product => product.departmentId === item.department_id);
+      if (index >= 0) {
+        return {
+          ...item,
+          return: Number(returnMoney[index].return)
+        };
+      }
+      return item;
     });
     return report;
   }
 
   async getTop10Sale(filter = {}): Promise<any> {
     let queryString = queryBuilderFunc('Order', filter);
-
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
-      .select(['user.code, user.firstName, user.lastName'])
+      .select(['user.code, user.firstName, user.lastName, user.id'])
       .addSelect('Sum(Order.real_money)', 'sum')
       .leftJoin('Order.sale', 'user')
       .where(queryString)
@@ -157,8 +164,34 @@ export class ReportService {
       .groupBy('Order.sale')
       .orderBy('sum(Order.real_money)', 'DESC')
       .limit(10);
+    const result = await queryBuilder.getRawMany();
 
-    return await queryBuilder.getRawMany();
+    queryString = queryBuilderFunc('StoreInput', filter);
+    const productIds = result.map(item => item.user_id);
+    const returnBuilder = await this.storeInputRepository
+      .createQueryBuilder('StoreInput')
+      .select(['saleId'])
+      .addSelect('SUM(StoreInput.realMoney)', 'return')
+      .where('saleId IN (:saleIds)', { saleIds: productIds.length > 0 ? productIds : '' })
+      .andWhere(queryString)
+      .andWhere(` StoreInput.status = 'APPROVED'`)
+      .groupBy('StoreInput.saleId')
+      .cache(3 * 3600)
+      .getRawMany();
+    console.log(returnBuilder)
+    const finalArray = result.map(item => {
+      const final = {
+        ...item,
+        return: 0
+      };
+      const founded = returnBuilder.filter(returnItem => returnItem.saleId === item.user_id);
+      if (founded.length > 0) {
+        final.return = founded[0].return;
+      }
+      return final;
+    });
+
+    return finalArray
   }
 
   async getTop10Product(filter = {}): Promise<any> {
@@ -198,16 +231,17 @@ export class ReportService {
   }
 
   async getOrderSaleReportForManager(departmentVisible: string[], filter = {}): Promise<any> {
-    let queryString = queryBuilderFunc('Order', filter);
-    const queryBuilder = this.orderRepository
-      .createQueryBuilder('Order')
+    let queryString = queryBuilderFunc('IncomeDashboard', filter);
+    const queryBuilder = this.incomeDashboardRepository
+      .createQueryBuilder('IncomeDashboard')
       .select('COUNT(*)', 'count')
       .cache(3 * 3600)
       .where(
-        `Order.department IN ${JSON.stringify(departmentVisible)
+        `IncomeDashboard.departmentId IN ${JSON.stringify(departmentVisible)
           .replace('[', '(')
-          .replace(']', ')')} and Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`
-      );
+          .replace(']', ')')}`
+      )
+      .andWhere(`IncomeDashboard.type = 'ORDER'`);
     if (queryString) {
       queryBuilder.andWhere(
         new Brackets(sqb => {
@@ -363,7 +397,7 @@ export class ReportService {
     const result = await queryBuilder.getRawMany();
     const count = await countBuilder.getRawMany();
     queryString = queryBuilderFunc('storeInput', filter);
-    const productIds = result.map(item => item.product_id)
+    const productIds = result.map(item => item.product_id);
     const storeInputQueryBuilder = this.storeInputDetailsRepository
       .createQueryBuilder('StoreInputDetails')
       .select('SUM(StoreInputDetails.priceTotal) ', 'return')
@@ -374,9 +408,9 @@ export class ReportService {
       .leftJoin('StoreInputDetails.storeInput', 'storeInput')
       .cache(3 * 3600)
       .groupBy('StoreInputDetails.product');
-      if (producQuery) {
-        storeInputQueryBuilder.andWhere(producQuery);
-      }
+    if (producQuery) {
+      storeInputQueryBuilder.andWhere(producQuery);
+    }
     const returnProduct = await storeInputQueryBuilder.getRawMany();
     const final = result.map(item => {
       const index = returnProduct.findIndex(product => product.product_id === item.product_id);
@@ -642,7 +676,7 @@ export class ReportService {
     const result = await queryBuilder.getRawMany();
     const customerId = result.map(item => item.customer_id);
     queryString = queryBuilderFunc('StoreInput', filter);
-    console.log(queryString)
+    console.log(queryString);
     const returnBuilder = await this.storeInputRepository
       .createQueryBuilder('StoreInput')
       .select(['customer.id'])

@@ -111,10 +111,7 @@ export class StoreInputService {
         type = ''
     ): Promise<[StoreInput[], number]> {
         let queryString = '';
-        Object.keys(filter).forEach((item, index) => {
-            if (item === 'endDate' || item === 'startDate') return;
-            queryString += `StoreInput.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
-        });
+
         let andQueryString = '';
 
         if (departmentVisible.length > 0) {
@@ -131,6 +128,7 @@ export class StoreInputService {
         if (isEmployee && type.includes("RETURN")) {
             andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} StoreInput.sale = ${currentUser.id} `;
         }
+
         const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, { ...filter, type }, options, 'StoreInputs');
         const queryBuilder = this.storeInputRepository
             .createQueryBuilder('StoreInput')
@@ -152,12 +150,31 @@ export class StoreInputService {
         const count = this.storeInputRepository
             .createQueryBuilder('StoreInput')
             .where(andQueryString)
+            .leftJoinAndSelect('StoreInput.customer', 'customer')
+            .leftJoinAndSelect('StoreInput.sale', 'sale')
             .orderBy(`StoreInput.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
             .take(options.take)
             .cache(
                 countCacheKeyBuilder
             );
+
+        if (filter['sale']) {
+            queryBuilder.andWhere(`sale.code like '%${filter['sale']}%'`)
+            count.andWhere(`sale.code like '%${filter['sale']}%'`)
+        }
+
+        if (filter['customerName']) {
+            queryBuilder.andWhere(`customer.name like '%${filter['customerName']}%'`)
+            count.andWhere(`customer.name like '%${filter['customerName']}%'`)
+        }
+        delete filter['sale']
+        delete filter['customerName']
+
+        Object.keys(filter).forEach((item, index) => {
+            if (item === 'endDate' || item === 'startDate') return;
+            queryString += `StoreInput.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+        });
         if (queryString) {
             queryBuilder.andWhere(
                 new Brackets(sqb => {
@@ -170,6 +187,8 @@ export class StoreInputService {
                 })
             );
         }
+
+
 
         const result = await queryBuilder.getManyAndCount();
         result[1] = await count.getCount();
@@ -197,10 +216,6 @@ export class StoreInputService {
 
     async save(storeInput: StoreInput, currentUser: User = null): Promise<StoreInput | undefined> {
         await this.storeInputRepository.removeCache(['StoreInputs']);
-        // if (Array.isArray(storeInput.storeInputDetails)) {
-        //     await this.storeInputDetailsService.saveMany(storeInput.storeInputDetails);
-        // }
-
         if (!storeInput.id) {
             const count = await this.storeInputRepository
                 .createQueryBuilder('storeInput')
@@ -216,13 +231,11 @@ export class StoreInputService {
         return await this.save(storeInput);
 
     }
-    async update(storeInput: StoreInput): Promise<StoreInput | undefined> {
-
+    async update(storeInput: StoreInput, currentUser: User = null): Promise<any> {
         const entity = await this.findById(storeInput.id);
-
-        // if (entity.status === StoreImportStatus.APPROVED && storeInput.status === StoreImportStatus.APPROVED) {
-        //     throw new HttpException('Phiếu này đã được duyệt', HttpStatus.UNPROCESSABLE_ENTITY);
-        // }
+        if (entity.status === StoreImportStatus.APPROVED && storeInput.status === StoreImportStatus.APPROVED) {
+            throw new HttpException('Phiếu này đã được duyệt', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         if (storeInput.status === StoreImportStatus.APPROVED) {
             const arrProduct = entity.storeInputDetails.map(item => item.product.id);
             const founded = await this.productQuantityService.findByfields({
@@ -244,7 +257,7 @@ export class StoreInputService {
                     await this.incomeDashboardService.save(incomeItem);
                 }
             } else {
-                await this.exportStore(founded, entity);
+                await this.exportStore(founded, entity, currentUser);
             }
         }
         return await this.save(storeInput);
@@ -273,13 +286,15 @@ export class StoreInputService {
         await this.transactionService.save(transaction);
     }
 
-    async exportStore(founded: ProductQuantity[], entity: StoreInput): Promise<void> {
+    async exportStore(founded: ProductQuantity[], entity: StoreInput, currentUser: User = null): Promise<void> {
         const productInStore = founded.map(item => {
             const itemFounded = entity.storeInputDetails.filter(origin => origin.product.id === item.product.id);
             const totalProduct = itemFounded.reduce((prev, current) => prev + current.quantity, 0);
 
             return {
                 ...item,
+                entity: 'STORE',
+                entityId: entity?.id,
                 quantity: item.quantity - totalProduct > 0 ? item.quantity - totalProduct : 0,
             };
         });
@@ -296,7 +311,10 @@ export class StoreInputService {
         if (entity.storeTransfer) {
             let arrDetails = [];
             if (Array.isArray(entity.storeInputDetails)) {
-                arrDetails = entity.storeInputDetails.map(item => ({ ...item, id: null }));
+                arrDetails = entity.storeInputDetails.map(item => {
+                    delete item.id
+                    return item
+                });
             }
             const importStore = new StoreInput();
             importStore.store = entity.storeTransfer;
@@ -307,7 +325,7 @@ export class StoreInputService {
             importStore.department = entity.storeTransfer.department;
             importStore.storeInputDetails = arrDetails;
             importStore.createdBy = 'system';
-            await this.save(importStore);
+            await this.save(importStore, currentUser);
         }
     }
 
@@ -321,6 +339,8 @@ export class StoreInputService {
                 quantity: item.quantity,
                 name: item.product.name,
                 storeName: entity.store.name,
+                entity: 'STORE',
+                entityId: entity?.id,
                 type: StoreHistoryType.IMPORT,
             }));
         const productInStore = founded.map(item => {
@@ -330,6 +350,8 @@ export class StoreInputService {
                 ...item,
                 department: entity.store.department,
                 quantity: item.quantity + totalProduct,
+                entity: 'STORE',
+                entityId: entity?.id,
             };
         });
         const total = [...productInStore, ...productNotInStore];

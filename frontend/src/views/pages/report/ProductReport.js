@@ -276,12 +276,10 @@ const ProductReport = () => {
     (info) => {
       const {column, asc} = info
       const copy = [...top10Product];
-      console.log(info)
       copy[0].sort((a, b) => {
           if (asc) return a[column] - b[column];
           else return b[column] - a[column];
         });
-      console.log(copy)
       setTop10Product(copy);
     },
     [top10Product[0]]
@@ -431,13 +429,13 @@ const ProductReport = () => {
               itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
               itemsPerPage={size}
               hover
-              sorter={{external: true, resetable: true }}
               noItemsView={{
                 noResults: 'Không tìm thấy kết quả',
                 noItems: 'Không có dữ liệu'
               }}
               loading={initialState.loading}
               onPaginationChange={val => setSize(val)}
+              sorter={{external: true, resetable: true }}
               onSorterValueChange={sortItem}
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{

@@ -190,7 +190,7 @@ const EditProduct = (props) => {
                       required
                       onChange={async (e) => {
                         await handleChange(e);
-                        renderProductCode();
+                        // renderProductCode();
                       }}
                       onBlur={handleBlur}
                       value={values.name}
@@ -218,7 +218,7 @@ const EditProduct = (props) => {
                       name="productGroup"
                       onChange={async (item) => {
                         await setFieldValue('productGroup', item.value);
-                        renderProductCode();
+                        // renderProductCode();
                       }}
                       value={{
                         value: values.productGroup,
@@ -255,7 +255,7 @@ const EditProduct = (props) => {
                       autoComplete="volume"
                       onChange={async (e) => {
                         await handleChange(e);
-                        renderProductCode();
+                        // renderProductCode();
                       }}
                       valid={errors.volume}
                       onBlur={handleBlur}

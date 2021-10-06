@@ -90,6 +90,7 @@ const CreateOrder = props => {
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
   const [isSelectProItem, setIsSelectProItem] = useState(false);
   const [showProductPromotion, setShowProductPromotion] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   useEffect(() => {
     dispatch(filterCustomer({ page: 0, size: 50, sort: 'createdDate,DESC', dependency: true, sale: account.id }));
     dispatch(getWarehouse({ dependency: true }));
@@ -232,6 +233,7 @@ const CreateOrder = props => {
         data.reducePercent = selectedPromotionItem.reducePercent || 0;
       }
     }
+    setSelectedProduct(value);
     setProductList([...copyArr, data]);
     // onChangeQuantity({ target: { value: 1 } }, index);
   };
@@ -282,17 +284,16 @@ const CreateOrder = props => {
       filterProductInStore({
         store: selectedWarehouse?.id,
         page: 0,
-        size: 50,
-        sort: 'createdDate,DESC',
+        size: 20,
+        sort: 'product,ASC',
         name: value,
-        code: value,
-        volume: value,
         dependency: true
       })
     );
   }, 300);
 
   const onSearchProduct = (value, action) => {
+    console.log(value)
     if (value) {
       debouncedSearchProduct(value);
     }
@@ -415,7 +416,7 @@ const CreateOrder = props => {
                         name="customer"
                         onInputChange={onSearchCustomer}
                         onChange={item => {
-                          setFieldValue('customer',  item.value);
+                          setFieldValue('customer', item.value);
                           onSelectCustomer(item.value);
                         }}
                         value={{
@@ -745,10 +746,17 @@ const CreateOrder = props => {
                 {selectedWarehouse && (
                   <Select
                     onInputChange={onSearchProduct}
-                    onChange={event => onSelectedProduct(event)}
-                    menuPortalTarget={document.body}
+                    onChange={event => {
+                      event ? onSelectedProduct(event) : setSelectedProduct(null);
+                    }}
                     className="mt-3"
+                    isClearable={true}
+                    openMenuOnClick={false}
                     placeholder="Chọn sản phẩm"
+                    value={{
+                      value: selectedProduct,
+                      label: selectedProduct?.name
+                    }}
                     options={productInWarehouses.map((item, index) => ({
                       index,
                       value: item.product,

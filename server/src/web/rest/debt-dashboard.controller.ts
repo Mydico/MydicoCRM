@@ -125,7 +125,7 @@ export class DebtDashboardController {
     }
 
     if (req.query.startDate && req.query.endDate) {
-      where['createdDate'] = LessThan(req.query.endDate);
+      where['createdDate'] = LessThan(`${req.query.endDate} 23:59:59`);
     }
     const results = await this.debtDashboardService.findAndCount({
       where,

@@ -70,6 +70,8 @@ const EditWarehouseReturn = loadable(() => import('./views/pages/warehouse/Retur
 const EditWarehouseReturnDetail = loadable(() => import('./views/pages/warehouse/Return/edit-warehouse-return-detail'));
 const ViewWarehouseReturn = loadable(() => import('./views/pages/warehouse/Return/view-warehouse-return'));
 
+const ViewWarehouse = loadable(() => import('./views/pages/warehouse/History/view-warehouse'));
+
 const WarehouseExport = loadable(() => import('./views/pages/warehouse/Export/warehouse-export'));
 const CreateWarehouseExport = loadable(() => import('./views/pages/warehouse/Export/create-warehouse-export'));
 const EditWarehouseExport = loadable(() => import('./views/pages/warehouse/Export/edit-warehouse-export'));
@@ -188,6 +190,7 @@ const routes = [
   {path: '/store-inputs/export/provider/new', name: 'Thêm mới phiếu xuất kho cho nhà cung cấp', component: CreateWarehouseExportProvider},
   {path: '/store-inputs', name: 'Phiếu nhập kho', component: WarehouseImport, exact: true},
   {path: '/store-inputs/:id/edit/', name: 'Chỉnh sửa phiếu nhập kho', component: EditWarehouseImport},
+  {path: '/store-inputs/:storeId/detail', name: 'Xem phiếu kho', exact: true, component: ViewWarehouse},
   {path: '/store-inputs/new/', name: 'Thêm mới phiếu nhập kho', component: CreateWarehouseImport},
   {path: '/store-inputs/return', name: 'Phiếu trả hàng', component: WarehouseReturn, exact: true},
   {path: '/store-inputs/return/:id/edit/', name: 'Chỉnh sửa phiếu trả hàng', component: EditWarehouseReturn},

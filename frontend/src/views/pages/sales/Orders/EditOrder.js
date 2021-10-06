@@ -112,36 +112,37 @@ const EditOrder = props => {
       setSelectedPromotion(order.promotion);
       setSelectedWarehouse(order.store);
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
-      dispatch(getOrderDetail({ orderId: props.match.params.id, dependency: true }));
+      if (Array.isArray(order.orderDetails)) {
+        const productArr = JSON.parse(JSON.stringify(order.orderDetails));
+        setProductList(productArr)
+        const copyArr = [...productArr].reverse()
+        if (order.orderDetails.length > 0) {
+          dispatch(
+            getProductWarehouseByField({
+              store: order.store.id,
+              product: JSON.stringify(order.orderDetails.map(item => item.product.id)),
+              dependency: true
+            })
+          ).then(numberOfQuantityInStore => {
+            if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+              numberOfQuantityInStore.payload.forEach(element => {
+                const foundedIndex = copyArr.findIndex(item => item.product.id === element.product.id);
+                if (foundedIndex !== -1) {
+                  copyArr[foundedIndex].quantityInStore = element.quantity;
+                }
+              });
+            }
+            setProductList(copyArr);
+          });
+        }
+      }
+      // dispatch(getOrderDetail({ orderId: props.match.params.id, dependency: true }));
     }
   }, [order]);
 
-  useEffect(() => {
-    if (Array.isArray(initialState.orderDetails)) {
-      const productArr = JSON.parse(JSON.stringify(initialState.orderDetails));
-      setProductList(productArr)
-      const copyArr = [...productArr]
-      if (initialState.orderDetails.length > 0) {
-        dispatch(
-          getProductWarehouseByField({
-            store: order.store.id,
-            product: JSON.stringify(initialState.orderDetails.map(item => item.product.id)),
-            dependency: true
-          })
-        ).then(numberOfQuantityInStore => {
-          if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
-            numberOfQuantityInStore.payload.forEach(element => {
-              const foundedIndex = copyArr.findIndex(item => item.product.id === element.product.id);
-              if (foundedIndex !== -1) {
-                copyArr[foundedIndex].quantityInStore = element.quantity;
-              }
-            });
-          }
-          setProductList(copyArr);
-        });
-      }
-    }
-  }, [initialState.orderDetails]);
+  // useEffect(() => {
+
+  // }, [initialState.orderDetails]);
 
   const onSubmit = (values, { }) => () => {
     values = JSON.parse(JSON.stringify(values));
@@ -205,7 +206,7 @@ const EditOrder = props => {
           store: selectedWarehouse?.id,
           page: 0,
           size: 20,
-          sort: 'createdDate,DESC',
+          sort: 'product,ASC',
           dependency: true
         })
       );
@@ -227,9 +228,8 @@ const EditOrder = props => {
         store: selectedWarehouse?.id,
         page: 0,
         size: 20,
-        sort: 'createdDate,DESC',
+        sort: 'product,ASC',
         name: value,
-        code: value,
         dependency: true
       })
     );

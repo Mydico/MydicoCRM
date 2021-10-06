@@ -163,7 +163,7 @@ const CreateReceipt = () => {
                     </CFormGroup>
                     <dl className="row">
                       <dt className="col-sm-3">Công nợ hiện tại</dt>
-                      <dd className="col-sm-9">
+                      <dd className="col-sm-3 h3">
                         {customerDebt
                           ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(customerDebt?.debt)
                           : 0}

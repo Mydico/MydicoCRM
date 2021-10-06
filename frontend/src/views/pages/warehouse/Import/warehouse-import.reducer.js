@@ -124,7 +124,7 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [getWarehouseReturn.rejected]: (state ) => {
-      state.loading = false;
+      state.initialState.loading = false;
     },
     [getWarehouseExport.fulfilled]: (state, action) => {
       warehouseImportAdapter.setAll(state, action.payload.data);

@@ -96,6 +96,7 @@ const WarehouseImport = props => {
   const history = useHistory();
   const paramRef = useRef(null);
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const warehouses = useSelector(selectAll);
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
@@ -112,7 +113,6 @@ const WarehouseImport = props => {
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
-  const warehouses = useSelector(selectAll);
   const computedItems = items => {
     return items.map(item => {
       return {
@@ -209,21 +209,6 @@ const WarehouseImport = props => {
           >
             CHỈNH SỬA THÔNG TIN
           </CButton>
-          // <CRow>
-          //   <CButton
-          //     onClick={() => {
-          //       toEditWarehouseReturn(item.id);
-          //     }}
-          //     color="warning"
-          //     variant="outline"
-          //     shape="square"
-          //     size="sm"
-          //     className="mr-1"
-          //   >
-          //     <CIcon name="cil-pencil" />
-          //     CHỈNH SỬA
-          //   </CButton>
-          // </CRow>
         );
       case WarehouseImportStatus.REJECTED:
         return null;
@@ -291,12 +276,12 @@ const WarehouseImport = props => {
     }
   }, [initialState.updatingSuccess]);
 
-  const memoComputedItems = React.useCallback(items => computedItems(items), []);
+  const memoComputedItems = React.useCallback(items => computedItems(items), [warehouses]);
   const memoListed = React.useMemo(() => memoComputedItems(warehouses), [warehouses]);
 
   const memoExcelComputedItems = React.useCallback(items => computedExcelItemsWarehouse(items), []);
   const memoExelListed = React.useMemo(() => memoExcelComputedItems(warehouses), [warehouses]);
-
+  
   return (
     <CCard>
       <CCardHeader>
@@ -347,6 +332,7 @@ const WarehouseImport = props => {
                 name="date-input"
                 placeholder="date"
               />
+ 
             </CCol>
           </CFormGroup>
         </CFormGroup>

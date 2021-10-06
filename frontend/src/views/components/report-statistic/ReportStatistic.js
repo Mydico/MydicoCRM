@@ -40,7 +40,7 @@ const ReportStatistic = (props) => {
       <CCol sm="6" lg="6">
         <CWidgetBrand
           rightHeader={sumOfIncome}
-          rightFooter="Doanh thu"
+          rightFooter="Doanh thu thuần"
           leftHeader={sumOfDebt}
           leftFooter="Công nợ"
           color="gradient-primary"

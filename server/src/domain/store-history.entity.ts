@@ -24,6 +24,14 @@ export default class StoreHistory extends BaseEntity {
     @Index()
     productName: string;
 
+    @Column({ name: 'entity', nullable: true })
+    @Index()
+    entity: string;
+
+    @Column({ name: 'entityId', nullable: true })
+    @Index()
+    entityId: string;
+
     @Column({ type: 'simple-enum', name: 'status', enum: StoreHistoryType, default: StoreHistoryType.IMPORT })
     @Index()
     type: StoreHistoryType;

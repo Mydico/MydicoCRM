@@ -46,20 +46,16 @@ export class BillService {
     }
     let queryString = "Bill.status <> 'DELETED' ";
     let filterString = '';
-    Object.keys(req.query).forEach((item, index) => {
-      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency' && item !== 'endDate' && item !== 'startDate') {
-        filterString += `Bill.${item} like '%${req.query[item]}%' ${Object.keys(req.query).length - 1 === index ? '' : 'AND '}`;
-      }
-    });
+
     if (departmentVisible.length > 0) {
       queryString += ` AND Bill.department IN ${JSON.stringify(departmentVisible.map(item => item.id))
         .replace('[', '(')
         .replace(']', ')')}`;
     }
     if (req.query['endDate'] && req.query['startDate']) {
-      queryString += ` ${queryString.length === 0 ? '' : ' AND '}  Bill.createdDate  >= '${req.query['startDate']}' AND  Bill.createdDate <= '${
-        req.query['endDate']
-      } 23:59:59'`;
+      queryString += ` ${queryString.length === 0 ? '' : ' AND '}  Bill.createdDate  >= '${
+        req.query['startDate']
+      }' AND  Bill.createdDate <= '${req.query['endDate']} 23:59:59'`;
     }
     const queryBuilder = this.billRepository
       .createQueryBuilder('Bill')
@@ -71,6 +67,12 @@ export class BillService {
       .orderBy(`Bill.${'createdDate'}`, 'DESC')
       .skip(pageRequest.page * pageRequest.size)
       .take(pageRequest.size);
+
+    Object.keys(req.query).forEach((item, index) => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency' && item !== 'endDate' && item !== 'startDate') {
+        queryBuilder.andWhere(`Bill.${item} like '%${req.query[item]}%'`);
+      }
+    });
     if (filterString) {
       queryBuilder.andWhere(
         new Brackets(sqb => {

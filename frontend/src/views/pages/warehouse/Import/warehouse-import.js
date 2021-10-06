@@ -83,7 +83,8 @@ export const fieldsExcelWarehouse = [
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'approverName', label: 'Người duyệt', _style: { width: '10%' } },
-  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } }
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
+  { key: 'realMoney', label: 'Tiền thanh toán', _style: { width: '10%' } }
 ];
 
 const getBadge = status => {

@@ -38,7 +38,7 @@ const validationSchema = function() {
       .min(3, `Họ và tên khách hàng phải lớn hơn 3 kí tự`)
       .required('Họ và tên khách hàng không để trống'),
     name: Yup.string()
-      .min(3, `Tên phải lớn hơn 3 kí tự`)
+      .min(1, `Tên phải lớn hơn 3 kí tự`)
       .required('Tên không để trống'),
     tel: Yup.string()
       .matches(phoneRegExp, 'Số điện thoại không đúng')

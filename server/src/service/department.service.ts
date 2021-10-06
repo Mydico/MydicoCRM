@@ -38,6 +38,20 @@ export class DepartmentService {
     return arrTree;
   }
 
+  // async find(department: Department): Promise<Department[]> {
+  //   const foundedDepartment = await this.departmentRepository.findOne(department.id);
+  //   let arrTree = [];
+  //   const flatTree = await this.departmentRepository.findDescendants(department);
+  //   if (foundedDepartment) {
+  //     try {
+  //       const ids = JSON.parse(foundedDepartment.externalChild);
+  //       const externalTree = await this.departmentRepository.findByIds(ids);
+  //       arrTree = [...new Set([...flatTree, ...externalTree])];
+  //     } catch (error) {}
+  //   }
+  //   return arrTree;
+  // }
+
   async findAncestor(department: Department): Promise<Department[]> {
     const flatTree = await this.departmentRepository.findAncestors(department);
     return flatTree;

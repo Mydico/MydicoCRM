@@ -71,7 +71,7 @@ const SaleReport = (props) => {
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
   const [user, setUser] = useState(null);
-  const [top10Product, setTop10Product] = useState([]);
+  const [top10Product, setTop10Product] = useState([[],0]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   useEffect(() => {

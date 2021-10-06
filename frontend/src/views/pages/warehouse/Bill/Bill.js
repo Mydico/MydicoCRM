@@ -139,7 +139,7 @@ const Bill = props => {
   const dispatch = useDispatch();
   const [focused, setFocused] = React.useState();
   const history = useHistory();
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
@@ -170,7 +170,7 @@ const Bill = props => {
   useEffect(() => {
     let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     if (date.endDate && date.startDate) {
-      params = { ...params, ...date };
+      params = { ...params, endDate: date.endDate.format('YYYY-MM-DD'), startDate: date.startDate.format('YYYY-MM-DD') };
     }
     dispatch(getBill(params));
     window.scrollTo(0, 100);
@@ -183,7 +183,7 @@ const Bill = props => {
         tel: item.customer?.tel,
         quantity: item.order?.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0) || 0,
         total: item.order ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.order.realMoney) : 0,
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
+        createdDate: moment(item.createdDate).format('YYYY-MM-DD')
       };
     });
   };
@@ -205,7 +205,16 @@ const Bill = props => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getBill({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
+      dispatch(
+        getBill({
+          page: 0,
+          size: size,
+          sort: 'createdDate,DESC',
+          ...value,
+          endDate: date.endDate.format('YYYY-MM-DD'),
+          startDate: date.startDate.format('YYYY-MM-DD')
+        })
+      );
     }
   }, 300);
 
@@ -220,26 +229,35 @@ const Bill = props => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       setModal(false);
-      dispatch(getBill({ page: activePage - 1, size: size, sort: 'createdDate,DESC', ...paramRef.current, ...date }));
+      dispatch(
+        getBill({
+          page: activePage - 1,
+          size: size,
+          sort: 'createdDate,DESC',
+          ...paramRef.current,
+          startDate: date.startDate?.format('YYYY-MM-DD'),
+          endDate: date.endDate?.format('YYYY-MM-DD')
+        })
+      );
       window.scrollTo(0, 100);
       dispatch(reset());
     }
   }, [initialState.updatingSuccess]);
 
   const approveBill = bill => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const data = { id: bill.id, status: BillStatus.APPROVED, action: 'approve', order: bill.order };
     dispatch(updateBill(data));
   };
 
   const rejectBill = bill => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const data = { id: bill.id, status: BillStatus.REJECTED, action: 'cancel', order: bill.order };
     dispatch(updateBill(data));
   };
 
   const shippingBill = bill => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     dispatch(
       updateBill({
         id: bill.id,
@@ -251,7 +269,7 @@ const Bill = props => {
   };
 
   const successBill = bill => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     dispatch(
       updateBill({
         id: bill.id,
@@ -268,7 +286,7 @@ const Bill = props => {
   };
 
   const deleteBill = bill => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const data = { id: bill.id, status: BillStatus.DELETED, action: 'delete', order: bill.order };
     dispatch(updateBill(data));
   };
@@ -481,11 +499,11 @@ const Bill = props => {
   }, 300);
 
   const onSearchUser = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchUser(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchUser("");
+    if (action.action === 'input-blur') {
+      debouncedSearchUser('');
     }
   };
 
@@ -662,7 +680,6 @@ const Bill = props => {
                         </div>
                         <div>{item?.customer?.address || ''}</div>
                         <div>{`${memoizedGetDistrictName(item?.customer?.district)}, ${memoizedGetCityName(item?.customer?.city)}`}</div>
-                        <div>Địa chỉ: {item?.customer?.address || ''}</div>
                         <div>Phone: {item?.customer?.tel || ''}</div>
                       </CCol>
                     </CRow>

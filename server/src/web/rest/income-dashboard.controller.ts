@@ -124,7 +124,7 @@ export class IncomeDashboardController {
     }
 
     if (req.query.startDate && req.query.endDate) {
-      where['createdDate'] = Between(req.query.startDate, req.query.endDate);
+      where['createdDate'] = Between(req.query.startDate, `${req.query.endDate} 23:59:59`);
     }
     const results = await this.incomeDashboardService.findAndCount({
       where,

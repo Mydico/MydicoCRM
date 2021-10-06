@@ -106,6 +106,7 @@ const CreateReceipt = () => {
       dispatch(
         filterProductInStore({
           store: selectedWarehouse.id,
+          sort: 'product,ASC',
           dependency: true
         })
       ).then(resp => {
@@ -189,6 +190,7 @@ const CreateReceipt = () => {
         store: selectedWarehouse.id,
         code: value,
         name: value,
+        sort: 'product,ASC',
         dependency: true
       })
     ).then(resp => {

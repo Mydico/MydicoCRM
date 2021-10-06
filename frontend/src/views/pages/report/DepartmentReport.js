@@ -132,7 +132,6 @@ const DepartmentReport = (props) => {
                   <th>Doanh thu</th>
                   <th>Trả lại</th>
                   <th>Doanh thu thuần</th>
-                  <th>Chiết khấu</th>
                   <th>Số đơn hàng</th>
                 </tr>
               </thead>
@@ -150,16 +149,13 @@ const DepartmentReport = (props) => {
                       </div>
                     </td>
                     <td>
-                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.total)}</div>
+                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
                     </td>
                     <td>
                       <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return || 0)}</div>
                     </td>
                     <td>
                       <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum - (item.return || 0))}</div>
-                    </td>
-                    <td>
-                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.reduce)}</div>
                     </td>
                     <td>
                       <div>{item.count}</div>

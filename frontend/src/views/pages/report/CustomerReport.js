@@ -71,7 +71,7 @@ const CustomerReport = () => {
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
   const [customer, setCustomer] = useState(null);
-  const [top10Product, setTop10Product] = useState([]);
+  const [top10Product, setTop10Product] = useState([[],0]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   const [filteredCustomer, setFilteredCustomer] = useState([]);
