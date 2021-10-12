@@ -18,6 +18,7 @@ import { globalizedPromotionSelectors } from '../sales/Promotion/promotion.reduc
 import { filterCustomerNotToStore } from '../customer/customer.api';
 import { getExactUser } from '../user/UserList/user.api';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
+import AdvancedTable from '../../components/table/AdvancedTable';
 
 moment.locale('vi');
 
@@ -30,10 +31,9 @@ const fields = [
   },
   { key: 'customer_code', label: 'Mã nhân viên', _style: { width: '10%' }, filter: false },
   { key: 'customer_name', label: 'Tên', _style: { width: '10%' }, filter: false },
-  { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
-  { key: 'reduce', label: 'Chiết khấu', _style: { width: '15%' }, filter: false },
+  { key: 'totalMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
-  { key: 'totalMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false }
+  { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false }
 ];
 
 const { selectAll } = globalizedBranchSelectors;
@@ -44,11 +44,12 @@ const PromotionReport = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
+  const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
 
-  const branches = useSelector(selectAll);
-  const promotions = useSelector(selectPromotionAll);
-  const users = useSelector(selectUserAll);
-
+  const branches = isEmployee? [account.branch] : useSelector(selectAll);
+  const users = isEmployee? [account] : useSelector(selectUserAll);
+  
+  const promotions = useSelector(selectPromotionAll)
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({ dependency: true });
@@ -59,7 +60,7 @@ const PromotionReport = () => {
   const [promotion, setPromotion] = useState(null);
   const [promotionItem, setPromotionItem] = useState(null);
 
-  const [top10Product, setTop10Product] = useState([[],0]);
+  const [top10Product, setTop10Product] = useState([[], 0]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   const [filteredCustomer, setFilteredCustomer] = useState([]);
@@ -216,7 +217,7 @@ const PromotionReport = () => {
   }, [customer]);
 
   useEffect(() => {
-    setPromotionItem(null)
+    setPromotionItem(null);
     setFilter({
       ...filter,
       promotion: promotion?.id,
@@ -325,13 +326,13 @@ const PromotionReport = () => {
   // const memoTop10Customer = React.useMemo(() => top10Customer, [top10Customer]);
   const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
   const sortItem = React.useCallback(
-    (info) => {
-      const {column, asc} = info
+    info => {
+      const { column, asc } = info;
       const copy = [...top10Product];
       copy[0].sort((a, b) => {
-          if (asc) return a[column] - b[column];
-          else return b[column] - a[column];
-        });
+        if (asc) return Number(a[column]) - Number(b[column]);
+        else return Number(b[column]) - Number(a[column]);
+      });
       setTop10Product(copy);
     },
     [top10Product[0]]
@@ -349,6 +350,7 @@ const PromotionReport = () => {
               endDateId="endDate"
               onDatesChange={value => setDate(value)}
               focusedInput={focused}
+              minimumNights={0}
               isOutsideRange={() => false}
               startDatePlaceholderText="Từ ngày"
               endDatePlaceholderText="Đến ngày"
@@ -445,7 +447,7 @@ const PromotionReport = () => {
                   placeholder="Chọn khách hàng"
                   options={filteredCustomer.map(item => ({
                     value: item,
-                    label: item.code
+                    label: `${item.code}-${item.name}`
                   }))}
                 />
               </CCol>
@@ -513,14 +515,14 @@ const PromotionReport = () => {
             <CCardTitle>Danh sách nhân viên</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <CDataTable
+            <AdvancedTable
               items={memoTop10Product}
               fields={fields}
               columnFilter
               itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
               itemsPerPage={size}
               hover
-              sorter={{external: true, resetable: true }}
+              sorter={{ external: true, resetable: true }}
               onSorterValueChange={sortItem}
               noItemsView={{
                 noResults: 'Không tìm thấy kết quả',
@@ -538,17 +540,12 @@ const PromotionReport = () => {
                 ),
                 realMoney: (item, index) => (
                   <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney - (item.return || 0))}</div>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
                   </td>
                 ),
                 return: (item, index) => (
                   <td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
-                  </td>
-                ),
-                reduce: (item, index) => (
-                  <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.reduce)}</div>
                   </td>
                 ),
                 totalMoney: (item, index) => (
@@ -565,7 +562,7 @@ const PromotionReport = () => {
             />
           </CCardBody>
           {/* <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
+            <table className="table table-hover table-outline mb-0 d-sm-table">
               <thead className="thead-light">
                 <tr>
                   <th>Tên sản phẩm</th>

@@ -26,7 +26,7 @@ export const resourceDesc = {
 
     'finish': 'hoàn thành',
 
-    'departments': 'phòng ban',
+    'departments': 'chi nhánh',
 
     'report-subjects': 'chủ đề đóng góp',
 
@@ -107,6 +107,7 @@ export const resourceDesc = {
     'store-inputs': 'phiếu xuất/nhập kho',
     'export': 'xuất kho',
     'return': 'trả hàng',
+    'transactions': 'công nợ',
     'product-quantities': 'sản phẩm trong kho',
 };
 
@@ -151,6 +152,18 @@ export const blackListPermission = [
         method: 'DELETE',
         url: '/api/product-quantities/:id',
     },
+    {
+        method: 'DELETE',
+        url: '/api/transactions/:id',
+    },
+    {
+        method: 'PUT',
+        url: '/api/transactions',
+    },
+    {
+        method: 'POST',
+        url: '/api/transactions',
+    },
 ];
 
 export const removeExceptional = ['approve', 'delete', 'create-cod', 'cancel', 'shipping', 'complete', 'transporter'];
@@ -168,6 +181,7 @@ export const blackList = [
     'change-password',
     'change-info',
     'orders/status',
+    'users/find/exact',
     'customer-categories',
     'income-dashboards',
     'debt-dashboards',
@@ -190,8 +204,9 @@ export const blackList = [
     'temps',
     'notifies',
     'skins',
-    'transaction',
     'map',
+    'transactions/debt',
+    'transactions/find',
     'details',
     'advisories',
     'request',

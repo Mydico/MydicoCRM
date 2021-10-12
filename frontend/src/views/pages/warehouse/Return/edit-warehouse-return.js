@@ -31,7 +31,7 @@ import _ from 'lodash';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
-import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import { globalizedProductSelectors, swap } from '../../product/ProductList/product.reducer';
 import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
@@ -131,12 +131,16 @@ const EditWarehouseReturn = props => {
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].quantity = Number(target.value).toString();
+    copyArr[index].priceTotal =
+    (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].price = Number(target.value.replace(/\D/g, ''));
+    copyArr[index].priceTotal =
+    (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
@@ -146,10 +150,16 @@ const EditWarehouseReturn = props => {
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({ value }, index) => {
+  const onSelectedProduct = ({ value ,index }, selectedProductIndex) => {
+    const tempArr = [...products];
+    const tempVar = tempArr[0];
+    tempArr[0] = tempArr[index];
+    tempArr[index] = tempVar;
+    dispatch(swap(tempArr));
     const copyArr = [...productList];
-    copyArr[index].product = value;
-    copyArr[index].quantity = 1;
+    copyArr[selectedProductIndex].product = value;
+    copyArr[selectedProductIndex].quantity = 1;
+    copyArr[selectedProductIndex].price = Number(value.price);
     setProductList(copyArr);
   };
 
@@ -204,8 +214,7 @@ const EditWarehouseReturn = props => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].reducePercent = Number(target.value).toString();
     copyArr[index].priceTotal =
-      copyArr[index].price * copyArr[index].quantity -
-      (copyArr[index].price * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
+    (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
@@ -519,7 +528,8 @@ const EditWarehouseReturn = props => {
                               onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
-                              options={products.map(item => ({
+                              options={products.map((item, index) => ({
+                                index,
                                 value: item,
                                 label: `${item?.productBrand?.name}-${item?.name}-${item?.volume}`
                               }))}

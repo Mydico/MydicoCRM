@@ -179,13 +179,13 @@ export class ReceiptService {
       transaction.previousDebt = latestTransaction ? latestTransaction.earlyDebt : 0;
       transaction.earlyDebt = latestTransaction ? Number(latestTransaction.earlyDebt) - Number(entity.money) : 0 - Number(entity.money);
       await this.transactionService.save(transaction);
-      const incomeItem = new IncomeDashboard();
-      incomeItem.amount = entity.money;
-      incomeItem.departmentId = entity.department.id;
-      incomeItem.branchId = entity.sale.branch?.id;
-      incomeItem.type = DashboardType.DEBT;
-      incomeItem.saleId = entity.customer.sale.id;
-      await this.incomeDashboardService.save(incomeItem);
+      // const incomeItem = new IncomeDashboard();
+      // incomeItem.amount = entity.money;
+      // incomeItem.departmentId = entity.department.id;
+      // incomeItem.branchId = entity.sale.branch?.id;
+      // incomeItem.type = DashboardType.DEBT;
+      // incomeItem.saleId = entity.customer.sale.id;
+      // await this.incomeDashboardService.save(incomeItem);
     }
     return await this.receiptRepository.save(receipt);
   }

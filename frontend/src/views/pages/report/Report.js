@@ -16,7 +16,8 @@ import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getTop10Customer, getTop10Product, getTop10sale } from './report.api';
-
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
+import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 moment.locale('vi');
 const { selectAll } = globalizedBranchSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
@@ -25,9 +26,10 @@ const Report = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
+  const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
 
-  const branches = useSelector(selectAll);
-  const users = useSelector(selectUserAll);
+  const branches = isEmployee? [account.branch] : useSelector(selectAll);
+  const users = isEmployee? [account] : useSelector(selectUserAll);
 
   const [filter, setFilter] = useState({ dependency: true, department: null, branch: null, user: null });
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
@@ -177,9 +179,11 @@ const Report = () => {
               startDateId="startDate"
               endDate={date.endDate}
               endDateId="endDate"
+              minimumNights={0}
               onDatesChange={value => setDate(value)}
               focusedInput={focused}
               isOutsideRange={() => false}
+              singleDateRange={true}
               startDatePlaceholderText="Từ ngày"
               endDatePlaceholderText="Đến ngày"
               onFocusChange={focusedInput => setFocused(focusedInput)}
@@ -265,30 +269,30 @@ const Report = () => {
             <CCardTitle> Top 10 nhân viên</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-              <thead className="thead-light">
-                <tr>
-                  <th>Mã nhân viên</th>
-                  <th>Tên</th>
-                  <th>Doanh thu thuần</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="table table-hover table-outline mb-0 d-sm-table">
+              <Thead className="thead-light">
+                <Tr>
+                  <Th>Mã nhân viên</Th>
+                  <Th>Tên</Th>
+                  <Th>Doanh thu thuần</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {memoTop10Sale.map((item, index) => (
-                  <tr>
-                    <td>
-                      <div>{item.code}</div>
-                    </td>
-                    <td>
-                      <div>{`${item.lastName || ''} ${item.firstName || ''}`}</div>
-                    </td>
-                    <td>
-                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
-                    </td>
-                  </tr>
+                  <Tr>
+                    <Td>
+                      <div>{item.sale_code}</div>
+                    </Td>
+                    <Td>
+                      <div>{`${item.sale_lastName || ''} ${item.sale_firstName || ''}`}</div>
+                    </Td>
+                    <Td>
+                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
+                    </Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
+              </Tbody>
+            </Table>
           </CCardBody>
         </CCard>
         <CCard>
@@ -296,30 +300,30 @@ const Report = () => {
             <CCardTitle> Top 10 sản phẩm bán chạy nhất</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-              <thead className="thead-light">
-                <tr>
-                  <th>Mã sản phẩm</th>
-                  <th>Tên sản phẩm</th>
-                  <th>Số lượng bán</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="table table-hover table-outline mb-0 d-sm-table">
+              <Thead className="thead-light">
+                <Tr>
+                  <Th>Mã sản phẩm</Th>
+                  <Th>Tên sản phẩm</Th>
+                  <Th>Số lượng bán</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {memoTop10Product.map((item, index) => (
-                  <tr>
-                    <td>
+                  <Tr>
+                    <Td>
                       <div>{item.code}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{item.name}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{item.sum}</div>
-                    </td>
-                  </tr>
+                    </Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
+              </Tbody>
+            </Table>
           </CCardBody>
         </CCard>
         <CCard>
@@ -327,30 +331,30 @@ const Report = () => {
             <CCardTitle> Top 10 khách hàng có doanh số cao nhất</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-              <thead className="thead-light">
-                <tr>
-                  <th>Mã khách hàng</th>
-                  <th>Tên khách hàng</th>
-                  <th>Doanh thu</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="table table-hover table-outline mb-0 d-sm-table">
+              <Thead className="thead-light">
+                <Tr>
+                  <Th>Mã khách hàng</Th>
+                  <Th>Tên khách hàng</Th>
+                  <Th>Doanh thu</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {memoTop10Customer.map((item, index) => (
-                  <tr key={index}>
-                    <td>
+                  <Tr key={index}>
+                    <Td>
                       <div>{item.code}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{item.name}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
-                    </td>
-                  </tr>
+                    </Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
+              </Tbody>
+            </Table>
           </CCardBody>
         </CCard>
       </CCol>

@@ -11,7 +11,8 @@ import { CChartBar, CChartDoughnut } from '@coreui/react-chartjs';
 import { getRandomColor } from '../../../shared/utils/helper';
 import { useHistory } from 'react-router';
 import moment from 'moment';
-
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
+import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 const DepartmentReport = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -66,6 +67,7 @@ const DepartmentReport = (props) => {
               startDateId="startDate"
               endDate={date.endDate}
               endDateId="endDate"
+              minimumNights={0}
               onDatesChange={value => setDate(value)}
               focusedInput={focused}
               isOutsideRange={() => false}
@@ -124,46 +126,47 @@ const DepartmentReport = (props) => {
             <CCardTitle>Thống kê theo văn phòng</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-              <thead className="thead-light">
-                <tr>
-                  <th>Mã nhân viên</th>
-                  <th>Tên</th>
-                  <th>Doanh thu</th>
-                  <th>Trả lại</th>
-                  <th>Doanh thu thuần</th>
-                  <th>Số đơn hàng</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="table table-hover table-outline mb-0 d-sm-table">
+              <Thead className="thead-light">
+                <Tr>
+                  <Th>Mã chi nhánh</Th>
+                  <Th>Tên chi nhánh</Th>
+                  <Th>Số đơn hàng</Th>
+                  <Th>Doanh thu</Th>
+                  <Th>Trả lại</Th>
+                  <Th>Doanh thu thuần</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {memoDepartmentReport.map((item, index) => (
-                  <tr key={index}>
-                    <td>
+                  <Tr key={index}>
+                    <Td>
                       <div>{item.code}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>
                         <CLink onClick={onDetail(item)} target="_blank">
                           {item.name}
                         </CLink>
                       </div>
-                    </td>
-                    <td>
-                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
-                    </td>
-                    <td>
-                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return || 0)}</div>
-                    </td>
-                    <td>
-                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum - (item.return || 0))}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{item.count}</div>
-                    </td>
-                  </tr>
+                    </Td>
+                    <Td>
+                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.total)}</div>
+                    </Td>
+                    <Td>
+                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return || 0)}</div>
+                    </Td>
+                    <Td>
+                      <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.real)}</div>
+                    </Td>
+
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
+              </Tbody>
+            </Table>
           </CCardBody>
         </CCard>
       </CCol>

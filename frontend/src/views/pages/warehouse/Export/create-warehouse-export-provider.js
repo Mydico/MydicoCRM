@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { creatingWarehouseImport } from '../Import/warehouse-import.api';
 import { currencyMask } from '../../../components/currency-input/currency-input';
 import MaskedInput from 'react-text-mask';
-import _ from 'lodash'
+import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { fetching } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
@@ -29,7 +29,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
-import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import { globalizedProductSelectors, swap } from '../../product/ProductList/product.reducer';
 import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { globalizedProviderSelectors } from '../Provider/provider.reducer';
@@ -39,7 +39,12 @@ import { blockInvalidChar } from '../../../../shared/utils/helper';
 
 const validationSchema = function() {
   return Yup.object().shape({
-    store: Yup.object().required('Kho không để trống')
+    store: Yup.object()
+      .required('Kho không để trống')
+      .nullable(),
+      provider: Yup.object()
+      .required('Kho nhận không để trống')
+      .nullable()
   });
 };
 
@@ -87,6 +92,14 @@ const CreateWarehouseExportProvider = () => {
   }, []);
 
   const onSubmit = (values, { resetForm }) => () => {
+    if (productList.reduce((sum, current) => sum + current.quantity, 0) === 0) {
+      alert('Không để tổng số lượng bằng 0');
+      return;
+    }
+    if (productList.filter(item => item.quantity === 0).length > 0) {
+      alert('Không để sản phẩm có số lượng bằng 0 khi tạo đơn hàng');
+      return;
+    }
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT_TO_PROVIDER;
     values.department = account.mainDepartment || account.department;
@@ -114,15 +127,17 @@ const CreateWarehouseExportProvider = () => {
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({ value }, index) => {
-    const arr = productList.filter(item => item.product.id === value.id);
-    if (arr.length === 0) {
-      const copyArr = [...productList];
-      copyArr[index].product = value;
-      copyArr[index].price = Number(value.price);
-      copyArr[index].quantity = 1;
-      setProductList(copyArr);
-    }
+  const onSelectedProduct = ({ value, index }, selectedProductIndex) => {
+    const tempArr = [...products];
+    const tempVar = tempArr[0];
+    tempArr[0] = tempArr[index];
+    tempArr[index] = tempVar;
+    dispatch(swap(tempArr));
+    const copyArr = [...productList];
+    copyArr[selectedProductIndex].product = value;
+    copyArr[selectedProductIndex].quantity = 1;
+    copyArr[selectedProductIndex].price = Number(value.price);
+    setProductList(copyArr);
   };
 
   const onAddProduct = () => {
@@ -141,11 +156,11 @@ const CreateWarehouseExportProvider = () => {
   }, 300);
 
   const onSearchProduct = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchProduct(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchProduct("");
+    if (action.action === 'input-blur') {
+      debouncedSearchProduct('');
     }
   };
 
@@ -174,7 +189,7 @@ const CreateWarehouseExportProvider = () => {
   return (
     <CCard>
       <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={editAlert} innerRef={formikRef}>
-        {({ values, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset }) => (
+        {({ values, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset, errors }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
               <CCardHeader>
@@ -195,7 +210,7 @@ const CreateWarehouseExportProvider = () => {
                         label: `${item.name}`
                       }))}
                     />
-                    {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
+                    <FormFeedback className="d-block">{errors.store}</FormFeedback>
                   </CCol>
                 </CRow>
                 <CRow>
@@ -242,6 +257,7 @@ const CreateWarehouseExportProvider = () => {
                         label: `${item.name}`
                       }))}
                     />
+                    <FormFeedback className="d-block">{errors.provider}</FormFeedback>
                   </CCol>
                 </CRow>
                 <CRow>
@@ -298,9 +314,10 @@ const CreateWarehouseExportProvider = () => {
                               onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
-                              options={products.map(item => ({
+                              options={products.map((item, index) => ({
+                                index,
                                 value: item,
-                                label:  `[${item?.code || ''}]-${item.name}-${item.volume}`
+                                label: `[${item?.code || ''}]-${item.name}-${item.volume}`
                               }))}
                             />
                           </td>

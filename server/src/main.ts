@@ -1,4 +1,6 @@
 require('dotenv').config({ path: '.env' });
+const OS = require('os');
+process.env.UV_THREADPOOL_SIZE = OS.cpus().length;
 import { NestFactory } from '@nestjs/core';
 import cloudConfigClient from 'cloud-config-client';
 import { AppModule } from './app.module';

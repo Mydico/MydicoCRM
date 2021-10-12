@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { CWidgetDropdown, CRow, CCol } from '@coreui/react/lib';
 import ChartLineSimple from '../charts/ChartLineSimple';
-import { getOrderSale, getSumDebtDashboard, getSumIncomeDashboard } from '../../pages/dashboard/dashboard.api';
+import {  getSumIncomeDashboard } from '../../pages/dashboard/dashboard.api';
 import { useDispatch, useSelector } from 'react-redux';
 import { userSafeSelector } from '../../../views/pages/login/authenticate.reducer';
 import { DashboardType } from '../../pages/dashboard/Dashboard';
 import memoize from 'fast-memoize';
+import { getDebt, getIncome, getOrder } from '../../pages/report/report.api';
 
 const getPoint = data => {
   const arr = data.map(item => Number(item.amount));
@@ -32,19 +33,19 @@ const WidgetsDropdown = props => {
   }, [date])
 
   const getData = (startDate, endDate) => {
-    dispatch(getSumIncomeDashboard({ saleId: account.id, startDate, endDate })).then(data => {
+    dispatch(getIncome({ startDate, endDate })).then(data => {
       if (data && data.payload) {
 
         // setIncomePoint(memoizedGetPoint(data.payload));
         setIncomeTotal(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));
       }
     });
-    dispatch(getOrderSale({ userId: account.id, startDate, endDate })).then(data => {
+    dispatch(getOrder({ startDate, endDate })).then(data => {
       if (data && data.payload) {
         setTotal(data.payload.count);
       }
     });
-    dispatch(getSumDebtDashboard({ saleId: account.id, startDate, endDate })).then(data => {
+    dispatch(getDebt({ startDate, endDate })).then(data => {
       if (data && data.payload) {
         // setDebtPoint(memoizedGetPoint(data.payload));
         setDebt(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));

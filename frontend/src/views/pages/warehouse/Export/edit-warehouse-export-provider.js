@@ -27,7 +27,7 @@ import MaskedInput from 'react-text-mask';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
-import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import { globalizedProductSelectors, swap } from '../../product/ProductList/product.reducer';
 import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { confirmAlert } from 'react-confirm-alert'; // Import
@@ -132,16 +132,29 @@ const EditWarehouseExportProvider = props => {
     }
   };
 
-  const onSelectedProduct = ({ value }, index) => {
-    const arr = productList.filter(item => item.product.id === value.id);
-    if (arr.length === 0) {
-      const copyArr = [...productList];
-      copyArr[index].product = value;
-      copyArr[index].price = Number(value.price);
-      copyArr[index].quantity = 1;
-      setProductList(copyArr);
-    }
+  const onSelectedProduct = ({ value ,index }, selectedProductIndex) => {
+    const tempArr = [...products];
+    const tempVar = tempArr[0];
+    tempArr[0] = tempArr[index];
+    tempArr[index] = tempVar;
+    dispatch(swap(tempArr));
+    const copyArr = [...productList];
+    copyArr[selectedProductIndex].product = value;
+    copyArr[selectedProductIndex].quantity = 1;
+    copyArr[selectedProductIndex].price = Number(value.price);
+    setProductList(copyArr);
   };
+
+  // const onSelectedProduct = ({ value }, index) => {
+  //   const arr = productList.filter(item => item.product.id === value.id);
+  //   if (arr.length === 0) {
+  //     const copyArr = [...productList];
+  //     copyArr[index].product = value;
+  //     copyArr[index].price = Number(value.price);
+  //     copyArr[index].quantity = 1;
+  //     setProductList(copyArr);
+  //   }
+  // };
 
   const onAddProduct = () => {
     const data = { product: {}, quantity: 1 };
@@ -312,7 +325,8 @@ const EditWarehouseExportProvider = props => {
                               onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
-                              options={products.map(item => ({
+                              options={products.map((item, index) => ({
+                                index,
                                 value: item,
                                 label: `${item?.code}-${item?.name}-${item?.volume}`
                               }))}

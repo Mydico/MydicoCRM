@@ -40,6 +40,10 @@ export default class Product extends BaseEntity {
     @Index()
     price: number;
 
+    @Column({ type: 'integer', name: 'order', nullable: true, default: 0 })
+    @Index()
+    order: number;
+
     @Column({ type: 'integer', name: 'volume', default: 0 })
     @Index({ fulltext: true })
     volume: number;

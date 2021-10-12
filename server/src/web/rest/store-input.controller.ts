@@ -189,8 +189,8 @@ export class StoreInputController {
   async postExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     const currentUser = req.user as User;
     storeInput.createdBy = currentUser.login;
-    storeInput.storeName = storeInput.store.name;
-    storeInput.storeTransferName = storeInput.storeTransfer.name;
+    storeInput.storeName = storeInput.store?.name;
+    storeInput.storeTransferName = storeInput.storeTransfer?.name;
     const created = await this.storeInputService.save(storeInput, currentUser);
     HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
     return res.send(created);

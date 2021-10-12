@@ -18,6 +18,7 @@ import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getSaleReport, getSaleSummaryReport } from './report.api';
 import Download from './../../components/excel/DownloadExcel';
 import { useHistory } from 'react-router';
+import AdvancedTable from '../../components/table/AdvancedTable';
 
 moment.locale('vi');
 const controlStyles = {
@@ -36,10 +37,9 @@ const fields = [
   },
   { key: 'sale_code', label: 'Mã nhân viên', _style: { width: '10%' }, filter: false },
   { key: 'name', label: 'Tên', _style: { width: '10%' }, filter: false },
-  { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
-  { key: 'reduce', label: 'Chiết khấu', _style: { width: '15%' }, filter: false },
+  { key: 'totalMoney', label: 'Doanh thu ', _style: { width: '15%' }, filter: false },
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
-  { key: 'totalMoney', label: 'Doanh thu ', _style: { width: '15%' }, filter: false }
+  { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false }
 ];
 
 const excelFields = [
@@ -51,18 +51,20 @@ const excelFields = [
   { key: 'sale_code', label: 'Mã nhân viên', _style: { width: '10%' }, filter: false },
   { key: 'name', label: 'Tên', _style: { width: '10%' }, filter: false },
   { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
-  { key: 'reduce', label: 'Chiết khấu', _style: { width: '15%' }, filter: false },
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
   { key: 'totalMoney', label: 'Doanh thu ', _style: { width: '15%' }, filter: false }
 ];
-const SaleReport = (props) => {
+const SaleReport = props => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
+
+  const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
+
+  const branches = isEmployee ? [account.branch] : useSelector(selectAll);
+  const users = isEmployee ? [account] : useSelector(selectUserAll);
   const history = useHistory();
 
-  const branches = useSelector(selectAll);
-  const users = useSelector(selectUserAll);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({ dependency: true });
@@ -71,16 +73,16 @@ const SaleReport = (props) => {
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
   const [user, setUser] = useState(null);
-  const [top10Product, setTop10Product] = useState([[],0]);
+  const [top10Product, setTop10Product] = useState([[], 0]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
   }, []);
 
-  useEffect(() => {
-    getTop10(filter);
-  }, [activePage, size]);
+  // useEffect(() => {
+  //   getTop10(filter);
+  // }, [activePage, size]);
 
   const getTop10 = filter => {
     dispatch(
@@ -104,8 +106,8 @@ const SaleReport = (props) => {
 
     dispatch(getSaleSummaryReport(filter)).then(data => {
       if (data && data.payload) {
-        setNumOfProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.count));
-        setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.sum));
+        setNumOfProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.total));
+        setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.real));
       }
     });
     // dispatch(getProductReport(filter)).then(data => {
@@ -128,7 +130,7 @@ const SaleReport = (props) => {
       user: null
     });
     if (department) {
-      dispatch(getBranch({ department: department.id, dependency: true }));
+      dispatch(getBranch({ department: department?.id, dependency: true }));
       dispatch(
         getExactUser({
           page: 0,
@@ -171,20 +173,18 @@ const SaleReport = (props) => {
   }, [user]);
 
   useEffect(() => {
-    if (Object.keys(filter).length > 1) {
+    console.log(filter)
+    if (Object.keys(filter).length > 2) {
       getTop10(filter);
     }
-   
   }, [filter]);
 
   useEffect(() => {
     if (date.startDate && date.endDate) {
       setFilter({
         ...filter,
-        ...{
-          startDate: date.startDate?.format('YYYY-MM-DD'),
-          endDate: date.endDate?.format('YYYY-MM-DD')
-        }
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
       });
     }
   }, [date]);
@@ -221,25 +221,28 @@ const SaleReport = (props) => {
   };
 
   const computedExcelItems = React.useCallback(items => {
-    return items || [].map((item, index) => {
-      return {
-        ...item,
-        order: index + 1,
-      };
-    });
-  },[]); 
+    return (
+      items ||
+      [].map((item, index) => {
+        return {
+          ...item,
+          order: index + 1
+        };
+      })
+    );
+  }, []);
 
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(top10Product[0]), [top10Product[0]]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
   const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
   const sortItem = React.useCallback(
-    (info) => {
-      const {column, asc} = info
+    info => {
+      const { column, asc } = info;
       const copy = [...top10Product];
       copy[0].sort((a, b) => {
-          if (asc) return a[column] - b[column];
-          else return b[column] - a[column];
-        });
+        if (asc) return Number(a[column]) - Number(b[column]);
+        else return Number(b[column]) - Number(a[column]);
+      });
       setTop10Product(copy);
     },
     [top10Product[0]]
@@ -255,6 +258,7 @@ const SaleReport = (props) => {
               startDateId="startDate"
               endDate={date.endDate}
               endDateId="endDate"
+              minimumNights={0}
               onDatesChange={value => setDate(value)}
               focusedInput={focused}
               isOutsideRange={() => false}
@@ -355,16 +359,16 @@ const SaleReport = (props) => {
             <CCardTitle>Danh sách nhân viên</CCardTitle>
           </CCardHeader>
           <CCardBody>
-          <Download data={memoExcelListed} headers={excelFields} name={'product_report'} />
+            <Download data={memoExcelListed} headers={excelFields} name={'product_report'} />
 
-            <CDataTable
+            <AdvancedTable
               items={memoTop10Product}
               fields={fields}
               columnFilter
               itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
               itemsPerPage={size}
               hover
-              sorter={{external: true, resetable: true }}
+              sorter={{ external: true, resetable: true }}
               onSorterValueChange={sortItem}
               noItemsView={{
                 noResults: 'Không tìm thấy kết quả',
@@ -375,7 +379,7 @@ const SaleReport = (props) => {
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
-                
+
                 sale_code: (item, index) => (
                   <td>
                     <div>{renderLink(item)}</div>
@@ -388,12 +392,7 @@ const SaleReport = (props) => {
                 ),
                 realMoney: (item, index) => (
                   <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney - (item.return || 0))}</div>
-                  </td>
-                ),
-                reduce: (item, index) => (
-                  <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.reduce)}</div>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
                   </td>
                 ),
                 return: (item, index) => (
@@ -415,7 +414,7 @@ const SaleReport = (props) => {
             />
           </CCardBody>
           {/* <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
+            <table className="table table-hover table-outline mb-0 d-sm-table">
               <thead className="thead-light">
                 <tr>
                   <th>Tên sản phẩm</th>

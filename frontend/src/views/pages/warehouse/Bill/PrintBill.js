@@ -51,7 +51,6 @@ class PrintBill extends Component {
                   <th className="center">STT</th>
                   <th className="center">Mã hàng</th>
                   <th className="center">Diễn giải</th>
-                  <th className="center">Dung tích</th>
                   <th className="center">Đơn vị</th>
                   <th className="center">Số luợng</th>
                   <th className="center">Đơn giá</th>
@@ -66,7 +65,6 @@ class PrintBill extends Component {
                       <td> {index + 1}</td>
                       <td>{item.product?.code}</td>
                       <td>{item.product?.name}</td>
-                      <td>{item.product?.volume}</td>
                       <td>{item.product?.unit}</td>
                       <td>{item.quantity}</td>
                       <td>{Number(item.product?.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
@@ -76,7 +74,7 @@ class PrintBill extends Component {
                   );
                 })}
                 <tr>
-                  <td className="center" colspan="5">
+                  <td className="center" colspan="4">
                     <strong>Tổng cộng</strong>
                   </td>
                   <td className="center"> {item?.orderDetails?.reduce((prev, current) => prev + current.quantity, 0)}</td>
@@ -85,27 +83,27 @@ class PrintBill extends Component {
                   <td className="right"></td>
                 </tr>
                 <tr>
-                  <td colspan="7">Số tiền chiết khấu</td>
+                  <td colspan="6">Số tiền chiết khấu</td>
                   <td>{Number(item.reduceMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
                   <td className="right"></td>
                 </tr>
                 <tr>
-                  <td colspan="7">Cộng tiền hàng( Đã trừ chiết khấu)</td>
+                  <td colspan="6">Cộng tiền hàng( Đã trừ chiết khấu)</td>
                   <td>{Number(item.realMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
                   <td className="right"></td>
                 </tr>
                 <tr>
-                  <td colspan="7">Tiền thuế GTGT</td>
+                  <td colspan="6">Tiền thuế GTGT</td>
                   <td></td>
                   <td className="right"></td>
                 </tr>
                 <tr>
-                  <td colspan="7">Tổng tiền thanh toán</td>
+                  <td colspan="6">Tổng tiền thanh toán</td>
                   <td>{Number(item.realMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
                   <td className="right"></td>
                 </tr>
                 <tr>
-                  <td colspan="8">
+                  <td colspan="7">
                     <strong>Số tiền viết bằng chữ:&nbsp;&nbsp;&nbsp; {docTien.doc(Number(item.realMoney))}</strong>
                   </td>
                   <td className="right"></td>

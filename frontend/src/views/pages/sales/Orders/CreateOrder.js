@@ -257,7 +257,7 @@ const CreateOrder = props => {
           store: selectedWarehouse?.id,
           page: 0,
           size: 50,
-          sort: 'createdDate,DESC',
+          sort: 'name,DESC',
           dependency: true
         })
       );
@@ -286,7 +286,7 @@ const CreateOrder = props => {
         store: selectedWarehouse?.id,
         page: 0,
         size: 20,
-        sort: 'product,ASC',
+        sort: 'name,ASC',
         name: value,
         dependency: true
       })
@@ -294,7 +294,6 @@ const CreateOrder = props => {
   }, 300);
 
   const onSearchProduct = (value, action) => {
-    console.log(value)
     if (value) {
       debouncedSearchProduct(value);
     }
@@ -329,9 +328,8 @@ const CreateOrder = props => {
     const copyArr = [...productList];
     copyArr[index].quantity = Number(target.value).toString();
     copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
-    copyArr[index].priceTotal =
-      copyArr[index].priceReal * copyArr[index].quantity -
-      (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
+    copyArr[index].priceTotal = (copyArr[index].priceReal * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
+    // (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     if (Array.isArray(promotionState.promotionProducts) && promotionState.promotionProducts.length > 0) {
       const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
       if (founded.length > 0) {
@@ -367,9 +365,8 @@ const CreateOrder = props => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].priceReal = Number(target.value.replace(/\D/g, ''));
     copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
-    copyArr[index].priceTotal =
-      copyArr[index].priceReal * copyArr[index].quantity -
-      (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
+    copyArr[index].priceTotal = (copyArr[index].priceReal * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
+    // (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     setProductList(copyArr);
   };
 
@@ -377,9 +374,8 @@ const CreateOrder = props => {
     const copyArr = [...productList];
     copyArr[index].reducePercent = target.value === '' ? 0 : target.value > 100 ? 100 : Number(target.value).toString();
     copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
-    copyArr[index].priceTotal =
-      copyArr[index].priceReal * copyArr[index].quantity -
-      (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
+    copyArr[index].priceTotal = (copyArr[index].priceReal * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
+    // (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     setProductList(copyArr);
   };
 
@@ -632,7 +628,6 @@ const CreateOrder = props => {
                   <thead>
                     <tr>
                       <th>Sản phẩm</th>
-                      <th>Dung tích</th>
                       <th>Số lượng</th>
                       <th>Đơn giá</th>
                       <th>Thành tiền</th>
@@ -670,7 +665,6 @@ const CreateOrder = props => {
                               }))}
                             /> */}
                           </td>
-                          <td>{item.product?.volume}</td>
                           <td style={{ minWidth: 130, maxWidth: 200 }}>
                             <CInput
                               type="number"
@@ -719,13 +713,10 @@ const CreateOrder = props => {
                             />
                           </td>
                           <td style={{ maxWidth: 100 }}>
-                            {(item.priceReal * item.quantity - (item.priceReal * item.quantity * item.reducePercent) / 100).toLocaleString(
-                              'it-IT',
-                              {
-                                style: 'currency',
-                                currency: 'VND'
-                              }
-                            ) || ''}
+                            {(item.priceTotal || 0).toLocaleString('it-IT', {
+                              style: 'currency',
+                              currency: 'VND'
+                            }) || ''}
                           </td>
                           <td>
                             <CButton
@@ -786,11 +777,9 @@ const CreateOrder = props => {
                         id="address"
                         placeholder="Địa chỉ"
                         autoComplete="address"
-                        valid={errors.address || null}
-                        invalid={touched.address && !!errors.address}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        value={values.address || selectedCustomer?.address}
+                        value={values.address}
                       />
                     </CFormGroup>
                     <CFormGroup>

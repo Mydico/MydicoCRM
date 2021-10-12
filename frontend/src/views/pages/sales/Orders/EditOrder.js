@@ -43,6 +43,7 @@ import { userSafeSelector, removePermission } from '../../login/authenticate.red
 import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
 import '../../../components/table/ResponsiveTable.css'
 import { useMediaQuery } from 'react-responsive'
+import { socket } from '../../../../App';
 
 const validationSchema = function () {
   return Yup.object().shape({
@@ -113,7 +114,7 @@ const EditOrder = props => {
       setSelectedWarehouse(order.store);
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
       if (Array.isArray(order.orderDetails)) {
-        const productArr = JSON.parse(JSON.stringify(order.orderDetails)).reverse();
+        const productArr = JSON.parse(JSON.stringify(order.orderDetails))
         setProductList(productArr)
         const copyArr = [...productArr]
         if (order.orderDetails.length > 0) {
@@ -206,7 +207,7 @@ const EditOrder = props => {
           store: selectedWarehouse?.id,
           page: 0,
           size: 20,
-          sort: 'product,ASC',
+          sort: 'name,ASC',
           dependency: true
         })
       );
@@ -228,7 +229,7 @@ const EditOrder = props => {
         store: selectedWarehouse?.id,
         page: 0,
         size: 20,
-        sort: 'product,ASC',
+        sort: 'name,ASC',
         name: value,
         dependency: true
       })
@@ -348,7 +349,7 @@ const EditOrder = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      // dispatch(removePermission());
+      socket.emit('order', order);
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -558,7 +559,6 @@ const EditOrder = props => {
                     <Tr>
                       <Th>Sản phẩm</Th>
                       <Th>Đơn vị</Th>
-                      <Th>Dung tích</Th>
                       <Th>Số lượng</Th>
                       <Th>Đơn giá</Th>
                       <Th>Thành tiền</Th>
@@ -580,7 +580,7 @@ const EditOrder = props => {
                               : {}
                           }
                         >
-                          <Td style={{ minWidth: 300 }}>
+                          <Td style={{ minWidth: 500 }}>
                             <Select
                               value={{
                                 value: item.product?.id,
@@ -596,7 +596,6 @@ const EditOrder = props => {
                             />
                           </Td>
                           <Td>{item.product?.unit}</Td>
-                          <Td>{item.product?.volume}</Td>
                           <Td style={{ minWidth: 100 }}>
                             <CInput
                               type="number"
@@ -694,11 +693,9 @@ const EditOrder = props => {
                         id="address"
                         placeholder="Địa chỉ"
                         autoComplete="address"
-                        valid={errors.address || null}
-                        invalid={touched.address && !!errors.address}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        value={values.address || values.customer?.address}
+                        value={values.address}
                       />
                     </CFormGroup>
                     <CFormGroup>

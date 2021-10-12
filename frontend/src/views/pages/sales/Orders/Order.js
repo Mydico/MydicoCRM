@@ -733,7 +733,6 @@ const Order = props => {
                         <Tr>
                           <Th className="center">#</Th>
                           <Th>Tên sản phẩm</Th>
-                          <Th>Dung tích</Th>
                           <Th className="center">Số lượng</Th>
                           <Th className="right">Đơn giá</Th>
                           <Th className="right">Chiết khấu(%)</Th>
@@ -747,7 +746,6 @@ const Order = props => {
                             <Tr key={index}>
                               <Td> {(activePage - 1) * size + index + 1}</Td>
                               <Td>{item.product?.name}</Td>
-                              <Td>{item.product?.volume}</Td>
                               <Td>{item.quantity}</Td>
                               <Td>
                                 {Number(item.priceReal || item.product?.price).toLocaleString('it-IT', {

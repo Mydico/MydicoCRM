@@ -22,7 +22,7 @@ export class PageRequest {
     @JsonProperty()
     page = 0;
     @JsonProperty()
-    size = 20;
+    size = 50;
     @Type(() => Sort)
     sort: Sort = new Sort('createdDate,DESC');
 

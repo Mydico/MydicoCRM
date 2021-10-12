@@ -62,8 +62,8 @@ export class TransactionService {
         .replace('[', '(')
         .replace(']', ')')}`;
     }
-    if (filter['endDate'] && filter['startDate']) {
-      queryString += ` AND Transaction.createdDate  >= '${filter['startDate']}' AND Transaction.createdDate <='${
+    if (filter['endDate']) {
+      queryString += ` AND Transaction.createdDate <='${
         filter['endDate']
       } 23:59:59'`;
     }
@@ -79,6 +79,9 @@ export class TransactionService {
     }
     delete filter['startDate'];
     delete filter['endDate'];
+    delete filter['page'];
+    delete filter['size'];
+    delete filter['sort'];
     Object.keys(filter).forEach((item, index) => {
       const specialCharacter = filter[item].includes('_') ? filter[item].replace('_', '\\_') : filter[item];
       andQueryString += ` Transaction.${item} like '%${specialCharacter}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;

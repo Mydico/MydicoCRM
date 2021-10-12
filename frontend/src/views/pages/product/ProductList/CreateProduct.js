@@ -13,7 +13,7 @@ import {
   CRow,
   CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
+import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -108,7 +108,7 @@ const CreateProduct = () => {
   const renderProductCode = () => {
     const codeName = getCodeByName(ref.current.values.name);
     const code = `${ref.current.values.productGroup?.productBrand?.code || ''}_${ref.current.values.productGroup?.code || ''}_${codeName}${
-      Number(ref.current.values.volume) > 0 ? '_'+ref.current.values.volume:''
+      Number(ref.current.values.volume) > 0 ? '_' + ref.current.values.volume : ''
     }`;
     ref.current.setFieldValue('code', `${code}`.toUpperCase());
   };
@@ -186,6 +186,22 @@ const CreateProduct = () => {
                         }))}
                       />
                       <CInvalidFeedback className="d-block">{errors.productGroup}</CInvalidFeedback>
+                    </CFormGroup>
+                    <CFormGroup>
+                      <CLabel htmlFor="productGroup">Thứ tự</CLabel>
+                      <CInput
+                        type="number"
+                        name="order"
+                        id="order"
+                        placeholder="Thứ tự"
+                        autoComplete="order"
+                        onKeyDown={blockInvalidChar}
+                        onChange={ (item) => {
+                          setFieldValue('order',Number(item.target.value).toString());
+                        }}                          
+                        onBlur={handleBlur}
+                        value={values.order}
+                      />
                     </CFormGroup>
                   </CCol>
                   <CCol lg="6">

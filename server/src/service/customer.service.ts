@@ -58,7 +58,7 @@ export class CustomerService {
       if (item === 'sale') return;
       if (item === 'branch') return;
       if (item === 'department') return;
-      queryString += `Customer.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'AND '}`;
+      queryString += `Customer.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'OR '}`;
     });
     let andQueryString = '1=1 ';
 
@@ -90,6 +90,10 @@ export class CustomerService {
       .skip(options.skip)
       .take(options.take);
 
+    if (queryString.length > 0) {
+      queryBuilder.andWhere(queryString);
+      count.andWhere(queryString);
+    }
     const result = await queryBuilder.getManyAndCount();
     result[1] = await count.getCount();
     return result;
@@ -105,10 +109,7 @@ export class CustomerService {
     options.cache = 3600000;
     let queryString = '';
     const length = Object.keys(filter).includes('sale') ? Object.keys(filter).length - 1 : Object.keys(filter).length;
-    Object.keys(filter).forEach((item, index) => {
-      if (item === 'sale') return;
-      queryString += `Customer.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'OR '}`;
-    });
+
     let andQueryString = '1=1 ';
 
     if (departmentVisible.length > 0) {
@@ -122,6 +123,11 @@ export class CustomerService {
     if (filter['sale']) {
       andQueryString += ` AND Customer.sale = ${filter['sale']}`;
     }
+    if (filter['activated']) {
+      andQueryString += ` AND Customer.activated = ${filter['activated']}`;
+    }
+    delete filter['activated'];
+    delete filter['sale'];
     const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, filter, options, 'customer');
 
     // const cacheKeyBuilder = `filter_customers_department_${JSON.stringify(departmentVisible)}_branch_${
@@ -160,15 +166,19 @@ export class CustomerService {
           currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
         }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}`
       );
-    if (queryString) {
+    if (Object.keys(filter).length > 0) {
       queryBuilder.andWhere(
         new Brackets(sqb => {
-          sqb.where(queryString);
+          Object.keys(filter).forEach((item, index) => {
+            sqb.orWhere(`Customer.${item} like '%${filter[item]}%'`);
+          });
         })
       );
       count.andWhere(
         new Brackets(sqb => {
-          sqb.where(queryString);
+          Object.keys(filter).forEach((item, index) => {
+            sqb.orWhere(`Customer.${item} like '%${filter[item]}%'`);
+          });
         })
       );
     }
@@ -186,15 +196,7 @@ export class CustomerService {
     currentUser: User
   ): Promise<[Customer[], number]> {
     options.cache = 3600000;
-    let queryString = '';
-    const arr = Object.keys(filter);
-    arr.forEach((item, index) => {
-      if (item === 'findBirthday') return;
-      queryString += `Customer.${item} like '%${filter[item]}%' ${arr.length - 1 === index ? '' : 'AND '}`;
-    });
-    if (queryString.trim().substr(queryString.length - 4, queryString.length - 1) === 'AND') {
-      queryString = queryString.substr(0, queryString.length - 4);
-    }
+
     let andQueryString = '1=1 ';
     if (filter['findBirthday']) {
       const startDate = new Date();
@@ -216,6 +218,20 @@ export class CustomerService {
     }
     if (isEmployee) {
       andQueryString += ` AND Customer.sale = ${currentUser.id}`;
+    }
+    if (filter['activated']) {
+      andQueryString += ` AND Customer.activated = ${filter['activated']}`;
+    }
+    delete filter['activated'];
+    delete filter['sale'];
+    let queryString = '';
+    const arr = Object.keys(filter);
+    arr.forEach((item, index) => {
+      if (item === 'findBirthday') return;
+      queryString += `Customer.${item} like '%${filter[item]}%' ${arr.length - 1 === index ? '' : 'AND '}`;
+    });
+    if (queryString.trim().substr(queryString.length - 4, queryString.length - 1) === 'AND') {
+      queryString = queryString.substr(0, queryString.length - 4);
     }
     const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, filter, options, 'customer');
 
@@ -315,42 +331,6 @@ export class CustomerService {
 
     return await this.customerRepository.save(newCustomer);
   }
-
-  // async syncToFastwork() {
-  //   const foundedCustomer = await this.customerRepository.find({
-  //     relations: relationshipNames
-  //   });
-  //   const promise = foundedCustomer.forEach( async customer => {
-  //     const data = {
-  //       customer_name: customer.name,
-  //       customer_address: customer.address,
-  //       customer_tel: customer.tel,
-  //       customer_email: '',
-  //       customer_note: '',
-  //       customer_city: memoizedGetCityName(customer.city),
-  //       customer_district: memoizedGetDistrictName(customer.district),
-  //       customer_type: customer.type.name,
-  //       customer_group: '',
-  //       customer_source: '',
-  //       customer_scale: '',
-  //       customer_field: '',
-  //       customer_code: customer.code,
-  //       customer_assign: [`${customer.sale.code}@mydico`],
-  //       contact_name: customer.contactName,
-  //       contact_address: customer.address,
-  //       contact_tel: customer.tel,
-  //       contact_email: '',
-  //       contact_title: '',
-  //       contact_vocative: ''
-  //     };
-  //     const result = this.httpService.post('https://api.fastwork.vn:6010/v1/customer?tokenkey=fb5aef467aa3dabe6f079993df63fe78', data);
-  //     const resp = await result.toPromise().catch(e => console.log(e));
-  //     console.log(resp)
-  //   });
-  //   // Promise.all(promise)
-  //   //   .then(resp => console.log(resp))
-  //   //   .catch(e => console.log(e));
-  // }
 
   async updateStatus(customer: Customer): Promise<Customer | undefined> {
     await this.customerRepository.removeCache(['customer']);

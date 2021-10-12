@@ -65,7 +65,7 @@ export default class Customer extends BaseEntity {
     marriage?: boolean;
 
 
-    @Column({ type: 'boolean', name: 'activated', nullable: true })
+    @Column({ type: 'boolean', name: 'activated', nullable: true, default: true })
     @Index()
     activated?: boolean;
 

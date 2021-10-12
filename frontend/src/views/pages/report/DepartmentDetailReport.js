@@ -10,10 +10,9 @@ import Select, { components } from 'react-select';
 import CIcon from '@coreui/icons-react';
 import _ from 'lodash';
 import ReportStatistic from '../../../views/components/report-statistic/ReportStatistic';
-import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
-import { getExactUser, getUser } from '../user/UserList/user.api';
 import { getTop10Customer, getTop10Product, getTop10sale } from './report.api';
-
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
+import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 moment.locale('vi');
 
 const DepartmentDetailReport = (props) => {
@@ -77,6 +76,7 @@ const DepartmentDetailReport = (props) => {
               minDate="01-01-2000"
               startDateId="startDate"
               endDate={date.endDate}
+              minimumNights={0}
               endDateId="endDate"
               onDatesChange={value => setDate(value)}
               focusedInput={focused}
@@ -124,30 +124,30 @@ const DepartmentDetailReport = (props) => {
             <CCardTitle> Top 10 nhân viên</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-              <thead className="thead-light">
-                <tr>
-                  <th>Mã nhân viên</th>
-                  <th>Tên</th>
-                  <th>Doanh số</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="table table-hover table-outline mb-0 d-sm-table">
+              <Thead className="thead-light">
+                <Tr>
+                  <Th>Mã nhân viên</Th>
+                  <Th>Tên</Th>
+                  <Th>Doanh số</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {memoTop10Sale.map((item, index) => (
-                  <tr>
-                    <td>
+                  <Tr>
+                    <Td>
                       <div>{item.code}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{`${item.lastName || ''} ${item.firstName || ''}`}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
-                    </td>
-                  </tr>
+                    </Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
+              </Tbody>
+            </Table>
           </CCardBody>
         </CCard>
         <CCard>
@@ -155,30 +155,30 @@ const DepartmentDetailReport = (props) => {
             <CCardTitle> Top 10 sản phẩm bán chạy nhất</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-              <thead className="thead-light">
-                <tr>
-                  <th>Mã sản phẩm</th>
-                  <th>Tên sản phẩm</th>
-                  <th>Số lượng bán</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="table table-hover table-outline mb-0 d-sm-table">
+              <Thead className="thead-light">
+                <Tr>
+                  <Th>Mã sản phẩm</Th>
+                  <Th>Tên sản phẩm</Th>
+                  <Th>Số lượng bán</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {memoTop10Product.map((item, index) => (
-                  <tr>
-                    <td>
+                  <Tr>
+                    <Td>
                       <div>{item.code}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{item.name}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{item.sum}</div>
-                    </td>
-                  </tr>
+                    </Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
+              </Tbody>
+            </Table>
           </CCardBody>
         </CCard>
         <CCard>
@@ -186,30 +186,30 @@ const DepartmentDetailReport = (props) => {
             <CCardTitle> Top 10 khách hàng có doanh số cao nhất</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-              <thead className="thead-light">
-                <tr>
-                  <th>Mã khách hàng</th>
-                  <th>Tên khách hàng</th>
-                  <th>Doanh thu</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="table table-hover table-outline mb-0 d-sm-table">
+              <Thead className="thead-light">
+                <Tr>
+                  <Th>Mã khách hàng</Th>
+                  <Th>Tên khách hàng</Th>
+                  <Th>Doanh thu</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {memoTop10Customer.map((item, index) => (
-                  <tr key={index}>
-                    <td>
+                  <Tr key={index}>
+                    <Td>
                       <div>{item.code}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{item.name}</div>
-                    </td>
-                    <td>
+                    </Td>
+                    <Td>
                       <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
-                    </td>
-                  </tr>
+                    </Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
+              </Tbody>
+            </Table>
           </CCardBody>
         </CCard>
       </CCol>

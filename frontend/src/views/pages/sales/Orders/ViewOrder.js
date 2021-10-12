@@ -69,7 +69,6 @@ const ViewOrder = props => {
               <tr>
                 <th className="center">#</th>
                 <th>Tên sản phẩm</th>
-                <th>Dung tích</th>
                 <th className="center">Số lượng</th>
                 <th className="right">Đơn giá</th>
                 <th className="right">Chiết khấu(%)</th>
@@ -78,12 +77,11 @@ const ViewOrder = props => {
               </tr>
             </thead>
             <tbody>
-              {[...invoice?.orderDetails || []].reverse().map((item, index) => {
+              {[...invoice?.orderDetails || []].map((item, index) => {
                 return (
                   <tr key={index}>
                     <td> {index + 1}</td>
                     <td>{item.product?.name}</td>
-                    <td>{item.product?.volume}</td>
                     <td>{item.quantity}</td>
                     <td>{Number(item.priceReal).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                     <td>{item.reducePercent}%</td>

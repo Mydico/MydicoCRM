@@ -79,7 +79,7 @@ const Debt = props => {
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
-    if (date.endDate && date.startDate) {
+    if (date.endDate) {
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getCustomerDebts(params));
       dispatch(getCustomerDebtsTotalDebit({ ...paramRef.current, ...date })).then(resp => {
@@ -112,7 +112,7 @@ const Debt = props => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = value;
-      dispatch(getCustomerDebtsTotalDebit(value)).then(resp => {
+      dispatch(getCustomerDebtsTotalDebit({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date })).then(resp => {
         setTotal(Number(resp.payload.data.sum));
       });
       dispatch(getCustomerDebts({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
@@ -141,11 +141,6 @@ const Debt = props => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách Công nợ
-        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/customer-debits').length > 0) && (
-          <CButton color="success" variant="outline" className="ml-3" onClick={toCreate}>
-            <CIcon name="cil-plus" /> Thêm mới công nợ
-          </CButton>
-        )}
       </CCardHeader>
       <CCardBody>
         <Download data={memoExcelListed} headers={excelFields} name={'order'} />
@@ -154,27 +149,8 @@ const Debt = props => {
           <CLabel>Tổng nợ:</CLabel>
           <strong>{`\u00a0\u00a0${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}`}</strong>
         </CRow>
-        <CFormGroup row xs="12" md="12" lg="12" className="ml-1 mt-3">
-          <CFormGroup row>
-            <CCol>
-              <CLabel htmlFor="date-input">Từ ngày</CLabel>
-            </CCol>
-            <CCol xs="12" md="9" lg="12">
-              <CInput
-                type="date"
-                id="date-input"
-                onChange={e =>
-                  setDate({
-                    ...date,
-                    startDate: e.target.value
-                  })
-                }
-                name="date-input"
-                placeholder="date"
-              />
-            </CCol>
-          </CFormGroup>
-          <CFormGroup row className="ml-3">
+        <CFormGroup row xs="12" md="12" lg="12">
+          <CFormGroup row className="ml-2">
             <CCol>
               <CLabel htmlFor="date-input">Đến ngày</CLabel>
             </CCol>

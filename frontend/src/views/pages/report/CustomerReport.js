@@ -19,6 +19,7 @@ import { getCustomerPriceReport, getCustomerReport, getCustomerSummaryReport } f
 import { filterCustomerNotToStore } from '../customer/customer.api';
 import { getCustomerType } from '../customer/CustomerType/customer-type.api';
 import { globalizedcustomerTypeSelectors } from '../customer/CustomerType/customer-type.reducer';
+import AdvancedTable from '../../components/table/AdvancedTable';
 
 moment.locale('vi');
 const controlStyles = {
@@ -44,10 +45,9 @@ const fields = [
   },
   { key: 'customer_code', label: 'Mã khách hàng', _style: { width: '10%' }, filter: false },
   { key: 'customer_name', label: 'Tên', _style: { width: '10%' }, filter: false },
-  { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
-  { key: 'debt', label: 'Công nợ', _style: { width: '15%' }, filter: false },
-  { key: 'totalMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false }
+  { key: 'total', label: 'Doanh thu', _style: { width: '15%' }, filter: false }
 ];
 
 const { selectAll } = globalizedBranchSelectors;
@@ -58,8 +58,11 @@ const CustomerReport = () => {
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
 
-  const branches = useSelector(selectAll);
-  const users = useSelector(selectUserAll);
+  const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
+
+  const branches = isEmployee ? [account.branch] : useSelector(selectAll);
+  const users = isEmployee ? [account] : useSelector(selectUserAll);
+
   const userTypes = useSelector(selectCustomerTypeAll);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
@@ -71,7 +74,7 @@ const CustomerReport = () => {
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
   const [customer, setCustomer] = useState(null);
-  const [top10Product, setTop10Product] = useState([[],0]);
+  const [top10Product, setTop10Product] = useState([[], 0]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   const [filteredCustomer, setFilteredCustomer] = useState([]);
@@ -102,7 +105,9 @@ const CustomerReport = () => {
   };
 
   useEffect(() => {
-    getTop10(filter);
+    if (Object.keys(filter).length > 2) {
+      getTop10(filter);
+    }
   }, [activePage, size]);
 
   const getTop10 = filter => {
@@ -152,7 +157,7 @@ const CustomerReport = () => {
       customer: null
     });
     if (department) {
-      dispatch(getBranch({ department: department.id, dependency: true }));
+      dispatch(getBranch({ department: department?.id, dependency: true }));
       dispatch(
         getExactUser({
           page: 0,
@@ -162,7 +167,7 @@ const CustomerReport = () => {
           dependency: true
         })
       );
-      getCustomer(department.id, null, null);
+      getCustomer(department?.id, null, null);
     }
   }, [department]);
 
@@ -186,7 +191,7 @@ const CustomerReport = () => {
           dependency: true
         })
       );
-      getCustomer(department.id, branch.id, null);
+      getCustomer(department?.id, branch?.id, null);
     }
   }, [branch]);
 
@@ -197,7 +202,7 @@ const CustomerReport = () => {
       customer: null
     });
     if (user) {
-      getCustomer(department.id, branch.id, user.id);
+      getCustomer(department?.id, branch?.id, user?.id);
     }
   }, [user]);
 
@@ -216,7 +221,7 @@ const CustomerReport = () => {
   }, [userType]);
 
   useEffect(() => {
-    if (Object.keys(filter).length > 1) {
+    if (Object.keys(filter).length > 2) {
       getTop10(filter);
     }
   }, [filter]);
@@ -225,10 +230,9 @@ const CustomerReport = () => {
     if (date.startDate && date.endDate) {
       setFilter({
         ...filter,
-        ...{
-          startDate: date.startDate?.format('YYYY-MM-DD'),
-          endDate: date.endDate?.format('YYYY-MM-DD')
-        }
+
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
       });
     }
   }, [date]);
@@ -289,13 +293,13 @@ const CustomerReport = () => {
   // const memoTop10Customer = React.useMemo(() => top10Customer, [top10Customer]);
   const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
   const sortItem = React.useCallback(
-    (info) => {
-      const {column, asc} = info
+    info => {
+      const { column, asc } = info;
       const copy = [...top10Product];
       copy[0].sort((a, b) => {
-          if (asc) return a[column] - b[column];
-          else return b[column] - a[column];
-        });
+        if (asc) return Number(a[column]) - Number(b[column]);
+        else return Number(b[column]) - Number(a[column]);
+      });
       setTop10Product(copy);
     },
     [top10Product[0]]
@@ -311,6 +315,7 @@ const CustomerReport = () => {
               startDateId="startDate"
               endDate={date.endDate}
               endDateId="endDate"
+              minimumNights={0}
               onDatesChange={value => setDate(value)}
               focusedInput={focused}
               isOutsideRange={() => false}
@@ -410,7 +415,7 @@ const CustomerReport = () => {
                   placeholder="Chọn khách hàng"
                   options={filteredCustomer.map(item => ({
                     value: item,
-                    label: item.code
+                    label: `${item.code}-${item.name}`
                   }))}
                 />
               </CCol>
@@ -444,7 +449,7 @@ const CustomerReport = () => {
               rightHeader={numOfPriceProduct}
               rightFooter="Doanh thu thuần"
               leftHeader={numOfProduct}
-              leftFooter="Tổng khách hàng"
+              leftFooter="Tổng khách hàng mở mới"
               color="gradient-primary"
             >
               <CIcon name="cil3d" height="76" className="my-4" />
@@ -456,14 +461,14 @@ const CustomerReport = () => {
             <CCardTitle>Danh sách khách hàng</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <CDataTable
+            <AdvancedTable
               items={memoTop10Product}
               fields={fields}
               columnFilter
               itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
               itemsPerPage={size}
               hover
-              sorter={{external: true, resetable: true }}
+              sorter={{ external: true, resetable: true }}
               onSorterValueChange={sortItem}
               noItemsView={{
                 noResults: 'Không tìm thấy kết quả',
@@ -479,9 +484,9 @@ const CustomerReport = () => {
                     <div>{`${item.sale_lastName || ''} ${item.sale_firstName || ''}`}</div>
                   </td>
                 ),
-                realMoney: (item, index) => (
+                real: (item, index) => (
                   <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney - (item.return || 0))}</div>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.real)}</div>
                   </td>
                 ),
                 debt: (item, index) => (
@@ -494,9 +499,9 @@ const CustomerReport = () => {
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
                   </td>
                 ),
-                totalMoney: (item, index) => (
+                total: (item, index) => (
                   <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalMoney)}</div>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.total)}</div>
                   </td>
                 )
               }}
@@ -508,7 +513,7 @@ const CustomerReport = () => {
             />
           </CCardBody>
           {/* <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
+            <table className="table table-hover table-outline mb-0 d-sm-table">
               <thead className="thead-light">
                 <tr>
                   <th>Tên sản phẩm</th>

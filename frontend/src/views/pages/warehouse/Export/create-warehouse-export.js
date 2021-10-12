@@ -35,12 +35,18 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 const validationSchema = function() {
   return Yup.object().shape({
-    store: Yup.object().required('Kho không để trống')
+    store: Yup.object()
+      .required('Kho không để trống')
+      .nullable(),
+    storeTransfer: Yup.object()
+      .required('Kho nhận không để trống')
+      .nullable()
   });
 };
 
 import { validate } from '../../../../shared/utils/normalize';
 import { blockInvalidChar } from '../../../../shared/utils/helper';
+import { swap } from '../../product/ProductList/product.reducer';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -90,6 +96,14 @@ const CreateReceipt = () => {
       }
     });
     if (!isValidProduct) return;
+    if (productList.reduce((sum, current) => sum + current.quantity, 0) === 0) {
+      alert('Không để tổng số lượng bằng 0');
+      return;
+    }
+    if (productList.filter(item => item.quantity === 0).length > 0) {
+      alert('Không để sản phẩm có số lượng bằng 0 khi tạo đơn hàng');
+      return;
+    }
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
     values.department = account.mainDepartment || account.department;
@@ -106,7 +120,7 @@ const CreateReceipt = () => {
       dispatch(
         filterProductInStore({
           store: selectedWarehouse.id,
-          sort: 'product,ASC',
+          sort: 'name,ASC',
           dependency: true
         })
       ).then(resp => {
@@ -171,11 +185,16 @@ const CreateReceipt = () => {
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({ value }, index) => {
+  const onSelectedProduct = ({ value, index }, selectedProductIndex) => {
+    const tempArr = [...products];
+    const tempVar = tempArr[0];
+    tempArr[0] = tempArr[index];
+    tempArr[index] = tempVar;
+    dispatch(swap(tempArr));
     const copyArr = [...productList];
-    copyArr[index].product = value;
-    copyArr[index].price = Number(value.price);
-    copyArr[index].quantity = 1;
+    copyArr[selectedProductIndex].product = value;
+    copyArr[selectedProductIndex].quantity = 1;
+    copyArr[selectedProductIndex].price = Number(value.price);
     setProductList(copyArr);
   };
 
@@ -190,7 +209,7 @@ const CreateReceipt = () => {
         store: selectedWarehouse.id,
         code: value,
         name: value,
-        sort: 'product,ASC',
+        sort: 'name,ASC',
         dependency: true
       })
     ).then(resp => {
@@ -202,11 +221,11 @@ const CreateReceipt = () => {
   }, 300);
 
   const onSearchProduct = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchProduct(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchProduct("");
+    if (action.action === 'input-blur') {
+      debouncedSearchProduct('');
     }
   };
 
@@ -241,7 +260,7 @@ const CreateReceipt = () => {
   return (
     <CCard>
       <Formik initialValues={initialValues} validate={validate(validationSchema)} onSubmit={editAlert} innerRef={formikRef}>
-        {({ values, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset }) => (
+        {({ values, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset, errors }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
               <CCardHeader>
@@ -262,7 +281,7 @@ const CreateReceipt = () => {
                         label: `${item.name}`
                       }))}
                     />
-                    {!isSelectedWarehouse && <FormFeedback className="d-block">Bạn phải chọn kho hàng</FormFeedback>}
+                    <FormFeedback className="d-block">{errors.store}</FormFeedback>
                   </CCol>
                 </CRow>
                 <CRow>
@@ -309,6 +328,7 @@ const CreateReceipt = () => {
                         label: `${item.name}`
                       }))}
                     />
+                    <FormFeedback className="d-block">{errors.storeTransfer}</FormFeedback>
                   </CCol>
                 </CRow>
                 <CRow>
@@ -347,9 +367,8 @@ const CreateReceipt = () => {
                     <tr>
                       <th>Sản phẩm</th>
                       <th>Đơn vị</th>
-                      <th>Dung tích</th>
                       <th>Số lượng</th>
-                      <th>Giá</th>
+                      <th>Đơn giá</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -374,14 +393,14 @@ const CreateReceipt = () => {
                               onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
-                              options={products.map(item => ({
+                              options={products.map((item, index) => ({
+                                index,
                                 value: item.product,
                                 label: `${item?.product?.code}-${item?.product?.name}-${item?.product?.volume}`
                               }))}
                             />
                           </td>
                           <td>{item?.product?.unit}</td>
-                          <td>{item?.product?.volume}</td>
                           <td style={{ minWidth: 300 }}>
                             <CInput
                               type="number"

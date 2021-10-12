@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CDataTable, CPagination } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import { getCountTotalPriceProduct, getCountTotalProduct, getProductReport } fro
 import { filterProduct } from '../product/ProductList/product.api';
 import { globalizedProductSelectors } from '../product/ProductList/product.reducer';
 import Download from './../../components/excel/DownloadExcel';
+import AdvancedTable from '../../components/table/AdvancedTable';
 
 moment.locale('vi');
 const controlStyles = {
@@ -48,9 +49,8 @@ const fields = [
   { key: 'product_name', label: 'Tên sản phẩm', _style: { width: '10%' }, filter: false },
   { key: 'count', label: 'Số lượng bán', _style: { width: '15%' }, filter: false },
   { key: 'total', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
-  { key: 'sum', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
-  { key: 'reduce', label: 'Chiết khấu', _style: { width: '15%' }, filter: false }
+  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
 ];
 const excelFields = [
   {
@@ -70,15 +70,18 @@ const ProductReport = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
-
-  const branches = useSelector(selectAll);
-  const users = useSelector(selectUserAll);
+  const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
+  const branches = isEmployee ? [account.branch] : useSelector(selectAll);
+  const users = isEmployee ? [account] : useSelector(selectUserAll);
   const products = useSelector(selectAllProduct);
 
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({
-    dependency: true
+    dependency: true,
+    page: activePage - 1,
+    size,
+    sort: 'createdDate,DESC'
   });
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
@@ -95,13 +98,13 @@ const ProductReport = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(getProductReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
-      if (data && data.payload) {
-        setTop10Product(data.payload);
-      }
+    setFilter({
+      ...filter,
+      page: activePage,
+      size
     });
-    window.scrollTo(0, 100);
   }, [activePage, size]);
+
 
   const getTop10 = (filter = {}) => {
     // dispatch(
@@ -114,17 +117,18 @@ const ProductReport = () => {
     //     dependency: true
     //   })
     // );
-    // delete filter['page'];
-    // delete filter['size'];
-    // delete filter['sort'];
-    dispatch(getCountTotalProduct(filter)).then(data => {
+    const copyFilter = {...filter}
+    delete copyFilter['page'];
+    delete copyFilter['size'];
+    delete copyFilter['sort'];
+    dispatch(getCountTotalProduct(copyFilter)).then(data => {
       if (data && data.payload) {
-        setNumOfProduct(data.payload.count || 0);
+        setNumOfProduct(data.payload.sum || 0);
       }
     });
-    dispatch(getCountTotalPriceProduct(filter)).then(data => {
+    dispatch(getCountTotalPriceProduct(copyFilter)).then(data => {
       if (data && data.payload) {
-        setNumOfPriceProduct(data.payload.count || 0);
+        setNumOfPriceProduct(data.payload.sum || 0);
       }
     });
     // dispatch(getProductReport(filter)).then(data => {
@@ -146,7 +150,7 @@ const ProductReport = () => {
       user: null
     });
     if (department) {
-      dispatch(getBranch({ department: department.id, dependency: true }));
+      dispatch(getBranch({ department: department?.id, dependency: true }));
       dispatch(
         getExactUser({
           page: 0,
@@ -196,9 +200,9 @@ const ProductReport = () => {
   }, [product]);
 
   useEffect(() => {
-    if (Object.keys(filter).length > 1) {
+    if (Object.keys(filter).length > 4) {
       getTop10(filter);
-      dispatch(getProductReport({ ...filter, page: activePage - 1, size, sort: 'createdDate,DESC' })).then(data => {
+      dispatch(getProductReport({ ...filter })).then(data => {
         if (data && data.payload) {
           setTop10Product(data.payload);
         }
@@ -208,12 +212,11 @@ const ProductReport = () => {
 
   useEffect(() => {
     if (date.startDate && date.endDate) {
+      console.log(filter)
       setFilter({
         ...filter,
-        ...{
-          startDate: date.startDate?.format('YYYY-MM-DD'),
-          endDate: date.endDate?.format('YYYY-MM-DD')
-        }
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
       });
     }
   }, [date]);
@@ -273,13 +276,13 @@ const ProductReport = () => {
   const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
 
   const sortItem = React.useCallback(
-    (info) => {
-      const {column, asc} = info
+    info => {
+      const { column, asc } = info;
       const copy = [...top10Product];
       copy[0].sort((a, b) => {
-          if (asc) return a[column] - b[column];
-          else return b[column] - a[column];
-        });
+        if (asc) return Number(a[column]) - Number(b[column]);
+        else return Number(b[column]) - Number(a[column]);
+      });
       setTop10Product(copy);
     },
     [top10Product[0]]
@@ -296,6 +299,7 @@ const ProductReport = () => {
               startDateId="startDate"
               endDate={date.endDate}
               endDateId="endDate"
+              minimumNights={0}
               onDatesChange={value => setDate(value)}
               focusedInput={focused}
               isOutsideRange={() => false}
@@ -422,7 +426,7 @@ const ProductReport = () => {
           <CCardBody>
             <Download data={memoExcelListed} headers={excelFields} name={'product_report'} />
 
-            <CDataTable
+            <AdvancedTable
               items={memoTop10Product}
               fields={fields}
               columnFilter
@@ -435,21 +439,16 @@ const ProductReport = () => {
               }}
               loading={initialState.loading}
               onPaginationChange={val => setSize(val)}
-              sorter={{external: true, resetable: true }}
+              sorter={{ external: true, resetable: true }}
               onSorterValueChange={sortItem}
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
-                sum: (item, index) => (
+                real: (item, index) => (
                   <td>
                     <div>
-                      {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum - (item.return || 0))}
+                      {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(item.total) - Number(item.return || 0))}
                     </div>
-                  </td>
-                ),
-                reduce: (item, index) => (
-                  <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.reduce)}</div>
                   </td>
                 ),
                 total: (item, index) => (
@@ -471,7 +470,7 @@ const ProductReport = () => {
             />
           </CCardBody>
           {/* <CCardBody>
-            <table className="table table-hover table-outline mb-0 d-none d-sm-table">
+            <table className="table table-hover table-outline mb-0 d-sm-table">
               <thead className="thead-light">
                 <tr>
                   <th>Tên sản phẩm</th>

@@ -248,13 +248,13 @@ export class StoreInputService {
                 await this.importStore(founded, entity);
                 if (entity.type === StoreImportType.RETURN) {
                     await this.createDebit(entity);
-                    const incomeItem = new IncomeDashboard();
-                    incomeItem.amount = entity.realMoney;
-                    incomeItem.departmentId = entity.department.id;
-                    incomeItem.branchId = entity.customer?.branch?.id;
-                    incomeItem.type = DashboardType.RETURN;
-                    incomeItem.saleId = entity.customer.sale.id;
-                    await this.incomeDashboardService.save(incomeItem);
+                    // const incomeItem = new IncomeDashboard();
+                    // incomeItem.amount = entity.realMoney;
+                    // incomeItem.departmentId = entity.department.id;
+                    // incomeItem.branchId = entity.customer?.branch?.id;
+                    // incomeItem.type = DashboardType.RETURN;
+                    // incomeItem.saleId = entity.customer.sale.id;
+                    // await this.incomeDashboardService.save(incomeItem);
                 }
             } else {
                 await this.exportStore(founded, entity, currentUser);

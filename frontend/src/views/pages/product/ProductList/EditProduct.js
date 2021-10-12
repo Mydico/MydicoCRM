@@ -109,8 +109,8 @@ const EditProduct = (props) => {
 
   const onSubmit = (values, {resetForm}) => {
     dispatch(fetching());
-    values.price = Number(values.price.replace(/\D/g, ''));
-    values.agentPrice = Number(values.agentPrice.replace(/\D/g, ''));
+    values.price = Number(values.price?.replace(/\D/g || 0, ''));
+    values.agentPrice = Number(values.agentPrice?.replace(/\D/g || 0, ''));
     values.image = JSON.stringify(images.current);
     dispatch(updateProduct(values));
   };
@@ -231,6 +231,22 @@ const EditProduct = (props) => {
                     />
                     <CInvalidFeedback>{errors.productGroup}</CInvalidFeedback>
                   </CFormGroup>
+                  <CFormGroup>
+                      <CLabel htmlFor="productGroup">Thứ tự</CLabel>
+                      <CInput
+                        type="number"
+                        name="order"
+                        id="order"
+                        onKeyDown={blockInvalidChar}
+                        placeholder="Thứ tự"
+                        autoComplete="order"
+                        onChange={ (item) => {
+                          setFieldValue('order',Number(item.target.value).toString());
+                        }}                        
+                        onBlur={handleBlur}
+                        value={values.order}
+                      />
+                    </CFormGroup>
                 </CCol>
                 <CCol lg="6">
                   <CFormGroup>

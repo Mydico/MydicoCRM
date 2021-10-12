@@ -26,7 +26,7 @@ import _ from 'lodash';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
-import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import { globalizedProductSelectors, swap } from '../../product/ProductList/product.reducer';
 import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
@@ -97,10 +97,16 @@ const CreateWarehouse = () => {
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({ value }, index) => {
+  const onSelectedProduct = ({ value ,index }, selectedProductIndex) => {
+    const tempArr = [...products];
+    const tempVar = tempArr[0];
+    tempArr[0] = tempArr[index];
+    tempArr[index] = tempVar;
+    dispatch(swap(tempArr));
     const copyArr = [...productList];
-    copyArr[index].product = value;
-    copyArr[index].quantity = 1;
+    copyArr[selectedProductIndex].product = value;
+    copyArr[selectedProductIndex].quantity = 1;
+    copyArr[selectedProductIndex].price = Number(value.price);
     setProductList(copyArr);
   };
 
@@ -217,7 +223,6 @@ const CreateWarehouse = () => {
                     <tr>
                       <th>Sản phẩm</th>
                       <th>Đơn vị</th>
-                      <th>Dung tích</th>
                       <th>Số lượng</th>
                     </tr>
                   </thead>
@@ -234,14 +239,14 @@ const CreateWarehouse = () => {
                               onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
-                              options={products.map(item => ({
+                              options={products.map((item, index) => ({
+                                index,
                                 value: item,
                                 label: `${item?.code}-${item?.name}-${item?.volume}`
                               }))}
                             />
                           </td>
                           <td>{item?.product?.unit}</td>
-                          <td>{item?.product?.volume}</td>
                           <td style={{ width: 100 }}>
                             {item.followIndex >= 0 ? (
                               item.quantity

@@ -47,13 +47,13 @@ const { selectById } = globalizedPermissionGroupsSelectors;
 const EditPermissionGroups = props => {
   const { initialState } = useSelector(state => state.permission);
   const checkboxRef = useRef();
-
+  const selectedType = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
   const [checkbox, setCheckbox] = useState({});
   const [selectedPermission, setSelectedPermission] = useState([]);
+  
   const perGroup = useSelector(state => selectById(state, props.match.params.id));
-
   const [initValues, setInitValues] = useState(null);
 
   const initialValues = {
@@ -89,7 +89,7 @@ const EditPermissionGroups = props => {
     const params = { type: value };
     dispatch(getPermissions(params));
   };
-
+  
   const onSubmit = (values, { resetForm }) => {
     let arrPermission = [];
     values = JSON.parse(JSON.stringify(values));
@@ -127,6 +127,7 @@ const EditPermissionGroups = props => {
   };
 
   useEffect(() => {
+    console.log(checkbox)
     if (checkbox && initialState.permissions && Array.isArray(initialState.permissions) && initialState.permissions.length > 0) {
       const selectedArr = [];
       Object.keys(checkbox).forEach(key => {
@@ -138,11 +139,6 @@ const EditPermissionGroups = props => {
     }
   }, [checkbox]);
 
-  const removePermission = index => {
-    const arr = [...selectedPermission];
-    arr.splice(index, 1);
-    setSelectedPermission(arr);
-  };
 
   const handleSelectPermission = (e, values) => {
     /* eslint-disable no-console */
@@ -181,8 +177,18 @@ const EditPermissionGroups = props => {
   useEffect(() => {
     if (initialState.permissions && Array.isArray(initialState.permissions)) {
       const tempPer = {};
+      
       initialState.permissions.forEach(per => {
+        const currentPer = selectedPermission.filter(item => item.type === selectedType.current)
         tempPer[per.id] = false;
+        if(currentPer.length > 0){
+          currentPer[0].permissions.forEach(item => {
+              if(per.resource === item.resource && per.action === item.action){
+                tempPer[per.id] = true;
+              }
+          })
+        }
+        
       });
       setCheckbox(tempPer);
     }
@@ -235,6 +241,7 @@ const EditPermissionGroups = props => {
                     name="department"
                     onChange={e => {
                       onGetPermission(e.value);
+                      selectedType.current =  e.value
                     }}
                     placeholder="Chọn nhóm chức năng"
                     options={initialState.permissionTypes.map(item => ({
@@ -263,9 +270,9 @@ const EditPermissionGroups = props => {
                   </CRow>
                   <CCol md="9">
                     {initialState.permissions &&
-                      initialState.permissions.map(entity => {
+                      initialState.permissions.map((entity, index) => {
                         return (
-                          <CFormGroup variant="checkbox" className="mb-2">
+                          <CFormGroup variant="checkbox" key={index} className="mb-2">
                             <CInputCheckbox
                               className="form-check-input"
                               id={entity.id}

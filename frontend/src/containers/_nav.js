@@ -13,6 +13,44 @@ export default [
     },
   },
   {
+    _tag: 'CSidebarNavDropdown',
+    name: 'Báo cáo',
+    route: '/report',
+    icon: 'cil-clipboard',
+    _children: [
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Tổng quan',
+        to: '/report'
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Theo chi nhánh',
+        to: '/department-report'
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Theo sản phẩm',
+        to: '/product-report'
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Theo nhân viên',
+        to: '/sale-report'
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Theo khách hàng',
+        to: '/customer-report'
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Theo chương trình',
+        to: '/promotion-report'
+      }
+    ]
+  },
+  {
     _tag: 'CSidebarNavTitle',
     _children: ['Quản lý nghiệp vụ'],
   },
@@ -88,13 +126,13 @@ export default [
   {
     _tag: 'CSidebarNavDropdown',
     name: 'Quản lý Tài chính',
-    route: '/customer-debits',
+    route: '/transactions',
     icon: 'cil-layers',
     _children: [
       {
         _tag: 'CSidebarNavItem',
         name: 'Công nợ',
-        to: '/customer-debits',
+        to: '/transactions',
       },
       {
         _tag: 'CSidebarNavItem',

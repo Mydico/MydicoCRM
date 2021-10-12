@@ -22,6 +22,8 @@ import { userSafeSelector } from '../login/authenticate.reducer.js';
 import { CCardTitle, CFormGroup, CInput, CLabel } from '@coreui/react';
 import memoize from 'fast-memoize';
 import { DateRangePicker } from 'react-dates';
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
+import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 
 const WidgetsDropdown = lazy(() => import('../../components/widgets/WidgetsDropdown.js'));
 const brandSuccess = getStyle('success') || '#4dbd74';
@@ -51,36 +53,36 @@ const Dashboard = () => {
   const [bestSaleProduct, setBestSaleProduct] = useState([]);
   const [bestCustomer, setBestCustomer] = useState([]);
   const { account } = useSelector(userSafeSelector);
-  const [mode, setMode] = useState('week');
+  const [mode, setMode] = useState(null);
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
 
   const getData = (startDate, endDate) => {
-    dispatch(getIncomeDashboard({ saleId: account.id, startDate, endDate })).then(data => {
-      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        const sum = memoizedTransformData(data.payload).reduce((curr, prev) => {
-          let sum = 0;
-          if (prev.type === DashboardType.ORDER) {
-            sum = +Number(prev.amount);
-          } else if (prev.type === DashboardType.RETURN) {
-            sum = -Number(prev.amount);
-          } else {
-            sum = 0;
-          }
-          return (curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(sum)), curr;
-        }, {});
-        setIncomeTotal(sum);
-      }
-    });
-    dispatch(getDebtDashboard({ saleId: account.id, startDate, endDate })).then(data => {
-      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        const sum = memoizedTransformData(data.payload).reduce(
-          (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),
-          {}
-        );
-        setDebt(sum);
-      }
-    });
+    // dispatch(getIncomeDashboard({ saleId: account.id, startDate, endDate })).then(data => {
+    //   if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+    //     const sum = memoizedTransformData(data.payload).reduce((curr, prev) => {
+    //       let sum = 0;
+    //       if (prev.type === DashboardType.ORDER) {
+    //         sum = +Number(prev.amount);
+    //       } else if (prev.type === DashboardType.RETURN) {
+    //         sum = -Number(prev.amount);
+    //       } else {
+    //         sum = 0;
+    //       }
+    //       return (curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(sum)), curr;
+    //     }, {});
+    //     setIncomeTotal(sum);
+    //   }
+    // });
+    // dispatch(getDebtDashboard({ saleId: account.id, startDate, endDate })).then(data => {
+    //   if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+    //     const sum = memoizedTransformData(data.payload).reduce(
+    //       (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),
+    //       {}
+    //     );
+    //     setDebt(sum);
+    //   }
+    // });
     dispatch(getBestProductSale({ saleId: account.id, startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         setBestSaleProduct(data.payload);
@@ -139,6 +141,7 @@ const Dashboard = () => {
               startDateId="startDate"
               endDate={date.endDate}
               endDateId="endDate"
+              minimumNights={0}
               onDatesChange={value => setDate(value)}
               focusedInput={focused}
               isOutsideRange={() => false}
@@ -248,30 +251,30 @@ const Dashboard = () => {
           <CCardTitle> Top 10 sản phẩm bán chạy nhất</CCardTitle>
         </CCardHeader>
         <CCardBody>
-          <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-            <thead className="thead-light">
-              <tr>
-                <th>Mã sản phẩm</th>
-                <th>Tên sản phẩm</th>
-                <th>Số lượng bán</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table className="table table-hover table-outline mb-0 d-sm-table">
+            <Thead className="thead-light">
+              <Tr>
+                <Th>Mã sản phẩm</Th>
+                <Th>Tên sản phẩm</Th>
+                <Th>Số lượng bán</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
               {memoBestSaleProduct.map((item, index) => (
-                <tr>
-                  <td>
+                <Tr>
+                  <Td>
                     <div>{item.code}</div>
-                  </td>
-                  <td>
+                  </Td>
+                  <Td>
                     <div>{item.name}</div>
-                  </td>
-                  <td>
+                  </Td>
+                  <Td>
                     <div>{item.sum}</div>
-                  </td>
-                </tr>
+                  </Td>
+                </Tr>
               ))}
-            </tbody>
-          </table>
+            </Tbody>
+          </Table>
         </CCardBody>
       </CCard>
       <CCard>
@@ -279,30 +282,30 @@ const Dashboard = () => {
           <CCardTitle> Top 10 khách hàng có doanh số cao nhất</CCardTitle>
         </CCardHeader>
         <CCardBody>
-          <table className="table table-hover table-outline mb-0 d-none d-sm-table">
-            <thead className="thead-light">
-              <tr>
-                <th>Mã khách hàng</th>
-                <th>Tên khách hàng</th>
-                <th>Doanh thu</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table className="table table-hover table-outline mb-0 d-sm-table">
+            <Thead className="thead-light">
+              <Tr>
+                <Th>Mã khách hàng</Th>
+                <Th>Tên khách hàng</Th>
+                <Th>Doanh thu thuần</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
               {bestCustomer.map((item, index) => (
-                <tr key={index}>
-                  <td>
+                <Tr key={index}>
+                  <Td>
                     <div>{item.code}</div>
-                  </td>
-                  <td>
+                  </Td>
+                  <Td>
                     <div>{item.name}</div>
-                  </td>
-                  <td>
+                  </Td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.sum)}</div>
-                  </td>
-                </tr>
+                  </Td>
+                </Tr>
               ))}
-            </tbody>
-          </table>
+            </Tbody>
+          </Table>
         </CCardBody>
       </CCard>
     </>

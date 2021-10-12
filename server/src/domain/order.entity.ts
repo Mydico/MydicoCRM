@@ -70,7 +70,7 @@ export default class Order extends BaseEntity {
   @ManyToOne(type => Promotion, { createForeignKeyConstraints: false })
   promotion?: Promotion;
 
-  @OneToMany(type => OrderDetails, orderDetails => orderDetails.order, { cascade: ['insert', 'update'] })
+  @OneToMany(type => OrderDetails, orderDetails => orderDetails.order, { cascade: ['insert', 'update'], nullable: false })
   orderDetails?: OrderDetails[];
 
   @OneToMany(type => Bill, bill => bill.order)

@@ -12,6 +12,7 @@ import { DebtDashboardRepository } from '../repository/debt-dashboard.repository
 import { StoreInputRepository } from '../repository/store-input.repository';
 import { StoreInputDetailsRepository } from '../repository/store-input-details.repository';
 import { TransactionRepository } from '../repository/transaction.repository';
+import { BillRepository } from '../repository/bill.repository';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { TransactionRepository } from '../repository/transaction.repository';
       DebtDashboardRepository,
       StoreInputRepository,
       StoreInputDetailsRepository,
-      TransactionRepository
+      TransactionRepository,
+      BillRepository
     ]),
     DepartmentModule,
     OrderModule

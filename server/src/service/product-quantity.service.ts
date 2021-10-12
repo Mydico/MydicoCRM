@@ -125,7 +125,7 @@ export class ProductQuantityService {
       .leftJoinAndSelect('product.productGroup', 'productGroup')
       .where(`ProductQuantity.store = ${filter['store']} AND ProductQuantity.status = 'ACTIVE'`)
       // .andWhere(`MATCH(ProductQuantity.name) AGAINST ('${filter['name'] || ''}' IN NATURAL LANGUAGE MODE)`)
-      .orderBy(`ProductQuantity.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .orderBy(`ProductQuantity.${Object.keys(options.order)[0] || 'ProductQuantity.createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);
     if (filter['store'] && queryString) {

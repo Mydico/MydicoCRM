@@ -74,7 +74,6 @@ const fieldsDetail = [
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'productName', label: 'Tên sản phẩm', _style: { width: '10%' } },
   { key: 'unit', label: 'Đơn vị', _style: { width: '10%' } },
-  { key: 'volume', label: 'Dung tích', _style: { width: '10%' } },
   { key: 'quantity', label: 'Số lượng', _style: { width: '10%' } }
 ];
 
@@ -405,7 +404,6 @@ const WarehouseImport = props => {
                           code: item.product?.code || '',
                           productName: item.product?.name || '',
                           unit: item.product?.unit || '',
-                          volume: item.product?.volume || '',
                           quantity: item.quantity || ''
                         };
                       })}

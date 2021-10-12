@@ -62,14 +62,14 @@ const TheSidebar = () => {
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const isManager = account.roles.filter(item => item.authority.includes('MANAGER')).length > 0;
   const [navigation, setNavigation] = useState(navigationList)
-  useEffect(() => {
-    if (isAdmin || isManager) {
-      if (navigation.filter(item => item.name == 'Báo cáo').length > 0) return;
-      const copiedArr =[...navigation]
-      copiedArr.splice(1, 0, ReportMenu)
-      setNavigation(copiedArr);
-    }
-  }, [account])
+  // useEffect(() => {
+  //   if (isAdmin || isManager) {
+  //     if (navigation.filter(item => item.name == 'Báo cáo').length > 0) return;
+  //     const copiedArr =[...navigation]
+  //     copiedArr.splice(1, 0, ReportMenu)
+  //     setNavigation(copiedArr);
+  //   }
+  // }, [account])
   return (
     <CSidebar
       show={show}

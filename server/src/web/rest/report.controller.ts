@@ -156,7 +156,7 @@ export class ReportController {
   })
   async getTop10product(@Req() req: Request, @Res() res): Promise<any> {
     const filter = await this.buildFilterForReport(req);
-    return res.send(await this.reportService.getTop10Product(filter));
+    return res.send(await this.reportService.getTop10BestSaleProduct(filter));
   }
 
   @Get('/top10customer')
@@ -353,6 +353,7 @@ export class ReportController {
     const filter = {};
     let departmentVisible: any = [];
     const currentUser = req.user as User;
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
     const isBranchManager = currentUser.roles.filter(item => item.authority === RoleType.BRANCH_MANAGER).length > 0;
     if (!isBranchManager) {
       if (!req.query['department'] && currentUser.department) {
@@ -372,6 +373,9 @@ export class ReportController {
     filter['department'] = departmentVisible;
     if (isBranchManager) {
       filter['branch'] = currentUser.branch.id;
+    }
+    if (isEmployee) {
+      filter['sale'] = currentUser.id;
     }
     return filter;
   }

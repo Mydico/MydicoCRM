@@ -10,14 +10,6 @@ export const getDetailTransaction = createAsyncThunk('api/detail/transactions', 
   }
 });
 
-export const creatingTransaction = createAsyncThunk('api/create/transactions', async (body, thunkAPI) => {
-  try {
-    const result = await axios.post('api/transactions', body);
-    return result.data;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data);
-  }
-});
 
 export const updateTransaction = createAsyncThunk('api/update/transactions', async (body, thunkAPI) => {
   try {

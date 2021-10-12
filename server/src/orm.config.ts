@@ -54,6 +54,9 @@ if (process.env.NODE_ENV === 'prod') {
         entities: commonConf.ENTITIES,
         migrations: commonConf.MIGRATIONS,
         cli: commonConf.CLI,
+        extra : {
+            connectionLimit: 20
+        },
         migrationsRun: commonConf.MIGRATIONS_RUN,
         cache: {
             type: 'ioredis',
@@ -70,7 +73,7 @@ if (process.env.NODE_ENV === 'dev') {
         name: 'default',
         type: 'mysql',
         database: 'MydicoCRM',
-        host: 'localhost',
+        host: '14.225.17.151',
         port: 3306,
         username: 'root',
         password: 'Dunghd@123',
@@ -81,6 +84,9 @@ if (process.env.NODE_ENV === 'dev') {
         cli: commonConf.CLI,
         verboseRetryLog: false,
         migrationsRun: commonConf.MIGRATIONS_RUN,
+        extra : {
+            connectionLimit: 20
+        },
         cache: {
             type: 'ioredis',
             alwaysEnabled: true,

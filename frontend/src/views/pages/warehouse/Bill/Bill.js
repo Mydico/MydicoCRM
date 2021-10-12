@@ -529,6 +529,7 @@ const Bill = props => {
               startDateId="startDate"
               endDate={date.endDate}
               endDateId="endDate"
+              minimumNights={0}
               onDatesChange={value => setDate(value)}
               focusedInput={focused}
               isOutsideRange={() => false}
@@ -689,7 +690,6 @@ const Bill = props => {
                         <tr>
                           <th className="center">#</th>
                           <th>Tên sản phẩm</th>
-                          <th>Dung tích</th>
                           <th className="center">Số lượng</th>
                           <th className="right">Đơn giá</th>
                           <th className="right">Chiết khấu(%)</th>
@@ -698,12 +698,11 @@ const Bill = props => {
                         </tr>
                       </thead>
                       <tbody>
-                        {[...item?.order?.orderDetails || []].reverse().map((item, index) => {
+                        {[...item?.order?.orderDetails || []].map((item, index) => {
                           return (
                             <tr key={index}>
                               <td> {(activePage - 1) * size + index + 1}</td>
                               <td>{item.product?.name}</td>
-                              <td>{item.product?.volume}</td>
                               <td>{item.quantity}</td>
 
                               <td>{item.product?.price}</td>

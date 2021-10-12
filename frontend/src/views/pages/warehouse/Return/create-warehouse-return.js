@@ -25,7 +25,7 @@ import Select from 'react-select';
 import { FormFeedback, Table } from 'reactstrap';
 import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
-import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
+import { globalizedProductSelectors, swap } from '../../product/ProductList/product.reducer';
 import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { WarehouseImportType } from './contants';
 import { globalizedCustomerSelectors } from '../../customer/customer.reducer';
@@ -113,15 +113,12 @@ const CreateWarehouse = () => {
   };
 
   const debouncedSearchProduct = _.debounce(value => {
-    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+    dispatch(filterProduct({ page: 0, size: 20, sort: 'id,ASC', code: value, name: value, dependency: true }));
   }, 300);
 
   const onSearchProduct = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (value) {
       debouncedSearchProduct(value);
-    }
-    if (action.action === "input-blur") {
-      debouncedSearchProduct("");
     }
   };
 
@@ -142,11 +139,11 @@ const CreateWarehouse = () => {
   }, 300);
 
   const onSearchCustomer = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchCustomer(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchCustomer("");
+    if (action.action === 'input-blur') {
+      debouncedSearchCustomer('');
     }
   };
 
@@ -164,6 +161,8 @@ const CreateWarehouse = () => {
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = Number(target.value).toString();
+    copyArr[index].priceTotal =
+    (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
@@ -176,14 +175,21 @@ const CreateWarehouse = () => {
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].price = Number(target.value.replace(/\D/g, ''));
+    copyArr[index].priceTotal =
+    (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({ value }, index) => {
+  const onSelectedProduct = ({ value ,index }, selectedProductIndex) => {
+    const tempArr = [...products];
+    const tempVar = tempArr[0];
+    tempArr[0] = tempArr[index];
+    tempArr[index] = tempVar;
+    dispatch(swap(tempArr));
     const copyArr = [...productList];
-    copyArr[index].product = value;
-    copyArr[index].quantity = 1;
-    copyArr[index].price = Number(value.price);
+    copyArr[selectedProductIndex].product = value;
+    copyArr[selectedProductIndex].quantity = 1;
+    copyArr[selectedProductIndex].price = Number(value.price);
     setProductList(copyArr);
   };
 
@@ -191,8 +197,8 @@ const CreateWarehouse = () => {
     const copyArr = [...productList];
     copyArr[index].reducePercent = Number(target.value).toString();
     copyArr[index].priceTotal =
-      copyArr[index].price * copyArr[index].quantity -
-      (copyArr[index].price * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
+      (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
+      // (copyArr[index].price * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
     setProductList(copyArr);
   };
 
@@ -248,7 +254,7 @@ const CreateWarehouse = () => {
   }, 300);
 
   const onSearchPromition = value => {
-    if(value){
+    if (value) {
       debouncedSearchPromotion(value);
     }
   };
@@ -467,7 +473,6 @@ const CreateWarehouse = () => {
                     <tr>
                       <th>Sản phẩm</th>
                       <th>Đơn vị</th>
-                      <th>Dung tích</th>
                       <th>Số lượng</th>
                       <th>Giá</th>
                       <th>Chiết khấu</th>
@@ -487,14 +492,14 @@ const CreateWarehouse = () => {
                               onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
-                              options={products.map(item => ({
+                              options={products.map((item, index) => ({
+                                index,
                                 value: item,
                                 label: `[${item?.code}]-${item.name}-${item.volume}`
                               }))}
                             />
                           </td>
                           <td>{item?.product?.unit}</td>
-                          <td>{item?.product?.volume}</td>
                           <td style={{ width: 100 }}>
                             <CInput
                               type="number"
@@ -534,7 +539,7 @@ const CreateWarehouse = () => {
                             />
                           </td>
                           <td style={{ width: 100 }}>
-                            {(item.price * item.quantity - (item.price * item.quantity * item.reducePercent) / 100).toLocaleString(
+                            {(item?.priceTotal || 0).toLocaleString(
                               'it-IT',
                               {
                                 style: 'currency',

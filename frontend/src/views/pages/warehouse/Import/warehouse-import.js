@@ -431,7 +431,6 @@ const WarehouseImport = props => {
                         <tr>
                           <th className="center">#</th>
                           <th>Tên sản phẩm</th>
-                          <th>Dung tích</th>
                           <th className="center">Số lượng</th>
                         </tr>
                       </thead>
@@ -441,7 +440,6 @@ const WarehouseImport = props => {
                             <tr key={index}>
                               <td> {(activePage - 1) * size + index + 1}</td>
                               <td>{detail.product?.name}</td>
-                              <td>{detail.product?.volume}</td>
                               <td>{detail.quantity}</td>
                             </tr>
                           );

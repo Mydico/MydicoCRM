@@ -47,6 +47,7 @@ const fields = [
   { key: 'customerName', label: 'Khách hàng', _style: { width: '10%' } },
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '10%' } },
+  { key: 'realMoney', label: 'Tiền thanh toán', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'approverName', label: 'Người duyệt', _style: { width: '10%' } },
@@ -377,6 +378,11 @@ const WarehouseImport = props => {
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
+            realMoney: (item, index) => (
+              <td>
+                <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
+              </td>
+            ),
             type: item => <td>{mappingType[item.type]}</td>,
             action: item => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
@@ -409,7 +415,6 @@ const WarehouseImport = props => {
                           <tr>
                             <th className="center">#</th>
                             <th>Tên sản phẩm</th>
-                            <th>Dung tích</th>
                             <th className="center">Số lượng</th>
                             <th className="right">Đơn giá</th>
                             <th className="right">Chiết khấu(%)</th>
@@ -424,7 +429,6 @@ const WarehouseImport = props => {
                               <tr key={index}>
                                 <td> {(activePage - 1) * size + index + 1}</td>
                                 <td>{detail.product?.name}</td>
-                                <td>{detail.product?.volume}</td>
                                 <td>{detail.quantity}</td>
                                 <td>
                                   {Number(detail.price || detail.product?.price).toLocaleString('it-IT', {

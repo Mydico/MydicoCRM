@@ -69,7 +69,7 @@ export class OrderService {
     isEmployee: boolean,
     currentUser: User
   ): Promise<[Order[], number]> {
-    const cacheKeyBuilder = generateCacheKey(departmentVisible,currentUser,isEmployee,filter,options,'order');
+    const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, filter, options, 'order');
 
     let andQueryString = '';
     let queryString = '';
@@ -87,11 +87,13 @@ export class OrderService {
     if (filter['status']) {
       queryString += ` Order.status  = '${filter['status']}' `;
     }
-    delete filter['startDate']
-    delete filter['endDate']
-    delete filter['status']
+    delete filter['startDate'];
+    delete filter['endDate'];
+    delete filter['status'];
     Object.keys(filter).forEach((item, index) => {
-      queryString += `Order.${item} ${item === 'saleId' ? '=' :'like'}  ${item === 'saleId' ? filter[item] : '\'%'+filter[item]+'%\''}  ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+      queryString += `Order.${item} ${item === 'saleId' ? '=' : 'like'}  ${
+        item === 'saleId' ? filter[item] : "'%" + filter[item] + "%'"
+      }  ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
     });
 
     if (isEmployee) {
@@ -117,10 +119,12 @@ export class OrderService {
       .leftJoinAndSelect('Order.sale', 'sale')
       .leftJoinAndSelect('Order.department', 'department')
       .cache(cacheKeyBuilder, 604800)
-      .where(andQueryString)
-      .orderBy(`Order.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
-      .take(options.take);
+      .take(options.take)
+      .where(andQueryString)
+      .orderBy({
+        'Order.createdDate': options.order[Object.keys(options.order)[0]] || 'DESC',
+      })
 
     const count = this.orderRepository
       .createQueryBuilder('Order')
@@ -145,10 +149,14 @@ export class OrderService {
         })
       );
     }
-
-    const result = await queryBuilder.getManyAndCount();
-    result[1] = await count.getCount();
-    return result;
+    const lastResult: [Order[], number] = [[],0] 
+    const result = await queryBuilder.getMany();
+    lastResult[1] = await count.getCount();
+    lastResult[0] = result.map(item => ({
+      ...item,
+      orderDetails : item.orderDetails.reverse()
+    }))
+    return lastResult;
   }
 
   async getProductInStore(arrIds: string[], store: Store): Promise<ProductQuantity[]> {
@@ -207,7 +215,7 @@ export class OrderService {
         ...item,
         quantity: item.quantity - itemFounded[0].quantity,
         entity: 'ORDER',
-        entityId: order.id,
+        entityId: order.id
       };
     });
     const checkExistInStore = productQuantityExported.filter(item => item.quantity < 0);
@@ -278,13 +286,16 @@ export class OrderService {
           ? Number(latestTransaction.earlyDebt) + Number(foundedOrder.realMoney)
           : Number(foundedOrder.realMoney);
         await this.transactionService.save(transaction);
-        const incomeItem = new IncomeDashboard();
-        incomeItem.amount = foundedOrder.realMoney;
-        incomeItem.departmentId = foundedOrder.department.id;
-        incomeItem.branchId = foundedOrder.branch.id;
-        incomeItem.type = DashboardType.ORDER;
-        incomeItem.saleId = foundedOrder.sale.id || null;
-        await this.incomeDashboardService.save(incomeItem);
+        // const incomeItem = new IncomeDashboard();
+        // incomeItem.amount = foundedOrder.realMoney;
+        // incomeItem.departmentId = foundedOrder.department.id;
+        // incomeItem.branchId = foundedOrder.branch.id;
+        // incomeItem.type = DashboardType.ORDER;
+        // incomeItem.saleId = foundedOrder.sale.id || null;
+        // await this.incomeDashboardService.save(incomeItem);
+      }else {
+        throw new HttpException('Đon hàng không thể tạo vận đơn.Số lượng sản phẩm trong kho không đủ', HttpStatus.UNPROCESSABLE_ENTITY);
+ 
       }
     }
     return await this.save(order, departmentVisible, isEmployee, currentUser);

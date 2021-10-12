@@ -4,6 +4,9 @@ import memoize from 'fast-memoize';
 import moment from 'moment';
 export const permissionDescriptionNormalize = (splitedEndpoint, isType) => {
   let desc = '';
+  if(splitedEndpoint[0] === 'customers' && splitedEndpoint[1] === 'status'){
+    return 'Khóa khách hàng'  
+  }
   if (Array.isArray(splitedEndpoint) && splitedEndpoint.length > 0) {
     splitedEndpoint.forEach(element => {
       const resource = resourceDesc[element] ? resourceDesc[element] : '';
@@ -42,8 +45,8 @@ export const permissionDescriptionNormalize = (splitedEndpoint, isType) => {
   return desc;
 };
 
-export const queryBuilderFunc = (entity, filter = {}) => {
-  delete filter['dependency']
+export const queryBuilderFunc = (entity, filter = {}, isDebt = false) => {
+  delete filter['dependency'];
   let query = '';
   Object.keys(filter).forEach((key, index) => {
     if (key === 'startDate' || key === 'endDate') return;
@@ -58,11 +61,11 @@ export const queryBuilderFunc = (entity, filter = {}) => {
     }
   });
   if (filter['endDate'] && filter['startDate']) {
-    if(entity === 'DebtDashboard'){
-      query += `  ${query.length > 0 ? 'AND' : ''}  ${entity}.createdDate <= '${
-        filter['endDate']
-      } 23:59:59'`;
-      return
+    if (entity === 'Transaction') {
+      if (isDebt) {
+        query += `  ${query.length > 0 ? 'AND' : ''}  ${entity}.createdDate <= '${filter['endDate']} 23:59:59'`;
+        return query;
+      }
     }
     query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']}' AND  ${entity}.createdDate <= '${
       filter['endDate']

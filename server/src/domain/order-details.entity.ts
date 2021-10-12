@@ -38,7 +38,7 @@ export default class OrderDetails extends BaseEntity {
     @Index()
     reduce: number;
 
-    @Column({ type: 'float', name: 'reduce_percent', nullable: true })
+    @Column({ type: 'float', name: 'reduce_percent', nullable: false, default: 0 })
     @Index()
     reducePercent: number;
 

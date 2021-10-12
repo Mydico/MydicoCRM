@@ -202,7 +202,7 @@ const Customer = props => {
           page: activePage - 1,
           size: size,
           sort: 'createdDate,DESC',
-          ...paramRef.current,
+          ...paramRef.current
         })
       );
       dispatch(reset());
@@ -317,19 +317,21 @@ const Customer = props => {
                   >
                     <CIcon name="cil-user" />
                   </CButton>
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    onClick={event => {
-                      event.stopPropagation();
-                      selectedPro.current = { id: item.id, activated: item.activated, login: item.login };
-                      setPrimary(!primary);
-                    }}
-                  >
-                    <CIcon name={!item.activated ? 'cilLockLocked' : 'cilLockUnlocked'} />
-                  </CButton>
+                  {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/customers/status').length > 0) && (
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      onClick={event => {
+                        event.stopPropagation();
+                        selectedPro.current = { id: item.id, activated: item.activated, login: item.login };
+                        setPrimary(!primary);
+                      }}
+                    >
+                      <CIcon name={!item.activated ? 'cilLockLocked' : 'cilLockUnlocked'} />
+                    </CButton>
+                  )}
                 </Td>
               );
             },
