@@ -110,6 +110,8 @@ const EditCustomer = props => {
       alert('Tên cửa hàng/đại lý phải có chữ cái');
       return;
     }
+    values = JSON.parse(JSON.stringify(values))
+    values.tel = values.tel.replace(/\s/g, "");
     dispatch(fetching());
     dispatch(updateCustomer(values));
   };

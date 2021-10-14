@@ -2,6 +2,9 @@ import loadable from '@loadable/component'
 import CustomerReport from './views/pages/report/CustomerReport';
 import DepartmentDetailReport from './views/pages/report/DepartmentDetailReport';
 import DepartmentReport from './views/pages/report/DepartmentReport';
+import OrderCustomerHistory from './views/pages/report/OrderCustomerHistory';
+import OrderProductHistory from './views/pages/report/OrderProductHistory';
+
 import ProductReport from './views/pages/report/ProductReport';
 import PromotionReport from './views/pages/report/PromotionReport';
 import Report from './views/pages/report/Report';
@@ -120,6 +123,9 @@ const Bill = loadable(() => import('./views/pages/warehouse/Bill/Bill'));
 const routes = [
   {path: '/', exact: true, name: 'Trang chủ', component: Dashboard},
   {path: '/report', exact: true, name: 'Báo cáo', component: Report},
+  {path: '/report/order-histories/:id', exact: true, name: 'Báo cáo', component: OrderHistory},
+  {path: '/report/order-customer-histories/:id', exact: true, name: 'Báo cáo', component: OrderCustomerHistory},
+  {path: '/report/order-product-histories/:id', exact: true, name: 'Báo cáo', component: OrderProductHistory},
   {path: '/department-report', exact: true, name: 'Báo cáo theo chi nhánh', component: DepartmentReport},
   {path: '/department-report/:id/detail',name: 'Báo cáo theo chi nhánh', component: DepartmentDetailReport},
   {path: '/product-report', exact: true, name: 'Báo cáo theo sản phẩm', component: ProductReport},

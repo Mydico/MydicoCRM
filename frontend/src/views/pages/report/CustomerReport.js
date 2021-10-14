@@ -94,7 +94,7 @@ const CustomerReport = () => {
         sort: 'createdDate,DESC',
         department: department,
         branch: branch,
-        sale: sale,
+        sale: isEmployee ? account.id : sale,
         dependency: true
       })
     ).then(resp => {
@@ -270,6 +270,7 @@ const CustomerReport = () => {
         address: value,
         department: department?.id || account.department.id,
         branch: branch?.id || account.branch.id,
+        sale: isEmployee ? account.id : sale,
         dependency: true,
         activated: true
       })

@@ -86,6 +86,8 @@ const CreateCustomer = () => {
   
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
+    values = JSON.parse(JSON.stringify(values))
+    values.tel = values.tel.replace(/\s/g, "");
     dispatch(creatingCustomer(values));
   };
 

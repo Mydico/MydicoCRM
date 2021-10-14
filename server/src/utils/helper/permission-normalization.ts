@@ -4,8 +4,8 @@ import memoize from 'fast-memoize';
 import moment from 'moment';
 export const permissionDescriptionNormalize = (splitedEndpoint, isType) => {
   let desc = '';
-  if(splitedEndpoint[0] === 'customers' && splitedEndpoint[1] === 'status'){
-    return 'Khóa khách hàng'  
+  if (splitedEndpoint[0] === 'customers' && splitedEndpoint[1] === 'status') {
+    return 'Khóa khách hàng';
   }
   if (Array.isArray(splitedEndpoint) && splitedEndpoint.length > 0) {
     splitedEndpoint.forEach(element => {
@@ -55,6 +55,10 @@ export const queryBuilderFunc = (entity, filter = {}, isDebt = false) => {
         query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${JSON.stringify(filter[key])
           .replace('[', '(')
           .replace(']', ')')}`;
+      }
+    } else if (Array.isArray(JSON.parse(filter[key]))) {
+      if (JSON.parse(filter[key]).length > 0) {
+        query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${filter[key].replace('[', '(').replace(']', ')')}`;
       }
     } else {
       query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id = ${filter[key]} `;

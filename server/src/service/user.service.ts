@@ -6,6 +6,7 @@ import { Brackets, FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import { RoleService } from './role.service';
 import { ChangePasswordDTO } from './dto/user.dto';
 import { checkCodeContext } from './utils/normalizeString';
+import Department from '../domain/department.entity';
 const relationshipNames = [];
 relationshipNames.push('roles');
 relationshipNames.push('department');
@@ -30,6 +31,16 @@ export class UserService {
         return this.flatAuthorities(result);
     }
 
+    async findAllSubDepartment(department: Department): Promise<String[]> {
+        const foundedDepartment = await this.userRepository.find({
+          where: {
+            mainDepartment: department
+          },
+          relations: ['department']
+        });
+        return Array.from(new Set(foundedDepartment.map(item => item.department.id)));
+      }
+      
     async find(options: FindManyOptions<User>): Promise<User | undefined> {
         options.relations = relationshipNames;
         // options.cache = 36000000
@@ -43,8 +54,13 @@ export class UserService {
   
         let andQueryString = '1=1 ';
     
-        if (filter['department']) {
+        if (!Array.isArray(filter['department'])) {
           andQueryString += ` AND User.department = ${filter['department']}`;
+        }else {
+            // andQueryString += ` AND User.department = ${filter['department']}`;
+            andQueryString += ` AND User.department IN ${JSON.stringify(filter['department'])
+            .replace('[', '(')
+            .replace(']', ')')}`;
         }
         if (filter['branch']) {
           andQueryString += ` AND User.branch = ${filter['branch']}`;

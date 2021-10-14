@@ -554,7 +554,7 @@ const EditWarehouseReturn = props => {
                               <MaskedInput
                                 mask={currencyMask}
                                 onChange={event => onChangePrice(event, index)}
-                                value={item.product.price || 0}
+                                value={item.price || item.product.price}
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
@@ -598,20 +598,74 @@ const EditWarehouseReturn = props => {
               </CCardBody>
             </CCard>
             <CCard>
+              <CCardHeader>
+                <CCardTitle>Thông tin khác</CCardTitle>
+              </CCardHeader>
               <CCardBody>
-                <CFormGroup>
-                  <CLabel htmlFor="userName">Ghi chú</CLabel>
-                  <CTextarea
-                    type="text"
-                    name="note"
-                    id="note"
-                    placeholder=""
-                    autoComplete="address"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.note}
-                  />
-                </CFormGroup>
+                <CRow>
+                  <CCol lg="4" sm="5">
+                    <CFormGroup>
+                      <CLabel htmlFor="userName">Ghi chú</CLabel>
+                      <CTextarea
+                        type="text"
+                        name="note"
+                        id="note"
+                        placeholder=""
+                        autoComplete="address"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.note}
+                      />
+                    </CFormGroup>
+                  </CCol>
+                  <CCol lg="4" sm="5" className="ml-auto">
+                    <Table className="table-clear">
+                      <tbody>
+                        <tr>
+                          <td className="left">
+                            <strong>Tổng số lượng</strong>
+                          </td>
+                          <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
+                        </tr>
+                        <tr>
+                          <td className="left">
+                            <strong>Cộng tiền hàng</strong>
+                          </td>
+                          <td className="right">
+                            {productList
+                              .reduce((sum, current) => sum + current.price * current.quantity, 0)
+                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left">
+                            <strong>Tổng tiền chiết khấu</strong>
+                          </td>
+                          <td className="right">
+                            {productList
+                              .reduce((sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100, 0)
+                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left">
+                            <strong>Tổng tiền thanh toán</strong>
+                          </td>
+                          <td className="right">
+                            {productList
+                              .reduce(
+                                (sum, current) =>
+                                  sum +
+                                  (current.price * current.quantity - (current.price * current.quantity * current.reducePercent) / 100),
+                                0
+                              )
+                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </CCol>
+                </CRow>
               </CCardBody>
             </CCard>
             <CFormGroup className="d-flex justify-content-center">

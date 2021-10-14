@@ -46,10 +46,10 @@ const PromotionReport = () => {
   const { account } = useSelector(state => state.authentication);
   const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
 
-  const branches = isEmployee? [account.branch] : useSelector(selectAll);
-  const users = isEmployee? [account] : useSelector(selectUserAll);
-  
-  const promotions = useSelector(selectPromotionAll)
+  const branches = isEmployee ? [account.branch] : useSelector(selectAll);
+  const users = isEmployee ? [account] : useSelector(selectUserAll);
+
+  const promotions = useSelector(selectPromotionAll);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [filter, setFilter] = useState({ dependency: true });
@@ -304,6 +304,7 @@ const PromotionReport = () => {
         address: value,
         department: department?.id || account.department.id,
         branch: branch?.id || account.branch.id,
+        sale: isEmployee ? account.id : user?.id,
         dependency: true,
         activated: true
       })

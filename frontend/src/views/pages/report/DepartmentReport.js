@@ -89,7 +89,7 @@ const DepartmentReport = (props) => {
                   {
                     label: 'Doanh số',
                     backgroundColor: '#f87979',
-                    data: memoDepartmentReport.map(item => item.sum)
+                    data: memoDepartmentReport.map(item => item.real)
                   }
                 ]}
                 labels={memoDepartmentReport.map(item => item.name)}
@@ -108,7 +108,7 @@ const DepartmentReport = (props) => {
                 datasets={[
                   {
                     backgroundColor: memoDepartmentReport.map(item => getRandomColor()),
-                    data: memoDepartmentReport.map(item => item.sum)
+                    data: memoDepartmentReport.map(item => item.real)
                   }
                 ]}
                 labels={memoDepartmentReport.map(item => item.name)}

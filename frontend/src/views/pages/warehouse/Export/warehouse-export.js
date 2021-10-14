@@ -39,6 +39,7 @@ const fields = [
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'storeName', label: 'Tên kho xuất', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
+  { key: 'quantity', label: 'Số lượng sp', _style: { width: '10%' } },
   { key: 'storeTransferName', label: 'Xuất đến', _style: { width: '10%' } },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'approverName', label: 'Người duyệt', _style: { width: '15%' } },
@@ -129,7 +130,7 @@ const WarehouseImport = props => {
         storeTransferName: item.storeTransferName || '',
         store: item.storeName || '',
         approverName: item.approverName || '',
-        createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
+        createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY')
       };
     });
   };
@@ -168,7 +169,7 @@ const WarehouseImport = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    if(value) debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const alertFunc = (item, message, operation) => {
@@ -188,13 +189,13 @@ const WarehouseImport = props => {
   };
 
   const rejectTicket = bill => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const data = { id: bill.id, status: WarehouseImportStatus.REJECTED, action: 'cancel' };
     dispatch(updateWarehouseStatusImport(data));
   };
 
   const approveTicket = bill => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, action: 'approve' };
     dispatch(updateWarehouseStatusImport(data));
   };
@@ -206,7 +207,7 @@ const WarehouseImport = props => {
         return null;
       case WarehouseImportStatus.WAITING:
         return (
-          <CRow>
+          <CRow style={{minWidth:300}}>
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export').length > 0) && (
               <CButton
                 onClick={() => {
@@ -269,7 +270,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date }; 
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
       dispatch(getWarehouseExport(params));
       dispatch(reset());
     }
@@ -290,7 +291,7 @@ const WarehouseImport = props => {
         )}
       </CCardHeader>
       <CCardBody>
-      <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'order'} />
+        <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'order'} />
 
         <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
@@ -375,7 +376,7 @@ const WarehouseImport = props => {
             action: item => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
             },
-            code: (item, index) => <td>{item.code || ""}</td>,
+            code: (item, index) => <td>{item.code || ''}</td>,
             show_details: item => {
               return (
                 <td className="py-2 d-flex">
@@ -392,6 +393,9 @@ const WarehouseImport = props => {
                   </CButton>
                 </td>
               );
+            },
+            quantity: item => {
+              return <td className="py-2 d-flex">{JSON.parse(JSON.stringify(item.storeInputDetails || [])).reduce((prev, curr) => prev+ curr.quantity,0)}</td>;
             },
             details: item => {
               return (
@@ -415,6 +419,9 @@ const WarehouseImport = props => {
                         order: (item, index) => <td> {(activePage - 1) * size + index + 1}</td>
                       }}
                     />
+                    <CCol lg="4" sm="5">
+                      Ghi chú: <strong>{item?.note}</strong>
+                    </CCol>
                   </CCardBody>
                 </CCollapse>
               );

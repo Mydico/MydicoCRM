@@ -47,7 +47,7 @@ export default class OrderDetails extends BaseEntity {
     priceReal: number;
 
 
-    @ManyToOne(type => Order, { createForeignKeyConstraints: false })
+    @ManyToOne(type => Order,order => order.orderDetails, { createForeignKeyConstraints: false })
     order: Order;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

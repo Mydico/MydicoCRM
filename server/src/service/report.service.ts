@@ -76,6 +76,51 @@ export class ReportService {
     return await queryBuilder.getRawOne();
   }
 
+  async getOrderIncludesProductId(options, filter = {}): Promise<any> {
+    let queryString = queryBuilderFunc('Order', filter);
+    queryString = queryString.replace('Order.productId', 'product.id');
+
+    const queryBuilder = this.orderRepository
+      .createQueryBuilder('Order')
+      .leftJoinAndSelect('Order.customer', 'customer')
+      .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
+      .leftJoinAndSelect('orderDetails.product', 'product')
+      .leftJoinAndSelect('Order.promotion', 'promotion')
+      .leftJoinAndSelect('promotion.customerType', 'customerType')
+      .leftJoinAndSelect('Order.sale', 'sale')
+      .leftJoinAndSelect('Order.department', 'department')
+      .cache(3 * 3600)
+      .skip(options.skip)
+      .take(options.take)
+      .where(queryString)
+      .orderBy({
+        'Order.createdDate': options.order[Object.keys(options.order)[0]] || 'DESC',
+      })
+      const count = this.orderRepository
+      .createQueryBuilder('Order')
+      .leftJoinAndSelect('Order.customer', 'customer')
+      .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
+      .leftJoinAndSelect('orderDetails.product', 'product')
+      .leftJoinAndSelect('Order.promotion', 'promotion')
+      .leftJoinAndSelect('promotion.customerType', 'customerType')
+      .leftJoinAndSelect('Order.sale', 'sale')
+      .leftJoinAndSelect('Order.department', 'department')
+      .where(queryString)
+      .orderBy(`Order.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .skip(options.skip)
+      .take(options.take)
+      .cache(3 * 3600)
+
+      const lastResult: [Order[], number] = [[],0] 
+      const result = await queryBuilder.getMany();
+      lastResult[1] = await count.getCount();
+      lastResult[0] = result.map(item => ({
+        ...item,
+        orderDetails : item.orderDetails.reverse()
+      }))
+      return lastResult;
+  }
+
   async getOrderSaleReport(userId: string, filter = {}): Promise<any> {
     let queryString = '';
 
@@ -208,7 +253,6 @@ export class ReportService {
   async getTop10Sale(filter = {}): Promise<any> {
     let queryString = queryBuilderFunc('Transaction', filter);
 
-    
     const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select(['user.code, user.firstName, user.lastName, user.id'])
@@ -245,7 +289,6 @@ export class ReportService {
     //   }
     //   return final;
     // });
-
   }
 
   async getTop10Product(filter = {}): Promise<any> {
@@ -270,26 +313,26 @@ export class ReportService {
   async getTop10Customer(filter = {}): Promise<any> {
     let queryString = queryBuilderFunc('Transaction', filter);
     const queryBuilder = this.transactionRepository
-    .createQueryBuilder('Transaction')
-    .select(['customer.code, customer.name'])
-    .addSelect(`sum(case when type = 'DEBIT' then total_money when  type = 'RETURN' then -refund_money else 0 end)`, 'sum')
-    .leftJoin('Transaction.customer', 'customer')
-    .where(queryString)
-    .groupBy('Transaction.customerId')
-    .cache(3 * 3600)
-    .orderBy('sum', 'DESC')
-    .limit(10);
-      // .createQueryBuilder('Order')
-      // .select(['customer.code, customer.name'])
-      // .addSelect('Sum(Order.real_money)', 'sum')
-      // .addSelect('Max(Order.customer)', 'customer')
-      // .leftJoin('Order.customer', 'customer')
-      // .where(queryString)
-      // .andWhere(`Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
-      // .cache(3 * 3600)
-      // .groupBy('Order.customer, customer.code, customer.name')
-      // .orderBy('sum(Order.real_money)', 'DESC')
-      // .limit(10);
+      .createQueryBuilder('Transaction')
+      .select(['customer.code, customer.name, customer.id'])
+      .addSelect(`sum(case when type = 'DEBIT' then total_money when  type = 'RETURN' then -refund_money else 0 end)`, 'sum')
+      .leftJoin('Transaction.customer', 'customer')
+      .where(queryString)
+      .groupBy('Transaction.customerId')
+      .cache(3 * 3600)
+      .orderBy('sum', 'DESC')
+      .limit(10);
+    // .createQueryBuilder('Order')
+    // .select(['customer.code, customer.name'])
+    // .addSelect('Sum(Order.real_money)', 'sum')
+    // .addSelect('Max(Order.customer)', 'customer')
+    // .leftJoin('Order.customer', 'customer')
+    // .where(queryString)
+    // .andWhere(`Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
+    // .cache(3 * 3600)
+    // .groupBy('Order.customer, customer.code, customer.name')
+    // .orderBy('sum(Order.real_money)', 'DESC')
+    // .limit(10);
     return await queryBuilder.getRawMany();
   }
 
@@ -390,6 +433,8 @@ export class ReportService {
   async getSumProductQuantity(filter): Promise<any> {
     let queryString = queryBuilderFunc('Transaction', filter);
     queryString = queryString.replace('Transaction.productId', 'product.id');
+    queryString = queryString.replace('Transaction.brandId', 'brand.id');
+    queryString = queryString.replace('Transaction.productGroupId', 'productGroup.id');
     const queryBuilder = await this.transactionRepository.manager.connection
       .createQueryBuilder()
       .from(Transaction, 'Transaction')
@@ -397,6 +442,8 @@ export class ReportService {
       .leftJoin('Transaction.order', 'order')
       .leftJoin('order.orderDetails', 'orderDetails')
       .leftJoin('orderDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
       .where(queryString)
       .cache(3 * 3600)
       .getRawOne();
@@ -407,6 +454,8 @@ export class ReportService {
       .leftJoin('Transaction.storeInput', 'storeInput')
       .leftJoin('storeInput.storeInputDetails', 'storeInputDetails')
       .leftJoin('storeInputDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
       .where(queryString)
       .cache(3 * 3600)
       .getRawOne();
@@ -417,7 +466,8 @@ export class ReportService {
   async getSumIncomeForProductReport(filter): Promise<any> {
     let queryString = queryBuilderFunc('Transaction', filter);
     queryString = queryString.replace('Transaction.productId', 'product.id');
-
+    queryString = queryString.replace('Transaction.brandId', 'brand.id');
+    queryString = queryString.replace('Transaction.productGroupId', 'productGroup.id');
     const queryBuilder = await this.transactionRepository.manager.connection
       .createQueryBuilder()
       .from(Transaction, 'Transaction')
@@ -425,10 +475,11 @@ export class ReportService {
       .leftJoin('Transaction.order', 'order')
       .leftJoin('order.orderDetails', 'orderDetails')
       .leftJoin('orderDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
       .where(queryString)
       .cache(3 * 3600)
       .getRawOne();
-      console.log(queryBuilder)
     const returnProduct = await this.transactionRepository.manager.connection
       .createQueryBuilder()
       .from(Transaction, 'Transaction')
@@ -436,57 +487,66 @@ export class ReportService {
       .leftJoin('Transaction.storeInput', 'storeInput')
       .leftJoin('storeInput.storeInputDetails', 'storeInputDetails')
       .leftJoin('storeInputDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
       .where(queryString)
       .cache(3 * 3600)
       .getRawOne();
-
-      console.log(returnProduct)
-
+      console.log(queryBuilder.sum ,returnProduct.sum)
     return { sum: queryBuilder.sum - returnProduct.sum };
   }
 
   async getProductReport(options, filter): Promise<any> {
     let queryString = queryBuilderFunc('Transaction', filter);
     queryString = queryString.replace('Transaction.productId', 'product.id');
+    queryString = queryString.replace('Transaction.brandId', 'brand.id');
+    queryString = queryString.replace('Transaction.productGroupId', 'productGroup.id');
 
     const queryBuilder = await this.transactionRepository
       .createQueryBuilder('Transaction')
       .select(['product.name', 'product.id'])
-      .addSelect(`sum(case when Transaction.type = 'DEBIT' then Transaction.total_money else 0 end)`, 'total')
+      .addSelect(`sum(orderDetails.price_total)`, 'total')
       .addSelect(`sum(orderDetails.quantity)`, 'count')
       .leftJoin('Transaction.order', 'order')
       .leftJoin('order.orderDetails', 'orderDetails')
       .leftJoin('orderDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
       .where(queryString)
       .andWhere(`orderDetails.orderId is not null`)
       .groupBy('orderDetails.productId')
+      .orderBy('`total`', 'DESC')
       .offset(options.skip)
       .limit(options.take)
       .cache(3 * 3600)
-      .getRawMany()
+      .getRawMany();
 
     const productIds = queryBuilder.map(item => item.product_id);
 
     const countBuilder = await this.transactionRepository.manager.connection
       .createQueryBuilder()
-      .from(Transaction,'Transaction')
+      .from(Transaction, 'Transaction')
       .select('count(*)', 'count')
-      .where(queryString)
       .leftJoin('Transaction.order', 'order')
       .leftJoin('order.orderDetails', 'orderDetails')
       .leftJoin('orderDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
       .where(queryString)
       .groupBy('orderDetails.productId')
       .cache(3 * 3600)
-      .getRawOne()
+      .getRawOne();
 
     const returnProduct = await this.transactionRepository
       .createQueryBuilder('Transaction')
       .select(['storeInputDetails.productId'])
       .addSelect('sum(storeInputDetails.priceTotal)', 'sum')
+      .addSelect('sum(storeInputDetails.quantity)', 'count')
       .leftJoin('Transaction.storeInput', 'storeInput')
       .leftJoin('storeInput.storeInputDetails', 'storeInputDetails')
       .leftJoin('storeInputDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
       .andWhere(queryString)
       .andWhere('storeInputDetails.product IN (:saleIds)', { saleIds: productIds.length > 0 ? productIds : '' })
       .cache(3 * 3600)
@@ -497,12 +557,13 @@ export class ReportService {
       if (index >= 0) {
         return {
           ...item,
+          count: Number(item.count) -  Number(returnProduct[index].count),
           return: Number(returnProduct[index].sum)
         };
       }
       return item;
     });
-    return [final, Number(countBuilder.count)];
+    return [final, Number(countBuilder?.count || 0)];
   }
 
   async getSaleSummary(filter): Promise<any> {
@@ -594,7 +655,7 @@ export class ReportService {
       .leftJoin('customer.type', 'type')
       .where(queryString)
       .groupBy('Transaction.customerId, customer.code, customer.name, customer.id ')
-      .orderBy('`real`','DESC')
+      .orderBy('`real`', 'DESC')
       .offset(options.skip)
       .limit(options.take)
       .cache(3 * 3600);

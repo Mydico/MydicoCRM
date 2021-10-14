@@ -19,6 +19,10 @@ import { filterProduct } from '../product/ProductList/product.api';
 import { globalizedProductSelectors } from '../product/ProductList/product.reducer';
 import Download from './../../components/excel/DownloadExcel';
 import AdvancedTable from '../../components/table/AdvancedTable';
+import { globalizedproductGroupsSelectors } from '../product/ProductGroup/product-group.reducer';
+import { globalizedproductBrandsSelectors } from '../product/ProductBrand/product-brand.reducer';
+import { getProductBrand } from '../product/ProductBrand/product-brand.api';
+import { getProductGroup } from '../product/ProductGroup/product-group.api';
 
 moment.locale('vi');
 const controlStyles = {
@@ -38,6 +42,8 @@ const ControlComponent = props => {
 const { selectAll } = globalizedBranchSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
 const { selectAll: selectAllProduct } = globalizedProductSelectors;
+const { selectAll: selectAllProductGroup } = globalizedproductGroupsSelectors;
+const { selectAll: selectAllProductBrand } = globalizedproductBrandsSelectors;
 
 const fields = [
   {
@@ -50,7 +56,7 @@ const fields = [
   { key: 'count', label: 'Số lượng bán', _style: { width: '15%' }, filter: false },
   { key: 'total', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
-  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false }
 ];
 const excelFields = [
   {
@@ -73,6 +79,9 @@ const ProductReport = () => {
   const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
   const branches = isEmployee ? [account.branch] : useSelector(selectAll);
   const users = isEmployee ? [account] : useSelector(selectUserAll);
+
+  const productGroups = useSelector(selectAllProductGroup);
+  const productBrands = useSelector(selectAllProductBrand);
   const products = useSelector(selectAllProduct);
 
   const [activePage, setActivePage] = useState(1);
@@ -88,13 +97,19 @@ const ProductReport = () => {
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
   const [user, setUser] = useState(null);
-  const [product, setProduct] = useState(null);
+  const [brand, setBrand] = useState(null);
+  const [productGroup, setProductGroup] = useState(null);
   const [top10Product, setTop10Product] = useState([[], 0]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState([]);
+
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(filterProduct());
+    dispatch(getProductBrand({ page: 0, size: 50, sort: 'createdDate,DESC' }));
+
+    // dispatch(getProductGroup({ page: 0, size: 50, sort: 'createdDate,DESC' }));
   }, []);
 
   useEffect(() => {
@@ -104,7 +119,6 @@ const ProductReport = () => {
       size
     });
   }, [activePage, size]);
-
 
   const getTop10 = (filter = {}) => {
     // dispatch(
@@ -117,7 +131,7 @@ const ProductReport = () => {
     //     dependency: true
     //   })
     // );
-    const copyFilter = {...filter}
+    const copyFilter = { ...filter };
     delete copyFilter['page'];
     delete copyFilter['size'];
     delete copyFilter['sort'];
@@ -137,6 +151,50 @@ const ProductReport = () => {
     //   }
     // });
   };
+
+  useEffect(() => {
+    setSelectedProduct([]);
+    setFilter({
+      ...filter,
+      brand: brand?.id,
+      selectedProduct: []
+    });
+
+    if (brand) {
+      dispatch(
+        getProductGroup({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          productBrand: brand?.id,
+          dependency: true
+        })
+      );
+    }
+  }, [brand]);
+
+  useEffect(() => {
+    setSelectedProduct([]);
+    setFilter({
+      ...filter,
+      productGroup: productGroup?.id,
+      selectedProduct: []
+    });
+
+    if (productGroup) {
+      dispatch(
+        filterProduct({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          productBrand: brand?.id,
+          productGroup: productGroup?.id,
+          dependency: true
+        })
+      );
+    }
+  }, [productGroup]);
+
   const reset = () => {
     setBranch(null);
     setUser(null);
@@ -195,11 +253,12 @@ const ProductReport = () => {
   useEffect(() => {
     setFilter({
       ...filter,
-      product: product?.id
+      product: JSON.stringify(selectedProduct?.map(item => item.value) || [])
     });
-  }, [product]);
+  }, [selectedProduct]);
 
   useEffect(() => {
+    console.log(filter);
     if (Object.keys(filter).length > 4) {
       getTop10(filter);
       dispatch(getProductReport({ ...filter })).then(data => {
@@ -212,7 +271,7 @@ const ProductReport = () => {
 
   useEffect(() => {
     if (date.startDate && date.endDate) {
-      console.log(filter)
+      console.log(filter);
       setFilter({
         ...filter,
         startDate: date.startDate?.format('YYYY-MM-DD'),
@@ -245,7 +304,18 @@ const ProductReport = () => {
   };
 
   const debouncedSearchProduct = _.debounce(value => {
-    dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', code: value, name: value, dependency: true }));
+    dispatch(
+      filterProduct({
+        page: 0,
+        size: 20,
+        sort: 'createdDate,DESC',
+        code: value,
+        name: value,
+        productGroup: productGroup?.id,
+        productBrand: branch?.id,
+        dependency: true
+      })
+    );
   }, 300);
 
   const onSearchProduct = (value, action) => {
@@ -382,23 +452,61 @@ const ProductReport = () => {
             </CRow>
             <CRow className="mt-2">
               <CCol sm={4} md={4}>
-                <p>Sản phẩm</p>
+                <p>Thương hiệu</p>
                 <Select
                   isSearchable
                   name="user"
                   onChange={e => {
-                    setProduct(e?.value || null);
+                    setBrand(e?.value || null);
                   }}
                   value={{
-                    value: product,
-                    label: product?.name
+                    value: brand,
+                    label: brand?.name
                   }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  placeholder="Chọn thương hiệu"
+                  options={productBrands.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
+              </CCol>
+              <CCol sm={4} md={4}>
+                <p>Nhóm sản phẩm</p>
+                <Select
+                  isSearchable
+                  name="user"
+                  onChange={e => {
+                    setProductGroup(e?.value || null);
+                  }}
+                  value={{
+                    value: productGroup,
+                    label: productGroup?.name
+                  }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  placeholder="Chọn nhóm sản phẩm"
+                  options={productGroups.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
+              </CCol>
+              <CCol sm={4} md={4}>
+                <p>Sản phẩm</p>
+                <Select
+                  isSearchable
+                  name="user"
+                  onChange={setSelectedProduct}
+                  value={selectedProduct}
+                  isMulti
                   isClearable={true}
                   openMenuOnClick={false}
                   onInputChange={onSearchProduct}
                   placeholder="Chọn sản phẩm"
                   options={products.map(item => ({
-                    value: item,
+                    value: item.id,
                     label: `${item?.code}-${item?.name}-${item?.volume}`
                   }))}
                 />
@@ -447,7 +555,9 @@ const ProductReport = () => {
                 real: (item, index) => (
                   <td>
                     <div>
-                      {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(item.total) - Number(item.return || 0))}
+                      {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                        Number(item.total) - Number(item.return || 0)
+                      )}
                     </div>
                   </td>
                 ),

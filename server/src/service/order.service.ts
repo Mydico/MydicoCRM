@@ -115,7 +115,6 @@ export class OrderService {
       .leftJoinAndSelect('orderDetails.product', 'product')
       .leftJoinAndSelect('Order.promotion', 'promotion')
       .leftJoinAndSelect('promotion.customerType', 'customerType')
-      .leftJoinAndSelect('Order.store', 'store')
       .leftJoinAndSelect('Order.sale', 'sale')
       .leftJoinAndSelect('Order.department', 'department')
       .cache(cacheKeyBuilder, 604800)

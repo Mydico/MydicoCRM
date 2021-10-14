@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle } from '@coreui/react';
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CLink } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
@@ -18,18 +18,20 @@ import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getTop10Customer, getTop10Product, getTop10sale } from './report.api';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
+import { useHistory } from 'react-router';
 moment.locale('vi');
 const { selectAll } = globalizedBranchSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
 
-const Report = () => {
+const Report = props => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
   const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
+  const history = useHistory();
 
-  const branches = isEmployee? [account.branch] : useSelector(selectAll);
-  const users = isEmployee? [account] : useSelector(selectUserAll);
+  const branches = isEmployee ? [account.branch] : useSelector(selectAll);
+  const users = isEmployee ? [account] : useSelector(selectUserAll);
 
   const [filter, setFilter] = useState({ dependency: true, department: null, branch: null, user: null });
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
@@ -88,13 +90,15 @@ const Report = () => {
     });
     if (department) {
       dispatch(getBranch({ department: department.id, dependency: true }));
-      dispatch(getExactUser({
-        page: 0,
-        size: 50,
-        sort: 'createdDate,DESC',
-        department: department?.id || account.department.id,
-        dependency: true
-      }))
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          dependency: true
+        })
+      );
     }
   }, [department]);
 
@@ -106,14 +110,16 @@ const Report = () => {
       user: null
     });
     if (branch) {
-      dispatch(getExactUser({
-        page: 0,
-        size: 50,
-        sort: 'createdDate,DESC',
-        department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
-        dependency: true
-      }))
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          branch: branch?.id || account.branch.id,
+          dependency: true
+        })
+      );
     }
   }, [branch]);
 
@@ -161,6 +167,30 @@ const Report = () => {
     if (action.action === 'input-blur') {
       debouncedSearchUser('');
     }
+  };
+
+  const renderLink = item => {
+    return (
+      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-histories/${item.sale_id}` })} target="_blank">
+        {item.sale_code}
+      </CLink>
+    );
+  };
+
+  const renderCustomerLink = item => {
+    return (
+      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-customer-histories/${item.id}` })} target="_blank">
+        {item.code}
+      </CLink>
+    );
+  };
+
+  const renderProductLink = item => {
+    return (
+      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-product-histories/${item.id}` })} target="_blank">
+        {item.code}
+      </CLink>
+    );
   };
 
   const memoTop10Sale = React.useMemo(() => top10Sale, [top10Sale]);
@@ -279,9 +309,9 @@ const Report = () => {
               </Thead>
               <Tbody>
                 {memoTop10Sale.map((item, index) => (
-                  <Tr>
+                  <Tr key={index}>
                     <Td>
-                      <div>{item.sale_code}</div>
+                      <div>{renderLink(item)}</div>
                     </Td>
                     <Td>
                       <div>{`${item.sale_lastName || ''} ${item.sale_firstName || ''}`}</div>
@@ -310,9 +340,9 @@ const Report = () => {
               </Thead>
               <Tbody>
                 {memoTop10Product.map((item, index) => (
-                  <Tr>
+                  <Tr key={index}>
                     <Td>
-                      <div>{item.code}</div>
+                      <div>{renderProductLink(item)}</div>
                     </Td>
                     <Td>
                       <div>{item.name}</div>
@@ -343,7 +373,7 @@ const Report = () => {
                 {memoTop10Customer.map((item, index) => (
                   <Tr key={index}>
                     <Td>
-                      <div>{item.code}</div>
+                      <div>{renderCustomerLink(item)}</div>
                     </Td>
                     <Td>
                       <div>{item.name}</div>

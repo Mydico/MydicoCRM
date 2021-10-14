@@ -120,7 +120,7 @@ const EditOrder = props => {
         if (order.orderDetails.length > 0) {
           dispatch(
             getProductWarehouseByField({
-              store: order.store.id,
+              store: order.store?.id,
               product: JSON.stringify(order.orderDetails.map(item => item.product.id)),
               dependency: true
             })
@@ -271,7 +271,7 @@ const EditOrder = props => {
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = Number(target.value).toString();
-    copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
+    copyArr[index].priceTotal = (copyArr[index].priceReal * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
     if (Array.isArray(promotionState.promotionProducts) && copyArr[index].attachTo === null) {
       const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
       if (founded.length > 0) {
@@ -306,16 +306,14 @@ const EditOrder = props => {
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].priceReal = Number(target.value.replace(/\D/g, ''));
-    copyArr[index].priceTotal = copyArr[index].quantity * copyArr[index].priceReal;
+    copyArr[index].priceTotal = (copyArr[index].priceReal * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].reducePercent = target.value > 100 ? 100 : target.value === '' ? 0 : Number(target.value).toString();
-    copyArr[index].priceTotal =
-      copyArr[index].priceReal * copyArr[index].quantity -
-      (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
+    copyArr[index].priceTotal = (copyArr[index].priceReal * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
 
     setProductList(copyArr);
   };

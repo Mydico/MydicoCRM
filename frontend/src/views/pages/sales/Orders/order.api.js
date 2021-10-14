@@ -63,3 +63,14 @@ export const getOrder = createAsyncThunk('api/orders', async (params = { page: 0
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
+export const getOrderwithproduct = createAsyncThunk('api/reports/orderwithproduct', async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/orderwithproduct', { params: params });
+    return { data: result.data[0], total:result.data[1] };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+

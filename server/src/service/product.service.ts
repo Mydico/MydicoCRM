@@ -44,10 +44,7 @@ export class ProductService {
 
   async findMany(options: FindManyOptions<Product>, filter: {}): Promise<Product[]> {
     const cacheKeyBuilder = generateCacheKey([], null, null, filter, options, 'product');
-    let queryString = '';
-    Object.keys(filter).forEach((item, index) => {
-      queryString += `Product.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
-    });
+
     const queryBuilder = this.productRepository
       .createQueryBuilder('Product')
       .leftJoinAndSelect('Product.productBrand', 'productBrand')
@@ -57,6 +54,20 @@ export class ProductService {
       .orderBy(`Product.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);
+
+    if (filter['productGroup']) {
+      queryBuilder.andWhere(`Product.productGroup = ${filter['productGroup']}`);
+    }
+    if (filter['productBrand']) {
+      queryBuilder.andWhere(`Product.productBrand = ${filter['productBrand']}`);
+    }
+    delete filter['productBrand'];
+    delete filter['productGroup'];
+    let queryString = '';
+    Object.keys(filter).forEach((item, index) => {
+      queryString += `Product.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '}`;
+    });
+
     if (queryString.length > 0) {
       queryBuilder.andWhere(
         new Brackets(sqb => {

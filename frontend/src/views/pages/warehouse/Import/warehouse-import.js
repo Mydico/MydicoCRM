@@ -61,6 +61,7 @@ const fields = [
   { key: 'storeTransferName', label: 'Xuất từ kho', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
+  { key: 'quantity', label: 'Số lượng sp', _style: { width: '10%' } },
   { key: 'approverName', label: 'Người duyệt', _style: { width: '10%' } },
   { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
   {
@@ -239,7 +240,7 @@ const WarehouseImport = props => {
         return null;
       case WarehouseImportStatus.WAITING:
         return (
-          <CRow>
+          <CRow style={{minWidth:300}}>
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs').length > 0) && (
               <CButton
                 onClick={() => {
@@ -420,6 +421,9 @@ const WarehouseImport = props => {
                 </td>
               );
             },
+            quantity: item => {
+              return <td className="py-2 d-flex">{JSON.parse(JSON.stringify(item.storeInputDetails || [])).reduce((prev, curr) => prev+ curr.quantity,0)}</td>;
+            },
             details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
@@ -446,6 +450,9 @@ const WarehouseImport = props => {
                         })}
                       </tbody>
                     </Table>
+                    <CCol lg="4" sm="5">
+                      Ghi chú: <strong>{item?.note}</strong>
+                    </CCol>
                   </CCardBody>
                 </CCollapse>
               );

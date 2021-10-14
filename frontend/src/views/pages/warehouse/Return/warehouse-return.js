@@ -47,6 +47,7 @@ const fields = [
   { key: 'customerName', label: 'Khách hàng', _style: { width: '10%' } },
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '10%' } },
+  { key: 'quantity', label: 'Số lượng sp', _style: { width: '10%' } },
   { key: 'realMoney', label: 'Tiền thanh toán', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
@@ -197,25 +198,25 @@ const WarehouseImport = props => {
   const renderButtonStatus = item => {
     switch (item.status) {
       case WarehouseImportStatus.APPROVED:
-        // return (
-        //   <CButton
-        //     onClick={() => {
-        //       toEditWarehouseReturnDetail(item.id);
-        //     }}
-        //     color="warning"
-        //     variant="outline"
-        //     shape="square"
-        //     size="sm"
-        //     className="mr-1"
-        //   >
-        //     CHỈNH SỬA THÔNG TIN
-        //   </CButton>
-        // );
+      // return (
+      //   <CButton
+      //     onClick={() => {
+      //       toEditWarehouseReturnDetail(item.id);
+      //     }}
+      //     color="warning"
+      //     variant="outline"
+      //     shape="square"
+      //     size="sm"
+      //     className="mr-1"
+      //   >
+      //     CHỈNH SỬA THÔNG TIN
+      //   </CButton>
+      // );
       case WarehouseImportStatus.REJECTED:
         return null;
       case WarehouseImportStatus.WAITING:
         return (
-          <CRow>
+          <CRow style={{minWidth:300}}>
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/return').length > 0) && (
               <CButton
                 onClick={() => {
@@ -282,7 +283,7 @@ const WarehouseImport = props => {
 
   const memoExcelComputedItems = React.useCallback(items => computedExcelItemsWarehouse(items), []);
   const memoExelListed = React.useMemo(() => memoExcelComputedItems(warehouses), [warehouses]);
-  
+
   return (
     <CCard>
       <CCardHeader>
@@ -333,7 +334,6 @@ const WarehouseImport = props => {
                 name="date-input"
                 placeholder="date"
               />
- 
             </CCol>
           </CFormGroup>
         </CFormGroup>
@@ -372,7 +372,7 @@ const WarehouseImport = props => {
           }}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
-            code: (item, index) => <td>{item.code || ""}</td>,
+            code: (item, index) => <td>{item.code || ''}</td>,
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
@@ -384,6 +384,9 @@ const WarehouseImport = props => {
               </td>
             ),
             type: item => <td>{mappingType[item.type]}</td>,
+            quantity: item => {
+              return <td className="py-2 d-flex">{JSON.parse(JSON.stringify(item.storeInputDetails || [])).reduce((prev, curr) => prev+ curr.quantity,0)}</td>;
+            },
             action: item => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
             },
@@ -537,6 +540,9 @@ const WarehouseImport = props => {
                         </CCol>
                       </CRow>
                     )}
+                    <CCol lg="4" sm="5">
+                      Ghi chú: <strong>{item?.note}</strong>
+                    </CCol>
                   </CCardBody>
                 </CCollapse>
               );
