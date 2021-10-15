@@ -122,7 +122,7 @@ const ProductGroup = props => {
           items={computedItems(productGroups)}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

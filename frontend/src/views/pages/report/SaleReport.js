@@ -222,19 +222,19 @@ const SaleReport = props => {
 
   const computedExcelItems = React.useCallback(items => {
     return (
-      items ||
-      [].map((item, index) => {
+      (items ||
+      []).map((item, index) => {
         return {
           ...item,
-          order: index + 1
+          name: `${item.sale_lastName || ''} ${item.sale_firstName || ''}`
         };
       })
     );
   }, []);
 
-  const memoExcelComputedItems = React.useCallback(items => computedExcelItems(top10Product[0]), [top10Product[0]]);
-  const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
-  const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
+  // const memoExcelComputedItems = React.useCallback(items => computedExcelItems(top10Product[0]), [top10Product[0]]);
+  // const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
+  const memoTop10Product = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
   const sortItem = React.useCallback(
     info => {
       const { column, asc } = info;
@@ -359,13 +359,13 @@ const SaleReport = props => {
             <CCardTitle>Danh sách nhân viên</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <Download data={memoExcelListed} headers={excelFields} name={'product_report'} />
+            <Download data={memoTop10Product} headers={fields} name={`thong_ke_theo_nhan_vien tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `} />
 
             <AdvancedTable
               items={memoTop10Product}
               fields={fields}
               columnFilter
-              itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+              itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
               itemsPerPage={size}
               hover
               sorter={{ external: true, resetable: true }}
@@ -385,11 +385,7 @@ const SaleReport = props => {
                     <div>{renderLink(item)}</div>
                   </td>
                 ),
-                name: (item, index) => (
-                  <td>
-                    <div>{`${item.sale_lastName || ''} ${item.sale_firstName || ''}`}</div>
-                  </td>
-                ),
+
                 realMoney: (item, index) => (
                   <td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>

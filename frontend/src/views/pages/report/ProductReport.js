@@ -58,20 +58,7 @@ const fields = [
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
   { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false }
 ];
-const excelFields = [
-  {
-    key: 'order',
-    label: 'STT',
-    filter: false
-  },
-  { key: 'code', label: 'Mã đơn hàng', _style: { width: '10%' } },
-  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
-  { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%' }, filter: false },
-  { key: 'realMoney', label: 'Tiền Thanh toán', _style: { width: '10%' }, filter: false },
-  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false },
-  { key: 'status', label: 'Trạng thái', _style: { width: '10%' }, filter: false }
-];
+
 const ProductReport = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
@@ -329,21 +316,18 @@ const ProductReport = () => {
 
   const computedExcelItems = React.useCallback(items => {
     return (
-      items ||
-      [].map((item, index) => {
+      (items ||
+      []).map((item, index) => {
+        console.log(item)
         return {
           ...item,
-          order: index + 1,
-          createdDate: moment(item.createdDate).format('DD-MM-YYYY HH:mm'),
-          quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
-          total: item.totalMoney
+          real: Number(item.total) - Number(item.return || 0),
         };
       })
     );
   }, []);
-  const memoExcelComputedItems = React.useCallback(items => computedExcelItems(top10Product[0]), [top10Product[0]]);
-  const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
-  const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
+  const memoExcelListed = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
+  const memoComputedExcelItems = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
 
   const sortItem = React.useCallback(
     info => {
@@ -532,13 +516,13 @@ const ProductReport = () => {
             <CCardTitle>Danh sách sản phẩm</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <Download data={memoExcelListed} headers={excelFields} name={'product_report'} />
+            <Download data={memoComputedExcelItems} headers={fields} name={`thong_ke_theo_san_pham tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `} />
 
             <AdvancedTable
-              items={memoTop10Product}
+              items={memoComputedExcelItems}
               fields={fields}
               columnFilter
-              itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+              itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
               itemsPerPage={size}
               hover
               noItemsView={{
@@ -556,7 +540,7 @@ const ProductReport = () => {
                   <td>
                     <div>
                       {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                        Number(item.total) - Number(item.return || 0)
+                        Number(item.real)
                       )}
                     </div>
                   </td>

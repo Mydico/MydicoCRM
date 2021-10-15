@@ -147,7 +147,7 @@ const OrderProductHistory = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const rejectRef = useRef('');
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const orders = useSelector(selectAll);
@@ -226,7 +226,7 @@ const OrderProductHistory = props => {
       Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(
         getOrderwithproduct({ page: 0, size: size, product: props.match.params.id, dependency: true, sort: 'createdDate,DESC', ...value, ...date })
       );
@@ -628,7 +628,7 @@ const OrderProductHistory = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

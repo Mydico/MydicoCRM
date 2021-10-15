@@ -19,6 +19,7 @@ import { filterCustomerNotToStore } from '../customer/customer.api';
 import { getExactUser } from '../user/UserList/user.api';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import AdvancedTable from '../../components/table/AdvancedTable';
+import Download from '../../components/excel/DownloadExcel.js';
 
 moment.locale('vi');
 
@@ -302,6 +303,7 @@ const PromotionReport = () => {
         sort: 'createdDate,DESC',
         code: value,
         address: value,
+        name: value,
         department: department?.id || account.department.id,
         branch: branch?.id || account.branch.id,
         sale: isEmployee ? account.id : user?.id,
@@ -516,11 +518,13 @@ const PromotionReport = () => {
             <CCardTitle>Danh sách nhân viên</CCardTitle>
           </CCardHeader>
           <CCardBody>
+          <Download data={memoTop10Product} headers={fields} name={`thong_ke_theo_chuong_trinh_ban_hang tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `} />
+
             <AdvancedTable
               items={memoTop10Product}
               fields={fields}
               columnFilter
-              itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+              itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
               itemsPerPage={size}
               hover
               sorter={{ external: true, resetable: true }}

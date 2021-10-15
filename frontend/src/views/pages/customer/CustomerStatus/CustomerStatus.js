@@ -16,7 +16,7 @@ const CustomerStatus = props => {
   const { initialState } = useSelector(state => state.customerStatus);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   const dispatch = useDispatch();
   const history = useHistory();
   const customerStatuses = useSelector(selectAll);
@@ -104,7 +104,7 @@ const CustomerStatus = props => {
           items={customerStatuses}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

@@ -52,14 +52,7 @@ export class CustomerService {
 
   async filterExact(options: FindManyOptions<Customer>, filter = {}): Promise<[Customer[], number]> {
     options.cache = 3600000;
-    let queryString = '';
-    const length = Object.keys(filter).includes('sale') ? Object.keys(filter).length - 1 : Object.keys(filter).length;
-    Object.keys(filter).forEach((item, index) => {
-      if (item === 'sale') return;
-      if (item === 'branch') return;
-      if (item === 'department') return;
-      queryString += `Customer.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'OR '}`;
-    });
+
     let andQueryString = '1=1 ';
 
     if (filter['sale']) {
@@ -70,6 +63,9 @@ export class CustomerService {
     }
     if (filter['branch']) {
       andQueryString += ` AND Customer.branch = ${filter['branch']}`;
+    }
+    if (filter['activated']) {
+      andQueryString += ` AND Customer.activated = ${filter['activated']}`;
     }
     const queryBuilder = this.customerRepository
       .createQueryBuilder('Customer')
@@ -89,7 +85,15 @@ export class CustomerService {
       .orderBy(`Customer.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);
-
+    let queryString = '';
+    delete filter['activated'];
+    delete filter['sale'];
+    delete filter['branch'];
+    delete filter['department'];
+    const length = Object.keys(filter).length;
+    Object.keys(filter).forEach((item, index) => {
+      queryString += `Customer.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'OR '}`;
+    });
     if (queryString.length > 0) {
       queryBuilder.andWhere(queryString);
       count.andWhere(queryString);

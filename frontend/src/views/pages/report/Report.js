@@ -302,6 +302,7 @@ const Report = props => {
             <Table className="table table-hover table-outline mb-0 d-sm-table">
               <Thead className="thead-light">
                 <Tr>
+                  <Th>#</Th>
                   <Th>Mã nhân viên</Th>
                   <Th>Tên</Th>
                   <Th>Doanh thu thuần</Th>
@@ -310,6 +311,9 @@ const Report = props => {
               <Tbody>
                 {memoTop10Sale.map((item, index) => (
                   <Tr key={index}>
+                    <Td>
+                      <div>{index + 1}</div>
+                    </Td>
                     <Td>
                       <div>{renderLink(item)}</div>
                     </Td>
@@ -333,6 +337,7 @@ const Report = props => {
             <Table className="table table-hover table-outline mb-0 d-sm-table">
               <Thead className="thead-light">
                 <Tr>
+                  <Th>#</Th>
                   <Th>Mã sản phẩm</Th>
                   <Th>Tên sản phẩm</Th>
                   <Th>Số lượng bán</Th>
@@ -341,6 +346,9 @@ const Report = props => {
               <Tbody>
                 {memoTop10Product.map((item, index) => (
                   <Tr key={index}>
+                    <Td>
+                      <div>{index + 1}</div>
+                    </Td>
                     <Td>
                       <div>{renderProductLink(item)}</div>
                     </Td>
@@ -364,6 +372,7 @@ const Report = props => {
             <Table className="table table-hover table-outline mb-0 d-sm-table">
               <Thead className="thead-light">
                 <Tr>
+                  <Th>#</Th>
                   <Th>Mã khách hàng</Th>
                   <Th>Tên khách hàng</Th>
                   <Th>Doanh thu</Th>
@@ -372,6 +381,9 @@ const Report = props => {
               <Tbody>
                 {memoTop10Customer.map((item, index) => (
                   <Tr key={index}>
+                    <Td>
+                      <div>{index + 1}</div>
+                    </Td>
                     <Td>
                       <div>{renderCustomerLink(item)}</div>
                     </Td>

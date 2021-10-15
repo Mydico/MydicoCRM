@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CDataTable, CPagination } from '@coreui/react';
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CDataTable, CPagination, CLink } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
@@ -9,7 +9,7 @@ import moment from 'moment';
 import Select, { components } from 'react-select';
 import CIcon from '@coreui/icons-react';
 import _ from 'lodash';
-import ReportStatistic from '../../components/report-statistic/ReportStatistic';
+import Download from '../../components/excel/DownloadExcel.js';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
 import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
@@ -20,6 +20,7 @@ import { filterCustomerNotToStore } from '../customer/customer.api';
 import { getCustomerType } from '../customer/CustomerType/customer-type.api';
 import { globalizedcustomerTypeSelectors } from '../customer/CustomerType/customer-type.reducer';
 import AdvancedTable from '../../components/table/AdvancedTable';
+import { useHistory } from 'react-router';
 
 moment.locale('vi');
 const controlStyles = {
@@ -27,14 +28,7 @@ const controlStyles = {
   padding: '5px',
   color: 'black'
 };
-const ControlComponent = props => {
-  return (
-    <div style={controlStyles}>
-      {<p>{props.title}</p>}
-      <components.Control {...props} />
-    </div>
-  );
-};
+
 
 const fields = [
   {
@@ -45,18 +39,35 @@ const fields = [
   },
   { key: 'customer_code', label: 'Mã khách hàng', _style: { width: '10%' }, filter: false },
   { key: 'customer_name', label: 'Tên', _style: { width: '10%' }, filter: false },
-  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+  { key: 'total', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
-  { key: 'total', label: 'Doanh thu', _style: { width: '15%' }, filter: false }
+  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+];
+
+const excelFields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'customer_code', label: 'Mã khách hàng', _style: { width: '10%' }, filter: false },
+  { key: 'customer_name', label: 'Tên', _style: { width: '10%' }, filter: false },
+  { key: 'customer_address', label: 'địa chỉ', _style: { width: '10%' }, filter: false },
+  { key: 'customer_tel', label: 'số điện thoại', _style: { width: '10%' }, filter: false },
+  { key: 'total', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
+  { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
+  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
 ];
 
 const { selectAll } = globalizedBranchSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
 const { selectAll: selectCustomerTypeAll } = globalizedcustomerTypeSelectors;
-const CustomerReport = () => {
+const CustomerReport = (props) => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
+  const history = useHistory();
 
   const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
 
@@ -140,6 +151,14 @@ const CustomerReport = () => {
         setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.realMoney || 0));
       }
     });
+  };
+
+  const renderCustomerLink = item => {
+    return (
+      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-customer-histories/${item.customer_id}` })} target="_blank">
+        {item.customer_code}
+      </CLink>
+    );
   };
 
   const reset = () => {
@@ -267,6 +286,7 @@ const CustomerReport = () => {
         size: 50,
         sort: 'createdDate,DESC',
         code: value,
+        name: value,
         address: value,
         department: department?.id || account.department.id,
         branch: branch?.id || account.branch.id,
@@ -290,8 +310,6 @@ const CustomerReport = () => {
     }
   };
 
-  // const memoTop10Sale = React.useMemo(() => top10Sale, [top10Sale]);
-  // const memoTop10Customer = React.useMemo(() => top10Customer, [top10Customer]);
   const memoTop10Product = React.useMemo(() => top10Product[0], [top10Product[0]]);
   const sortItem = React.useCallback(
     info => {
@@ -305,6 +323,22 @@ const CustomerReport = () => {
     },
     [top10Product[0]]
   );
+
+  const computedExcelItems = React.useCallback(items => {
+    return items.map((item, index) => {
+      return {
+        ...item,
+        order: index + 1,
+        createdDate: moment(item.createdDate).format('DD-MM-YYYY HH:mm'),
+        quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
+        total: item.totalMoney,
+        status: mappingStatus[item.status]
+      };
+    });
+  },[]);
+  const memoExcelComputedItems = React.useCallback(items => top10Product[0], [top10Product[0]]);
+  const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
+
   return (
     <CRow>
       <CCol sm={12} md={12}>
@@ -462,11 +496,13 @@ const CustomerReport = () => {
             <CCardTitle>Danh sách khách hàng</CCardTitle>
           </CCardHeader>
           <CCardBody>
+          <Download data={memoExcelListed} headers={excelFields} name={`thong_ke_theo_khach_hang tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `} />
+
             <AdvancedTable
               items={memoTop10Product}
               fields={fields}
               columnFilter
-              itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+              itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
               itemsPerPage={size}
               hover
               sorter={{ external: true, resetable: true }}
@@ -490,6 +526,12 @@ const CustomerReport = () => {
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.real)}</div>
                   </td>
                 ),
+                customer_code: (item, index) => (
+                  <td>
+                    <div>{renderCustomerLink(item)}</div>{' '}
+                  </td>
+                ),
+
                 debt: (item, index) => (
                   <td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.debt)}</div>

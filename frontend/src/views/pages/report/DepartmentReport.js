@@ -13,7 +13,22 @@ import { useHistory } from 'react-router';
 import moment from 'moment';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
-const DepartmentReport = (props) => {
+import Download from '../../components/excel/DownloadExcel.js';
+const excelFields = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã ', _style: { width: '10%' }, filter: false },
+  { key: 'name', label: 'Tên', _style: { width: '10%' }, filter: false },
+  { key: 'count', label: 'Số lượng', _style: { width: '15%' }, filter: false },
+  { key: 'total', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
+  { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
+  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false }
+];
+const DepartmentReport = props => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -48,10 +63,10 @@ const DepartmentReport = (props) => {
     }
   }, [filter]);
 
-  const onDetail = (department) => () => {
+  const onDetail = department => () => {
     const href = `${props.match.url}/${department.department_id}/detail`;
-    history.push({ pathname: href,state: department })
-  }
+    history.push({ pathname: href, state: department });
+  };
 
   const memoDepartmentReport = React.useMemo(() => departmentReport, [departmentReport]);
 
@@ -114,7 +129,21 @@ const DepartmentReport = (props) => {
                 labels={memoDepartmentReport.map(item => item.name)}
                 options={{
                   tooltips: {
-                    enabled: true
+                    enabled: true,
+                    // callbacks: {
+                    //   title: function(tooltipItem, data) {
+                    //     console.log(data,tooltipItem)
+                    //     return data['labels'][tooltipItem[0]['index']];
+                    //   },
+                    //   label: function(tooltipItem, data) {
+                    //     return data['datasets'][0]['data'][tooltipItem['index']];
+                    //   },
+                    //   afterLabel: function(tooltipItem, data) {
+                    //     var dataset = data['datasets'][0];
+                    //     var percent = 40
+                    //     return '(' + percent + '%)';
+                    //   }
+                    // }
                   }
                 }}
               />
@@ -125,10 +154,14 @@ const DepartmentReport = (props) => {
           <CCardHeader>
             <CCardTitle>Thống kê theo văn phòng</CCardTitle>
           </CCardHeader>
+
           <CCardBody>
-            <Table className="table table-hover table-outline mb-0 d-sm-table">
+            <Download data={memoDepartmentReport} headers={excelFields} name={`thong_ke_theo_chi_nhanh tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `} />
+
+            <Table className="table table-hover table-outline mb-0 mt-3 d-sm-table">
               <Thead className="thead-light">
                 <Tr>
+                  <Th>#</Th>
                   <Th>Mã chi nhánh</Th>
                   <Th>Tên chi nhánh</Th>
                   <Th>Số đơn hàng</Th>
@@ -140,6 +173,9 @@ const DepartmentReport = (props) => {
               <Tbody>
                 {memoDepartmentReport.map((item, index) => (
                   <Tr key={index}>
+                    <Td>
+                      <div>{index + 1}</div>
+                    </Td>
                     <Td>
                       <div>{item.code}</div>
                     </Td>
@@ -162,7 +198,6 @@ const DepartmentReport = (props) => {
                     <Td>
                       <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.real)}</div>
                     </Td>
-
                   </Tr>
                 ))}
               </Tbody>

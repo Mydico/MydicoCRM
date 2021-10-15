@@ -30,22 +30,18 @@ import { getDetailProductPromotion, getPromotion } from '../Promotion/promotion.
 import { globalizedWarehouseSelectors } from '../../warehouse/Warehouse/warehouse.reducer';
 import { getWarehouse } from '../../warehouse/Warehouse/warehouse.api';
 import { globalizedProductWarehouseSelectors } from '../../warehouse/Product/product-warehouse.reducer';
-import {
-  filterProductInStore,
-  getProductInstore,
-  getProductWarehouseByField
-} from '../../warehouse/Product/product-warehouse.api';
+import { filterProductInStore, getProductInstore, getProductWarehouseByField } from '../../warehouse/Product/product-warehouse.api';
 import { FormFeedback } from 'reactstrap';
 import { OrderStatus } from './order-status';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { userSafeSelector, removePermission } from '../../login/authenticate.reducer.js';
 import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
-import '../../../components/table/ResponsiveTable.css'
-import { useMediaQuery } from 'react-responsive'
+import '../../../components/table/ResponsiveTable.css';
+import { useMediaQuery } from 'react-responsive';
 import { socket } from '../../../../App';
 
-const validationSchema = function () {
+const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object()
       .required('Khách hàng  không để trống')
@@ -58,6 +54,7 @@ const validationSchema = function () {
 
 import { validate } from '../../../../shared/utils/normalize';
 import { blockInvalidChar, memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
+import { checkProductIsNotEnough } from './CreateOrder';
 
 const mappingType = {
   SHORTTERM: 'Ngắn hạn',
@@ -84,7 +81,7 @@ const EditOrder = props => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const isMobile = useMediaQuery({ maxWidth: '40em' })
+  const isMobile = useMediaQuery({ maxWidth: '40em' });
 
   const promotions = useSelector(selectAllPromotion);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
@@ -103,8 +100,8 @@ const EditOrder = props => {
     dispatch(getDetailOrder({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     return () => {
-      dispatch(reset())
-    }
+      dispatch(reset());
+    };
   }, []);
 
   useEffect(() => {
@@ -114,9 +111,9 @@ const EditOrder = props => {
       setSelectedWarehouse(order.store);
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
       if (Array.isArray(order.orderDetails)) {
-        const productArr = JSON.parse(JSON.stringify(order.orderDetails))
-        setProductList(productArr)
-        const copyArr = [...productArr]
+        const productArr = JSON.parse(JSON.stringify(order.orderDetails));
+        setProductList(productArr);
+        const copyArr = [...productArr];
         if (order.orderDetails.length > 0) {
           dispatch(
             getProductWarehouseByField({
@@ -145,11 +142,11 @@ const EditOrder = props => {
 
   // }, [initialState.orderDetails]);
 
-  const onSubmit = (values, { }) => () => {
+  const onSubmit = (values, {}) => () => {
     values = JSON.parse(JSON.stringify(values));
-    if(productList.filter(item => item.quantity > item.quantityInStore).length > 0){
-      alert("Vui lòng chọn lại số lương sản phẩm")
-      return
+    if (productList.filter(item => item.quantity > item.quantityInStore).length > 0) {
+      alert('Vui lòng chọn lại số lương sản phẩm');
+      return;
     }
     if (!values.address) values.address = selectedCustomer.address;
     if (selectedPromotion) {
@@ -237,11 +234,11 @@ const EditOrder = props => {
   }, 300);
 
   const onSearchProduct = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchProduct(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchProduct("");
+    if (action.action === 'input-blur') {
+      debouncedSearchProduct('');
     }
   };
 
@@ -254,7 +251,11 @@ const EditOrder = props => {
     ).then(numberOfQuantityInStore => {
       if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
         copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
-        if (numberOfQuantityInStore?.payload[0] && numberOfQuantityInStore?.payload[0]?.quantity < 100 && copyArr[index].quantity > numberOfQuantityInStore?.payload[0]?.quantity ) {
+        if (
+          numberOfQuantityInStore?.payload[0] &&
+          numberOfQuantityInStore?.payload[0]?.quantity < 100 &&
+          copyArr[index].quantity > numberOfQuantityInStore?.payload[0]?.quantity
+        ) {
           copyArr[index].quantity = numberOfQuantityInStore?.payload[0]?.quantity;
         }
         setProductList(copyArr);
@@ -567,17 +568,7 @@ const EditOrder = props => {
                   <Tbody>
                     {productList.map((item, index) => {
                       return (
-                        <Tr
-                          key={index}
-                          style={
-                            item.quantityInStore !== undefined &&
-                              Number(item.quantity) > item.quantityInStore
-                              ? {
-                                boxShadow: '0px 0px 6px 5px red'
-                              }
-                              : {}
-                          }
-                        >
+                        <Tr key={index} style={checkProductIsNotEnough(item, productList)}>
                           <Td style={{ minWidth: 500 }}>
                             <Select
                               value={{
@@ -618,8 +609,8 @@ const EditOrder = props => {
                                 value={
                                   typeof productList[index].priceReal !== 'number'
                                     ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                                      productList[index].priceReal
-                                    )
+                                        productList[index].priceReal
+                                      )
                                     : productList[index].priceReal
                                 }
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
@@ -726,55 +717,56 @@ const EditOrder = props => {
                     )}
                   </CCol>
                   <CCol lg="4" sm="5" className="ml-auto">
-                    {!isMobile ? <Table className="table table-striped">
-                      <tbody>
-                        <tr>
-                          <td className="left">
-                            <strong>Tổng số lượng</strong>
-                          </td>
-                          <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
-                        </tr>
-                        <tr>
-                          <td className="left">
-                            <strong>Tổng tiền</strong>
-                          </td>
-                          <td className="right">
-                            {productList
-                              .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
-                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="left">
-                            <strong>Chiết khấu</strong>
-                          </td>
-                          <td className="right">
-                            {productList
-                              .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
-                              .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="left">
-                            <strong>Tiền thanh toán</strong>
-                          </td>
-                          <td className="right">
-                            <strong>
+                    {!isMobile ? (
+                      <Table className="table table-striped">
+                        <tbody>
+                          <tr>
+                            <td className="left">
+                              <strong>Tổng số lượng</strong>
+                            </td>
+                            <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
+                          </tr>
+                          <tr>
+                            <td className="left">
+                              <strong>Tổng tiền</strong>
+                            </td>
+                            <td className="right">
                               {productList
-                                .reduce(
-                                  (sum, current) =>
-                                    sum +
-                                    (current.priceReal * current.quantity -
-                                      (current.priceReal * current.quantity * current.reducePercent) / 100),
-                                  0
-                                )
+                                .reduce((sum, current) => sum + current.priceReal * current.quantity, 0)
                                 .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                            </strong>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                      :
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="left">
+                              <strong>Chiết khấu</strong>
+                            </td>
+                            <td className="right">
+                              {productList
+                                .reduce((sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100, 0)
+                                .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="left">
+                              <strong>Tiền thanh toán</strong>
+                            </td>
+                            <td className="right">
+                              <strong>
+                                {productList
+                                  .reduce(
+                                    (sum, current) =>
+                                      sum +
+                                      (current.priceReal * current.quantity -
+                                        (current.priceReal * current.quantity * current.reducePercent) / 100),
+                                    0
+                                  )
+                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                              </strong>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </Table>
+                    ) : (
                       <Table className="table-clear">
                         <Thead>
                           <Tr>
@@ -819,7 +811,7 @@ const EditOrder = props => {
                           </Tr>
                         </Tbody>
                       </Table>
-                    }
+                    )}
                     <CFormGroup className="d-flex justify-content-center">
                       <CButton type="submit" size="lg" className="btn btn-success">
                         {'Lưu lại'} <CIcon name="cil-save" />

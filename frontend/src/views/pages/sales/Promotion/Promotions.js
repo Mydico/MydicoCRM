@@ -80,7 +80,7 @@ const Promotion = props => {
   const { initialState } = useSelector(state => state.promotion);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
@@ -132,7 +132,7 @@ const Promotion = props => {
       Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   }, 300);
@@ -180,7 +180,7 @@ const Promotion = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

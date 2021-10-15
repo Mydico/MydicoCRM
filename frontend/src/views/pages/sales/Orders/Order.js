@@ -153,7 +153,7 @@ const Order = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const rejectRef = useRef('');
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const orders = useSelector(selectAll);
@@ -221,13 +221,17 @@ const Order = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
+    }else {
+      clearSearchParams()
     }
   }, 300);
+
+  const clearSearchParams = () => {
+    paramRef.current['code'] && delete paramRef.current['code']
+    paramRef.current['customerName'] && delete paramRef.current['customerName']
+  }
 
   const onFilterColumn = value => {
     if (value) debouncedSearchColumn(value);
@@ -636,7 +640,7 @@ const Order = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

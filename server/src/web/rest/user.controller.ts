@@ -83,12 +83,14 @@ export class UserController {
       });
       const currentUser = req.user as User;
       const childDepartment  = await this.userService.findAllSubDepartment(filter['department'])
+      const department = [Number(filter['department']) || currentUser.department.id]
       if(currentUser.mainDepartment){
-        filter['department'] = [currentUser.mainDepartment.id, filter['department'] || currentUser.department.id]
+        filter['department'] = [...department, currentUser.mainDepartment.id]
       }
       if(childDepartment.length > 0) {
-        filter['department'] = [filter['department'],...childDepartment]
+        filter['department'] = [...filter['department'],...childDepartment]
       }
+      filter['department'] = [...new Set(filter['department'])]
       const [results, count] = await this.userService.filterExact(
           {
               skip: +pageRequest.page * pageRequest.size,

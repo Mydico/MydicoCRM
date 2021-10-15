@@ -116,7 +116,7 @@ const Receipt = props => {
   const { initialState } = useSelector(state => state.receipt);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   const dispatch = useDispatch();
   const history = useHistory();
   const [total, setTotal] = useState(0);
@@ -163,16 +163,24 @@ const Receipt = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(getReceipt());
       dispatch(getCountReceipt({ ...value, ...date, dependency: true })).then(resp => {
         setTotal(Number(resp.payload.data.money));
       });
+    }else {
+      clearSearchParams()
     }
   }, 300);
+
+  const clearSearchParams = () => {
+    paramRef.current['code'] && delete paramRef.current['code']
+    paramRef.current['customerName'] && delete paramRef.current['customerName']
+    paramRef.current['sale'] && delete paramRef.current['sale']
+    paramRef.current['createdBy'] && delete paramRef.current['createdBy']
+    paramRef.current['approverName'] && delete paramRef.current['approverName']
+  }
+
 
   const onFilterColumn = value => {
     if (value) debouncedSearchColumn(value);
@@ -355,7 +363,7 @@ const Receipt = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

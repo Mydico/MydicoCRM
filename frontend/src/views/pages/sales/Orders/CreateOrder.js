@@ -58,6 +58,21 @@ const { selectAll: selectAllCustomer } = globalizedCustomerSelectors;
 const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
 const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
 const { selectAll: selectAllProductInWarehouse } = globalizedProductWarehouseSelectors;
+
+export const checkProductIsNotEnough = (item, productList) => {
+  const currentQuantity = productList.reduce((prev, curr) => {
+    if (curr.product.id === item.product.id) {
+      return Number(prev) + Number(curr.quantity);
+    }
+    return Number(prev);
+  }, 0);
+  return item.quantityInStore !== undefined && Number(currentQuantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
+    ? {
+        boxShadow: '0px 0px 6px 5px red'
+      }
+    : {};
+};
+
 const CreateOrder = props => {
   const { initialState: promotionState } = useSelector(state => state.promotion);
 
@@ -638,17 +653,7 @@ const CreateOrder = props => {
                   <Tbody>
                     {productList.map((item, index) => {
                       return (
-                        <tr
-                          key={index}
-                          style={
-                            item.quantityInStore !== undefined &&
-                            Number(item.quantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
-                              ? {
-                                  boxShadow: '0px 0px 6px 5px red'
-                                }
-                              : {}
-                          }
-                        >
+                        <tr key={index} style={checkProductIsNotEnough(item, productList)}>
                           <td className="text-info" style={{ maxWidth: 200 }}>
                             {`${item.product.productBrand?.code || ''}-${item.product.name || ''}-${item.product.volume || ''}`}
                             {/* <Select

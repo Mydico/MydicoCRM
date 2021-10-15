@@ -72,14 +72,18 @@ const slice = createSlice({
       state.isAuthenticated = false;
       state.loading = false;
       state.sessionHasBeenFetched = false;
-      if (Storage.local.get(AUTH_TOKEN_KEY)) {
-        Storage.local.remove(AUTH_TOKEN_KEY);
-        Storage.local.remove(USER_INFO);
-      }
-      if (Storage.session.get(AUTH_TOKEN_KEY)) {
-        Storage.session.remove(AUTH_TOKEN_KEY);
-        Storage.session.remove(USER_INFO);
-      }
+      Storage.local.remove(AUTH_TOKEN_KEY);
+      Storage.local.remove(USER_INFO);
+      Storage.session.remove(AUTH_TOKEN_KEY);
+      Storage.session.remove(USER_INFO);
+      // if (Storage.local.get(AUTH_TOKEN_KEY)) {
+      //   Storage.local.remove(AUTH_TOKEN_KEY);
+      //   Storage.local.remove(USER_INFO);
+      // }
+      // if (Storage.session.get(AUTH_TOKEN_KEY)) {
+      //   Storage.session.remove(AUTH_TOKEN_KEY);
+      //   Storage.session.remove(USER_INFO);
+      // }
     }
   },
   extraReducers: {

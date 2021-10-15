@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../domain/user.entity';
 import { UserRepository } from '../repository/user.repository';
-import { Brackets, FindManyOptions, FindOneOptions, Like } from 'typeorm';
+import { Brackets, FindManyOptions, FindOneOptions, Like, Not } from 'typeorm';
 import { RoleService } from './role.service';
 import { ChangePasswordDTO } from './dto/user.dto';
 import { checkCodeContext } from './utils/normalizeString';
@@ -77,6 +77,7 @@ export class UserService {
           .leftJoinAndSelect('User.branch', 'branch')
           .leftJoinAndSelect('User.department', 'department')
           .where(andQueryString)
+          .andWhere(`User.login <> 'admin'`)
           .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
           .skip(options.skip)
           .take(options.take);
@@ -99,6 +100,7 @@ export class UserService {
             .createQueryBuilder('User')
             .leftJoinAndSelect('User.branch', 'branch')
             .where(`User.departmentId = ${departmentId} AND branch.allowToTransport = 1`)
+            .andWhere(`User.login <> 'admin'`)
             .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
             .take(50);
@@ -143,6 +145,7 @@ export class UserService {
             .leftJoinAndSelect('User.department', 'department')
             .leftJoinAndSelect('User.branch', 'branch')
             .where(andQueryString)
+            .andWhere(`User.login <> 'admin'`)
             .cache(`get_users_department_${departmentVisible.join(',')}_filter_${JSON.stringify(filter)}_skip_${options.skip}_${options.take}`, 3600000)
             .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
@@ -151,6 +154,7 @@ export class UserService {
         const count = this.userRepository
             .createQueryBuilder('User')
             .where(andQueryString)
+            .andWhere(`User.login <> 'admin'`)
             .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
             .take(options.take)

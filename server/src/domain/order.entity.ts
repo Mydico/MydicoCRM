@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, ManyToOne, OneToMany, Index } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany, Index, JoinColumn } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
 import Customer from './customer.entity';
@@ -71,6 +71,7 @@ export default class Order extends BaseEntity {
   promotion?: Promotion;
 
   @OneToMany(type => OrderDetails, orderDetails => orderDetails.order, { cascade: ['insert', 'update'], nullable: false })
+  @JoinColumn({ name: "orderId", referencedColumnName: "id"})
   orderDetails?: OrderDetails[];
 
   @OneToMany(type => Bill, bill => bill.order)

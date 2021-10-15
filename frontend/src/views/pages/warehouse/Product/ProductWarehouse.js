@@ -101,7 +101,7 @@ const ProductWarehouse = props => {
       Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(getProductWarehouse({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       dispatch(getCountProductWarehouse({ dependency: true,  ...value })).then(resp => {
         setTotal(Number(resp.payload.data.count));
@@ -133,7 +133,7 @@ const ProductWarehouse = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

@@ -647,7 +647,7 @@ export class ReportService {
     queryString = queryString.replace('Transaction.typeId', 'customer.typeId');
     const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
-      .select(['customer.id', 'customer.code', 'customer.name'])
+      .select(['customer.id', 'customer.code', 'customer.name','customer.address','customer.tel'])
       .addSelect(`sum(case when type = 'DEBIT' then total_money else 0 end)`, 'total')
       .addSelect(`sum(case when type = 'DEBIT' then total_money when  type = 'RETURN' then -refund_money else 0 end)`, 'real')
       .addSelect(`sum(case when type = 'RETURN' then refund_money else 0 end)`, 'return')

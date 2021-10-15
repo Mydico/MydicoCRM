@@ -196,7 +196,7 @@ const CustomerUser = props => {
       Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value,  dependency: true, activated: true }));
     }
   }, 300);

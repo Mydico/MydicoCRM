@@ -28,7 +28,7 @@ const UserRole = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
 
   useEffect(() => {
     dispatch(getUserRole({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.value }));
@@ -90,7 +90,7 @@ const UserRole = props => {
         Object.keys(value).forEach(key => {
           if (!value[key]) delete value[key];
         });
-        paramRef.current = value;
+        paramRef.current = { ...paramRef.current, ...value };
         dispatch(getUserRole({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
       }
     }, 300)
@@ -115,7 +115,7 @@ const UserRole = props => {
           items={computedItems(users)}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

@@ -50,7 +50,7 @@ const Transaction = props => {
   const [customer, setCustomer] = useState(null)
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   const computedItems = items => {
     return items
       .map(item => {
@@ -101,7 +101,7 @@ const Transaction = props => {
       Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   }, 300);
@@ -189,7 +189,7 @@ const Transaction = props => {
             items={memoListed}
             fields={fields}
             columnFilter
-            itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+            itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
             itemsPerPage={size}
             hover
             sorter

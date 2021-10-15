@@ -147,7 +147,7 @@ const WarehouseImport = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [loadingIndex, setLoadingIndex] = useState(-1);
   useEffect(() => {
@@ -196,7 +196,7 @@ const WarehouseImport = props => {
       Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
     }
   }, 300);
@@ -363,7 +363,7 @@ const WarehouseImport = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

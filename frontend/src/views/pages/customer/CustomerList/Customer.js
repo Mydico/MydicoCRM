@@ -105,7 +105,7 @@ const Customer = props => {
   const { initialState } = useSelector(state => state.customer);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   const dispatch = useDispatch();
   const history = useHistory();
   const departments = useSelector(selectAllDepartment);
@@ -172,11 +172,10 @@ const Customer = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
-      paramRef.current = value;
-      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      paramRef.current = { ...paramRef.current, ...value };
+      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+    }else {
+      clearSearchParams()
     }
   }, 300);
 
@@ -194,6 +193,13 @@ const Customer = props => {
 
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(items), [customers]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(customers), [customers]);
+
+  const clearSearchParams = () => {
+    paramRef.current['code'] && delete paramRef.current['code']
+    paramRef.current['name'] && delete paramRef.current['name']
+    paramRef.current['tel'] && delete paramRef.current['tel']
+    paramRef.current['saleName'] && delete paramRef.current['saleName']
+  }
 
   useEffect(() => {
     if (initialState.updatingSuccess) {

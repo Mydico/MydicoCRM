@@ -65,8 +65,8 @@ const fields = [
   { key: 'department', label: 'Chi nhánh', _style: { width: '15%' } },
   { key: 'branch', label: 'Phòng ban', _style: { width: '15%' } },
   { key: 'roles', label: 'Chức vụ', _style: { width: '15%' }, filter: false },
-  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } },
-  { key: 'activated', label: 'Trạng thái', _style: { width: '15%' } },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
+  { key: 'activated', label: 'Trạng thái', _style: { width: '15%' }, filter: false },
   {
     key: 'show_details',
     label: '',
@@ -117,7 +117,7 @@ const User = props => {
   const [primary, setPrimary] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   const users = useSelector(selectAll);
   const branches = useSelector(selectAllBranch);
   const departments = useSelector(selectAllDepartment);
@@ -189,13 +189,19 @@ const User = props => {
   };
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value ,...date }));
+    }else {
+      clearSearchParams()
     }
   }, 300);
+
+  const clearSearchParams = () => {
+    paramRef.current['login'] && delete paramRef.current['login']
+    paramRef.current['name'] && delete paramRef.current['name']
+    paramRef.current['code'] && delete paramRef.current['code']
+    paramRef.current['phone'] && delete paramRef.current['phone']
+  }
 
   const onFilterColumn = value => {
     if (value) debouncedSearchColumn(value);
@@ -314,7 +320,7 @@ const User = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

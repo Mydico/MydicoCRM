@@ -69,7 +69,7 @@ const Branch = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.provider);
   const [activePage, setActivePage] = useState(1);
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
 
   useEffect(() => {
     dispatch(reset());
@@ -145,7 +145,7 @@ const Branch = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

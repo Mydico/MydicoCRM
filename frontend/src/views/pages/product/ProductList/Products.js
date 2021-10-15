@@ -93,7 +93,7 @@ const Product = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   // const productGroups = useSelector(selectProfuctGroup);
   const products = useSelector(selectAll);
 
@@ -150,13 +150,18 @@ const Product = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+    }else {
+      clearSearchParams()
     }
   }, 300);
+
+  const clearSearchParams = () => {
+    paramRef.current['code'] && delete paramRef.current['code']
+    paramRef.current['name'] && delete paramRef.current['name']
+  }
+  
 
   const onFilterColumn = value => {
     if (value) debouncedSearchColumn(value);
@@ -197,7 +202,7 @@ const Product = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter

@@ -132,6 +132,7 @@ const routes = [
   {path: '/sale-report', exact: true, name: 'Báo cáo theo nhân viên', component: SaleReport},
   {path: '/sale-report/order-histories/:id', exact: true, name: 'Báo cáo', component: OrderHistory},
   {path: '/customer-report', exact: true, name: 'Báo cáo theo sản phẩm', component: CustomerReport},
+  {path: '/customer-report/order-customer-histories/:id', exact: true, name: 'Báo cáo theo sản phẩm', component: OrderCustomerHistory},
   {path: '/promotion-report', exact: true, name: 'Báo cáo theo chương trình', component: PromotionReport},
   {path: '/change-password', exact: true, name: 'Đổi mật khẩu', component: ChangePassword},
   {path: '/edit-profile', exact: true, name: 'Đổi thông tin cá nhân', component: EditUserProfile},

@@ -135,7 +135,7 @@ const Bill = props => {
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [modal, setModal] = useState(false);
-  const paramRef = useRef(null);
+  const paramRef = useRef({});
   const dispatch = useDispatch();
   const [focused, setFocused] = React.useState();
   const history = useHistory();
@@ -205,7 +205,7 @@ const Bill = props => {
       Object.keys(value).forEach(key => {
         if (!value[key]) delete value[key];
       });
-      paramRef.current = value;
+      paramRef.current = { ...paramRef.current, ...value };
       dispatch(
         getBill({
           page: 0,
@@ -611,7 +611,7 @@ const Bill = props => {
           items={memoListed}
           fields={fields}
           columnFilter
-          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200] }}
+          itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
           itemsPerPage={size}
           hover
           sorter
