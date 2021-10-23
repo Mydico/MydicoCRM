@@ -33,13 +33,23 @@ import { contentParser } from 'fastify-multer';
 
 const logger: Logger = new Logger('Main');
 const port = process.env.NODE_SERVER_PORT || config.get('server.port');
+const portWs = process.env.NODE_SERVER_PORT || config.get('server.ws.port');
+
 const useJHipsterRegistry = config.get('eureka.client.enabled');
 
+// const httpsOptions = {
+//   key: fs.readFileSync(path.resolve(__dirname, './secrets/private-key.pem')),
+//   cert: fs.readFileSync(path.resolve(__dirname, './secrets/public-certificate.pem')),
+// };
 async function bootstrap(): Promise<void> {
   // loadCloudConfig();
   // registerAsEurekaService();
 
-  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(
+    {
+      // https: httpsOptions
+    }
+  ));
   const fastifyInstance = app.getHttpAdapter().getInstance();
   fastifyInstance.decorate('routes', []);
   fastifyInstance.addHook('onRoute', routeOptions => {
@@ -105,10 +115,16 @@ async function bootstrap(): Promise<void> {
     mkdirSync(staticFilePath);
   }
   setupSwagger(app);
-
+  // const sslapp = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
+  //   https: httpsOptions
+  // }));
+  // await sslapp.listen(portWs, (err) => {
+  //   logger.error(`${err}`);
+  // })
   await app.listen(port, (err) => {
     logger.error(`${err}`);
   })
+
   logger.log(`Application listening on port ${port}`);
 
   // const permissionServices = app.get(PermissionService);

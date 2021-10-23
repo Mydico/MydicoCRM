@@ -127,7 +127,6 @@ const EditPermissionGroups = props => {
   };
 
   useEffect(() => {
-    console.log(checkbox)
     if (checkbox && initialState.permissions && Array.isArray(initialState.permissions) && initialState.permissions.length > 0) {
       const selectedArr = [];
       Object.keys(checkbox).forEach(key => {

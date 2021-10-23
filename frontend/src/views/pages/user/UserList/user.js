@@ -21,6 +21,7 @@ import 'react-dates/lib/css/_datepicker.css';
 import { confirmAlert } from 'react-confirm-alert';
 import { CSVLink } from 'react-csv';
 import Download from '../../../components/excel/DownloadExcel.js';
+import ReportDate from '../../../components/report-date/ReportDate.js';
 
 moment.locale('vi'); // Polish
 
@@ -57,7 +58,7 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
-  { key: 'imageUrl', label: '' },
+  { key: 'imageUrl', label: '', filter: false },
   { key: 'login', label: 'Tên đăng nhập', _style: { width: '10%' } },
   { key: 'name', label: 'Họ tên', _style: { width: '15%' } },
   { key: 'code', label: 'Mã nhân viên', _style: { width: '15%' } },
@@ -65,7 +66,6 @@ const fields = [
   { key: 'department', label: 'Chi nhánh', _style: { width: '15%' } },
   { key: 'branch', label: 'Phòng ban', _style: { width: '15%' } },
   { key: 'roles', label: 'Chức vụ', _style: { width: '15%' }, filter: false },
-  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'activated', label: 'Trạng thái', _style: { width: '15%' }, filter: false },
   {
     key: 'show_details',
@@ -122,10 +122,17 @@ const User = props => {
   const branches = useSelector(selectAllBranch);
   const departments = useSelector(selectAllDepartment);
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
-
+  const [focused, setFocused] = React.useState();
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
+      };
       dispatch(getUser(params));
     }
   }, [date]);
@@ -148,7 +155,7 @@ const User = props => {
       localStorage.removeItem('params');
     }
     if (date.endDate && date.startDate) {
-      params = { ...params, ...date };
+      params = { ...params, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }
     dispatch(getUser(params));
     window.scrollTo(0, 100);
@@ -177,31 +184,54 @@ const User = props => {
   };
 
   const toCreateUser = () => {
-    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+    const params = {
+      page: activePage - 1,
+      size,
+      sort: 'createdDate,DESC',
+      ...paramRef.current,
+      startDate: date.startDate?.format('YYYY-MM-DD'),
+      endDate: date.endDate?.format('YYYY-MM-DD')
+    };
     localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/new`);
   };
 
   const toEditUser = userId => {
-    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+    const params = {
+      page: activePage - 1,
+      size,
+      sort: 'createdDate,DESC',
+      ...paramRef.current,
+      startDate: date.startDate?.format('YYYY-MM-DD'),
+      endDate: date.endDate?.format('YYYY-MM-DD')
+    };
     localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/${userId}/edit`);
   };
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getUser({ page: 0, size: size, sort: 'createdDate,DESC', ...value ,...date }));
-    }else {
-      clearSearchParams()
+      dispatch(
+        getUser({
+          page: 0,
+          size: size,
+          sort: 'createdDate,DESC',
+          ...value,
+          startDate: date.startDate?.format('YYYY-MM-DD'),
+          endDate: date.endDate?.format('YYYY-MM-DD')
+        })
+      );
+    } else {
+      clearSearchParams();
     }
   }, 300);
 
   const clearSearchParams = () => {
-    paramRef.current['login'] && delete paramRef.current['login']
-    paramRef.current['name'] && delete paramRef.current['name']
-    paramRef.current['code'] && delete paramRef.current['code']
-    paramRef.current['phone'] && delete paramRef.current['phone']
-  }
+    paramRef.current['login'] && delete paramRef.current['login'];
+    paramRef.current['name'] && delete paramRef.current['name'];
+    paramRef.current['code'] && delete paramRef.current['code'];
+    paramRef.current['phone'] && delete paramRef.current['phone'];
+  };
 
   const onFilterColumn = value => {
     if (value) debouncedSearchColumn(value);
@@ -272,10 +302,12 @@ const User = props => {
           </CButton>
         )}
       </CCardHeader>
+      <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
+
       <CCardBody>
         <Download data={memoExcelListed} headers={excelFields} name={'customer'} />
 
-        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+        {/* <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>
               <CLabel htmlFor="date-input">Từ ngày</CLabel>
@@ -286,7 +318,7 @@ const User = props => {
                 id="date-input"
                 onChange={e =>
                   setDate({
-                    ...date,
+                     startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'),
                     startDate: e.target.value
                   })
                 }
@@ -305,7 +337,7 @@ const User = props => {
                 id="date-input"
                 onChange={e =>
                   setDate({
-                    ...date,
+                     startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'),
                     endDate: e.target.value
                   })
                 }
@@ -314,7 +346,7 @@ const User = props => {
               />
             </CCol>
           </CFormGroup>
-        </CFormGroup>
+        </CFormGroup> */}
 
         <CDataTable
           items={memoListed}
@@ -339,7 +371,7 @@ const User = props => {
               <div style={{ minWidth: 200 }}>
                 <Select
                   onChange={item => {
-                    onFilterColumn({ ...paramRef.current, departmentId: item?.value || '' });
+                    onFilterColumn({ ...paramRef.current, departmentId: item?.value});
                   }}
                   isClearable
                   placeholder="chọn chi nhánh"
@@ -354,7 +386,7 @@ const User = props => {
               <div style={{ minWidth: 200 }}>
                 <Select
                   onChange={item => {
-                    onFilterColumn({ ...paramRef.current, branchId: item?.value || '' });
+                    onFilterColumn({ ...paramRef.current, branchId: item?.value });
                   }}
                   isClearable
                   placeholder="Chọn phòng ban"

@@ -716,7 +716,7 @@ const OrderHistory = props => {
                     <Table striped="true" responsive="true">
                       <Thead>
                         <Tr>
-                          <Th className="center">#</Th>
+                          <Th className="center">STT</Th>
                           <Th>Tên sản phẩm</Th>
                           <Th>Dung tích</Th>
                           <Th className="center">Số lượng</Th>

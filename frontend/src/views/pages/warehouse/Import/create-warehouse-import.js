@@ -230,7 +230,7 @@ const CreateWarehouse = () => {
                     {productList.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{ width: 500 }}>
+                          <td style={{ minWidth: 650 }}>
                             <Select
                               value={{
                                 value: item,
@@ -247,7 +247,7 @@ const CreateWarehouse = () => {
                             />
                           </td>
                           <td>{item?.product?.unit}</td>
-                          <td style={{ width: 100 }}>
+                          <td style={{ minWidth: 100, maxWidth: 300 }}>
                             {item.followIndex >= 0 ? (
                               item.quantity
                             ) : (

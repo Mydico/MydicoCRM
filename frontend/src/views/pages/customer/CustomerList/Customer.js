@@ -16,7 +16,7 @@ import AdvancedTable from '../../../components/table/AdvancedTable';
 import Select from 'react-select';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 import Download from '../../../components/excel/DownloadExcel.js';
-import { getDepartment } from '../../user/UserDepartment/department.api.js';
+import { getDepartment,getChildTreeDepartmentByUser } from '../../user/UserDepartment/department.api.js';
 import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer.js';
 
 const { selectAll } = globalizedCustomerSelectors;
@@ -116,7 +116,7 @@ const Customer = props => {
     // dispatch(syncCustomer())
     dispatch(reset());
     dispatch(getCustomerType({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
-    dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getChildTreeDepartmentByUser({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   const computedItems = items => {

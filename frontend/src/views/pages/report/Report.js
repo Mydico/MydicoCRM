@@ -6,19 +6,18 @@ import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import moment from 'moment';
-import Select, { components } from 'react-select';
-import CIcon from '@coreui/icons-react';
+import Select from 'react-select';
 import _ from 'lodash';
 import ReportStatistic from '../../../views/components/report-statistic/ReportStatistic';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
 import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
-import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
+import { globalizedBranchSelectors, setAll } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getTop10Customer, getTop10Product, getTop10sale } from './report.api';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
-import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 import { useHistory } from 'react-router';
+import ReportDate from '../../../views/components/report-date/ReportDate';
 moment.locale('vi');
 const { selectAll } = globalizedBranchSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
@@ -31,6 +30,7 @@ const Report = props => {
   const history = useHistory();
 
   const branches = isEmployee ? [account.branch] : useSelector(selectAll);
+
   const users = isEmployee ? [account] : useSelector(selectUserAll);
 
   const [filter, setFilter] = useState({ dependency: true, department: null, branch: null, user: null });
@@ -47,6 +47,14 @@ const Report = props => {
     // getTop10();
   }, []);
 
+  useEffect(() => {
+    if (account.department.externalChild && department && branches.length > 1) {
+      if (JSON.parse(account.department.externalChild).includes(department.id)) {
+        dispatch(setAll([account.branch]));
+      }
+    }
+  }, [branches]);
+
   const getTop10 = filter => {
     dispatch(
       getExactUser({
@@ -54,7 +62,7 @@ const Report = props => {
         size: 50,
         sort: 'createdDate,DESC',
         department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
+        branch: branch?.id,
         dependency: true
       })
     );
@@ -116,7 +124,7 @@ const Report = props => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
-          branch: branch?.id || account.branch.id,
+          branch: branch?.id,
           dependency: true
         })
       );
@@ -124,7 +132,9 @@ const Report = props => {
   }, [branch]);
 
   useEffect(() => {
-    getTop10(filter);
+    if (Object.keys(filter).length > 5) {
+      getTop10(filter);
+    }
   }, [filter]);
 
   useEffect(() => {
@@ -138,10 +148,8 @@ const Report = props => {
     if (date.startDate && date.endDate) {
       setFilter({
         ...filter,
-        ...{
-          startDate: date.startDate?.format('YYYY-MM-DD'),
-          endDate: date.endDate?.format('YYYY-MM-DD')
-        }
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
       });
     }
   }, [date]);
@@ -154,7 +162,7 @@ const Report = props => {
         sort: 'createdDate,DESC',
         code: value,
         department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
+        branch: branch?.id,
         dependency: true
       })
     );
@@ -201,8 +209,8 @@ const Report = props => {
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          {/* <CCardHeader>React-Dates</CCardHeader> */}
-          <CCardBody>
+          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
+          {/* <CCardBody>
             <DateRangePicker
               startDate={date.startDate}
               minDate="01-01-2000"
@@ -221,7 +229,7 @@ const Report = props => {
               block={false}
               openDirection="down"
             />
-          </CCardBody>
+          </CCardBody> */}
         </CCard>
         <CCard>
           <CCardBody>
@@ -302,7 +310,7 @@ const Report = props => {
             <Table className="table table-hover table-outline mb-0 d-sm-table">
               <Thead className="thead-light">
                 <Tr>
-                  <Th>#</Th>
+                  <Th>STT</Th>
                   <Th>Mã nhân viên</Th>
                   <Th>Tên</Th>
                   <Th>Doanh thu thuần</Th>
@@ -337,7 +345,7 @@ const Report = props => {
             <Table className="table table-hover table-outline mb-0 d-sm-table">
               <Thead className="thead-light">
                 <Tr>
-                  <Th>#</Th>
+                  <Th>STT</Th>
                   <Th>Mã sản phẩm</Th>
                   <Th>Tên sản phẩm</Th>
                   <Th>Số lượng bán</Th>
@@ -372,7 +380,7 @@ const Report = props => {
             <Table className="table table-hover table-outline mb-0 d-sm-table">
               <Thead className="thead-light">
                 <Tr>
-                  <Th>#</Th>
+                  <Th>STT</Th>
                   <Th>Mã khách hàng</Th>
                   <Th>Tên khách hàng</Th>
                   <Th>Doanh thu</Th>

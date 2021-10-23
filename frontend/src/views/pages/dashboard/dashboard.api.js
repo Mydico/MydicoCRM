@@ -20,7 +20,7 @@ export const getSumIncomeDashboard = createAsyncThunk('api/income-dashboards/sum
 
 export const getDebtDashboard = createAsyncThunk('api/debt-dashboards', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/debt-dashboards', { params: params });
+    const result = await axios.get('api/reports/get-debt-chart', { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -53,6 +53,14 @@ export const getBestProductSale = createAsyncThunk('api/best-product-saler', asy
 export const getBestCustomer = createAsyncThunk('api/best-customer', async (params, thunkAPI) => {
   try {
     const result = await axios.get('api/reports/best-customer', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+export const getIncomeChart = createAsyncThunk('api/getincomechart', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/get-income-chart', { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

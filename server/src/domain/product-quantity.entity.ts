@@ -28,6 +28,14 @@ export default class ProductQuantity extends BaseEntity {
   @Index()
   entityId: string;
 
+  @Column({ name: 'entityCode', nullable: true })
+  @Index()
+  entityCode: string;
+
+  @Column({ name: 'entityType', nullable: true })
+  @Index()
+  entityType: string;
+
   @Column({ name: 'store_name' })
   @Index()
   storeName: string;

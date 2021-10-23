@@ -42,11 +42,12 @@ const CreateDepartment = () => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const [external, setExternal] = useState([])
+  const [external, setExternal] = useState([]);
   const groupPermissions = useSelector(selectAllPermissionGroups);
   const departments = useSelector(selectAllDepartments);
   const [selectedBranches, setSelectedBranches] = useState([]);
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
+  const [reportDepartment, setReportDepartment] = useState([]);
 
   const initialValues = {
     name: '',
@@ -62,11 +63,11 @@ const CreateDepartment = () => {
     };
   }, []);
 
-
   const onSubmit = (values, { resetForm }) => {
     values.permissionGroups = selectedGroupPermission;
-    values.externalChild = JSON.stringify(external.map(item => item.value))
+    values.externalChild = JSON.stringify(external.map(item => item.value));
     values.branches = selectedBranches.map(item => item.value);
+    values.reportDepartment = reportDepartment ? JSON.stringify(reportDepartment.map(item => item.value)) : '[]';
 
     dispatch(fetching());
     dispatch(creatingDepartment(values));
@@ -166,19 +167,34 @@ const CreateDepartment = () => {
                 />
               </CFormGroup>
               <CFormGroup>
-                  <CLabel htmlFor="login">Phòng ban</CLabel>
-                  <Select
-                    name="branches"
-                    onChange={setSelectedBranches}
-                    isMulti
-                    value={selectedBranches}
-                    placeholder="Chọn phòng ban"
-                    options={branches.map(item => ({
-                      value: item,
-                      label: item.name
-                    }))}
-                  />
-                </CFormGroup>              <CFormGroup>
+                <CLabel htmlFor="login">Chi nhánh được xem báo cáo</CLabel>
+                <Select
+                  name="department"
+                  onChange={setReportDepartment}
+                  isMulti
+                  value={reportDepartment}
+                  placeholder="Chọn chi nhánh"
+                  options={departments.map(item => ({
+                    value: item.id,
+                    label: item.name
+                  }))}
+                />
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="login">Phòng ban</CLabel>
+                <Select
+                  name="branches"
+                  onChange={setSelectedBranches}
+                  isMulti
+                  value={selectedBranches}
+                  placeholder="Chọn phòng ban"
+                  options={branches.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
+              </CFormGroup>{' '}
+              <CFormGroup>
                 <CLabel htmlFor="userName">Nhóm quyền</CLabel>
                 <Select
                   name="department"
@@ -192,7 +208,6 @@ const CreateDepartment = () => {
                   }))}
                 />
               </CFormGroup>
-
               {selectedGroupPermission.length > 0 ? (
                 <Table style={{ marginTop: 15 }}>
                   <thead>

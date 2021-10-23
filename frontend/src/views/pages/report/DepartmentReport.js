@@ -3,10 +3,10 @@ import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CC
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
-import { DateRangePicker } from 'react-dates';
+import ReportDate from '../../../views/components/report-date/ReportDate';
 import 'react-dates/lib/css/_datepicker.css';
 import _ from 'lodash';
-import { getDepartmentReport, getTop10Customer, getTop10Product, getTop10sale } from './report.api';
+import { getDepartmentReport, getDepartmentReportExternal } from './report.api';
 import { CChartBar, CChartDoughnut } from '@coreui/react-chartjs';
 import { getRandomColor } from '../../../shared/utils/helper';
 import { useHistory } from 'react-router';
@@ -14,6 +14,8 @@ import moment from 'moment';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 import Download from '../../components/excel/DownloadExcel.js';
+import { currencyFormat } from '../../../shared/utils/normalize';
+import CIcon from '@coreui/icons-react';
 const excelFields = [
   {
     key: 'order',
@@ -31,28 +33,35 @@ const excelFields = [
 const DepartmentReport = props => {
   const dispatch = useDispatch();
   const history = useHistory();
-
+  const { account } = useSelector(state => state.authentication);
+  const specialRole = JSON.parse(account.department.reportDepartment || '[]').length > 0;
   const [filter, setFilter] = useState({ dependency: true });
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
   const [departmentReport, setDepartmentReport] = useState([]);
 
   const getData = filter => {
-    dispatch(getDepartmentReport(filter)).then(data => {
-      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-        setDepartmentReport(data.payload);
-      }
-    });
+    if (specialRole) {
+      dispatch(getDepartmentReportExternal(filter)).then(data => {
+        if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+          setDepartmentReport(data.payload);
+        }
+      });
+    } else {
+      dispatch(getDepartmentReport(filter)).then(data => {
+        if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+          setDepartmentReport(data.payload);
+        }
+      });
+    }
   };
 
   useEffect(() => {
     if (date.startDate && date.endDate) {
       setFilter({
         ...filter,
-        ...{
-          startDate: date.startDate?.format('YYYY-MM-DD'),
-          endDate: date.endDate?.format('YYYY-MM-DD')
-        }
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
       });
     }
   }, [date]);
@@ -75,25 +84,7 @@ const DepartmentReport = props => {
       <CCol sm={12} md={12}>
         <CCard>
           {/* <CCardHeader>React-Dates</CCardHeader> */}
-          <CCardBody>
-            <DateRangePicker
-              startDate={date.startDate}
-              minDate="01-01-2000"
-              startDateId="startDate"
-              endDate={date.endDate}
-              endDateId="endDate"
-              minimumNights={0}
-              onDatesChange={value => setDate(value)}
-              focusedInput={focused}
-              isOutsideRange={() => false}
-              startDatePlaceholderText="Từ ngày"
-              endDatePlaceholderText="Đến ngày"
-              onFocusChange={focusedInput => setFocused(focusedInput)}
-              orientation="horizontal"
-              block={false}
-              openDirection="down"
-            />
-          </CCardBody>
+          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
         </CCard>
         <CCardGroup columns className="cols-2">
           <CCard>
@@ -111,6 +102,17 @@ const DepartmentReport = props => {
                 options={{
                   tooltips: {
                     enabled: true
+                  },
+                  scales: {
+                    yAxes: [
+                      {
+                        ticks: {
+                          callback: function(value, index, values) {
+                            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+                          }
+                        }
+                      }
+                    ]
                   }
                 }}
               />
@@ -128,40 +130,67 @@ const DepartmentReport = props => {
                 ]}
                 labels={memoDepartmentReport.map(item => item.name)}
                 options={{
+                  legend: {
+                    display: true,
+                    position: 'left'
+                  },
                   tooltips: {
                     enabled: true,
-                    // callbacks: {
-                    //   title: function(tooltipItem, data) {
-                    //     console.log(data,tooltipItem)
-                    //     return data['labels'][tooltipItem[0]['index']];
-                    //   },
-                    //   label: function(tooltipItem, data) {
-                    //     return data['datasets'][0]['data'][tooltipItem['index']];
-                    //   },
-                    //   afterLabel: function(tooltipItem, data) {
-                    //     var dataset = data['datasets'][0];
-                    //     var percent = 40
-                    //     return '(' + percent + '%)';
-                    //   }
-                    // }
+                    callbacks: {
+                      title: function(tooltipItem, data) {
+                        return data['labels'][tooltipItem[0]['index']];
+                      },
+                      label: function(tooltipItem, data) {
+                        if (data['datasets'][0]['data'][tooltipItem['index']]) {
+                          return currencyFormat(Number(data['datasets'][0]['data'][tooltipItem['index']]))
+                        }else {
+                          return ''
+                        }
+                      },
+                      afterLabel: function(tooltipItem, data) {
+                        const dataset = data['datasets'][0];
+                        const sum = dataset.data.reduce((prev, curr) => prev + Number(curr), 0);
+                        const percent = Math.round(Number(dataset['data'][tooltipItem['index']] / sum) * 100);
+                        return '(' + percent + '%)';
+                      }
+                    }
                   }
                 }}
               />
             </CCardBody>
           </CCard>
         </CCardGroup>
+        <CRow sm={12} md={12}>
+          <CCol sm="12" lg="12">
+            <CWidgetBrand
+              rightHeader={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(memoDepartmentReport.reduce((prev, curr) => prev + Number(curr.real),0))}
+              rightFooter="Doanh thu thuần"
+              leftHeader={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(memoDepartmentReport.reduce((prev, curr) => prev + Number(curr.total),0))}
+              leftFooter="Doanh thu"
+              color="gradient-primary"
+            >
+              <CIcon name="cil3d" height="76" className="my-4" />
+            </CWidgetBrand>
+          </CCol>
+        </CRow>
         <CCard>
           <CCardHeader>
             <CCardTitle>Thống kê theo văn phòng</CCardTitle>
           </CCardHeader>
 
           <CCardBody>
-            <Download data={memoDepartmentReport} headers={excelFields} name={`thong_ke_theo_chi_nhanh tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `} />
+            <Download
+              data={memoDepartmentReport}
+              headers={excelFields}
+              name={`thong_ke_theo_chi_nhanh tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format(
+                'DD-MM-YYYY'
+              )} `}
+            />
 
             <Table className="table table-hover table-outline mb-0 mt-3 d-sm-table">
               <Thead className="thead-light">
                 <Tr>
-                  <Th>#</Th>
+                  <Th>STT</Th>
                   <Th>Mã chi nhánh</Th>
                   <Th>Tên chi nhánh</Th>
                   <Th>Số đơn hàng</Th>

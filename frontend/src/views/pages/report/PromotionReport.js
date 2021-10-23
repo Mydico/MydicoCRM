@@ -11,7 +11,7 @@ import CIcon from '@coreui/icons-react';
 import _ from 'lodash';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
 import { getBranch } from '../user/UserBranch/branch.api';
-import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
+import { globalizedBranchSelectors, setAll } from '../user/UserBranch/branch.reducer';
 import { getCustomerReport, getPromotionCustomer, getPromotionIncome, getPromotionReport } from './report.api';
 import { getPromotion } from '../sales/Promotion/promotion.api';
 import { globalizedPromotionSelectors } from '../sales/Promotion/promotion.reducer';
@@ -20,6 +20,7 @@ import { getExactUser } from '../user/UserList/user.api';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import AdvancedTable from '../../components/table/AdvancedTable';
 import Download from '../../components/excel/DownloadExcel.js';
+import ReportDate from '../../../views/components/report-date/ReportDate';
 
 moment.locale('vi');
 
@@ -74,6 +75,14 @@ const PromotionReport = () => {
   }, []);
 
   useEffect(() => {
+    if (account.department.externalChild && department && branches.length > 1) {
+      if (JSON.parse(account.department.externalChild).includes(department.id)) {
+        dispatch(setAll([account.branch]));
+      }
+    }
+  }, [branches]);
+
+  useEffect(() => {
     if (Object.keys(filter).length > 1) {
       getTop10(filter);
     }
@@ -87,7 +96,7 @@ const PromotionReport = () => {
   //       sort: 'createdDate,DESC',
   //       code: '',
   //       department: department?.id || account.department.id,
-  //       branch: branch?.id || account.branch.id,
+  //       branch: branch?.id,
   //       dependency: true
   //     })
   //   );
@@ -97,7 +106,7 @@ const PromotionReport = () => {
   //       size: 50,
   //       sort: 'createdDate,DESC',
   //       department: department?.id || account.department.id,
-  //       branch: branch?.id || account.branch.id,
+  //       branch: branch?.id,
   //       dependency: true
   //     })).then(resp => {
   //       if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
@@ -191,7 +200,7 @@ const PromotionReport = () => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
-          branch: branch?.id || account.branch.id,
+          branch: branch?.id,
           dependency: true
         })
       );
@@ -280,7 +289,7 @@ const PromotionReport = () => {
         sort: 'createdDate,DESC',
         code: value,
         department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
+        branch: branch?.id,
         dependency: true
       })
     );
@@ -305,7 +314,7 @@ const PromotionReport = () => {
         address: value,
         name: value,
         department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
+        branch: branch?.id,
         sale: isEmployee ? account.id : user?.id,
         dependency: true,
         activated: true
@@ -344,25 +353,7 @@ const PromotionReport = () => {
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          <CCardBody>
-            <DateRangePicker
-              startDate={date.startDate}
-              minDate="01-01-2000"
-              startDateId="startDate"
-              endDate={date.endDate}
-              endDateId="endDate"
-              onDatesChange={value => setDate(value)}
-              focusedInput={focused}
-              minimumNights={0}
-              isOutsideRange={() => false}
-              startDatePlaceholderText="Từ ngày"
-              endDatePlaceholderText="Đến ngày"
-              onFocusChange={focusedInput => setFocused(focusedInput)}
-              orientation="horizontal"
-              block={false}
-              openDirection="down"
-            />
-          </CCardBody>
+          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
         </CCard>
         <CCard>
           <CCardBody>
@@ -518,7 +509,13 @@ const PromotionReport = () => {
             <CCardTitle>Danh sách nhân viên</CCardTitle>
           </CCardHeader>
           <CCardBody>
-          <Download data={memoTop10Product} headers={fields} name={`thong_ke_theo_chuong_trinh_ban_hang tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `} />
+            <Download
+              data={memoTop10Product}
+              headers={fields}
+              name={`thong_ke_theo_chuong_trinh_ban_hang tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(
+                date.endDate
+              ).format('DD-MM-YYYY')} `}
+            />
 
             <AdvancedTable
               items={memoTop10Product}

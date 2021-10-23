@@ -65,6 +65,25 @@ export const getDepartmentReport = createAsyncThunk('api/reports/department', as
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
+export const getDepartmentReportExternal = createAsyncThunk('api/reports/department-for-external-child', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/department-for-external-child', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const getCustomerCountReport = createAsyncThunk('api/reports/count-customer', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/count-customer', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const getCountTotalProduct = createAsyncThunk('api/reports/count-total-product', async (params, thunkAPI) => {
   try {
     const result = await axios.get('api/reports/count-total-product', { params: params });

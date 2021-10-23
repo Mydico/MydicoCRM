@@ -59,13 +59,14 @@ const slice = createSlice({
       state.initialState.totalItem = action.payload.total;
       state.initialState.loading = false;
     },
+    [getDepartment.rejected]: state => {
+      state.loading = false;
+    },
     [getTreeDepartment.fulfilled]: (state, action) => {
       state.initialState.treeDepartments = action.payload.data;
       state.initialState.loading = false;
     },
-    [getDepartment.rejected]: state => {
-      state.loading = false;
-    },
+
     [getChildTreeDepartment.fulfilled]: (state, action) => {
       state.initialState.allChild = action.payload.data;
       state.initialState.loading = false;
@@ -74,6 +75,8 @@ const slice = createSlice({
       state.loading = false;
     },
     [getChildTreeDepartmentByUser.fulfilled]: (state, action) => {
+      departmentAdapter.setAll(state, action.payload.data);
+
       state.initialState.allChild = action.payload.data;
       state.initialState.loading = false;
     },

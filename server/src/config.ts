@@ -9,6 +9,7 @@ export class Config {
     debugLogging = 'debug';
 
     'server.port' = '8082';
+    'server.ws.port' = '8083';
     'jhipster.clientApp.name' = 'MydicoCRM';
     'jhipster.registry.password' = 'admin';
     'jhipster.security.authentication.jwt.base64-secret' = '';

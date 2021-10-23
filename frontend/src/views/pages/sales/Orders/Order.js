@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { editSelfOrder, getOrder, updateStatusOrder } from './order.api';
+import { editSelfOrder, getDetailOrder, getOrder, updateStatusOrder } from './order.api';
 import { fetching, globalizedOrdersSelectors, reset } from './order.reducer';
 import { useHistory } from 'react-router-dom';
 import { OrderStatus } from './order-status';
@@ -18,6 +18,7 @@ import { Td, Table, Thead, Th, Tr, Tbody } from '../../../components/super-respo
 import { useMediaQuery } from 'react-responsive';
 import Download from '../../../components/excel/DownloadExcel.js';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
+import ReportDate from '../../../components/report-date/ReportDate';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -158,12 +159,19 @@ const Order = props => {
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const orders = useSelector(selectAll);
   const isMobile = useMediaQuery({ maxWidth: '40em' });
-
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const [focused, setFocused] = React.useState();
+  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
+      };
       dispatch(getOrder(params));
     }
   }, [date]);
@@ -182,14 +190,13 @@ const Order = props => {
       localStorage.removeItem('params');
     }
     if (date.endDate && date.startDate) {
-      params = { ...params, ...date };
+      params = { ...params, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }
     dispatch(getOrder(params));
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const computedItems = items => {
-  
     return items.map(item => {
       return {
         ...item,
@@ -214,7 +221,14 @@ const Order = props => {
   };
 
   const toCreateOrder = () => {
-    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+    const params = {
+      page: activePage - 1,
+      size,
+      sort: 'createdDate,DESC',
+      ...paramRef.current,
+      startDate: date.startDate?.format('YYYY-MM-DD'),
+      endDate: date.endDate?.format('YYYY-MM-DD')
+    };
     localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/new`);
   };
@@ -222,24 +236,42 @@ const Order = props => {
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
-    }else {
-      clearSearchParams()
+      dispatch(
+        getOrder({
+          page: 0,
+          size: size,
+          sort: 'createdDate,DESC',
+          ...paramRef.current,
+          startDate: date.startDate?.format('YYYY-MM-DD'),
+          endDate: date.endDate?.format('YYYY-MM-DD')
+        })
+      );
+    } else {
+      clearSearchParams();
     }
   }, 300);
 
   const clearSearchParams = () => {
-    paramRef.current['code'] && delete paramRef.current['code']
-    paramRef.current['customerName'] && delete paramRef.current['customerName']
-  }
+    paramRef.current['code'] && delete paramRef.current['code'];
+    paramRef.current['customerName'] && delete paramRef.current['customerName'];
+  };
 
   const onFilterColumn = value => {
     if (value) debouncedSearchColumn(value);
   };
 
   const toEditOrder = typeId => {
-    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+    const params = {
+      page: activePage - 1,
+      size,
+      sort: 'createdDate,DESC',
+      ...paramRef.current,
+      startDate: date.startDate?.format('YYYY-MM-DD'),
+      endDate: date.endDate?.format('YYYY-MM-DD')
+    };
     localStorage.setItem('params', JSON.stringify(params));
+    dispatch(getDetailOrder({ id: typeId, dependency: true }));
+
     history.push(`${props.match.url}/${typeId}/edit`);
   };
 
@@ -255,13 +287,20 @@ const Order = props => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       dispatch(reset());
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
+      };
       dispatch(getOrder(params));
     }
   }, [initialState.updatingSuccess]);
 
   const approveOrder = order => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const newOrder = {
       id: order.id,
       status: OrderStatus.APPROVED,
@@ -272,7 +311,7 @@ const Order = props => {
   };
 
   const cancelOrder = order => {
-    dispatch(fetching())
+    dispatch(fetching());
     const newOrder = {
       id: order.id,
       status: OrderStatus.CANCEL,
@@ -289,7 +328,7 @@ const Order = props => {
   };
 
   const deleteOrder = order => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const newOrder = {
       id: order.id,
       status: OrderStatus.DELETED,
@@ -300,7 +339,7 @@ const Order = props => {
   };
 
   const createCodOrder = order => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const newOrder = {
       id: order.id,
       status: OrderStatus.CREATE_COD,
@@ -575,7 +614,7 @@ const Order = props => {
         status: mappingStatus[item.status]
       };
     });
-  },[]);
+  }, []);
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(orders), [orders]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(orders), [orders]);
 
@@ -589,6 +628,8 @@ const Order = props => {
           </CButton>
         )}
       </CCardHeader>
+      <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
+
       <CCardBody>
         <Download data={memoExcelListed} headers={excelFields} name={'order'} />
 
@@ -596,7 +637,8 @@ const Order = props => {
           <CLabel>Tổng :</CLabel>
           <strong>{`\u00a0\u00a0${initialState.totalItem}`}</strong>
         </CRow>
-        <CRow row className="d-flex justify-content-between ml-1" style={{ width: '50%' }}>
+
+        {/* <CRow row className="d-flex justify-content-between ml-1" style={{ width: '50%' }}>
           <CRow row>
             <CCol>
               <CLabel htmlFor="date-input">Từ ngày</CLabel>
@@ -607,7 +649,8 @@ const Order = props => {
                 id="date-input"
                 onChange={e =>
                   setDate({
-                    ...date,
+                            startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD'),
                     startDate: e.target.value
                   })
                 }
@@ -626,7 +669,8 @@ const Order = props => {
                 id="date-input"
                 onChange={e =>
                   setDate({
-                    ...date,
+                            startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD'),
                     endDate: e.target.value
                   })
                 }
@@ -635,7 +679,7 @@ const Order = props => {
               />
             </CCol>
           </CRow>
-        </CRow>
+        </CRow> */}
         <AdvancedTable
           items={memoListed}
           fields={fields}
@@ -658,7 +702,7 @@ const Order = props => {
               <div style={{ minWidth: 200 }}>
                 <Select
                   onChange={item => {
-                    onFilterColumn({ ...paramRef.current, status: item?.value || '' });
+                    onFilterColumn({ ...paramRef.current, status: item?.value || null });
                   }}
                   isClearable
                   placeholder="Chọn trạng thái"
@@ -735,7 +779,7 @@ const Order = props => {
                     <Table striped="true" responsive="true">
                       <Thead>
                         <Tr>
-                          <Th className="center">#</Th>
+                          <Th className="center">STT</Th>
                           <Th>Tên sản phẩm</Th>
                           <Th className="center">Số lượng</Th>
                           <Th className="right">Đơn giá</Th>

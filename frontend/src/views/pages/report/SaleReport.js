@@ -9,16 +9,16 @@ import moment from 'moment';
 import Select, { components } from 'react-select';
 import CIcon from '@coreui/icons-react';
 import _ from 'lodash';
-import ReportStatistic from '../../components/report-statistic/ReportStatistic';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
 import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
-import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
+import { globalizedBranchSelectors, setAll } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getSaleReport, getSaleSummaryReport } from './report.api';
 import Download from './../../components/excel/DownloadExcel';
 import { useHistory } from 'react-router';
 import AdvancedTable from '../../components/table/AdvancedTable';
+import ReportDate from '../../../views/components/report-date/ReportDate';
 
 moment.locale('vi');
 const controlStyles = {
@@ -67,7 +67,7 @@ const SaleReport = props => {
 
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const [filter, setFilter] = useState({ dependency: true });
+  const [filter, setFilter] = useState({ dependency: true, startDate: moment().startOf('month').format('YYYY-MM-DD'), endDate: moment().format('YYYY-MM-DD')  });
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
@@ -80,9 +80,13 @@ const SaleReport = props => {
     dispatch(getChildTreeDepartmentByUser());
   }, []);
 
-  // useEffect(() => {
-  //   getTop10(filter);
-  // }, [activePage, size]);
+  useEffect(() => {
+    if (account.department.externalChild && department && branches.length > 1) {
+      if (JSON.parse(account.department.externalChild).includes(department.id)) {
+        dispatch(setAll([account.branch]));
+      }
+    }
+  }, [branches]);
 
   const getTop10 = filter => {
     dispatch(
@@ -91,7 +95,7 @@ const SaleReport = props => {
         size: 50,
         sort: 'createdDate,DESC',
         department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
+        branch: branch?.id,
         dependency: true
       })
     );
@@ -110,11 +114,6 @@ const SaleReport = props => {
         setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.real));
       }
     });
-    // dispatch(getProductReport(filter)).then(data => {
-    //   if (data && data.payload) {
-    //     setTop10Product(data.payload);
-    //   }
-    // });
   };
 
   const reset = () => {
@@ -158,7 +157,7 @@ const SaleReport = props => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
-          branch: branch?.id || account.branch.id,
+          branch: branch?.id,
           dependency: true
         })
       );
@@ -173,7 +172,6 @@ const SaleReport = props => {
   }, [user]);
 
   useEffect(() => {
-    console.log(filter)
     if (Object.keys(filter).length > 2) {
       getTop10(filter);
     }
@@ -189,6 +187,14 @@ const SaleReport = props => {
     }
   }, [date]);
 
+  useEffect(() => {
+    setFilter({
+      ...filter,
+      page: activePage - 1,
+      size
+    });
+  }, [activePage, size]);
+
   const debouncedSearchUser = _.debounce(value => {
     dispatch(
       getExactUser({
@@ -197,7 +203,7 @@ const SaleReport = props => {
         sort: 'createdDate,DESC',
         code: value,
         department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
+        branch: branch?.id,
         dependency: true
       })
     );
@@ -221,15 +227,12 @@ const SaleReport = props => {
   };
 
   const computedExcelItems = React.useCallback(items => {
-    return (
-      (items ||
-      []).map((item, index) => {
-        return {
-          ...item,
-          name: `${item.sale_lastName || ''} ${item.sale_firstName || ''}`
-        };
-      })
-    );
+    return (items || []).map((item, index) => {
+      return {
+        ...item,
+        name: `${item.sale_lastName || ''} ${item.sale_firstName || ''}`
+      };
+    });
   }, []);
 
   // const memoExcelComputedItems = React.useCallback(items => computedExcelItems(top10Product[0]), [top10Product[0]]);
@@ -251,25 +254,7 @@ const SaleReport = props => {
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          <CCardBody>
-            <DateRangePicker
-              startDate={date.startDate}
-              minDate="01-01-2000"
-              startDateId="startDate"
-              endDate={date.endDate}
-              endDateId="endDate"
-              minimumNights={0}
-              onDatesChange={value => setDate(value)}
-              focusedInput={focused}
-              isOutsideRange={() => false}
-              startDatePlaceholderText="Từ ngày"
-              endDatePlaceholderText="Đến ngày"
-              onFocusChange={focusedInput => setFocused(focusedInput)}
-              orientation="horizontal"
-              block={false}
-              openDirection="down"
-            />
-          </CCardBody>
+          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
         </CCard>
         <CCard>
           <CCardBody>
@@ -347,7 +332,7 @@ const SaleReport = props => {
               rightHeader={numOfPriceProduct}
               rightFooter="Doanh thu thuần"
               leftHeader={numOfProduct}
-              leftFooter="Tổng doanh thu"
+              leftFooter="Doanh thu"
               color="gradient-primary"
             >
               <CIcon name="cil3d" height="76" className="my-4" />
@@ -359,7 +344,13 @@ const SaleReport = props => {
             <CCardTitle>Danh sách nhân viên</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <Download data={memoTop10Product} headers={fields} name={`thong_ke_theo_nhan_vien tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `} />
+            <Download
+              data={memoTop10Product}
+              headers={fields}
+              name={`thong_ke_theo_nhan_vien tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format(
+                'DD-MM-YYYY'
+              )} `}
+            />
 
             <AdvancedTable
               items={memoTop10Product}
@@ -368,7 +359,7 @@ const SaleReport = props => {
               itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
               itemsPerPage={size}
               hover
-              sorter={{ external: true, resetable: true }}
+              sorter={{ external: true }}
               onSorterValueChange={sortItem}
               noItemsView={{
                 noResults: 'Không tìm thấy kết quả',

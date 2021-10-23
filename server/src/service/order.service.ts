@@ -84,17 +84,9 @@ export class OrderService {
         filter['startDate']
       }' AND  Order.createdDate <= '${filter['endDate']} 23:59:59'`;
     }
-    if (filter['status']) {
-      queryString += ` Order.status  = '${filter['status']}' `;
-    }
+
     delete filter['startDate'];
     delete filter['endDate'];
-    delete filter['status'];
-    Object.keys(filter).forEach((item, index) => {
-      queryString += `Order.${item} ${item === 'saleId' ? '=' : 'like'}  ${
-        item === 'saleId' ? filter[item] : "'%" + filter[item] + "%'"
-      }  ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
-    });
 
     if (isEmployee) {
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.sale = ${currentUser.id}`;
@@ -106,8 +98,9 @@ export class OrderService {
     } else {
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '} Order.branch is NULL `;
     }
-    andQueryString += ` AND Order.status <> 'DELETED'`;
-
+    if (!filter['status']) {
+      andQueryString += ` AND Order.status <> 'DELETED'`;
+    }
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .leftJoinAndSelect('Order.customer', 'customer')
@@ -122,39 +115,69 @@ export class OrderService {
       .take(options.take)
       .where(andQueryString)
       .orderBy({
-        'Order.createdDate': options.order[Object.keys(options.order)[0]] || 'DESC',
-      })
+        'Order.createdDate': options.order[Object.keys(options.order)[0]] || 'DESC'
+      });
 
     const count = this.orderRepository
       .createQueryBuilder('Order')
-      .where(andQueryString)
-      .orderBy(`Order.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
-      .skip(options.skip)
-      .take(options.take)
-      .cache(
-        `cache_count_get_orders_department_${JSON.stringify(departmentVisible)}_branch_${
-          currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
-        }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}`
-      );
-    if (queryString) {
+      .leftJoinAndSelect('Order.customer', 'customer')
+      .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
+      .leftJoinAndSelect('orderDetails.product', 'product')
+      .leftJoinAndSelect('Order.promotion', 'promotion')
+      .leftJoinAndSelect('promotion.customerType', 'customerType')
+      .leftJoinAndSelect('Order.sale', 'sale')
+      .leftJoinAndSelect('Order.department', 'department')
+      .where(andQueryString);
+    // .cache(
+    //   `cache_count_get_orders_department_${JSON.stringify(departmentVisible)}_branch_${
+    //     currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
+    //   }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}`
+    // );
+    if (Object.keys(filter).length > 0) {
       queryBuilder.andWhere(
         new Brackets(sqb => {
-          sqb.where(queryString);
+          Object.keys(filter).forEach((item, index) => {
+            sqb.andWhere(
+              `Order.${item} ${(item === 'saleId' || item == 'status') ? '=' : 'like'}  ${
+                (item === 'saleId' || item == 'status') ?  "'"+filter[item] +"'" : "'%" + filter[item] + "%'"
+              }`
+            );
+            // queryString += ` AND Order.${item} ${item === 'saleId' ? '=' : 'like'}  ${
+            //   item === 'saleId' ? filter[item] : "'%" + filter[item] + "%'"
+            // }`;
+            // if (item == 'status') {
+            //   sqb.andWhere(
+            //     `Order.status = ${filter['status']}`
+            //   );
+            // }
+          });
         })
       );
       count.andWhere(
         new Brackets(sqb => {
-          sqb.where(queryString);
+          Object.keys(filter).forEach((item, index) => {
+            sqb.andWhere(
+              `Order.${item} ${(item === 'saleId' || item == 'status') ? '=' : 'like'}  ${(item === 'saleId' || item == 'status') ? "'"+filter[item]+"'" : "'%" + filter[item] + "%'"}`
+            );
+            // queryString += ` AND Order.${item} ${item === 'saleId' ? '=' : 'like'}  ${
+            //   item === 'saleId' ? filter[item] : "'%" + filter[item] + "%'"
+            // }`;
+            // if (item == 'status') {
+            //   sqb.andWhere(`Order.status = ${filter['status']}`);
+            // }
+          });
+          // sqb.where(queryString);
         })
       );
     }
-    const lastResult: [Order[], number] = [[],0] 
+
+    const lastResult: [Order[], number] = [[], 0];
     const result = await queryBuilder.getMany();
     lastResult[1] = await count.getCount();
     lastResult[0] = result.map(item => ({
       ...item,
-      orderDetails : item.orderDetails.reverse()
-    }))
+      orderDetails: item.orderDetails.reverse()
+    }));
     return lastResult;
   }
 
@@ -214,7 +237,8 @@ export class OrderService {
         ...item,
         quantity: item.quantity - itemFounded[0].quantity,
         entity: 'ORDER',
-        entityId: order.id
+        entityId: order.id,
+        entityCode: order.code
       };
     });
     const checkExistInStore = productQuantityExported.filter(item => item.quantity < 0);
@@ -292,9 +316,8 @@ export class OrderService {
         // incomeItem.type = DashboardType.ORDER;
         // incomeItem.saleId = foundedOrder.sale.id || null;
         // await this.incomeDashboardService.save(incomeItem);
-      }else {
+      } else {
         throw new HttpException('Đon hàng không thể tạo vận đơn.Số lượng sản phẩm trong kho không đủ', HttpStatus.UNPROCESSABLE_ENTITY);
- 
       }
     }
     return await this.save(order, departmentVisible, isEmployee, currentUser);

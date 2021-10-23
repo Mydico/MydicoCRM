@@ -88,22 +88,22 @@ const CreateReceipt = () => {
   }, []);
 
   const onSubmit = (values, { resetForm }) => () => {
-    let isValidProduct = true;
-    productList.forEach(element => {
-      if (element.quantity > element.quantityInStore) {
-        isValidProduct = false;
-        return;
-      }
-    });
-    if (!isValidProduct) return;
-    if (productList.reduce((sum, current) => sum + current.quantity, 0) === 0) {
-      alert('Không để tổng số lượng bằng 0');
-      return;
-    }
-    if (productList.filter(item => item.quantity === 0).length > 0) {
-      alert('Không để sản phẩm có số lượng bằng 0 khi tạo đơn hàng');
-      return;
-    }
+    // let isValidProduct = true;
+    // productList.forEach(element => {
+    //   if (element.quantity > element.quantityInStore) {
+    //     isValidProduct = false;
+    //     return;
+    //   }
+    // });
+    // if (!isValidProduct) return;
+    // if (productList.reduce((sum, current) => sum + current.quantity, 0) === 0) {
+    //   alert('Không để tổng số lượng bằng 0');
+    //   return;
+    // }
+    // if (productList.filter(item => item.quantity === 0).length > 0) {
+    //   alert('Không để sản phẩm có số lượng bằng 0 khi tạo đơn hàng');
+    //   return;
+    // }
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
     values.department = account.mainDepartment || account.department;
@@ -362,7 +362,7 @@ const CreateReceipt = () => {
             </CButton>
             <CCard>
               <CCardBody>
-                <Table responsive striped>
+                <Table striped>
                   <thead>
                     <tr>
                       <th>Sản phẩm</th>
@@ -384,12 +384,13 @@ const CreateReceipt = () => {
                               : {}
                           }
                         >
-                          <td style={{ minWidth: 300 }}>
+                          <td style={{ minWidth: 600}} >
                             <Select
                               value={{
                                 value: item.product,
                                 label: item?.product?.name
                               }}
+                              // styles={customStyles}
                               onInputChange={onSearchProduct}
                               onChange={event => onSelectedProduct(event, index)}
                               menuPortalTarget={document.body}
@@ -401,7 +402,7 @@ const CreateReceipt = () => {
                             />
                           </td>
                           <td>{item?.product?.unit}</td>
-                          <td style={{ minWidth: 300 }}>
+                          <td style={{ minWidth: 100, maxWidth: 300 }}>
                             <CInput
                               type="number"
                               min={1}
@@ -416,7 +417,7 @@ const CreateReceipt = () => {
                               <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
                             )}
                           </td>
-                          <td style={{ minWidth: 300 }}>
+                          <td style={{ minWidth: 200 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}

@@ -30,7 +30,8 @@ const slice = createSlice({
     branchAddOne: branchAdapter.addOne,
     branchAddMany: branchAdapter.addMany,
     branchUpdate: branchAdapter.updateOne,
-    branchRemove: branchAdapter.removeOne
+    branchRemove: branchAdapter.removeOne,
+    setAll: branchAdapter.setAll
   },
   extraReducers: {
     [creatingBranch.fulfilled]: state => {
@@ -65,6 +66,6 @@ const slice = createSlice({
 });
 
 export default slice.reducer;
-export const { fetching, reset, branchRemove } = slice.actions;
+export const { fetching, reset, branchRemove, setAll } = slice.actions;
 
 export const globalizedBranchSelectors = branchAdapter.getSelectors(state => state.branch);

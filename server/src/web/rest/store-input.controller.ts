@@ -288,6 +288,12 @@ export class StoreInputController {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
     if (storeInput.status === StoreImportStatus.APPROVED) {
+      if(storeInput.type === StoreImportType.EXPORT){
+        const canExport = await this.storeInputService.canExportStore(storeInput);
+        if (!canExport) {
+          throw new HttpException('Sản phẩm trong kho không đủ để tạo phiếu xuất', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+      }
       storeInput.approver = currentUser;
       storeInput.approverName = currentUser.login;
     }
@@ -356,7 +362,7 @@ export class StoreInputController {
     if (storeInput.status === StoreImportStatus.APPROVED) {
       const canExport = await this.storeInputService.canExportStore(storeInput);
       if (!canExport) {
-        throw new HttpException('Sản phẩm trong kho không đủ để tạo phiếu xuất', HttpStatus.UNPROCESSABLE_ENTITY);
+        throw new HttpException('Sản phẩm trong kho không đủ để duyệt phiếu xuất', HttpStatus.UNPROCESSABLE_ENTITY);
       }
     }
     return res.send(await this.storeInputService.update(storeInput));

@@ -139,6 +139,47 @@ export class ReportController {
     return res.send(await this.reportService.getSaleReportByDepartment(filter));
   }
 
+  @Get('/department-for-external-child')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getDepartmentForExternalChild(@Req() req: Request, @Res() res): Promise<any> {
+    const filter = await this.buildFilterForReport(req);
+    const currentUser = req.user as User;
+    const department = await this.departmentService.findAllFlatChild(currentUser.department, currentUser);
+    const namesToDeleteArr = JSON.parse(currentUser.department.externalChild);
+
+    const namesToDeleteSet = new Set(namesToDeleteArr);
+
+    const newArr = department.filter(item => {
+      return !namesToDeleteSet.has(item.id);
+    });
+    filter['department'] = newArr.map(item => item.id);
+    delete filter['branch'];
+    return res.send(await this.reportService.getSaleReportByDepartmentExternal(filter, currentUser.department));
+  }
+
+  @Get('/get-income-chart')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getIncomeChart(@Req() req: Request, @Res() res): Promise<any> {
+    const filter = await this.buildFilterForReport(req);
+    return res.send(await this.reportService.getIncomeChart(filter));
+  }
+
+  @Get('/get-debt-chart')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getDebtChart(@Req() req: Request, @Res() res): Promise<any> {
+    const filter = await this.buildFilterForReport(req);
+    return res.send(await this.reportService.getDebtChart(filter));
+  }
+
   @Get('/top10sale')
   @ApiResponse({
     status: 200,
@@ -187,7 +228,6 @@ export class ReportController {
     const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getOrderIncludesProductId(options, filter));
   }
-
 
   @Get('/count-total-product')
   @ApiResponse({
@@ -283,7 +323,7 @@ export class ReportController {
   })
   async getSummaryCustomerReport(@Req() req: Request, @Res() res): Promise<any> {
     const filter = await this.buildFilterForReport(req);
-    if(filter['customer']) return res.send(null);
+    if (filter['customer']) return res.send(null);
     return res.send(await this.reportService.getCustomerSummary(filter));
   }
 
@@ -338,6 +378,18 @@ export class ReportController {
     return res.send(await this.reportService.getPromotionCustomer(filter));
   }
 
+  @Get('/count-customer')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getCountCustomer(@Req() req: Request, @Res() res): Promise<any> {
+    delete req.query['startDate']
+    delete req.query['endDate']
+    const filter = await this.buildFilterForReport(req);
+    return res.send(await this.reportService.getCustomerCount(filter));
+  }
+
   async buildFilter(req): Promise<any> {
     const filter = {};
     Object.keys(req.query).forEach(item => {
@@ -382,17 +434,30 @@ export class ReportController {
       } else {
         departmentVisible.push(req.query['department']);
       }
-    }else {
-      departmentVisible.push(currentUser.department.id);
+    } else {
+      if(JSON.parse(currentUser.department.externalChild).length > 0){
+        departmentVisible.push(req.query['department']);
+      }else {
+        departmentVisible.push(currentUser.department.id);
+      }
+    }
+    if (JSON.parse(currentUser.department.externalChild).length > 0 && !req.query['department']) {
+      departmentVisible.push(JSON.parse(currentUser.department.externalChild)[0]);
     }
 
     delete req.query['department'];
     Object.keys(req.query).forEach(async key => {
       filter[key] = req.query[key];
     });
-    filter['department'] = departmentVisible;
+    filter['department'] = departmentVisible.map(item => Number(item));
     if (isBranchManager) {
       filter['branch'] = currentUser.branch.id;
+    }
+    if(JSON.parse(currentUser.department.externalChild).length > 0){
+      if(!filter['department'].includes(JSON.parse(currentUser.department.externalChild)[0])){
+        delete filter['branch']
+      }
+      
     }
     if (isEmployee) {
       filter['sale'] = currentUser.id;

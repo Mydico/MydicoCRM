@@ -17,6 +17,7 @@ import _ from 'lodash';
 import Select from 'react-select';
 import { computedExcelItemsWarehouse, fieldsExcelWarehouse } from '../Import/warehouse-import.js';
 import Download from '../../../components/excel/DownloadExcel';
+import ReportDate from '../../../components/report-date/ReportDate';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -43,15 +44,14 @@ const fields = [
     label: '',
     filter: false
   },
-  { key: 'storeName', label: 'Tên kho nhập', _style: { width: '10%' } },
-  { key: 'customerName', label: 'Khách hàng', _style: { width: '10%' } },
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
+  { key: 'storeName', label: 'Tên kho nhập', _style: { width: '10%' } },
+  { key: 'customerName', label: 'Khách hàng', _style: { minWidth: 200 } },
   { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '10%' } },
   { key: 'quantity', label: 'Số lượng sp', _style: { width: '10%' } },
   { key: 'realMoney', label: 'Tiền thanh toán', _style: { width: '10%' } },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
-  { key: 'approverName', label: 'Người duyệt', _style: { width: '10%' } },
   { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
   {
     key: 'action',
@@ -99,10 +99,18 @@ const WarehouseImport = props => {
   const paramRef = useRef({});
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const warehouses = useSelector(selectAll);
+  const [focused, setFocused] = React.useState();
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
+      };
       dispatch(getWarehouseReturn(params));
     }
   }, [date]);
@@ -216,7 +224,7 @@ const WarehouseImport = props => {
         return null;
       case WarehouseImportStatus.WAITING:
         return (
-          <CRow style={{minWidth:300}}>
+          <CRow style={{ minWidth: 300 }}>
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/return').length > 0) && (
               <CButton
                 onClick={() => {
@@ -294,10 +302,11 @@ const WarehouseImport = props => {
           </CButton>
         )}
       </CCardHeader>
+      <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
       <CCardBody>
         <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'order'} />
 
-        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+        {/* <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>
               <CLabel htmlFor="date-input">Từ ngày</CLabel>
@@ -308,7 +317,7 @@ const WarehouseImport = props => {
                 id="date-input"
                 onChange={e =>
                   setDate({
-                    ...date,
+                     startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'),
                     startDate: e.target.value
                   })
                 }
@@ -327,7 +336,7 @@ const WarehouseImport = props => {
                 id="date-input"
                 onChange={e =>
                   setDate({
-                    ...date,
+                     startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'),
                     endDate: e.target.value
                   })
                 }
@@ -336,7 +345,7 @@ const WarehouseImport = props => {
               />
             </CCol>
           </CFormGroup>
-        </CFormGroup>
+        </CFormGroup> */}
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -385,7 +394,11 @@ const WarehouseImport = props => {
             ),
             type: item => <td>{mappingType[item.type]}</td>,
             quantity: item => {
-              return <td className="py-2 d-flex">{JSON.parse(JSON.stringify(item.storeInputDetails || [])).reduce((prev, curr) => prev+ curr.quantity,0)}</td>;
+              return (
+                <td className="py-2 d-flex">
+                  {JSON.parse(JSON.stringify(item.storeInputDetails || [])).reduce((prev, curr) => prev + curr.quantity, 0)}
+                </td>
+              );
             },
             action: item => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
@@ -416,7 +429,7 @@ const WarehouseImport = props => {
                       <Table striped responsive>
                         <thead>
                           <tr>
-                            <th className="center">#</th>
+                            <th className="center">STT</th>
                             <th>Tên sản phẩm</th>
                             <th className="center">Số lượng</th>
                             <th className="right">Đơn giá</th>
@@ -473,7 +486,7 @@ const WarehouseImport = props => {
                       <Table striped responsive>
                         <thead>
                           <tr>
-                            <th className="center">#</th>
+                            <th className="center">STT</th>
                             <th>Tên sản phẩm</th>
                             <th>Dung tích</th>
                             <th className="center">Số lượng</th>

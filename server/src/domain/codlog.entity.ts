@@ -1,27 +1,31 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Entity, Column, Index } from 'typeorm';
+import { Entity, Column, Index, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
+import Bill from './bill.entity';
+import Order from './order.entity';
+import { User } from './user.entity';
 
 /**
  * A Codlog.
  */
 @Entity('codlog')
 export default class Codlog extends BaseEntity {
-    @Column({ type: 'integer', name: 'transport_id', nullable: true })
-    @Index()
-    transportId: number;
+    @ManyToOne(type => Bill, { createForeignKeyConstraints: false })
+    bill: Bill;
 
-    @Column({ name: 'content', length: 255, nullable: true })
-    @Index()
-    content: string;
+    @ManyToOne(type => User, { createForeignKeyConstraints: false })
+    transporter: User;
 
-    @Column({ type: 'integer', name: 'time', nullable: true })
+    @Column({ name: 'status', length: 255, nullable: true })
     @Index()
-    time: number;
+    status: string;
 
-    @Column({ type: 'integer', name: 'order_id', nullable: true })
+    @Column({ name: 'code', length: 255, nullable: true })
     @Index()
-    orderId: number;
+    code: string;
+
+    @ManyToOne(type => Order, {createForeignKeyConstraints: false })
+    order: Order;
 
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

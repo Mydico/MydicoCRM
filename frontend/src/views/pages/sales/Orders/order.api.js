@@ -46,9 +46,9 @@ export const updateStatusOrder = createAsyncThunk('api/update/orders/status', as
   }
 });
 
-export const getOrderDetail = createAsyncThunk('api/get/order-detail', async (orderId, thunkAPI) => {
+export const getDetailCodLogs = createAsyncThunk('api/get/codlogs', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/order-details/order', { params: orderId });
+    const result = await axios.get('api/codlogs', { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

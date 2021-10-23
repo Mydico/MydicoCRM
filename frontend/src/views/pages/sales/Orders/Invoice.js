@@ -88,7 +88,7 @@ const Invoice = () => {
           <Table striped responsive>
             <thead>
               <tr>
-                <th className="center">#</th>
+                <th className="center">STT</th>
                 <th>Tên sản phẩm</th>
                 <th className="center">Số lượng</th>
                 <th className="right">Đơn giá</th>

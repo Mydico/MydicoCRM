@@ -73,6 +73,7 @@ const getBadgeType = status => {
 
 const Promotion = props => {
   const [details, setDetails] = useState([]);
+  const [detailsDescription, setDetailsDescription] = useState([]);
   const selectedPro = useRef({ id: null, isLock: false });
   const [primary, setPrimary] = useState(false);
   const { account } = useSelector(userSafeSelector);
@@ -98,7 +99,7 @@ const Promotion = props => {
       return {
         ...item,
         customerType: item.customerType?.name || '',
-        description: item.description?.length > 10 ? `${item.description.substring(0, 250)}...` : item.description,
+        description: item.description,
         createdDate: moment(item.createdDate).format('DD-MM-YYYY')
       };
     });
@@ -112,6 +113,17 @@ const Promotion = props => {
       newDetails = [...details, index];
     }
     setDetails(newDetails);
+  };
+
+  const toggleDetailsDescription = index => {
+    const position = detailsDescription.indexOf(index);
+    let newDetails = detailsDescription.slice();
+    if (position !== -1) {
+      newDetails.splice(position, 1);
+    } else {
+      newDetails = [...detailsDescription, index];
+    }
+    setDetailsDescription(newDetails);
   };
 
   const toCreatePromotion = () => {
@@ -138,14 +150,14 @@ const Promotion = props => {
   }, 300);
 
   const onFilterColumn = value => {
-    if(value) debouncedSearchColumn(value);
+    if (value) debouncedSearchColumn(value);
   };
 
   const lockPromotion = () => {
-   if(Date.parse(selectedPro.current.endTime) < new Date() && selectedPro.current.isLock){
-    alert("Vui lòng chỉnh sửa ngày kết thúc lớn hơn ngày hiện tại")
-    return
-   }
+    if (Date.parse(selectedPro.current.endTime) < new Date() && selectedPro.current.isLock) {
+      alert('Vui lòng chỉnh sửa ngày kết thúc lớn hơn ngày hiện tại');
+      return;
+    }
     dispatch(updatePromotion({ id: selectedPro.current.id, isLock: !selectedPro.current.isLock }));
   };
 
@@ -175,7 +187,6 @@ const Promotion = props => {
         )}
       </CCardHeader>
       <CCardBody>
-
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -196,7 +207,9 @@ const Promotion = props => {
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             isLock: item => (
               <td>
-                <CBadge color={getBadge(item.isLock)}>{item.isLock ? Date.parse(item.endTime) < new Date() ? 'Quá thời gian quy định' : 'Đã khóa' : 'Đang mở'}</CBadge>
+                <CBadge color={getBadge(item.isLock)}>
+                  {item.isLock ? (Date.parse(item.endTime) < new Date() ? 'Quá thời gian quy định' : 'Đã khóa') : 'Đang mở'}
+                </CBadge>
               </td>
             ),
             type: item => (
@@ -269,12 +282,28 @@ const Promotion = props => {
                         </dl>
                         <dl className="row">
                           <dt className="col-sm-3">Mô tả:</dt>
-                          <dd className="col-sm-9">{item.description || ''}</dd>
+
+                          <dd className="col-sm-9">
+                            {detailsDescription.includes(item.id) ? (
+                              item.description || ''
+                            ) : (
+                              <p>
+                                {item.description?.length > 10 ? `${item.description.substring(0, 250)}...` : ''}
+                                <CButton
+                                  onClick={() => {
+                                    toggleDetailsDescription(item.id);
+                                  }}
+                                >
+                                  {!detailsDescription.includes(item.id) ? 'Hiển thị thêm' : 'Rút gọn'}
+                                </CButton>
+                              </p>
+                            )}
+                          </dd>
                         </dl>
                       </CCol>
                       <CCol lg="6">
                         <dl className="row">
-                          <dt className="col-sm-3">Tổng doanh thu:</dt>
+                          <dt className="col-sm-3">Doanh thu thuần:</dt>
                           <dd className="col-sm-9">{item.totalRevenue}</dd>
                         </dl>
                         <dl className="row">
@@ -291,7 +320,7 @@ const Promotion = props => {
                       <Table>
                         <Thead>
                           <tr>
-                            <th className="center">#</th>
+                            <th className="center">STT</th>
                             <th>Tên sản phẩm</th>
                             <th>Dung tích</th>
                             <th className="right">Chương trình</th>
@@ -314,7 +343,7 @@ const Promotion = props => {
                       <Table>
                         <Thead>
                           <tr>
-                            <th className="center">#</th>
+                            <th className="center">STT</th>
                             <th>Tên doanh số</th>
                             <th>Doanh số</th>
                             <th className="right">Chiết khấu(%)</th>

@@ -1,10 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../domain/user.entity';
 import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import Department from '../domain/department.entity';
 import { DepartmentRepository } from '../repository/department.repository';
 import { RoleService } from './role.service';
 import { checkCodeContext } from './utils/normalizeString';
+import { RoleType } from '../security';
 
 const relationshipNames = [];
 relationshipNames.push('permissionGroups');
@@ -24,7 +26,7 @@ export class DepartmentService {
     return result.filter(item => item.activated);
   }
 
-  async findAllFlatChild(department: Department): Promise<Department[]> {
+  async findAllFlatChild(department: Department, user?: User): Promise<Department[]> {
     const foundedDepartment = await this.departmentRepository.findOne(department.id);
     let arrTree = [];
     const flatTree = await this.departmentRepository.findDescendants(department);
@@ -33,6 +35,14 @@ export class DepartmentService {
         const ids = JSON.parse(foundedDepartment.externalChild);
         const externalTree = await this.departmentRepository.findByIds(ids);
         arrTree = [...new Set([...flatTree, ...externalTree])];
+        if (user) {
+          const isEmployee = user.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+          if (!isEmployee) {
+            const idsReport = JSON.parse(foundedDepartment.reportDepartment);
+            const externalTreeReport = await this.departmentRepository.findByIds(idsReport);
+            arrTree = [...new Set([...arrTree, ...externalTreeReport])];
+          }
+        }
       } catch (error) {}
     }
     return arrTree;

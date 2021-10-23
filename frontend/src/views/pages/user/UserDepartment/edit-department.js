@@ -54,6 +54,7 @@ const EditDepartment = props => {
   const [selectedGroupPermission, setSelectedGroupPermission] = useState([]);
   const [initValues, setInitValues] = useState(null);
   const [external, setExternal] = useState([]);
+  const [reportDepartment, setReportDepartment] = useState([]);
   const [selectedBranches, setSelectedBranches] = useState([]);
 
   useEffect(() => {
@@ -72,21 +73,27 @@ const EditDepartment = props => {
           label: departments.filter(depart => depart.id === item)[0]?.name || ''
         }));
         setExternal(arrWithLabel);
-        const arrBranchesWithLabel = initialState.detail.branches.map(item => {
+        const arrBranchesWithLabel = (initialState.detail.branches || []).map(item => {
           dispatch(branchRemove(item.id));
-
           return {
             value: item,
             label: item.name
           };
         });
         setSelectedBranches(arrBranchesWithLabel);
-      } catch {
+        const arrReport = JSON.parse(initialState.detail.reportDepartment);
+        const arrWithLabelReport = (arrReport || []).map(item => ({
+          value: item,
+          label: departments.filter(depart => depart.id === item)[0]?.name || ''
+        }));
+        setReportDepartment(arrWithLabelReport);
+      } catch (e) {
         setExternal([]);
+        setReportDepartment([]);
         setSelectedBranches([]);
       }
     }
-  }, [departments]);
+  }, [departments, initialState.detail]);
 
   useEffect(() => {
     dispatch(getDepartment({ page: 0, size: 200, sort: 'createdDate,DESC', dependency: true }));
@@ -104,6 +111,7 @@ const EditDepartment = props => {
     values = JSON.parse(JSON.stringify(values));
     values.permissionGroups = selectedGroupPermission;
     values.externalChild = external ? JSON.stringify(external.map(item => item.value)) : '[]';
+    values.reportDepartment = reportDepartment ? JSON.stringify(reportDepartment.map(item => item.value)) : '[]';
     values.branches = selectedBranches?.map(item => item.value) || [];
 
     dispatch(fetching());
@@ -212,6 +220,20 @@ const EditDepartment = props => {
                     onChange={setExternal}
                     isMulti
                     value={external}
+                    placeholder="Chọn chi nhánh"
+                    options={departments.map(item => ({
+                      value: item.id,
+                      label: item.name
+                    }))}
+                  />
+                </CFormGroup>
+                <CFormGroup>
+                  <CLabel htmlFor="login">Chi nhánh được xem báo cáo</CLabel>
+                  <Select
+                    name="department"
+                    onChange={setReportDepartment}
+                    isMulti
+                    value={reportDepartment}
                     placeholder="Chọn chi nhánh"
                     options={departments.map(item => ({
                       value: item.id,

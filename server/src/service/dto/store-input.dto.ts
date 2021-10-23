@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ApiHideProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MinLength, MaxLength, Length, Min, Max, Matches } from 'class-validator';
+import { StoreImportType } from '../../domain/enumeration/store-import-type';
 import { StoreImportStatus } from '../../domain/enumeration/store-import-status';
 import { User } from '../../domain/user.entity';
 import { BaseDTO } from './base.dto';
@@ -51,5 +52,6 @@ export class StoreInputUpdateStatusDTO extends BaseDTO {
     status: StoreImportStatus;
     approver: User;
     approverName: string;
+    type: StoreImportType
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
   }

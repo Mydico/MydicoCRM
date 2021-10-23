@@ -16,6 +16,7 @@ import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 import Download from '../../../components/excel/DownloadExcel';
+import ReportDate from '../../../components/report-date/ReportDate';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -149,10 +150,10 @@ const WarehouseImport = props => {
   const history = useHistory();
   const paramRef = useRef({});
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
-  const [loadingIndex, setLoadingIndex] = useState(-1);
+  const [focused, setFocused] = React.useState();
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
       dispatch(getWarehouseImport(params));
     }
   }, [date]);
@@ -164,7 +165,7 @@ const WarehouseImport = props => {
   useEffect(() => {
     let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     if (date.endDate && date.startDate) {
-      params = { ...params, ...date };
+      params = { ...params,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }
     dispatch(getWarehouseImport(params));
     window.scrollTo(0, 100);
@@ -197,7 +198,7 @@ const WarehouseImport = props => {
         if (!value[key]) delete value[key];
       });
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
+      dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') }));
     }
   }, 300);
 
@@ -294,7 +295,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
       dispatch(getWarehouseImport(params));
       dispatch(reset());
     }
@@ -316,10 +317,11 @@ const WarehouseImport = props => {
           </CButton>
         )}
       </CCardHeader>
+      <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
       <CCardBody>
         <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'order'} />
 
-        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+        {/* <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>
               <CLabel htmlFor="date-input">Từ ngày</CLabel>
@@ -330,7 +332,7 @@ const WarehouseImport = props => {
                 id="date-input"
                 onChange={e =>
                   setDate({
-                    ...date,
+                     startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'),
                     startDate: e.target.value
                   })
                 }
@@ -349,7 +351,7 @@ const WarehouseImport = props => {
                 id="date-input"
                 onChange={e =>
                   setDate({
-                    ...date,
+                     startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'),
                     endDate: e.target.value
                   })
                 }
@@ -358,7 +360,7 @@ const WarehouseImport = props => {
               />
             </CCol>
           </CFormGroup>
-        </CFormGroup>
+        </CFormGroup> */}
         <CDataTable
           items={memoListed}
           fields={fields}
@@ -433,7 +435,7 @@ const WarehouseImport = props => {
                     <Table striped responsive>
                       <thead>
                         <tr>
-                          <th className="center">#</th>
+                          <th className="center">STT</th>
                           <th>Tên sản phẩm</th>
                           <th className="center">Số lượng</th>
                         </tr>

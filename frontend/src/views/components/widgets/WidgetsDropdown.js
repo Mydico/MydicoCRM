@@ -26,7 +26,7 @@ const WidgetsDropdown = props => {
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      getData(date.startDate.format('YYYY-MM-DD'), date.endDate.format('YYYY-MM-DD'));
+      getData(date.startDate?.format('YYYY-MM-DD'), date.endDate?.format('YYYY-MM-DD'));
     }else{
       getData(null, null);
     }

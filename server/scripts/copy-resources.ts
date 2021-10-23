@@ -10,6 +10,7 @@ createFolderIfNotExist(path.join(out, 'config'));
 
 shell.cp('-R', 'src/config/*.yml', 'dist/config');
 shell.cp('-R', 'src/*.conf', 'dist/');
+shell.cp('-R', 'src/secrets/', 'dist/secrets/');
 
 const clientDist = path.join(__dirname, '..', '..', 'frontend', 'target', 'classes');
 

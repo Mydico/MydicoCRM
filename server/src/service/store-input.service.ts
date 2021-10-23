@@ -295,6 +295,8 @@ export class StoreInputService {
                 ...item,
                 entity: 'STORE',
                 entityId: entity?.id,
+                entityCode: entity?.code,
+                entityType: entity?.type,
                 quantity: item.quantity - totalProduct > 0 ? item.quantity - totalProduct : 0,
             };
         });
@@ -341,6 +343,8 @@ export class StoreInputService {
                 storeName: entity.store.name,
                 entity: 'STORE',
                 entityId: entity?.id,
+                entityCode: entity?.code,
+                entityType: StoreHistoryType.IMPORT,
                 type: StoreHistoryType.IMPORT,
             }));
         const productInStore = founded.map(item => {
@@ -352,6 +356,8 @@ export class StoreInputService {
                 quantity: item.quantity + totalProduct,
                 entity: 'STORE',
                 entityId: entity?.id,
+                entityCode: entity?.code,
+                entityType: entity?.type,
             };
         });
         const total = [...productInStore, ...productNotInStore];

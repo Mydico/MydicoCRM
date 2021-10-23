@@ -16,7 +16,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import moment from 'moment';
 import MainChart from '../../components/charts/MainChartExample.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBestCustomer, getBestProductSale, getDebtDashboard, getIncomeDashboard } from './dashboard.api.js';
+import { getBestCustomer, getBestProductSale, getDebtDashboard, getIncomeChart, getIncomeDashboard } from './dashboard.api.js';
 import { getStyle, hexToRgba } from '@coreui/utils';
 import { userSafeSelector } from '../login/authenticate.reducer.js';
 import { CCardTitle, CFormGroup, CInput, CLabel } from '@coreui/react';
@@ -24,6 +24,7 @@ import memoize from 'fast-memoize';
 import { DateRangePicker } from 'react-dates';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
+import ReportDate from '../../components/report-date/ReportDate.js';
 
 const WidgetsDropdown = lazy(() => import('../../components/widgets/WidgetsDropdown.js'));
 const brandSuccess = getStyle('success') || '#4dbd74';
@@ -53,36 +54,21 @@ const Dashboard = () => {
   const [bestSaleProduct, setBestSaleProduct] = useState([]);
   const [bestCustomer, setBestCustomer] = useState([]);
   const { account } = useSelector(userSafeSelector);
-  const [mode, setMode] = useState(null);
+  const [mode, setMode] = useState('week');
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
 
   const getData = (startDate, endDate) => {
-    // dispatch(getIncomeDashboard({ saleId: account.id, startDate, endDate })).then(data => {
-    //   if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-    //     const sum = memoizedTransformData(data.payload).reduce((curr, prev) => {
-    //       let sum = 0;
-    //       if (prev.type === DashboardType.ORDER) {
-    //         sum = +Number(prev.amount);
-    //       } else if (prev.type === DashboardType.RETURN) {
-    //         sum = -Number(prev.amount);
-    //       } else {
-    //         sum = 0;
-    //       }
-    //       return (curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(sum)), curr;
-    //     }, {});
-    //     setIncomeTotal(sum);
-    //   }
-    // });
-    // dispatch(getDebtDashboard({ saleId: account.id, startDate, endDate })).then(data => {
-    //   if (data && Array.isArray(data.payload) && data.payload.length > 0) {
-    //     const sum = memoizedTransformData(data.payload).reduce(
-    //       (curr, prev) => ((curr[`${prev.createdDate}`] = (Number(curr[`${prev.createdDate}`]) || 0) + Number(prev.amount)), curr),
-    //       {}
-    //     );
-    //     setDebt(sum);
-    //   }
-    // });
+    dispatch(getIncomeChart({ startDate, endDate })).then(data => {
+      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+        setIncomeTotal(data.payload);
+      }
+    });
+    dispatch(getDebtDashboard({ startDate, endDate })).then(data => {
+      if (data && Array.isArray(data.payload) && data.payload.length > 0) {
+        setDebt(data.payload);
+      }
+    });
     dispatch(getBestProductSale({ saleId: account.id, startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         setBestSaleProduct(data.payload);
@@ -95,9 +81,11 @@ const Dashboard = () => {
     });
   };
 
+  const getChartDate = (startDate, endDate) => {};
+
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      getData(date.startDate.format('YYYY-MM-DD'), date.endDate.format('YYYY-MM-DD'));
+      getData(date.startDate?.format('YYYY-MM-DD'), date.endDate?.format('YYYY-MM-DD'));
     }
   }, [date]);
 
@@ -109,17 +97,17 @@ const Dashboard = () => {
       case 'week':
         to_date = today.format('YYYY-MM-DD');
         from_date = today.subtract(7, 'days').format('YYYY-MM-DD');
-        getData(from_date, to_date);
+        getChartDate(from_date, to_date);
         break;
       case 'month':
         from_date = today.startOf('month').format('YYYY-MM-DD');
         to_date = today.endOf('month').format('YYYY-MM-DD');
-        getData(from_date, to_date);
+        getChartDate(from_date, to_date);
         break;
       case 'year':
         from_date = today.startOf('year').format('YYYY-MM-DD');
         to_date = today.endOf('year').format('YYYY-MM-DD');
-        getData(from_date, to_date);
+        getChartDate(from_date, to_date);
         break;
       default:
         break;
@@ -133,8 +121,10 @@ const Dashboard = () => {
   return (
     <>
       <CCard>
-          {/* <CCardHeader>React-Dates</CCardHeader> */}
-          <CCardBody>
+        {/* <CCardHeader>React-Dates</CCardHeader> */}
+        <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
+
+        {/* <CCardBody>
             <DateRangePicker
               startDate={date.startDate}
               minDate="01-01-2000"
@@ -152,9 +142,9 @@ const Dashboard = () => {
               block={false}
               openDirection="down"
             />
-          </CCardBody>
-        </CCard>
-        {/* <CFormGroup row>
+          </CCardBody> */}
+      </CCard>
+      {/* <CFormGroup row>
           <CCol>
             <CLabel htmlFor="date-input">Từ ngày</CLabel>
           </CCol>
@@ -203,28 +193,6 @@ const Dashboard = () => {
               </h4>
               {/* <div className="small text-muted">November 2017</div> */}
             </CCol>
-            <CCol sm="7" className="d-none d-md-block">
-              <CButton color="primary" className="float-right">
-                <CIcon name="cil-cloud-download" />
-              </CButton>
-              <CButtonGroup className="float-right mr-3">
-                {[
-                  { label: 'Tuần', value: 'week' },
-                  { label: 'Tháng', value: 'month' },
-                  { label: 'Năm', value: 'year' }
-                ].map(item => (
-                  <CButton
-                    color="outline-secondary"
-                    key={item.value}
-                    onClick={() => setMode(item.value)}
-                    className="mx-0"
-                    active={item.value === mode}
-                  >
-                    {item.label}
-                  </CButton>
-                ))}
-              </CButtonGroup>
-            </CCol>
           </CRow>
           <CRow>
             <CCol>
@@ -254,6 +222,7 @@ const Dashboard = () => {
           <Table className="table table-hover table-outline mb-0 d-sm-table">
             <Thead className="thead-light">
               <Tr>
+                <Th>STT</Th>
                 <Th>Mã sản phẩm</Th>
                 <Th>Tên sản phẩm</Th>
                 <Th>Số lượng bán</Th>
@@ -262,6 +231,9 @@ const Dashboard = () => {
             <Tbody>
               {memoBestSaleProduct.map((item, index) => (
                 <Tr>
+                  <Td>
+                    <div>{index + 1}</div>
+                  </Td>
                   <Td>
                     <div>{item.code}</div>
                   </Td>
@@ -285,6 +257,7 @@ const Dashboard = () => {
           <Table className="table table-hover table-outline mb-0 d-sm-table">
             <Thead className="thead-light">
               <Tr>
+                <Th>STT</Th>
                 <Th>Mã khách hàng</Th>
                 <Th>Tên khách hàng</Th>
                 <Th>Doanh thu thuần</Th>
@@ -293,6 +266,9 @@ const Dashboard = () => {
             <Tbody>
               {bestCustomer.map((item, index) => (
                 <Tr key={index}>
+                  <Td>
+                    <div>{index + 1}</div>
+                  </Td>
                   <Td>
                     <div>{item.code}</div>
                   </Td>

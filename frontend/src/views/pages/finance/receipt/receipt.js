@@ -15,6 +15,7 @@ import _ from 'lodash';
 import Select from 'react-select';
 import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 import Download from '../../../components/excel/DownloadExcel';
+import ReportDate from '../../../components/report-date/ReportDate.js';
 
 const getBadge = status => {
   switch (status) {
@@ -79,33 +80,32 @@ const computedItems = items => {
       sale: item.sale?.code || '',
       createdBy: item.createdBy || '',
       approver: item.approver?.login || '',
-      createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
+      createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY')
     };
   });
 };
 const excelFields = [
   {
     key: 'order',
-    label: 'STT',
+    label: 'STT'
   },
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'customerName', label: 'Khách hàng', _style: { width: '15%' } },
   { key: 'money', label: 'Số tiền', _style: { width: '10%' }, filter: false },
   { key: 'sale', label: 'Nhân viên quản lý', _style: { width: '10%' }, filter: false },
   { key: 'approverName', label: 'Người duyệt', _style: { width: '15%' } },
-  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } },
-
+  { key: 'status', label: 'Trạng thái', _style: { width: '10%' } }
 ];
 const computedExcelItems = items => {
   return items.map((item, index) => {
     return {
       ...item,
-      order: index +1,
+      order: index + 1,
       customer: item.customer?.name || '',
       sale: item.sale?.code || '',
       approver: item.approver?.login || '',
       createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
-      status: mappingStatus[item.status],
+      status: mappingStatus[item.status]
     };
   });
 };
@@ -120,32 +120,40 @@ const Receipt = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [total, setTotal] = useState(0);
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
-
+  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
+  const [focused, setFocused] = React.useState();
   useEffect(() => {
+    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, dependency: true };
     if (date.endDate && date.startDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      params = { ...params, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
+    }
       dispatch(getReceipt(params));
-      dispatch(getCountReceipt({...paramRef.current, ...date, dependency: true })).then(resp => {
+      dispatch(
+        getCountReceipt({
+          ...paramRef.current,
+          startDate: date.startDate?.format('YYYY-MM-DD'),
+          endDate: date.endDate?.format('YYYY-MM-DD'),
+          dependency: true
+        })
+      ).then(resp => {
         setTotal(Number(resp.payload.data.money));
       });
-    }
-  }, [date]);
+      window.scrollTo(0, 100);
+
+  }, [date,activePage, size]);
   useEffect(() => {
     dispatch(reset());
   }, []);
 
-  useEffect(() => {
-    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, dependency: true }
-    if (date.endDate && date.startDate) {
-      params = { ...params, ...date };
-    }
-    dispatch(getReceipt(params));
-    dispatch(getCountReceipt(params)).then(resp => {
-      setTotal(Number(resp.payload.data.money));
-    });
-    window.scrollTo(0, 100);
-  }, [activePage, size]);
+  // useEffect(() => {
+  //   if (date.endDate && date.startDate) {
+  //     params = { ...params, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
+  //   }
+  //   dispatch(getReceipt(params));
+  //   dispatch(getCountReceipt(params)).then(resp => {
+  //     setTotal(Number(resp.payload.data.money));
+  //   });
+  // }, [activePage, size]);
 
   const warehouses = useSelector(selectAll);
 
@@ -160,27 +168,32 @@ const Receipt = props => {
     setDetails(newDetails);
   };
 
-
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getReceipt());
-      dispatch(getCountReceipt({ ...value, ...date, dependency: true })).then(resp => {
+      dispatch(
+        getCountReceipt({
+          ...value,
+          startDate: date.startDate?.format('YYYY-MM-DD'),
+          endDate: date.endDate?.format('YYYY-MM-DD'),
+          dependency: true
+        })
+      ).then(resp => {
         setTotal(Number(resp.payload.data.money));
       });
-    }else {
-      clearSearchParams()
+    } else {
+      clearSearchParams();
     }
   }, 300);
 
   const clearSearchParams = () => {
-    paramRef.current['code'] && delete paramRef.current['code']
-    paramRef.current['customerName'] && delete paramRef.current['customerName']
-    paramRef.current['sale'] && delete paramRef.current['sale']
-    paramRef.current['createdBy'] && delete paramRef.current['createdBy']
-    paramRef.current['approverName'] && delete paramRef.current['approverName']
-  }
-
+    paramRef.current['code'] && delete paramRef.current['code'];
+    paramRef.current['customerName'] && delete paramRef.current['customerName'];
+    paramRef.current['sale'] && delete paramRef.current['sale'];
+    paramRef.current['createdBy'] && delete paramRef.current['createdBy'];
+    paramRef.current['approverName'] && delete paramRef.current['approverName'];
+  };
 
   const onFilterColumn = value => {
     if (value) debouncedSearchColumn(value);
@@ -188,7 +201,15 @@ const Receipt = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current , ...date, dependency: true };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD'),
+        dependency: true
+      };
       dispatch(getReceipt(params));
       dispatch(getCountReceipt(params)).then(resp => {
         setTotal(Number(resp.payload.data.money));
@@ -210,13 +231,13 @@ const Receipt = props => {
   };
 
   const rejectTicket = receipt => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const data = { id: receipt.id, status: ReceiptStatus.REJECTED, action: 'cancel' };
     dispatch(updateReceiptStatus(data));
   };
 
   const approveTicket = receipt => () => {
-    dispatch(fetching())
+    dispatch(fetching());
     const data = { id: receipt.id, status: ReceiptStatus.APPROVED, action: 'approve' };
     dispatch(updateReceiptStatus(data));
   };
@@ -300,8 +321,6 @@ const Receipt = props => {
   const memoComputedItemsExcel = React.useCallback(items => computedExcelItems(items), []);
   const memoExcelListed = React.useMemo(() => memoComputedItemsExcel(warehouses), [warehouses]);
 
-  
-
   return (
     <CCard>
       <CCardHeader>
@@ -312,10 +331,12 @@ const Receipt = props => {
           </CButton>
         )}
       </CCardHeader>
+      <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
+
       <CCardBody>
         <Download data={memoExcelListed} headers={excelFields} name={'order'} />
 
-        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+        {/* <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>
               <CLabel htmlFor="date-input">Từ ngày</CLabel>
@@ -354,7 +375,7 @@ const Receipt = props => {
               />
             </CCol>
           </CFormGroup>
-        </CFormGroup>
+        </CFormGroup> */}
         <CRow className="ml-0 mt-4">
           <CLabel>Tổng tiền:</CLabel>
           <strong>{`\u00a0\u00a0${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}`}</strong>

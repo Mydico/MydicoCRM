@@ -54,7 +54,7 @@ class Invoice extends Component {
             <Table striped responsive>
               <thead>
                 <tr>
-                  <th className="center">#</th>
+                  <th className="center">STT</th>
                   <th>Item</th>
                   <th>Description</th>
                   <th className="center">Quantity</th>

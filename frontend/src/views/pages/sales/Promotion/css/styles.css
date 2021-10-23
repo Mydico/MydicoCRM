@@ -1,0 +1,12 @@
+.description-text {
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    width: 150px;
+    -webkit-line-clamp: 2;
+display: -webkit-box;
+-webkit-box-orient: vertical;
+}
+.description-text:hover {
+    overflow:visible;
+}

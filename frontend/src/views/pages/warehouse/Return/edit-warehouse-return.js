@@ -519,7 +519,7 @@ const EditWarehouseReturn = props => {
                     {productList.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{ width: 500 }}>
+                          <td style={{ minWidth: 500 }}>
                             <Select
                               value={{
                                 value: item,

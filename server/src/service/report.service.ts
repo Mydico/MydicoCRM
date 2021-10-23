@@ -14,10 +14,9 @@ import { StoreInputDetailsRepository } from '../repository/store-input-details.r
 import { TransactionRepository } from '../repository/transaction.repository';
 import Transaction from '../domain/transaction.entity';
 import _ from 'lodash';
-import StoreInput from '../domain/store-input.entity';
 import { User } from '../domain/user.entity';
 import { BillRepository } from '../repository/bill.repository';
-import { from } from 'rxjs';
+import Department from '../domain/department.entity';
 @Injectable()
 export class ReportService {
   constructor(
@@ -200,7 +199,6 @@ export class ReportService {
     //   .createQueryBuilder('DebtDashboard')
     //   .select(`sum(case when DebtDashboard.type = 'DEBT' then DebtDashboard.amount else -DebtDashboard.amount end)`, 'sum')
     //   .where(queryString);
-    console.log(queryString);
     const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select('SUM(Transaction.total_money)-SUM(Transaction.collect_money)-SUM(Transaction.refund_money)', 'sum')
@@ -250,6 +248,44 @@ export class ReportService {
     //   return item;
     // });  }
   }
+
+  async getSaleReportByDepartmentExternal(filter = {}, externalDepartment: Department): Promise<any> {
+    let queryString = queryBuilderFunc('Transaction', filter);
+    const queryBuilder = this.transactionRepository
+      .createQueryBuilder('Transaction')
+      .select(['department.code, department.name', 'department.id'])
+      .addSelect(`sum(case when type = 'DEBIT' then total_money else 0 end)`, 'total')
+      .addSelect(`sum(case when type = 'DEBIT' then total_money when  type = 'RETURN' then -refund_money else 0 end)`, 'real')
+      .addSelect(`sum(case when type = 'RETURN' then refund_money else 0 end)`, 'return')
+      .addSelect(`count(case when type = 'DEBIT' then 1 end)`, 'count')
+      .leftJoin('Transaction.department', 'department')
+      .where(queryString)
+      .cache(3 * 3600)
+      .groupBy('Transaction.department')
+      .orderBy('Transaction.department', 'ASC');
+    delete  filter['department']
+    queryString = queryBuilderFunc('Transaction', filter);
+
+    const queryBuilderExternal = this.transactionRepository
+      .createQueryBuilder('Transaction')
+      .select(['department.code, department.name', 'department.id'])
+      .addSelect(`sum(case when type = 'DEBIT' then total_money else 0 end)`, 'total')
+      .addSelect(`sum(case when type = 'DEBIT' then total_money when  type = 'RETURN' then -refund_money else 0 end)`, 'real')
+      .addSelect(`sum(case when type = 'RETURN' then refund_money else 0 end)`, 'return')
+      .addSelect(`count(case when type = 'DEBIT' then 1 end)`, 'count')
+      .leftJoin('Transaction.department', 'department')
+      .where(queryString)
+      .andWhere(`Transaction.department = ${JSON.parse(externalDepartment.externalChild)[0]} and Transaction.branch = 4`)
+      .cache(3 * 3600)
+      .groupBy('Transaction.department')
+      .orderBy('Transaction.department', 'ASC');
+    // const arr = await queryBuilder.getRawMany()
+    // const arr2 = await queryBuilderExternal.getRawMany()
+    // console.log(arr2)
+    return [...await queryBuilder.getRawMany(),...await queryBuilderExternal.getRawMany()];
+  }
+
+
   async getTop10Sale(filter = {}): Promise<any> {
     let queryString = queryBuilderFunc('Transaction', filter);
 
@@ -289,6 +325,37 @@ export class ReportService {
     //   }
     //   return final;
     // });
+  }
+
+
+  async getIncomeChart(filter = {}): Promise<any> {
+    // select sum(quantity), productId, p.code,p.name from order_details join product p on p.id = order_details.productId group by productId ORDER BY sum(quantity) DESC limit 10
+    let queryString = queryBuilderFunc('Transaction', filter);
+
+    const queryBuilder = await this.transactionRepository
+      .createQueryBuilder('Transaction')
+      .select('DATE(createdDate)','date')
+      .addSelect(`sum(case when type = 'DEBIT' then total_money when  type = 'RETURN' then -refund_money else 0 end)`, 'sum')
+      .andWhere(queryString)
+      .cache(3 * 3600)
+      .groupBy('DATE(Transaction.createdDate)')
+      .getRawMany();
+    return queryBuilder
+  }
+
+  async getDebtChart(filter = {}): Promise<any> {
+    // select sum(quantity), productId, p.code,p.name from order_details join product p on p.id = order_details.productId group by productId ORDER BY sum(quantity) DESC limit 10
+    let queryString = queryBuilderFunc('Transaction', filter);
+
+    const queryBuilder = await this.transactionRepository
+      .createQueryBuilder('Transaction')
+      .select('DATE(createdDate)','date')
+      .addSelect(`sum(case when type = 'DEBIT' then total_money else 0 end)`, 'sum')
+      .andWhere(queryString)
+      .cache(3 * 3600)
+      .groupBy('DATE(Transaction.createdDate)')
+      .getRawMany();
+    return queryBuilder
   }
 
   async getTop10Product(filter = {}): Promise<any> {
@@ -478,6 +545,7 @@ export class ReportService {
       .leftJoin('product.productBrand', 'brand')
       .leftJoin('product.productGroup', 'productGroup')
       .where(queryString)
+      .andWhere(`Transaction.orderId is not null`)
       .cache(3 * 3600)
       .getRawOne();
     const returnProduct = await this.transactionRepository.manager.connection
@@ -490,9 +558,9 @@ export class ReportService {
       .leftJoin('product.productBrand', 'brand')
       .leftJoin('product.productGroup', 'productGroup')
       .where(queryString)
+      .andWhere(`Transaction.storeInputId is not null`)
       .cache(3 * 3600)
       .getRawOne();
-      console.log(queryBuilder.sum ,returnProduct.sum)
     return { sum: queryBuilder.sum - returnProduct.sum };
   }
 
@@ -533,14 +601,15 @@ export class ReportService {
       .leftJoin('product.productBrand', 'brand')
       .leftJoin('product.productGroup', 'productGroup')
       .where(queryString)
+      .andWhere(`Transaction.orderId is not null`)
       .groupBy('orderDetails.productId')
       .cache(3 * 3600)
       .getRawOne();
 
     const returnProduct = await this.transactionRepository
       .createQueryBuilder('Transaction')
-      .select(['storeInputDetails.productId'])
-      .addSelect('sum(storeInputDetails.priceTotal)', 'sum')
+      .select(['product.name', 'product.id'])
+      .addSelect('sum(storeInputDetails.priceTotal)', 'return')
       .addSelect('sum(storeInputDetails.quantity)', 'count')
       .leftJoin('Transaction.storeInput', 'storeInput')
       .leftJoin('storeInput.storeInputDetails', 'storeInputDetails')
@@ -548,22 +617,28 @@ export class ReportService {
       .leftJoin('product.productBrand', 'brand')
       .leftJoin('product.productGroup', 'productGroup')
       .andWhere(queryString)
-      .andWhere('storeInputDetails.product IN (:saleIds)', { saleIds: productIds.length > 0 ? productIds : '' })
+      .andWhere('storeInputDetails.product IN (:saleIds)', { saleIds: productIds.length > 0 ? productIds: JSON.parse(filter['product']).length > 0? JSON.parse(filter['product']): '' })
+      .andWhere(`Transaction.storeInputId is not null`)
       .cache(3 * 3600)
       .groupBy('storeInputDetails.productId')
       .getRawMany();
-    const final = queryBuilder.map(item => {
-      const index = returnProduct.findIndex(product => product.productId === item.product_id);
-      if (index >= 0) {
-        return {
-          ...item,
-          count: Number(item.count) -  Number(returnProduct[index].count),
-          return: Number(returnProduct[index].sum)
-        };
-      }
-      return item;
-    });
-    return [final, Number(countBuilder?.count || 0)];
+    if(queryBuilder.length > 0){
+      const final = queryBuilder.map(item => {
+        const index = returnProduct.findIndex(product => product.productId === item.product_id);
+        if (index >= 0) {
+          return {
+            ...item,
+            count: Number(item.count) -  Number(returnProduct[index].count),
+            return: Number(returnProduct[index].sum)
+          };
+        }
+        return item;
+      });
+      return [final, Number(countBuilder?.count || 0)];
+    }else {
+      return [returnProduct, Number(returnProduct?.length || 0)];
+    }
+
   }
 
   async getSaleSummary(filter): Promise<any> {
@@ -618,12 +693,19 @@ export class ReportService {
 
   async getCustomerSummary(filter): Promise<any> {
     let queryString = queryBuilderFunc('Customer', filter);
+
     const queryBuilder = this.customerRepository.manager.connection
       .createQueryBuilder()
-      .addSelect('count(*)', 'count')
-      .from(Customer, 'Customer')
-      .where(queryString)
-      .cache(3 * 3600);
+      .select('count(*)', 'count')
+      .from(qb => {
+        return qb
+          .select('Customer.id')
+          .addSelect('COUNT(order.id) > 0', 'count')
+          .from(Customer, 'Customer')
+          .innerJoin('Customer.order', 'order')
+          .where(queryString)
+          .groupBy('Customer.id');
+      }, 'totals');
     return await queryBuilder.getRawOne();
   }
 
@@ -750,5 +832,28 @@ export class ReportService {
     const result = await queryBuilder.getRawMany();
 
     return [result, count.length];
+  }
+
+  async getCustomerCount(filter): Promise<any> {
+    let queryString = queryBuilderFunc('Customer', filter);
+    // queryString = queryString.replace('Transaction.promotion', 'order.promotion');
+    const count = await this.customerRepository
+      .createQueryBuilder('Customer')
+      .select('count(*)', 'count')
+      .where(queryString)
+      .cache(3 * 3600)
+      .getRawOne();
+    // const queryBuilder = this.customerRepository.manager.connection
+    //   .createQueryBuilder()
+    //   .select('count(*)', 'count')
+    //   .from(qb => {
+    //     return qb
+    //       .select('Order.customerId')
+    //       .from(Order, 'Order')
+    //       .where(queryString)
+    //       .andWhere(` Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
+    //       .groupBy('Order.customerId');
+    //   }, 'totals');
+    return await count;
   }
 }

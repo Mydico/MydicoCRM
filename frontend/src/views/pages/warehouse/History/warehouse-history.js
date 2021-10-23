@@ -10,10 +10,17 @@ import moment from 'moment';
 import Download from '../../../components/excel/DownloadExcel.js';
 import { CLink } from '@coreui/react';
 import { useHistory } from 'react-router';
+import ReportDate from '../../../components/report-date/ReportDate';
 
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
   IMPORT: 'NHẬP KHO'
+};
+const mappingType = {
+  RETURN: 'TRẢ HÀNG',
+  IMPORT: 'NHẬP KHO',
+  EXPORT: 'XUẤT KHO',
+  EXPORT_TO_PROVIDER: 'XUẤT KHO TRẢ NHÀ CUNG CẤP'
 };
 const getBadge = status => {
   switch (status) {
@@ -55,20 +62,21 @@ const excelFields = [
   { key: 'storeName', label: 'Tên kho', _style: { width: '10%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false }
 ];
-const StoreHistory = (props) => {
+const StoreHistory = props => {
   const { initialState } = useSelector(state => state.storeHistory);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const storeHistorys = useSelector(selectAll);
-  const history = useHistory()
+  const history = useHistory();
   const paramRef = useRef({});
+  const [focused, setFocused] = React.useState();
 
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
       dispatch(getStoreHistory(params));
     }
   }, [date]);
@@ -80,7 +88,7 @@ const StoreHistory = (props) => {
   useEffect(() => {
     let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     if (date.endDate && date.startDate) {
-      params = { ...params, ...date };
+      params = { ...params,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }
     dispatch(getStoreHistory(params));
     window.scrollTo(0, 100);
@@ -131,19 +139,19 @@ const StoreHistory = (props) => {
   };
 
   const renderLink = item => {
-    if(!item.entityId) return;
+    if (!item.entityId) return;
     let link = '';
     let href = '';
     if (item.entity === 'ORDER') {
-      link = `Đơn hàng ${item.entityId}`;
+      link = `Đơn hàng ${item.entityCode || ''}`;
       href = `orders/${item.entityId}/detail`;
     } else {
-      link = `Phiếu kho ${item.entityId}`;
+      link = `Phiếu ${mappingType[item.entityType] || 'kho'} ${item.entityCode || ''}`;
       href = `store-inputs/${item.entityId}/detail`;
     }
 
     return (
-      <CLink onClick={() => document.location.href = href } target="_blank">
+      <CLink onClick={() => (document.location.href = href)} target="_blank">
         {link}
       </CLink>
     );
@@ -156,10 +164,11 @@ const StoreHistory = (props) => {
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách lịch sử xuất nhập kho
       </CCardHeader>
+      <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
       <CCardBody>
         <Download data={memoExcelListed} headers={excelFields} name={'history'} />
 
-        <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
+        {/* <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
             <CCol>
               <CLabel htmlFor="date-input">Từ ngày</CLabel>
@@ -170,7 +179,7 @@ const StoreHistory = (props) => {
                 id="date-input"
                 onChange={e =>
                   setDate({
-                    ...date,
+                     startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'),
                     startDate: e.target.value
                   })
                 }
@@ -189,7 +198,7 @@ const StoreHistory = (props) => {
                 id="date-input"
                 onChange={e =>
                   setDate({
-                    ...date,
+                     startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'),
                     endDate: e.target.value
                   })
                 }
@@ -198,7 +207,7 @@ const StoreHistory = (props) => {
               />
             </CCol>
           </CFormGroup>
-        </CFormGroup>
+        </CFormGroup> */}
         <CDataTable
           items={memoListed}
           fields={fields}

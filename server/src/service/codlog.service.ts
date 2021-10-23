@@ -5,7 +5,7 @@ import Codlog from '../domain/codlog.entity';
 import { CodlogRepository } from '../repository/codlog.repository';
 
 const relationshipNames = [];
-
+relationshipNames.push('transporter')
 @Injectable()
 export class CodlogService {
     logger = new Logger('CodlogService');

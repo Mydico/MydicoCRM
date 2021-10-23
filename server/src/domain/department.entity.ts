@@ -27,6 +27,10 @@ export default class Department extends BaseEntity {
     @Index()
     externalChild: string;
 
+    @Column({ name: 'report_department', nullable: true })
+    @Index()
+    reportDepartment: string;
+
     @Column({ type: 'boolean', name: 'activated', nullable: true, default: true })
     @Index()
     activated?: boolean;

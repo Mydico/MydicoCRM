@@ -173,7 +173,7 @@ const DetailWarehouse = props => {
                     {productList.map((item, index) => {
                       return (
                         <tr key={index}>
-                          <td style={{ width: 500 }}>{`${item?.product?.productBrand?.name || ''}-${item?.product?.name || ''}-${item
+                          <td style={{ minWidth: 500 }}>{`${item?.product?.productBrand?.name || ''}-${item?.product?.name || ''}-${item
                             ?.product?.volume || ''}`}</td>
                           <td>{item?.product?.volume}</td>
                           <td>

@@ -18,7 +18,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { editSelfOrder, getDetailOrder, getOrderDetail, updateOrder } from './order.api';
+import { editSelfOrder, getDetailOrder, updateOrder } from './order.api';
 import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { globalizedOrdersSelectors, reset } from './order.reducer';
@@ -97,7 +97,6 @@ const EditOrder = props => {
 
   useEffect(() => {
     dispatch(getPromotion({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true, isLock: 0 }));
-    dispatch(getDetailOrder({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     return () => {
       dispatch(reset());
@@ -134,7 +133,6 @@ const EditOrder = props => {
           });
         }
       }
-      // dispatch(getOrderDetail({ orderId: props.match.params.id, dependency: true }));
     }
   }, [order]);
 
@@ -272,6 +270,7 @@ const EditOrder = props => {
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = Number(target.value).toString();
+    copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     copyArr[index].priceTotal = (copyArr[index].priceReal * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
     if (Array.isArray(promotionState.promotionProducts) && copyArr[index].attachTo === null) {
       const founded = promotionState.promotionProducts.filter(item => item.product.id === copyArr[index].product.id);
@@ -307,6 +306,7 @@ const EditOrder = props => {
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].priceReal = Number(target.value.replace(/\D/g, ''));
+    copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     copyArr[index].priceTotal = (copyArr[index].priceReal * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
@@ -314,6 +314,7 @@ const EditOrder = props => {
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].reducePercent = target.value > 100 ? 100 : target.value === '' ? 0 : Number(target.value).toString();
+    copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     copyArr[index].priceTotal = (copyArr[index].priceReal * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
 
     setProductList(copyArr);

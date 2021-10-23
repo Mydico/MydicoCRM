@@ -12,7 +12,7 @@ import _ from 'lodash';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
 import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
-import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
+import { globalizedBranchSelectors, setAll } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getCountTotalPriceProduct, getCountTotalProduct, getProductReport } from './report.api';
 import { filterProduct } from '../product/ProductList/product.api';
@@ -23,6 +23,7 @@ import { globalizedproductGroupsSelectors } from '../product/ProductGroup/produc
 import { globalizedproductBrandsSelectors } from '../product/ProductBrand/product-brand.reducer';
 import { getProductBrand } from '../product/ProductBrand/product-brand.api';
 import { getProductGroup } from '../product/ProductGroup/product-group.api';
+import ReportDate from '../../../views/components/report-date/ReportDate';
 
 moment.locale('vi');
 const controlStyles = {
@@ -100,9 +101,17 @@ const ProductReport = () => {
   }, []);
 
   useEffect(() => {
+    if (account.department.externalChild && department && branches.length > 1) {
+      if (JSON.parse(account.department.externalChild).includes(department.id)) {
+        dispatch(setAll([account.branch]));
+      }
+    }
+  }, [branches]);
+
+  useEffect(() => {
     setFilter({
       ...filter,
-      page: activePage,
+      page: activePage - 1,
       size
     });
   }, [activePage, size]);
@@ -114,7 +123,7 @@ const ProductReport = () => {
     //     size: 50,
     //     sort: 'createdDate,DESC',
     //     department: department?.id || account.department.id,
-    //     branch: branch?.id || account.branch.id,
+    //     branch: branch?.id,
     //     dependency: true
     //   })
     // );
@@ -223,7 +232,7 @@ const ProductReport = () => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
-          branch: branch?.id || account.branch.id,
+          branch: branch?.id,
           dependency: true
         })
       );
@@ -245,7 +254,6 @@ const ProductReport = () => {
   }, [selectedProduct]);
 
   useEffect(() => {
-    console.log(filter);
     if (Object.keys(filter).length > 4) {
       getTop10(filter);
       dispatch(getProductReport({ ...filter })).then(data => {
@@ -258,7 +266,6 @@ const ProductReport = () => {
 
   useEffect(() => {
     if (date.startDate && date.endDate) {
-      console.log(filter);
       setFilter({
         ...filter,
         startDate: date.startDate?.format('YYYY-MM-DD'),
@@ -275,7 +282,7 @@ const ProductReport = () => {
         sort: 'createdDate,DESC',
         code: value,
         department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
+        branch: branch?.id,
         dependency: true
       })
     );
@@ -315,16 +322,12 @@ const ProductReport = () => {
   };
 
   const computedExcelItems = React.useCallback(items => {
-    return (
-      (items ||
-      []).map((item, index) => {
-        console.log(item)
-        return {
-          ...item,
-          real: Number(item.total) - Number(item.return || 0),
-        };
-      })
-    );
+    return (items || []).map((item, index) => {
+      return {
+        ...item,
+        real: Number(item.total) - Number(item.return || 0)
+      };
+    });
   }, []);
   const memoExcelListed = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
   const memoComputedExcelItems = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
@@ -346,25 +349,7 @@ const ProductReport = () => {
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          <CCardBody>
-            <DateRangePicker
-              startDate={date.startDate}
-              minDate="01-01-2000"
-              startDateId="startDate"
-              endDate={date.endDate}
-              endDateId="endDate"
-              minimumNights={0}
-              onDatesChange={value => setDate(value)}
-              focusedInput={focused}
-              isOutsideRange={() => false}
-              startDatePlaceholderText="Từ ngày"
-              endDatePlaceholderText="Đến ngày"
-              onFocusChange={focusedInput => setFocused(focusedInput)}
-              orientation="horizontal"
-              block={false}
-              openDirection="down"
-            />
-          </CCardBody>
+          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
         </CCard>
         <CCard>
           <CCardBody>
@@ -504,7 +489,7 @@ const ProductReport = () => {
               rightHeader={numOfProduct}
               rightFooter="Sản phẩm đã bán"
               leftHeader={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(numOfPriceProduct)}
-              leftFooter="Tổng doanh thu"
+              leftFooter="Doanh thu thuần"
               color="gradient-primary"
             >
               <CIcon name="cil3d" height="76" className="my-4" />
@@ -516,7 +501,13 @@ const ProductReport = () => {
             <CCardTitle>Danh sách sản phẩm</CCardTitle>
           </CCardHeader>
           <CCardBody>
-            <Download data={memoComputedExcelItems} headers={fields} name={`thong_ke_theo_san_pham tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `} />
+            <Download
+              data={memoComputedExcelItems}
+              headers={fields}
+              name={`thong_ke_theo_san_pham tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format(
+                'DD-MM-YYYY'
+              )} `}
+            />
 
             <AdvancedTable
               items={memoComputedExcelItems}
@@ -538,16 +529,12 @@ const ProductReport = () => {
                 order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
                 real: (item, index) => (
                   <td>
-                    <div>
-                      {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                        Number(item.real)
-                      )}
-                    </div>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(item.real || 0))}</div>
                   </td>
                 ),
                 total: (item, index) => (
                   <td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.total)}</div>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.total || 0)}</div>
                   </td>
                 ),
                 return: (item, index) => (

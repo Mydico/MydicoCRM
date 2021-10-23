@@ -33,7 +33,9 @@ const ReportStatistic = (props) => {
       });
   };
   useEffect(() => {
-    getData(props.filter);
+    if(Object.keys(props.filter).length > 5){
+      getData(props.filter);
+    }
   }, [props.filter]);
   return (
     <CRow sm={12} md={12}>

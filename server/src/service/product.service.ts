@@ -141,7 +141,7 @@ export class ProductService {
         product
       }
     });
-    const updatedStatus = arrProductInStore.map(item => ({ ...item, status: product.status }));
+    const updatedStatus = arrProductInStore.map(item => ({ ...item, status: product.status, name: product.name }));
     await this.productQuantity.saveMany(updatedStatus);
     return await this.save(product);
   }

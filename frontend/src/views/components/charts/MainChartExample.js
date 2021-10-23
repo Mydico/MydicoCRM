@@ -2,8 +2,6 @@ import React from 'react';
 import { CChartLine } from '@coreui/react-chartjs';
 import { getStyle, hexToRgba } from '@coreui/utils';
 
-
-
 const MainChart = attributes => {
   const defaultDatasets = (() => {
     const data = attributes.data ? Object.values(attributes.data) : [];
@@ -14,8 +12,8 @@ const MainChart = attributes => {
         borderColor: attributes.color,
         pointHoverBackgroundColor: attributes.color,
         borderWidth: 2,
-        data: data
-      },
+        data: data.map(item => item.sum)
+      }
     ];
   })();
 
@@ -30,7 +28,7 @@ const MainChart = attributes => {
           {
             beginAtZero: false,
             ticks: {
-               autoSkip: false
+              autoSkip: false
             },
             gridLines: {
               drawOnChartArea: false
@@ -42,7 +40,7 @@ const MainChart = attributes => {
             ticks: {
               beginAtZero: false,
               maxTicksLimit: 5,
-              stepSize: Math.ceil(250 / 5),
+              stepSize: Math.ceil(250 / 5)
             },
             gridLines: {
               display: true
@@ -62,14 +60,7 @@ const MainChart = attributes => {
   })();
 
   // render
-  return (
-    <CChartLine
-      {...attributes}
-      datasets={defaultDatasets}
-      options={defaultOptions}
-      labels={Object.keys(attributes.data)}
-    />
-  );
+  return <CChartLine {...attributes} datasets={defaultDatasets} options={defaultOptions} labels={[]} />;
 };
 
 export default MainChart;

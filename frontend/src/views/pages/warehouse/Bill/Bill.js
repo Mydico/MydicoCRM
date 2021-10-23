@@ -170,7 +170,7 @@ const Bill = props => {
   useEffect(() => {
     let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     if (date.endDate && date.startDate) {
-      params = { ...params, endDate: date.endDate.format('YYYY-MM-DD'), startDate: date.startDate.format('YYYY-MM-DD') };
+      params = { ...params, endDate: date.endDate?.format('YYYY-MM-DD'), startDate: date.startDate?.format('YYYY-MM-DD') };
     }
     dispatch(getBill(params));
     window.scrollTo(0, 100);
@@ -212,8 +212,8 @@ const Bill = props => {
           size: size,
           sort: 'createdDate,DESC',
           ...value,
-          endDate: date.endDate.format('YYYY-MM-DD'),
-          startDate: date.startDate.format('YYYY-MM-DD')
+          endDate: date.endDate?.format('YYYY-MM-DD'),
+          startDate: date.startDate?.format('YYYY-MM-DD')
         })
       );
     }
@@ -688,7 +688,7 @@ const Bill = props => {
                     <Table striped responsive>
                       <thead>
                         <tr>
-                          <th className="center">#</th>
+                          <th className="center">STT</th>
                           <th>Tên sản phẩm</th>
                           <th className="center">Số lượng</th>
                           <th className="right">Đơn giá</th>

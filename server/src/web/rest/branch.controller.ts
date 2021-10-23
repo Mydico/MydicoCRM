@@ -48,7 +48,7 @@ export class BranchController {
       where = `department_id = ${req.query['department']}`
     }
 
-    if (isBranchManager) return res.send([currentUser.branch]);
+    if (isBranchManager && JSON.parse(currentUser.department.externalChild).length == 0) return res.send([currentUser.branch]);
     const [results, count] = await this.branchService.findAndCount({
       where,
       skip: +pageRequest.page * pageRequest.size,

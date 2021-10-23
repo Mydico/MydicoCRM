@@ -3,7 +3,7 @@ import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CD
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
-import { DateRangePicker } from 'react-dates';
+import ReportDate from '../../../views/components/report-date/ReportDate';
 import 'react-dates/lib/css/_datepicker.css';
 import moment from 'moment';
 import Select, { components } from 'react-select';
@@ -13,9 +13,9 @@ import Download from '../../components/excel/DownloadExcel.js';
 import { getChildTreeDepartmentByUser } from '../user/UserDepartment/department.api';
 import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
-import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer';
+import { globalizedBranchSelectors, setAll } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
-import { getCustomerPriceReport, getCustomerReport, getCustomerSummaryReport } from './report.api';
+import { getCustomerCountReport, getCustomerPriceReport, getCustomerReport, getCustomerSummaryReport } from './report.api';
 import { filterCustomerNotToStore } from '../customer/customer.api';
 import { getCustomerType } from '../customer/CustomerType/customer-type.api';
 import { globalizedcustomerTypeSelectors } from '../customer/CustomerType/customer-type.reducer';
@@ -29,7 +29,6 @@ const controlStyles = {
   color: 'black'
 };
 
-
 const fields = [
   {
     key: 'order',
@@ -41,7 +40,7 @@ const fields = [
   { key: 'customer_name', label: 'Tên', _style: { width: '10%' }, filter: false },
   { key: 'total', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
-  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false }
 ];
 
 const excelFields = [
@@ -57,13 +56,13 @@ const excelFields = [
   { key: 'customer_tel', label: 'số điện thoại', _style: { width: '10%' }, filter: false },
   { key: 'total', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
-  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false },
+  { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false }
 ];
 
 const { selectAll } = globalizedBranchSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
 const { selectAll: selectCustomerTypeAll } = globalizedcustomerTypeSelectors;
-const CustomerReport = (props) => {
+const CustomerReport = props => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
@@ -88,6 +87,7 @@ const CustomerReport = (props) => {
   const [top10Product, setTop10Product] = useState([[], 0]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
+  const [numberOfCustomer, setNumberOfCustomer] = useState(0);
   const [filteredCustomer, setFilteredCustomer] = useState([]);
 
   useEffect(() => {
@@ -121,6 +121,14 @@ const CustomerReport = (props) => {
     }
   }, [activePage, size]);
 
+  useEffect(() => {
+    if (account.department.externalChild && department && branches.length > 1) {
+      if (JSON.parse(account.department.externalChild).includes(department.id)) {
+        dispatch(setAll([account.branch]));
+      }
+    }
+  }, [branches]);
+
   const getTop10 = filter => {
     // dispatch(
     //   getExactUser({
@@ -128,7 +136,7 @@ const CustomerReport = (props) => {
     //     size: 50,
     //     sort: 'createdDate,DESC',
     //     department: department?.id || account.department.id,
-    //     branch: branch?.id || account.branch.id,
+    //     branch: branch?.id,
     //     dependency: true
     //   })
     // );
@@ -146,6 +154,13 @@ const CustomerReport = (props) => {
         setNumOfProduct(data.payload?.count || 0);
       }
     });
+    dispatch(getCustomerCountReport(filter)).then(data => {
+      if (data) {
+        setNumberOfCustomer(data.payload?.count || 0);
+      }
+    });
+
+    
     dispatch(getCustomerPriceReport(filter)).then(data => {
       if (data) {
         setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.realMoney || 0));
@@ -206,7 +221,7 @@ const CustomerReport = (props) => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
-          branch: branch?.id || account.branch.id,
+          branch: branch?.id,
           dependency: true
         })
       );
@@ -264,7 +279,7 @@ const CustomerReport = (props) => {
         sort: 'createdDate,DESC',
         code: value,
         department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
+        branch: branch?.id,
         dependency: true
       })
     );
@@ -289,7 +304,7 @@ const CustomerReport = (props) => {
         name: value,
         address: value,
         department: department?.id || account.department.id,
-        branch: branch?.id || account.branch.id,
+        branch: branch?.id,
         sale: isEmployee ? account.id : sale,
         dependency: true,
         activated: true
@@ -335,7 +350,7 @@ const CustomerReport = (props) => {
         status: mappingStatus[item.status]
       };
     });
-  },[]);
+  }, []);
   const memoExcelComputedItems = React.useCallback(items => top10Product[0], [top10Product[0]]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
 
@@ -343,25 +358,7 @@ const CustomerReport = (props) => {
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          <CCardBody>
-            <DateRangePicker
-              startDate={date.startDate}
-              minDate="01-01-2000"
-              startDateId="startDate"
-              endDate={date.endDate}
-              endDateId="endDate"
-              minimumNights={0}
-              onDatesChange={value => setDate(value)}
-              focusedInput={focused}
-              isOutsideRange={() => false}
-              startDatePlaceholderText="Từ ngày"
-              endDatePlaceholderText="Đến ngày"
-              onFocusChange={focusedInput => setFocused(focusedInput)}
-              orientation="horizontal"
-              block={false}
-              openDirection="down"
-            />
-          </CCardBody>
+          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
         </CCard>
         <CCard>
           <CCardBody>
@@ -479,7 +476,7 @@ const CustomerReport = (props) => {
           </CCardBody>
         </CCard>
         <CRow sm={12} md={12}>
-          <CCol sm="12" lg="12">
+          <CCol sm="6" lg="6">
             <CWidgetBrand
               rightHeader={numOfPriceProduct}
               rightFooter="Doanh thu thuần"
@@ -490,13 +487,30 @@ const CustomerReport = (props) => {
               <CIcon name="cil3d" height="76" className="my-4" />
             </CWidgetBrand>
           </CCol>
+          <CCol sm="6" lg="6">
+            <CWidgetBrand
+              rightHeader={numberOfCustomer}
+              rightFooter="Tổng khách hàng"
+              // leftHeader={numOfProduct}
+              // leftFooter="Tổng khách hàng"
+              color="gradient-danger"
+            >
+              <CIcon name="cil3d" height="76" className="my-4" />
+            </CWidgetBrand>
+          </CCol>
         </CRow>
         <CCard>
           <CCardHeader>
             <CCardTitle>Danh sách khách hàng</CCardTitle>
           </CCardHeader>
           <CCardBody>
-          <Download data={memoExcelListed} headers={excelFields} name={`thong_ke_theo_khach_hang tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `} />
+            <Download
+              data={memoExcelListed}
+              headers={excelFields}
+              name={`thong_ke_theo_khach_hang tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format(
+                'DD-MM-YYYY'
+              )} `}
+            />
 
             <AdvancedTable
               items={memoTop10Product}
