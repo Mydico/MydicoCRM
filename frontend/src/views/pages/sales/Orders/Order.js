@@ -130,7 +130,7 @@ const excelFields = [
   { key: 'status', label: 'Trạng thái', _style: { width: '10%' }, filter: false }
 ];
 
-const getBadge = status => {
+export const getBadge = status => {
   switch (status) {
     case 'APPROVED':
       return 'success';

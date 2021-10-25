@@ -7,7 +7,9 @@ import ReactToPrint from 'react-to-print';
 import { globalizedOrdersSelectors } from './order.reducer';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 import { Table } from 'reactstrap';
-import moment from 'moment'
+import moment from 'moment';
+import { CBadge } from '@coreui/react';
+import { getBadge } from './Order';
 const { selectById } = globalizedOrdersSelectors;
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
@@ -20,12 +22,12 @@ const mappingStatus = {
 };
 const mappingStatusDesc = {
   CREATED: 'Mới tạo vận đơn',
-  APPROVED: 'Duyệt vận đơn',
+  APPROVED: 'Đã duyệt duyệt vận đơn',
   CANCEL: 'Hủy vận đơn',
   REJECTED: 'Không duyệt vận đơn',
   SUPPLY_WAITING: 'Đợi xuất kho',
-  SHIPPING: 'Đang vận chuyển',
-  SUCCESS: 'Giao thành công'
+  SHIPPING: 'Đang vận chuyển tới khách hàng',
+  SUCCESS: 'Giao thành công. Đóng vận đơn'
 };
 const ViewOrder = props => {
   const dispatch = useDispatch();
@@ -37,13 +39,14 @@ const ViewOrder = props => {
 
   useEffect(() => {
     dispatch(getDetailOrder({ id: props.match.params.orderId, dependency: true }));
-    dispatch(getDetailCodLogs({ order: props.match.params.orderId, dependency: true, page: 0, size: 20, sort: 'createdDate,DESC' })).then(resp => {
-      console.log(resp)
-      if (resp && resp.payload) {
-        setCodLog(resp.payload);
+    dispatch(getDetailCodLogs({ order: props.match.params.orderId, dependency: true, page: 0, size: 20, sort: 'createdDate,DESC' })).then(
+      resp => {
+        console.log(resp);
+        if (resp && resp.payload) {
+          setCodLog(resp.payload);
+        }
       }
-      
-    });
+    );
   }, []);
 
   useEffect(() => {
@@ -206,7 +209,9 @@ const ViewOrder = props => {
                     <td>{moment(item.createdDate).format('DD-MM-YYYY HH:mm')}</td>
                     <td>{item.transporter?.code || ''}</td>
                     <td>{mappingStatusDesc[item.status]}</td>
-                    <td>{mappingStatus[item.status]}</td>
+                    <td>
+                      <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
+                    </td>
                   </tr>
                 );
               })}
