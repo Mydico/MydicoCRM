@@ -21,6 +21,7 @@ import { getCustomerType } from '../customer/CustomerType/customer-type.api';
 import { globalizedcustomerTypeSelectors } from '../customer/CustomerType/customer-type.reducer';
 import AdvancedTable from '../../components/table/AdvancedTable';
 import { useHistory } from 'react-router';
+import { Td } from '../../../views/components/super-responsive-table';
 
 moment.locale('vi');
 const controlStyles = {
@@ -529,37 +530,37 @@ const CustomerReport = props => {
               onPaginationChange={val => setSize(val)}
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
-                order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+                order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
                 name: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{`${item.sale_lastName || ''} ${item.sale_firstName || ''}`}</div>
-                  </td>
+                  </Td>
                 ),
                 real: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.real)}</div>
-                  </td>
+                  </Td>
                 ),
                 customer_code: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{renderCustomerLink(item)}</div>{' '}
-                  </td>
+                  </Td>
                 ),
 
                 debt: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.debt)}</div>
-                  </td>
+                  </Td>
                 ),
                 return: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
-                  </td>
+                  </Td>
                 ),
                 total: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.total)}</div>
-                  </td>
+                  </Td>
                 )
               }}
             />

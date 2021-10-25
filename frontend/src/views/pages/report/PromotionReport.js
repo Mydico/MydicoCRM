@@ -21,6 +21,7 @@ import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import AdvancedTable from '../../components/table/AdvancedTable';
 import Download from '../../components/excel/DownloadExcel.js';
 import ReportDate from '../../../views/components/report-date/ReportDate';
+import { Td } from '../../../views/components/super-responsive-table';
 
 moment.locale('vi');
 
@@ -524,7 +525,7 @@ const PromotionReport = () => {
               itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
               itemsPerPage={size}
               hover
-              sorter={{ external: true, resetable: true }}
+              sorter={{ external: true }}
               onSorterValueChange={sortItem}
               noItemsView={{
                 noResults: 'Không tìm thấy kết quả',
@@ -534,26 +535,26 @@ const PromotionReport = () => {
               onPaginationChange={val => setSize(val)}
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
-                order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+                order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
                 name: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{`${item.sale_lastName || ''} ${item.sale_firstName || ''}`}</div>
-                  </td>
+                  </Td>
                 ),
                 realMoney: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
-                  </td>
+                  </Td>
                 ),
                 return: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
-                  </td>
+                  </Td>
                 ),
                 totalMoney: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalMoney)}</div>
-                  </td>
+                  </Td>
                 )
               }}
             />

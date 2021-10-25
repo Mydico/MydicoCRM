@@ -24,6 +24,7 @@ import { globalizedproductBrandsSelectors } from '../product/ProductBrand/produc
 import { getProductBrand } from '../product/ProductBrand/product-brand.api';
 import { getProductGroup } from '../product/ProductGroup/product-group.api';
 import ReportDate from '../../../views/components/report-date/ReportDate';
+import { Td } from '../../../views/components/super-responsive-table';
 
 moment.locale('vi');
 const controlStyles = {
@@ -522,25 +523,25 @@ const ProductReport = () => {
               }}
               loading={initialState.loading}
               onPaginationChange={val => setSize(val)}
-              sorter={{ external: true, resetable: true }}
-              onSorterValueChange={sortItem}
+              sorter
+              // onSorterValueChange={sortItem}
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
-                order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+                order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
                 real: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(item.real || 0))}</div>
-                  </td>
+                  </Td>
                 ),
                 total: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.total || 0)}</div>
-                  </td>
+                  </Td>
                 ),
                 return: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return || 0)}</div>
-                  </td>
+                  </Td>
                 )
               }}
             />

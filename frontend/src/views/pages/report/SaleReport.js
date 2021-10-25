@@ -19,6 +19,7 @@ import Download from './../../components/excel/DownloadExcel';
 import { useHistory } from 'react-router';
 import AdvancedTable from '../../components/table/AdvancedTable';
 import ReportDate from '../../../views/components/report-date/ReportDate';
+import { Td } from '../../../views/components/super-responsive-table';
 
 moment.locale('vi');
 const controlStyles = {
@@ -237,7 +238,7 @@ const SaleReport = props => {
 
   // const memoExcelComputedItems = React.useCallback(items => computedExcelItems(top10Product[0]), [top10Product[0]]);
   // const memoExcelListed = React.useMemo(() => memoExcelComputedItems(top10Product[0]), [top10Product[0]]);
-  const memoTop10Product = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
+  const memoTop10Product = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product]);
   const sortItem = React.useCallback(
     info => {
       const { column, asc } = info;
@@ -248,7 +249,7 @@ const SaleReport = props => {
       });
       setTop10Product(copy);
     },
-    [top10Product[0]]
+    [top10Product]
   );
   return (
     <CRow>
@@ -369,28 +370,28 @@ const SaleReport = props => {
               onPaginationChange={val => setSize(val)}
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
-                order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+                order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
 
                 sale_code: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{renderLink(item)}</div>
-                  </td>
+                  </Td>
                 ),
 
                 realMoney: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.realMoney)}</div>
-                  </td>
+                  </Td>
                 ),
                 return: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.return)}</div>
-                  </td>
+                  </Td>
                 ),
                 totalMoney: (item, index) => (
-                  <td>
+                  <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalMoney)}</div>
-                  </td>
+                  </Td>
                 )
               }}
             />

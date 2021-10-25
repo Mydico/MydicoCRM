@@ -23,6 +23,7 @@ export class BillSubscriber implements EntitySubscriberInterface<Bill> {
         const updateEntity = event.entity;
         codLog.bill = updateEntity;
         codLog.code = updateEntity.code;
+        codLog.transporter = updateEntity.transporter;
         codLog.status = updateEntity.status;
         codLog.order = updateEntity.order,
         codLog.createdDate = new Date();

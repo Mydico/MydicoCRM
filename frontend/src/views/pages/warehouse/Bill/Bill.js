@@ -128,6 +128,7 @@ const getBadge = status => {
 const Bill = props => {
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
   const selectedBill = useRef(null);
   const selectedTransporter = useRef(null);
   const [details, setDetails] = useState([]);
@@ -149,7 +150,8 @@ const Bill = props => {
         sort: 'createdDate,DESC',
         ...paramRef.current,
         startDate: date.startDate?.format('YYYY-MM-DD'),
-        endDate: date.endDate?.format('YYYY-MM-DD')
+        endDate: date.endDate?.format('YYYY-MM-DD'),
+        transporter: isEmployee ? account.id : null
       };
       dispatch(getBill(params));
     }
@@ -170,7 +172,12 @@ const Bill = props => {
   useEffect(() => {
     let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     if (date.endDate && date.startDate) {
-      params = { ...params, endDate: date.endDate?.format('YYYY-MM-DD'), startDate: date.startDate?.format('YYYY-MM-DD') };
+      params = {
+        ...params,
+        endDate: date.endDate?.format('YYYY-MM-DD'),
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        transporter: isEmployee ? account.id : null
+      };
     }
     dispatch(getBill(params));
     window.scrollTo(0, 100);
@@ -211,6 +218,7 @@ const Bill = props => {
           page: 0,
           size: size,
           sort: 'createdDate,DESC',
+          transporter: isEmployee ? account.id : null,
           ...value,
           endDate: date.endDate?.format('YYYY-MM-DD'),
           startDate: date.startDate?.format('YYYY-MM-DD')
@@ -235,6 +243,7 @@ const Bill = props => {
           page: activePage - 1,
           size: size,
           sort: 'createdDate,DESC',
+          transporter: isEmployee ? account.id : null,
           ...paramRef.current,
           startDate: date.startDate?.format('YYYY-MM-DD'),
           endDate: date.endDate?.format('YYYY-MM-DD')
@@ -698,7 +707,7 @@ const Bill = props => {
                         </tr>
                       </thead>
                       <tbody>
-                        {[...item?.order?.orderDetails || []].map((item, index) => {
+                        {[...(item?.order?.orderDetails || [])].map((item, index) => {
                           return (
                             <tr key={index}>
                               <td> {(activePage - 1) * size + index + 1}</td>

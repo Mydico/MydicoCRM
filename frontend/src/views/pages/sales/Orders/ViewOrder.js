@@ -7,6 +7,7 @@ import ReactToPrint from 'react-to-print';
 import { globalizedOrdersSelectors } from './order.reducer';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 import { Table } from 'reactstrap';
+import moment from 'moment'
 const { selectById } = globalizedOrdersSelectors;
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
@@ -36,7 +37,13 @@ const ViewOrder = props => {
 
   useEffect(() => {
     dispatch(getDetailOrder({ id: props.match.params.orderId, dependency: true }));
-    dispatch(getDetailCodLogs({ order: props.match.params.orderId, dependency: true, page: 0, size: 20, sort: 'createdDate,DESC' }));
+    dispatch(getDetailCodLogs({ order: props.match.params.orderId, dependency: true, page: 0, size: 20, sort: 'createdDate,DESC' })).then(resp => {
+      console.log(resp)
+      if (resp && resp.payload) {
+        setCodLog(resp.payload);
+      }
+      
+    });
   }, []);
 
   useEffect(() => {
