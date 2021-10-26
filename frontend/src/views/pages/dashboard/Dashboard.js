@@ -230,7 +230,7 @@ const Dashboard = () => {
             </Thead>
             <Tbody>
               {memoBestSaleProduct.map((item, index) => (
-                <Tr>
+                <Tr key={index}>
                   <Td>
                     <div>{index + 1}</div>
                   </Td>

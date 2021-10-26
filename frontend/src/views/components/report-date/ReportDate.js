@@ -50,7 +50,7 @@ export default function ReportDate(props) {
       <CCol style={{paddingLeft: 0}}>
         <DateRangePicker
           startDate={date.startDate}
-          minDate="01-01-2000"
+          minDate={moment("01-01-2020")}
           startDateId="startDate"
           endDate={date.endDate}
           endDateId="endDate"
@@ -58,7 +58,6 @@ export default function ReportDate(props) {
           onDatesChange={value => setDate(value)}
           focusedInput={focused}
           isOutsideRange={() => false}
-          singleDateRange={true}
           startDatePlaceholderText="Từ ngày"
           endDatePlaceholderText="Đến ngày"
           onFocusChange={focusedInput => setFocused(focusedInput)}

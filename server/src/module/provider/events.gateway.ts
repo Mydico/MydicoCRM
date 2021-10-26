@@ -5,11 +5,7 @@ import { Server } from 'socket.io';
 
 @WebSocketGateway(8083, {
   transports: ['websocket'],
-  cors: {
-    origin: 'https://localhost:9000',
-    methods: ['GET', 'POST'],
-    transports: ['websocket', 'polling'],
-  },
+  cors: false,
   allowEIO3: true,
 })
 export class EventsGateway {

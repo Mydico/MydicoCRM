@@ -58,7 +58,7 @@ const WidgetsDropdown = props => {
       <CCol sm="6" lg="4">
         <CWidgetDropdown
           color="gradient-primary"
-          header={incomeTotal}
+          header={incomeTotal.toString()}
           text="Doanh thu thuần"
           footerSlot={
             <ChartLineSimple
@@ -77,7 +77,7 @@ const WidgetsDropdown = props => {
       <CCol sm="6" lg="4">
         <CWidgetDropdown
           color="gradient-info"
-          header={total}
+          header={total.toString()}
           text="Số lượng đơn hàng"
           footerSlot={
             <ChartLineSimple
@@ -96,7 +96,7 @@ const WidgetsDropdown = props => {
       <CCol sm="6" lg="4">
         <CWidgetDropdown
           color="gradient-danger"
-          header={debt}
+          header={debt.toString()}
           text="Công nợ"
           footerSlot={
             <ChartLineSimple
