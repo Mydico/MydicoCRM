@@ -50,7 +50,7 @@ export default function ReportDate(props) {
       <CCol style={{paddingLeft: 0}}>
         <DateRangePicker
           startDate={date.startDate}
-          minDate={moment("01-01-2020")}
+          minDate={moment("01-01-2020","DD-MM-YYYY")}
           startDateId="startDate"
           endDate={date.endDate}
           endDateId="endDate"

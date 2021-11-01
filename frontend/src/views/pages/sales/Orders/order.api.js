@@ -49,7 +49,7 @@ export const updateStatusOrder = createAsyncThunk('api/update/orders/status', as
 export const getDetailCodLogs = createAsyncThunk('api/get/codlogs', async (params, thunkAPI) => {
   try {
     const result = await axios.get('api/codlogs', { params: params });
-    return result.data;
+    return result.data || result;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
   }

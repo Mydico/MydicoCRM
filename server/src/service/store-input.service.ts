@@ -56,7 +56,11 @@ export class StoreInputService {
             relationshipNames.push('storeInputDetails.product');
         }
         const options = { relations: relationshipNames };
-        return await this.storeInputRepository.findOne(id, options);
+        const result = await this.storeInputRepository.findOne(id, options)
+        result.storeInputDetails = result.storeInputDetails.sort((a, b) => {
+            return Number(a.id) - Number(b.id);
+          })
+        return result;
     }
 
     async findByfields(options: FindOneOptions<StoreInput>): Promise<StoreInput | undefined> {
@@ -187,11 +191,14 @@ export class StoreInputService {
                 })
             );
         }
-
-
-
         const result = await queryBuilder.getManyAndCount();
         result[1] = await count.getCount();
+        result[0] = result[0].map(item => ({
+            ...item,
+            orderDetails: item.storeInputDetails.sort((a, b) => {
+              return Number(a.id) - Number(b.id);
+            })
+          }));
         return result;
     }
 

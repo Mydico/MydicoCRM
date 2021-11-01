@@ -73,7 +73,7 @@ if (process.env.NODE_ENV === 'dev') {
         name: 'default',
         type: 'mysql',
         database: 'MydicoCRM',
-        host: 'localhost',
+        host: '14.225.17.151',
         port: 3306,
         username: 'root',
         password: 'Dunghd@123',

@@ -101,7 +101,7 @@ const fields = [
     filter: false
   },
   { key: 'code', label: 'Mã đơn hàng', _style: { maxWidth: 250 } },
-  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { minWidth: 200, maxWidth: 400 } },
+  { key: 'customerName', label: 'Tên khách hàng', _style: { minWidth: 200, maxWidth: 400 } },
   { key: 'createdBy', label: 'Người tạo', _style: { width: '10%' } },
   { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '10%', maxWidth: 200 }, filter: false },
   { key: 'total', label: 'Tiền Thanh toán', _style: { width: '10%' }, filter: false },

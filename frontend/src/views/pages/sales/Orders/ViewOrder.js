@@ -41,8 +41,7 @@ const ViewOrder = props => {
     dispatch(getDetailOrder({ id: props.match.params.orderId, dependency: true }));
     dispatch(getDetailCodLogs({ order: props.match.params.orderId, dependency: true, page: 0, size: 20, sort: 'createdDate,DESC' })).then(
       resp => {
-        console.log(resp);
-        if (resp && resp.payload) {
+        if (resp && resp.payload && Array.isArray(resp.payload)) {
           setCodLog(resp.payload);
         }
       }
@@ -56,7 +55,7 @@ const ViewOrder = props => {
   }, [order]);
 
   return (
-    <div className="animated fadeIn">
+    <div>
       <div className="animated fadeIn" ref={el => (ref.current = el)}>
         <CCard>
           <CCardHeader>

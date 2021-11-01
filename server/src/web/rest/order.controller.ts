@@ -102,13 +102,13 @@ export class OrderController {
         order.department = currentUser.mainDepartment ||  currentUser.department;
         order.branch = currentUser.branch;
         order.customerName = order.customer.name;
-        let departmentVisible = [];
-        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-        if (currentUser.department) {
-            departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-            departmentVisible = departmentVisible.map(item => item.id);
-        }
-        const created = await this.orderService.save(order, departmentVisible, isEmployee, currentUser);
+        // let departmentVisible = [];
+        // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+        // if (currentUser.department) {
+        //     departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        //     departmentVisible = departmentVisible.map(item => item.id);
+        // }
+        const created = await this.orderService.save(order, currentUser);
         HeaderUtil.addEntityCreatedHeaders(res, 'Order', created.id);
         return res.send(created);
     }

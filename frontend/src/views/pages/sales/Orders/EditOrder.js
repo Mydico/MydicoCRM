@@ -354,6 +354,28 @@ const EditOrder = props => {
     }
   }, [initialState.updatingSuccess]);
 
+  const debouncedSearchPromotion = _.debounce(value => {
+    if (initValuesState.customer) {
+      dispatch(
+        getPromotion({
+          isLock: 0,
+          page: 0,
+          size: 50,
+          name: value,
+          sort: 'createdDate,DESC',
+          dependency: true,
+          customerType: initValuesState.customer?.type?.id
+        })
+      );
+    }
+  }, 300);
+
+  const onSearchPromition = value => {
+    if (value) {
+      debouncedSearchPromotion(value);
+    }
+  };
+
   return (
     <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={editAlert}>
       {({
@@ -424,6 +446,7 @@ const EditOrder = props => {
                     <CCol sm={4}>
                       <CLabel htmlFor="lastName">Chọn chương trình bán hàng</CLabel>
                       <Select
+                        onInputChange={onSearchPromition}
                         onChange={item => {
                           setFieldValue('promotion', { id: item.value, name: item.label });
                           onSelectPromotion(item);

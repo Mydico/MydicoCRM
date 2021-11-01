@@ -538,7 +538,7 @@ export class ReportService {
     const queryBuilder = await this.transactionRepository.manager.connection
       .createQueryBuilder()
       .from(Transaction, 'Transaction')
-      .addSelect('sum(orderDetails.priceTotal)', 'sum')
+      .addSelect('sum(orderDetails.priceReal * orderDetails.quantity * (100 - orderDetails.reducePercent) / 100)', 'sum')
       .leftJoin('Transaction.order', 'order')
       .leftJoin('order.orderDetails', 'orderDetails')
       .leftJoin('orderDetails.product', 'product')
@@ -569,11 +569,11 @@ export class ReportService {
     queryString = queryString.replace('Transaction.productId', 'product.id');
     queryString = queryString.replace('Transaction.brandId', 'brand.id');
     queryString = queryString.replace('Transaction.productGroupId', 'productGroup.id');
-
+    //order_details.price_real * quantity * (100 - reduce_percent) / 100
     const queryBuilder = await this.transactionRepository
       .createQueryBuilder('Transaction')
       .select(['product.name', 'product.id'])
-      .addSelect(`sum(orderDetails.price_total)`, 'total')
+      .addSelect(`sum(orderDetails.price_real * orderDetails.quantity * (100 - orderDetails.reduce_percent) / 100)`, 'total')
       .addSelect(`sum(orderDetails.quantity)`, 'count')
       .leftJoin('Transaction.order', 'order')
       .leftJoin('order.orderDetails', 'orderDetails')

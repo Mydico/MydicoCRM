@@ -17,17 +17,19 @@ export class BillSubscriber implements EntitySubscriberInterface<Bill> {
     }
 
     async afterUpdate(event: UpdateEvent<Bill>): Promise<any> {
-        event.entity.lastModifiedDate = new Date();
-        event.entity.lastModifiedBy = 'hệ thống';
-        const codLog = new Codlog();
-        const updateEntity = event.entity;
-        codLog.bill = updateEntity;
-        codLog.code = updateEntity.code;
-        codLog.transporter = updateEntity.transporter;
-        codLog.status = updateEntity.status;
-        codLog.order = updateEntity.order,
-        codLog.createdDate = new Date();
-        const codLogRepository = event.manager.getRepository(Codlog);
-        await codLogRepository.save(codLog);
+        if(event.entity){
+            event.entity.lastModifiedDate = new Date();
+            event.entity.lastModifiedBy = 'hệ thống';
+            const codLog = new Codlog();
+            const updateEntity = event.entity;
+            codLog.bill = updateEntity;
+            codLog.code = updateEntity.code;
+            codLog.transporter = updateEntity.transporter;
+            codLog.status = updateEntity.status;
+            codLog.order = updateEntity.order,
+            codLog.createdDate = new Date();
+            const codLogRepository = event.manager.getRepository(Codlog);
+            await codLogRepository.save(codLog);
+        }
     }
 }

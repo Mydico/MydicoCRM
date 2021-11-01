@@ -3,8 +3,9 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Server } from 'socket.io';
 
-@WebSocketGateway(8083, {
+@WebSocketGateway({
   transports: ['websocket'],
+  path:'/socket',
   cors: false,
   allowEIO3: true,
 })

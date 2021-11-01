@@ -32,15 +32,6 @@ const controlStyles = {
   padding: '5px',
   color: 'black'
 };
-const ControlComponent = props => {
-  return (
-    <div style={controlStyles}>
-      {<p>{props.title}</p>}
-      <components.Control {...props} />
-    </div>
-  );
-};
-
 const { selectAll } = globalizedBranchSelectors;
 const { selectAll: selectUserAll } = globalizedUserSelectors;
 const { selectAll: selectAllProduct } = globalizedProductSelectors;
@@ -160,6 +151,15 @@ const ProductReport = () => {
     if (brand) {
       dispatch(
         getProductGroup({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          productBrand: brand?.id,
+          dependency: true
+        })
+      );
+      dispatch(
+        filterProduct({
           page: 0,
           size: 50,
           sort: 'createdDate,DESC',
@@ -307,7 +307,7 @@ const ProductReport = () => {
         code: value,
         name: value,
         productGroup: productGroup?.id,
-        productBrand: branch?.id,
+        productBrand: brand?.id,
         dependency: true
       })
     );

@@ -43,7 +43,6 @@ export class OrderService {
     private readonly billService: BillService,
     private readonly productQuantityService: ProductQuantityService,
     private readonly transactionService: TransactionService,
-    private readonly incomeDashboardService: IncomeDashboardService,
     private readonly departmentService: DepartmentService,
     private readonly eventsGateway: EventsGateway
   ) {}
@@ -54,8 +53,11 @@ export class OrderService {
       relationshipNames.push('customer.type');
     }
     const options = { relations: relationshipNames };
-
-    return await this.orderRepository.findOne(id, options);
+    const result = await this.orderRepository.findOne(id, options);
+    result.orderDetails = result.orderDetails.sort((a, b) => {
+      return Number(a.id) - Number(b.id);
+    });
+    return result;
   }
 
   async findByfields(options: FindOneOptions<Order>): Promise<Order | undefined> {
@@ -110,7 +112,6 @@ export class OrderService {
       .leftJoinAndSelect('promotion.customerType', 'customerType')
       .leftJoinAndSelect('Order.sale', 'sale')
       .leftJoinAndSelect('Order.department', 'department')
-      .cache(cacheKeyBuilder, 604800)
       .skip(options.skip)
       .take(options.take)
       .where(andQueryString)
@@ -138,8 +139,8 @@ export class OrderService {
         new Brackets(sqb => {
           Object.keys(filter).forEach((item, index) => {
             sqb.andWhere(
-              `Order.${item} ${(item === 'saleId' || item == 'status') ? '=' : 'like'}  ${
-                (item === 'saleId' || item == 'status') ?  "'"+filter[item] +"'" : "'%" + filter[item] + "%'"
+              `Order.${item} ${item === 'saleId' || item == 'status' ? '=' : 'like'}  ${
+                item === 'saleId' || item == 'status' ? "'" + filter[item] + "'" : "'%" + filter[item] + "%'"
               }`
             );
             // queryString += ` AND Order.${item} ${item === 'saleId' ? '=' : 'like'}  ${
@@ -157,7 +158,9 @@ export class OrderService {
         new Brackets(sqb => {
           Object.keys(filter).forEach((item, index) => {
             sqb.andWhere(
-              `Order.${item} ${(item === 'saleId' || item == 'status') ? '=' : 'like'}  ${(item === 'saleId' || item == 'status') ? "'"+filter[item]+"'" : "'%" + filter[item] + "%'"}`
+              `Order.${item} ${item === 'saleId' || item == 'status' ? '=' : 'like'}  ${
+                item === 'saleId' || item == 'status' ? "'" + filter[item] + "'" : "'%" + filter[item] + "%'"
+              }`
             );
             // queryString += ` AND Order.${item} ${item === 'saleId' ? '=' : 'like'}  ${
             //   item === 'saleId' ? filter[item] : "'%" + filter[item] + "%'"
@@ -176,7 +179,9 @@ export class OrderService {
     lastResult[1] = await count.getCount();
     lastResult[0] = result.map(item => ({
       ...item,
-      orderDetails: item.orderDetails.reverse()
+      orderDetails: item.orderDetails.sort((a, b) => {
+        return Number(a.id) - Number(b.id);
+      })
     }));
     return lastResult;
   }
@@ -250,19 +255,22 @@ export class OrderService {
     }
   }
 
-  async save(order: Order, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Order | undefined> {
-    await this.orderRepository.removeCache(['order']);
-    const count = await this.orderRepository
-      .createQueryBuilder('order')
-      .select('DISTINCT()')
-      .where(`order.code like '%${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}%'`)
-      .getCount();
+  async emitMessage(result: Order, order: Order): Promise<void> {
+    const ancestor = await this.departmentService.findAncestor(order.department);
+    await this.eventsGateway.emitMessage({ ...result, departmentVisible: ancestor.map(item => item.id) });
+  }
+
+  async save(order: Order, currentUser: User): Promise<Order | undefined> {
     if (!order.id) {
+      const count = await this.orderRepository
+        .createQueryBuilder('order')
+        .select('DISTINCT()')
+        .where(`order.code like '%${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}%'`)
+        .getCount();
       order.code = `${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}-${count + 1}`;
     }
     const result = await this.orderRepository.save(order);
-    const ancestor = await this.departmentService.findAncestor(order.department);
-    await this.eventsGateway.emitMessage({ ...result, departmentVisible: ancestor.map(item => item.id) });
+    await this.emitMessage(result, order);
     return result;
   }
 
@@ -277,50 +285,61 @@ export class OrderService {
       throw new HttpException('Đơn hàng đã tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
     }
     if (order.status === OrderStatus.CREATE_COD) {
-      const canCreateBill = await this.exportStore(foundedOrder);
-      if (canCreateBill) {
-        const bill = new Bill();
-        bill.code = `VD-${foundedOrder.code}`;
-        bill.customer = foundedOrder.customer;
-        bill.order = foundedOrder;
-        bill.store = foundedOrder.store;
-        bill.customerName = foundedOrder.customer.name;
-        bill.department = foundedOrder.department;
-        bill.createdBy = foundedOrder.createdBy;
-        const createdBill = await this.billService.save(bill);
-        const latestTransaction = await this.transactionService.findByfields({
-          where: { customer: foundedOrder.customer },
-          order: { createdDate: 'DESC' }
-        });
-        const transaction = new Transaction();
-        transaction.customer = foundedOrder.customer;
-        transaction.customerCode = foundedOrder.customer.code;
-        transaction.customerName = foundedOrder.customer.name;
-        transaction.sale = foundedOrder.sale;
-        transaction.saleName = foundedOrder.sale.code;
-        transaction.branch = foundedOrder.branch;
-        transaction.department = foundedOrder.department;
-        transaction.order = foundedOrder;
-        transaction.bill = createdBill;
-        transaction.totalMoney = foundedOrder.realMoney;
-        transaction.type = TransactionType.DEBIT;
-        transaction.previousDebt = latestTransaction ? latestTransaction.earlyDebt : 0;
-        transaction.earlyDebt = latestTransaction
-          ? Number(latestTransaction.earlyDebt) + Number(foundedOrder.realMoney)
-          : Number(foundedOrder.realMoney);
-        await this.transactionService.save(transaction);
-        // const incomeItem = new IncomeDashboard();
-        // incomeItem.amount = foundedOrder.realMoney;
-        // incomeItem.departmentId = foundedOrder.department.id;
-        // incomeItem.branchId = foundedOrder.branch.id;
-        // incomeItem.type = DashboardType.ORDER;
-        // incomeItem.saleId = foundedOrder.sale.id || null;
-        // await this.incomeDashboardService.save(incomeItem);
+      const exist = await this.billService.findByfields({
+        where: {
+          order: order
+        }
+      });
+      if (!exist) {
+        const canCreateBill = await this.exportStore(foundedOrder);
+        if (canCreateBill) {
+          const bill = new Bill();
+          bill.code = `VD-${foundedOrder.code}`;
+          bill.customer = foundedOrder.customer;
+          bill.order = foundedOrder;
+          bill.store = foundedOrder.store;
+          bill.customerName = foundedOrder.customer.name;
+          bill.department = foundedOrder.department;
+          bill.createdBy = foundedOrder.createdBy;
+          const createdBill = await this.billService.save(bill);
+          const latestTransaction = await this.transactionService.findByfields({
+            where: { customer: foundedOrder.customer },
+            order: { createdDate: 'DESC' }
+          });
+          const transaction = new Transaction();
+          transaction.customer = foundedOrder.customer;
+          transaction.customerCode = foundedOrder.customer.code;
+          transaction.customerName = foundedOrder.customer.name;
+          transaction.sale = foundedOrder.sale;
+          transaction.saleName = foundedOrder.sale.code;
+          transaction.branch = foundedOrder.branch;
+          transaction.department = foundedOrder.department;
+          transaction.order = foundedOrder;
+          transaction.bill = createdBill;
+          transaction.totalMoney = foundedOrder.realMoney;
+          transaction.type = TransactionType.DEBIT;
+          transaction.previousDebt = latestTransaction ? latestTransaction.earlyDebt : 0;
+          transaction.earlyDebt = latestTransaction
+            ? Number(latestTransaction.earlyDebt) + Number(foundedOrder.realMoney)
+            : Number(foundedOrder.realMoney);
+          await this.transactionService.save(transaction);
+          // const incomeItem = new IncomeDashboard();
+          // incomeItem.amount = foundedOrder.realMoney;
+          // incomeItem.departmentId = foundedOrder.department.id;
+          // incomeItem.branchId = foundedOrder.branch.id;
+          // incomeItem.type = DashboardType.ORDER;
+          // incomeItem.saleId = foundedOrder.sale.id || null;
+          // await this.incomeDashboardService.save(incomeItem);
+        } else {
+          throw new HttpException('Đon hàng không thể tạo vận đơn.Số lượng sản phẩm trong kho không đủ', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
       } else {
-        throw new HttpException('Đon hàng không thể tạo vận đơn.Số lượng sản phẩm trong kho không đủ', HttpStatus.UNPROCESSABLE_ENTITY);
+        throw new HttpException('Vận đơn đã tồn tại', HttpStatus.UNPROCESSABLE_ENTITY);
       }
     }
-    return await this.save(order, departmentVisible, isEmployee, currentUser);
+    const result = await this.orderRepository.save(order);
+    await this.emitMessage(result, order);
+    return result;
   }
 
   async delete(order: Order): Promise<Order | undefined> {

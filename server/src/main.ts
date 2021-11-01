@@ -108,6 +108,7 @@ async function bootstrap(): Promise<void> {
   } else {
     logger.log('No client it has been found');
   }
+  
   if (fs.existsSync(staticFilePath)) {
     app.use('/images', express.static(staticFilePath));
     logger.log(`Serving static file resources on ${staticFilePath}`);
