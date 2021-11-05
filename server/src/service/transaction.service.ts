@@ -152,6 +152,11 @@ export class TransactionService {
       .orderBy(`MAX(Transaction.${Object.keys(options.order)[0] || 'createdDate'})`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);
+    const count = this.transactionRepository
+      .createQueryBuilder('Transaction')
+      .select(['Transaction.customerId, Transaction.customerName, Transaction.customerCode, Transaction.saleName'])
+      .where(andQueryString)
+      .groupBy('Transaction.customerId, Transaction.customerName, Transaction.customerCode, Transaction.saleName')
 
     if (queryString) {
       queryBuilder.andWhere(
@@ -159,8 +164,14 @@ export class TransactionService {
           sqb.where(queryString);
         })
       );
+      count.andWhere(
+        new Brackets(sqb => {
+          sqb.where(queryString);
+        })
+      );
     }
     const rawData = await queryBuilder.getRawMany();
+    const countMany = await count.getRawMany();
     const convertedEntity: Transaction[] = rawData.map(item => ({
       id: item.id,
       customerCode: item.customer_code,
@@ -170,7 +181,7 @@ export class TransactionService {
       customerName: item.customer_name,
       createdDate: item.createdDate
     }));
-    return [convertedEntity, rawData.length];
+    return [convertedEntity, countMany.length];
   }
 
   async save(transaction: Transaction): Promise<Transaction | undefined> {

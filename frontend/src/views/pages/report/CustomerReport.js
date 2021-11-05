@@ -98,7 +98,7 @@ const CustomerReport = props => {
     dispatch(getCustomerType());
   }, []);
 
-  const getCustomer = (department, branch, sale) => {
+  const getCustomer = (department, branch, sale, type) => {
     dispatch(
       filterCustomerNotToStore({
         page: 0,
@@ -106,6 +106,7 @@ const CustomerReport = props => {
         sort: 'createdDate,DESC',
         department: department,
         branch: branch,
+        type,
         sale: isEmployee ? account.id : sale,
         dependency: true
       })
@@ -161,7 +162,6 @@ const CustomerReport = props => {
       }
     });
 
-    
     dispatch(getCustomerPriceReport(filter)).then(data => {
       if (data) {
         setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.realMoney || 0));
@@ -244,16 +244,21 @@ const CustomerReport = props => {
   useEffect(() => {
     setFilter({
       ...filter,
-      customer: customer?.id
+      type: userType?.id
     });
-  }, [customer]);
+    if (userType) {
+      getCustomer(department?.id, branch?.id, user?.id, userType?.id);
+    }
+  }, [userType]);
 
   useEffect(() => {
     setFilter({
       ...filter,
-      type: userType?.id
+      customer: customer?.id
     });
-  }, [userType]);
+  }, [customer]);
+
+
 
   useEffect(() => {
     if (Object.keys(filter).length > 2) {
@@ -430,6 +435,27 @@ const CustomerReport = props => {
               </CCol>
             </CRow>
             <CRow sm={12} md={12} className="mt-2">
+            <CCol sm={4} md={4}>
+              <p>Loại khách hàng</p>
+              <Select
+                isSearchable
+                name="userType"
+                onChange={e => {
+                  setUserType(e?.value || null);
+                }}
+                value={{
+                  value: userType,
+                  label: userType?.name
+                }}
+                isClearable={true}
+                openMenuOnClick={false}
+                placeholder="Chọn khách hàng"
+                options={userTypes.map(item => ({
+                  value: item,
+                  label: item.name
+                }))}
+              />
+            </CCol>
               <CCol sm={4} md={4}>
                 <p>Khách hàng</p>
                 <Select
@@ -449,27 +475,6 @@ const CustomerReport = props => {
                   options={filteredCustomer.map(item => ({
                     value: item,
                     label: `${item.code}-${item.name}`
-                  }))}
-                />
-              </CCol>
-              <CCol sm={4} md={4}>
-                <p>Loại khách hàng</p>
-                <Select
-                  isSearchable
-                  name="userType"
-                  onChange={e => {
-                    setUserType(e?.value || null);
-                  }}
-                  value={{
-                    value: userType,
-                    label: userType?.name
-                  }}
-                  isClearable={true}
-                  openMenuOnClick={false}
-                  placeholder="Chọn khách hàng"
-                  options={userTypes.map(item => ({
-                    value: item,
-                    label: item.name
                   }))}
                 />
               </CCol>

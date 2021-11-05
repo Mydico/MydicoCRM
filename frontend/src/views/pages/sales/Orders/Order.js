@@ -162,19 +162,19 @@ const Order = props => {
   const [focused, setFocused] = React.useState();
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
 
-  useEffect(() => {
-    if (date.endDate && date.startDate) {
-      const params = {
-        page: activePage - 1,
-        size,
-        sort: 'createdDate,DESC',
-        ...paramRef.current,
-        startDate: date.startDate?.format('YYYY-MM-DD'),
-        endDate: date.endDate?.format('YYYY-MM-DD')
-      };
-      dispatch(getOrder(params));
-    }
-  }, [date]);
+  // useEffect(() => {
+  //   if (date.endDate && date.startDate) {
+  //     const params = {
+  //       page: activePage - 1,
+  //       size,
+  //       sort: 'createdDate,DESC',
+  //       ...paramRef.current,
+  //       startDate: date.startDate?.format('YYYY-MM-DD'),
+  //       endDate: date.endDate?.format('YYYY-MM-DD')
+  //     };
+  //     dispatch(getOrder(params));
+  //   }
+  // }, [date]);
 
   useEffect(() => {
     dispatch(reset());
@@ -182,19 +182,21 @@ const Order = props => {
   }, []);
 
   useEffect(() => {
-    const localParams = localStorage.getItem('params');
-    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
-    if (localParams) {
-      params = JSON.parse(localParams);
-      setActivePage(params.page + 1);
-      localStorage.removeItem('params');
+    if (activePage > 0) {
+      const localParams = localStorage.getItem('params');
+      let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+      if (localParams) {
+        params = JSON.parse(localParams);
+        setActivePage(params.page + 1);
+        localStorage.removeItem('params');
+      }
+      if (date.endDate && date.startDate) {
+        params = { ...params, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
+      }
+      dispatch(getOrder(params));
+      window.scrollTo(0, 100);
     }
-    if (date.endDate && date.startDate) {
-      params = { ...params, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
-    }
-    dispatch(getOrder(params));
-    window.scrollTo(0, 100);
-  }, [activePage, size]);
+  }, [activePage, size, date]);
 
   const computedItems = items => {
     return items.map(item => {
@@ -221,15 +223,7 @@ const Order = props => {
   };
 
   const toCreateOrder = () => {
-    const params = {
-      page: activePage - 1,
-      size,
-      sort: 'createdDate,DESC',
-      ...paramRef.current,
-      startDate: date.startDate?.format('YYYY-MM-DD'),
-      endDate: date.endDate?.format('YYYY-MM-DD')
-    };
-    localStorage.setItem('params', JSON.stringify(params));
+    saveParams();
     history.push(`${props.match.url}/new`);
   };
 
@@ -261,6 +255,13 @@ const Order = props => {
   };
 
   const toEditOrder = typeId => {
+    saveParams();
+    dispatch(getDetailOrder({ id: typeId, dependency: true }));
+
+    history.push(`${props.match.url}/${typeId}/edit`);
+  };
+
+  const saveParams = () => {
     const params = {
       page: activePage - 1,
       size,
@@ -270,12 +271,10 @@ const Order = props => {
       endDate: date.endDate?.format('YYYY-MM-DD')
     };
     localStorage.setItem('params', JSON.stringify(params));
-    dispatch(getDetailOrder({ id: typeId, dependency: true }));
-
-    history.push(`${props.match.url}/${typeId}/edit`);
   };
 
   const toSeeBill = item => {
+    saveParams();
     history.push({
       pathname: `${props.match.url}/print`,
       state: {
@@ -600,6 +599,7 @@ const Order = props => {
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
   const toDetailOrder = id => {
+    saveParams();
     history.push(`${props.match.url}/${id}/detail`);
   };
 
@@ -918,7 +918,8 @@ const Order = props => {
         />
         <CPagination
           activePage={activePage}
-          pages={Math.floor(initialState.totalItem / size) + 1}
+          pages={Math.floor(initialState.totalItem / size) + 1
+          }
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>

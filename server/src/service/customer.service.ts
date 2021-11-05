@@ -91,12 +91,24 @@ export class CustomerService {
     delete filter['branch'];
     delete filter['department'];
     const length = Object.keys(filter).length;
-    Object.keys(filter).forEach((item, index) => {
-      queryString += `Customer.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'OR '}`;
-    });
-    if (queryString.length > 0) {
-      queryBuilder.andWhere(queryString);
-      count.andWhere(queryString);
+    // Object.keys(filter).forEach((item, index) => {
+    //   queryString += `Customer.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'OR '}`;
+    // });
+    if (length > 0) {
+      queryBuilder.andWhere(
+        new Brackets(sqb => {
+          Object.keys(filter).forEach((item, index) => {
+            sqb.orWhere(`Customer.${item} like '%${filter[item]}%'`);
+          });
+        })
+      );
+      count.andWhere(
+        new Brackets(sqb => {
+          Object.keys(filter).forEach((item, index) => {
+            sqb.orWhere(`Customer.${item} like '%${filter[item]}%'`);
+          });
+        })
+      );
     }
     const result = await queryBuilder.getManyAndCount();
     result[1] = await count.getCount();
