@@ -78,6 +78,45 @@ export const queryBuilderFunc = (entity, filter = {}, isDebt = false) => {
   return query;
 };
 
+export const queryBuilderCustomerForPromotionReportFunc = (filter = {}) => {
+  const entity = 'Transaction'
+  delete filter['dependency'];
+  let query = '';
+  Object.keys(filter).forEach((key, index) => {
+    if (key === 'startDate' || key === 'endDate') return;
+    if (key === 'promotion' || key === 'promotionItem') return;
+    if (Array.isArray(filter[key])) {
+      if (filter[key].length > 0) {
+        query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${JSON.stringify(filter[key])
+          .replace('[', '(')
+          .replace(']', ')')}`;
+      }
+    } else if (Array.isArray(JSON.parse(filter[key]))) {
+      if (JSON.parse(filter[key]).length > 0) {
+        query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${filter[key].replace('[', '(').replace(']', ')')}`;
+      }
+    } else {
+      query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id = ${filter[key]} `;
+    }
+  });
+  if (filter['promotion']) {
+    query += `  ${query.length > 0 ? 'AND' : ''} (order.promotionId  = '${filter['promotion']}' OR  storeInput.promotionId = '${
+      filter['promotion']
+    }')`;
+  }
+  if (filter['promotionItem']) {
+    query += `  ${query.length > 0 ? 'AND' : ''} (order.promotionItemId  = '${filter['promotionItem']}' OR  storeInput.promotionItemId = '${
+      filter['promotionItem']
+    }')`;
+  }
+  if (filter['endDate'] && filter['startDate']) {
+    query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']}' AND  ${entity}.createdDate <= '${
+      filter['endDate']
+    } 23:59:59'`;
+  }
+  return query;
+};
+
 const transformData = data => {
   return data
     .sort((a, b) => +moment(a.createdDate).toDate() - +moment(b.createdDate).toDate())

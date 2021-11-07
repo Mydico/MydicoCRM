@@ -19,6 +19,7 @@ import { useMediaQuery } from 'react-responsive';
 import Download from '../../../components/excel/DownloadExcel.js';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 import ReportDate from '../../../components/report-date/ReportDate';
+import { setParams } from '../../../../App.reducer';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -149,6 +150,7 @@ export const getBadge = status => {
 const Order = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.order);
+  const { params } = useSelector(state => state.app);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
@@ -178,22 +180,22 @@ const Order = props => {
 
   useEffect(() => {
     dispatch(reset());
-    localStorage.setItem('order', JSON.stringify({}));
+    // localStorage.setItem('order', JSON.stringify({}));
   }, []);
 
   useEffect(() => {
     if (activePage > 0) {
-      const localParams = localStorage.getItem('params');
-      let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
-      if (localParams) {
-        params = JSON.parse(localParams);
-        setActivePage(params.page + 1);
-        localStorage.removeItem('params');
-      }
+      let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+
+      paramsLocal = { ...paramsLocal, ...params?.order };
+      // if (localParams) {
+      //   setActivePage(params.page + 1);
+      //   // localStorage.removeItem('params');
+      // }
       if (date.endDate && date.startDate) {
-        params = { ...params, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
+        paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
       }
-      dispatch(getOrder(params));
+      dispatch(getOrder(paramsLocal));
       window.scrollTo(0, 100);
     }
   }, [activePage, size, date]);
@@ -230,6 +232,7 @@ const Order = props => {
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
+
       dispatch(
         getOrder({
           page: 0,
@@ -240,6 +243,7 @@ const Order = props => {
           endDate: date.endDate?.format('YYYY-MM-DD')
         })
       );
+      saveParams();
     } else {
       clearSearchParams();
     }
@@ -262,7 +266,7 @@ const Order = props => {
   };
 
   const saveParams = () => {
-    const params = {
+    const orderParams = {
       page: activePage - 1,
       size,
       sort: 'createdDate,DESC',
@@ -270,7 +274,13 @@ const Order = props => {
       startDate: date.startDate?.format('YYYY-MM-DD'),
       endDate: date.endDate?.format('YYYY-MM-DD')
     };
-    localStorage.setItem('params', JSON.stringify(params));
+    dispatch(
+      setParams({
+        ...params,
+        order: orderParams
+      })
+    );
+    // localStorage.setItem('params', JSON.stringify(params));
   };
 
   const toSeeBill = item => {
@@ -284,7 +294,7 @@ const Order = props => {
   };
 
   useEffect(() => {
-    if (initialState.updatingSuccess) {
+    if (initialState.updateStatusSuccess) {
       dispatch(reset());
       const params = {
         page: activePage - 1,
@@ -296,7 +306,7 @@ const Order = props => {
       };
       dispatch(getOrder(params));
     }
-  }, [initialState.updatingSuccess]);
+  }, [initialState.updateStatusSuccess]);
 
   const approveOrder = order => () => {
     dispatch(fetching());
@@ -697,6 +707,7 @@ const Order = props => {
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
           onRowClick={val => toDetailOrder(val.id)}
+          columnFilterValue={params.order}
           columnFilterSlot={{
             status: (
               <div style={{ minWidth: 200 }}>
@@ -706,6 +717,10 @@ const Order = props => {
                   }}
                   isClearable
                   placeholder="Chọn trạng thái"
+                  value={{
+                    value: params?.order?.status,
+                    label: statusList.filter(item => item.value === params?.order?.status)[0]?.label
+                  }}
                   options={statusList.map(item => ({
                     value: item.value,
                     label: item.label
@@ -918,8 +933,7 @@ const Order = props => {
         />
         <CPagination
           activePage={activePage}
-          pages={Math.floor(initialState.totalItem / size) + 1
-          }
+          pages={Math.floor(initialState.totalItem / size) + 1}
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>

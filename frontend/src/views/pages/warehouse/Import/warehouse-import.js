@@ -160,6 +160,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
 
   useEffect(() => {
@@ -194,9 +195,7 @@ const WarehouseImport = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
+
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getWarehouseImport({ page: 0, size: size, sort: 'createdDate,DESC', ...value,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') }));
     }

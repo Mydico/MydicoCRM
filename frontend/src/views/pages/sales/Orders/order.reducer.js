@@ -5,6 +5,7 @@ import { getOrder, getDetailOrder, updateOrder } from './order.api';
 const initialState = {
   loading: false,
   updatingSuccess: false,
+  updateStatusSuccess: false,
   orderDetails: [],
   totalItem: 0
 };
@@ -77,11 +78,11 @@ const slice = createSlice({
     },
     [updateStatusOrder.fulfilled]: state => {
       state.initialState.loading = false;
-      state.initialState.updatingSuccess = true;
+      state.initialState.updateStatusSuccess = true;
     },
     [updateStatusOrder.rejected]: state => {
       state.initialState.loading = false;
-      state.initialState.updatingSuccess = false;
+      state.initialState.updateStatusSuccess = false;
     },
     [updateOrder.fulfilled]: state => {
       state.initialState.loading = false;

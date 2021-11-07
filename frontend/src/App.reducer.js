@@ -5,7 +5,7 @@ const initialState = {
   sidebarShow: 'responsive',
   asideShow: false,
   darkMode: false,
-  toaster: []
+  params: {}
 };
 const slice = createSlice({
   name: 'app',
@@ -20,8 +20,8 @@ const slice = createSlice({
     setDarkMode: (state, action) => {
       state.darkMode = action.payload;
     },
-    setToatsList: (state, action) => {
-      state.toaster = [...state.toaster, action.payload];
+    setParams: (state, action) => {
+      state.params = action.payload;
     }
   }
 });
@@ -30,4 +30,4 @@ export default slice.reducer;
 
 // Actions
 
-export const { setAsideShow, setSidebarShow, setDarkMode, setToatsList } = slice.actions;
+export const { setAsideShow, setSidebarShow, setDarkMode, setToatsList, setParams } = slice.actions;

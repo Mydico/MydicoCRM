@@ -11,6 +11,7 @@ import Download from '../../../components/excel/DownloadExcel.js';
 import { CLink } from '@coreui/react';
 import { useHistory } from 'react-router';
 import ReportDate from '../../../components/report-date/ReportDate';
+import { setParams } from '../../../../App.reducer.js';
 
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
@@ -68,7 +69,7 @@ const StoreHistory = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const storeHistorys = useSelector(selectAll);
-  const history = useHistory();
+  const { params } = useSelector(state => state.app);
   const paramRef = useRef({});
   const [focused, setFocused] = React.useState();
 
@@ -76,7 +77,14 @@ const StoreHistory = props => {
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
+      };
       dispatch(getStoreHistory(params));
     }
   }, [date]);
@@ -86,11 +94,12 @@ const StoreHistory = props => {
   }, []);
 
   useEffect(() => {
-    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    paramsLocal = { ...paramsLocal, ...params?.history };
     if (date.endDate && date.startDate) {
-      params = { ...params,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
+      paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }
-    dispatch(getStoreHistory(params));
+    dispatch(getStoreHistory(paramsLocal));
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
@@ -107,13 +116,29 @@ const StoreHistory = props => {
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(storeHistorys), [storeHistorys]);
 
+  const saveParams = () => {
+    const orderParams = {
+      page: activePage - 1,
+      size,
+      sort: 'createdDate,DESC',
+      ...paramRef.current,
+      startDate: date.startDate?.format('YYYY-MM-DD'),
+      endDate: date.endDate?.format('YYYY-MM-DD')
+    };
+    dispatch(
+      setParams({
+        ...params,
+        history: orderParams
+      })
+    );
+    // localStorage.setItem('params', JSON.stringify(params));
+  };
+
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getStoreHistory({ page: 0, size, sort: 'lastModifiedDate,DESC', ...value }));
+      saveParams();
     }
   }, 300);
 
@@ -220,6 +245,7 @@ const StoreHistory = props => {
             noResults: 'Không tìm thấy kết quả',
             noItems: 'Không có dữ liệu'
           }}
+          columnFilterValue={params.history}
           onPaginationChange={setSize}
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{

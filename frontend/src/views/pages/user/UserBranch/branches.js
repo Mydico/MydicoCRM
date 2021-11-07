@@ -73,6 +73,7 @@ const Branch = props => {
 
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
 
   useEffect(() => {

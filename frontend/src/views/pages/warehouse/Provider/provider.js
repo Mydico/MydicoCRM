@@ -27,6 +27,7 @@ const Provider = props => {
   const paramRef = useRef();
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
 
   useEffect(() => {

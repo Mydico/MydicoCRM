@@ -223,9 +223,7 @@ const OrderCustomerHistory = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
+
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(
         getOrder({ page: 0, size: size, customerId: props.match.params.id, dependency: true, sort: 'createdDate,DESC', ...value, ...date })

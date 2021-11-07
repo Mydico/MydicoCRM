@@ -68,6 +68,7 @@ const Warehouse = props => {
 
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
 
   useEffect(() => {

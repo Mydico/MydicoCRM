@@ -21,6 +21,7 @@ const ProductGroup = props => {
   const history = useHistory();
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
   const productGroups = useSelector(selectAll);
   useEffect(() => {

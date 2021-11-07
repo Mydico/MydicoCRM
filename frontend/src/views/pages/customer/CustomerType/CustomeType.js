@@ -20,6 +20,7 @@ const CustomerType = props => {
   const history = useHistory();
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
   const customerTypes = useSelector(selectAll);
   useEffect(() => {

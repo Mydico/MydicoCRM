@@ -32,8 +32,8 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
-  { key: 'customer_code', label: 'Mã nhân viên', _style: { width: '10%' }, filter: false },
-  { key: 'customer_name', label: 'Tên', _style: { width: '10%' }, filter: false },
+  { key: 'customer_code', label: 'Mã khách hàng', _style: { width: '10%' }, filter: false },
+  { key: 'customer_name', label: 'Tên khách hàng', _style: { width: '10%' }, filter: false },
   { key: 'totalMoney', label: 'Doanh thu', _style: { width: '15%' }, filter: false },
   { key: 'return', label: 'Trả lại', _style: { width: '15%' }, filter: false },
   { key: 'realMoney', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false }
@@ -48,8 +48,11 @@ const PromotionReport = () => {
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
   const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
+  const isManager = account.roles.filter(item => item.authority == 'MANAGER').length > 0;
+  const isBranchManager = account.roles.filter(item => item.authority.includes('BRANCH_MANAGER')).length > 0;
 
-  const branches = isEmployee ? [account.branch] : useSelector(selectAll);
+  const specialRole = JSON.parse(account.department.reportDepartment || '[]').length > 0;
+  const branches = ((isEmployee || isBranchManager) && !specialRole) ? [account.branch] : useSelector(selectAll);
   const users = isEmployee ? [account] : useSelector(selectUserAll);
 
   const promotions = useSelector(selectPromotionAll);
@@ -73,6 +76,9 @@ const PromotionReport = () => {
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(getPromotion());
+    if(isManager){
+      dispatch(getBranch({ department: account.department.id, dependency: true }));
+    }
   }, []);
 
   useEffect(() => {
@@ -201,7 +207,7 @@ const PromotionReport = () => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
-          branch: branch?.id,
+          branch: isBranchManager ? account.branch.id : branch?.id,
           dependency: true
         })
       );
@@ -290,7 +296,7 @@ const PromotionReport = () => {
         sort: 'createdDate,DESC',
         code: value,
         department: department?.id || account.department.id,
-        branch: branch?.id,
+        branch: isBranchManager ? account.branch.id : branch?.id,
         dependency: true
       })
     );
@@ -367,9 +373,12 @@ const PromotionReport = () => {
                   onChange={e => {
                     setDepartment(e?.value || null);
                   }}
-                  value={{
+                  value={initialState.allChild.length > 1 ? {
                     value: department,
                     label: department?.name
+                  } : {
+                    value: initialState.allChild[0],
+                    label: initialState.allChild[0]?.name
                   }}
                   isClearable={true}
                   openMenuOnClick={false}
@@ -388,9 +397,12 @@ const PromotionReport = () => {
                   onChange={e => {
                     setBranch(e?.value || null);
                   }}
-                  value={{
+                  value={branches.length > 1 ?{
                     value: branch,
                     label: branch?.name
+                  }:{
+                    value: branches[0],
+                    label: branches[0]?.name
                   }}
                   isClearable={true}
                   openMenuOnClick={false}
@@ -507,7 +519,7 @@ const PromotionReport = () => {
         </CRow>
         <CCard>
           <CCardHeader>
-            <CCardTitle>Danh sách nhân viên</CCardTitle>
+            <CCardTitle>Danh sách khách hàng</CCardTitle>
           </CCardHeader>
           <CCardBody>
             <Download

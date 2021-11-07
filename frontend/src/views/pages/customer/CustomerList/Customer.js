@@ -18,6 +18,7 @@ import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared
 import Download from '../../../components/excel/DownloadExcel.js';
 import { getDepartment,getChildTreeDepartmentByUser } from '../../user/UserDepartment/department.api.js';
 import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer.js';
+import { setParams } from '../../../../App.reducer.js';
 
 const { selectAll } = globalizedCustomerSelectors;
 // Code	Tên cửa hàng/đại lý	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại khách hàng	Phân loại	Sửa	Tạo đơn
@@ -101,6 +102,7 @@ const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
 const Customer = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
+  const { params } = useSelector(state => state.app);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const { initialState } = useSelector(state => state.customer);
   const [activePage, setActivePage] = useState(1);
@@ -113,7 +115,7 @@ const Customer = props => {
   const selectedPro = useRef({ id: null, activated: true });
   const [primary, setPrimary] = useState(false);
   useEffect(() => {
-    // dispatch(syncCustomer())
+    // localStorage.removeItem('params');
     dispatch(reset());
     dispatch(getCustomerType({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getChildTreeDepartmentByUser({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
@@ -134,14 +136,9 @@ const Customer = props => {
 
   useEffect(() => {
     dispatch(reset());
-    const localParams = localStorage.getItem('params');
-    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
-    if (localParams) {
-      params = JSON.parse(localParams);
-      setActivePage(params.page + 1);
-      localStorage.removeItem('params');
-    }
-    dispatch(getCustomer(params));
+    let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    paramsLocal = { ...paramsLocal, ...params?.order };
+    dispatch(getCustomer(paramsLocal));
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
@@ -156,17 +153,28 @@ const Customer = props => {
     setDetails(newDetails);
   };
 
+  const saveParams = () => {
+    const customerParams = {
+      page: activePage - 1,
+      size,
+      sort: 'createdDate,DESC',
+      ...paramRef.current,
+    };
+    dispatch(
+      setParams({
+        ...params,
+        customer: customerParams
+      })
+    );
+  };
+
   const toCreateCustomer = () => {
-    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
-    localStorage.setItem('params', JSON.stringify(params));
     history.push({
       pathname: `${props.match.url}/new`
     });
   };
 
   const toEditCustomer = userId => {
-    const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
-    localStorage.setItem('params', JSON.stringify(params));
     history.push(`${props.match.url}/${userId}/edit`);
   };
 
@@ -174,6 +182,7 @@ const Customer = props => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
+      saveParams()
     }else {
       clearSearchParams()
     }
@@ -246,7 +255,7 @@ const Customer = props => {
             noResults: 'Không tìm thấy kết quả',
             noItems: 'Không có dữ liệu'
           }}
-          // loading
+          columnFilterValue={params.customer}
 
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}

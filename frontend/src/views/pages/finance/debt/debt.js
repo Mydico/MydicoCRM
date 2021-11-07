@@ -108,9 +108,7 @@ const Debt = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
+
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getCustomerDebtsTotalDebit({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date })).then(resp => {
         setTotal(Number(resp.payload.data.sum));

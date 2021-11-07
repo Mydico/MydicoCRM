@@ -22,6 +22,7 @@ const CustomerStatus = props => {
   const customerStatuses = useSelector(selectAll);
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
 
   useEffect(() => {

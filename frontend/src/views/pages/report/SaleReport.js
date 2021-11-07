@@ -14,7 +14,7 @@ import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors, setAll } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
-import { getSaleReport, getSaleSummaryReport } from './report.api';
+import { getCustomerCountReport, getCustomerSummaryReport, getSaleReport, getSaleSummaryReport } from './report.api';
 import Download from './../../components/excel/DownloadExcel';
 import { useHistory } from 'react-router';
 import AdvancedTable from '../../components/table/AdvancedTable';
@@ -61,14 +61,24 @@ const SaleReport = props => {
   const { account } = useSelector(state => state.authentication);
 
   const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
+  const isManager = account.roles.filter(item => item.authority == 'MANAGER').length > 0;
 
-  const branches = isEmployee ? [account.branch] : useSelector(selectAll);
+  const isBranchManager = account.roles.filter(item => item.authority.includes('BRANCH_MANAGER')).length > 0;
+
+  const specialRole = JSON.parse(account.department.reportDepartment || '[]').length > 0;
+  const branches = ((isEmployee || isBranchManager) && !specialRole) ? [account.branch] : useSelector(selectAll);
   const users = isEmployee ? [account] : useSelector(selectUserAll);
   const history = useHistory();
 
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const [filter, setFilter] = useState({ dependency: true, startDate: moment().startOf('month').format('YYYY-MM-DD'), endDate: moment().format('YYYY-MM-DD')  });
+  const [filter, setFilter] = useState({
+    dependency: true,
+    startDate: moment()
+      .startOf('month')
+      .format('YYYY-MM-DD'),
+    endDate: moment().format('YYYY-MM-DD')
+  });
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
@@ -79,6 +89,9 @@ const SaleReport = props => {
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
+    if(isManager){
+      dispatch(getBranch({ department: account.department.id, dependency: true }));
+    }
   }, []);
 
   useEffect(() => {
@@ -96,7 +109,7 @@ const SaleReport = props => {
         size: 50,
         sort: 'createdDate,DESC',
         department: department?.id || account.department.id,
-        branch: branch?.id,
+        branch: isBranchManager ? account.branch.id : branch?.id,
         dependency: true
       })
     );
@@ -108,7 +121,6 @@ const SaleReport = props => {
     delete filter['page'];
     delete filter['size'];
     delete filter['sort'];
-
     dispatch(getSaleSummaryReport(filter)).then(data => {
       if (data && data.payload) {
         setNumOfProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.total));
@@ -158,7 +170,7 @@ const SaleReport = props => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
-          branch: branch?.id,
+          branch: isBranchManager ? account.branch.id : branch?.id,
           dependency: true
         })
       );
@@ -204,7 +216,7 @@ const SaleReport = props => {
         sort: 'createdDate,DESC',
         code: value,
         department: department?.id || account.department.id,
-        branch: branch?.id,
+        branch: isBranchManager ? account.branch.id : branch?.id,
         dependency: true
       })
     );
@@ -268,9 +280,12 @@ const SaleReport = props => {
                   onChange={e => {
                     setDepartment(e?.value || null);
                   }}
-                  value={{
+                  value={initialState.allChild.length > 1 ? {
                     value: department,
                     label: department?.name
+                  } : {
+                    value: initialState.allChild[0],
+                    label: initialState.allChild[0]?.name
                   }}
                   isClearable={true}
                   openMenuOnClick={false}
@@ -289,9 +304,12 @@ const SaleReport = props => {
                   onChange={e => {
                     setBranch(e?.value || null);
                   }}
-                  value={{
+                  value={branches.length > 1 ?{
                     value: branch,
                     label: branch?.name
+                  }:{
+                    value: branches[0],
+                    label: branches[0]?.name
                   }}
                   isClearable={true}
                   openMenuOnClick={false}
@@ -339,6 +357,17 @@ const SaleReport = props => {
               <CIcon name="cil3d" height="76" className="my-4" />
             </CWidgetBrand>
           </CCol>
+          {/* <CCol sm="6" lg="6">
+            <CWidgetBrand
+              rightHeader={numOfCustomer}
+              rightFooter="Tổng khách hàng"
+              leftHeader={numOfNewCustomer}
+              leftFooter="Tổng mở mới"
+              color="gradient-danger"
+            >
+              <CIcon name="cil3d" height="76" className="my-4" />
+            </CWidgetBrand>
+          </CCol> */}
         </CRow>
         <CCard>
           <CCardHeader>

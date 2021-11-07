@@ -20,6 +20,7 @@ const ProductBrand = props => {
   const history = useHistory();
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
   const productBrandss = useSelector(selectAll);
   useEffect(() => {

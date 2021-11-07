@@ -64,6 +64,9 @@ export class CustomerService {
     if (filter['branch']) {
       andQueryString += ` AND Customer.branch = ${filter['branch']}`;
     }
+    if (filter['type']) {
+      andQueryString += ` AND Customer.type = ${filter['type']}`;
+    }
     if (filter['activated']) {
       andQueryString += ` AND Customer.activated = ${filter['activated']}`;
     }
@@ -85,11 +88,11 @@ export class CustomerService {
       .orderBy(`Customer.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);
-    let queryString = '';
     delete filter['activated'];
     delete filter['sale'];
     delete filter['branch'];
     delete filter['department'];
+    delete filter['type'];
     const length = Object.keys(filter).length;
     // Object.keys(filter).forEach((item, index) => {
     //   queryString += `Customer.${item} like '%${filter[item]}%' ${length - 1 === index ? '' : 'OR '}`;

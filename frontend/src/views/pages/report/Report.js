@@ -27,9 +27,14 @@ const Report = props => {
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
   const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
+  const isManager = account.roles.filter(item => item.authority == 'MANAGER').length > 0;
+
   const history = useHistory();
 
-  const branches = isEmployee ? [account.branch] : useSelector(selectAll);
+  const isBranchManager = account.roles.filter(item => item.authority.includes('BRANCH_MANAGER')).length > 0;
+
+  const specialRole = JSON.parse(account.department.reportDepartment || '[]').length > 0;
+  const branches = ((isEmployee || isBranchManager) && !specialRole) ? [account.branch] : useSelector(selectAll);
 
   const users = isEmployee ? [account] : useSelector(selectUserAll);
 
@@ -44,7 +49,10 @@ const Report = props => {
   const [top10Product, setTop10Product] = useState([]);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
-    // getTop10();
+    if(isManager){
+      dispatch(getBranch({ department: account.department.id, dependency: true }));
+
+    }
   }, []);
 
   useEffect(() => {
@@ -62,7 +70,7 @@ const Report = props => {
         size: 50,
         sort: 'createdDate,DESC',
         department: department?.id || account.department.id,
-        branch: branch?.id,
+        branch: isBranchManager ? account.branch.id : branch?.id,
         dependency: true
       })
     );
@@ -124,7 +132,7 @@ const Report = props => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
-          branch: branch?.id,
+          branch: isBranchManager ? account.branch.id : branch?.id,
           dependency: true
         })
       );
@@ -162,7 +170,7 @@ const Report = props => {
         sort: 'createdDate,DESC',
         code: value,
         department: department?.id || account.department.id,
-        branch: branch?.id,
+        branch: isBranchManager ? account.branch.id : branch?.id,
         dependency: true
       })
     );
@@ -242,9 +250,12 @@ const Report = props => {
                   onChange={e => {
                     setDepartment(e?.value || null);
                   }}
-                  value={{
+                  value={initialState.allChild.length > 1 ? {
                     value: department,
                     label: department?.name
+                  } : {
+                    value: initialState.allChild[0],
+                    label: initialState.allChild[0]?.name
                   }}
                   isClearable={true}
                   openMenuOnClick={false}
@@ -263,9 +274,12 @@ const Report = props => {
                   onChange={e => {
                     setBranch(e?.value || null);
                   }}
-                  value={{
+                  value={branches.length > 1 ?{
                     value: branch,
                     label: branch?.name
+                  }:{
+                    value: branches[0],
+                    label: branches[0]?.name
                   }}
                   isClearable={true}
                   openMenuOnClick={false}

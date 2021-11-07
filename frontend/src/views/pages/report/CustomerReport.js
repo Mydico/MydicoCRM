@@ -70,10 +70,13 @@ const CustomerReport = props => {
   const history = useHistory();
 
   const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
+  const isManager = account.roles.filter(item => item.authority == 'MANAGER').length > 0;
 
-  const branches = isEmployee ? [account.branch] : useSelector(selectAll);
+  const isBranchManager = account.roles.filter(item => item.authority.includes('BRANCH_MANAGER')).length > 0;
+
+  const specialRole = JSON.parse(account.department.reportDepartment || '[]').length > 0;
+  const branches = (isEmployee || isBranchManager) && !specialRole ? [account.branch] : useSelector(selectAll);
   const users = isEmployee ? [account] : useSelector(selectUserAll);
-
   const userTypes = useSelector(selectCustomerTypeAll);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
@@ -93,9 +96,13 @@ const CustomerReport = props => {
 
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
-    // dispatch(getBranch());
-    // dispatch(getUser());
     dispatch(getCustomerType());
+    if(branches.length === 1){
+      setBranch(branches[0])
+    }
+    if (isManager) {
+      dispatch(getBranch({ department: account.department.id, dependency: true }));
+    }
   }, []);
 
   const getCustomer = (department, branch, sale, type) => {
@@ -106,12 +113,12 @@ const CustomerReport = props => {
         sort: 'createdDate,DESC',
         department: department,
         branch: branch,
-        type,
+        type: type || userType?.id,
         sale: isEmployee ? account.id : sale,
         dependency: true
       })
     ).then(resp => {
-      if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
+      if (resp && resp.payload && Array.isArray(resp.payload.data)) {
         setFilteredCustomer(resp.payload.data);
       }
     });
@@ -183,27 +190,30 @@ const CustomerReport = props => {
     setCustomer(null);
   };
   useEffect(() => {
-    reset();
-    setFilter({
-      ...filter,
-      department: department?.id,
-      branch: null,
-      user: null,
-      customer: null
-    });
-    if (department) {
-      dispatch(getBranch({ department: department?.id, dependency: true }));
-      dispatch(
-        getExactUser({
-          page: 0,
-          size: 50,
-          sort: 'createdDate,DESC',
-          department: department?.id || account.department.id,
-          dependency: true
-        })
-      );
-      getCustomer(department?.id, null, null);
+    if(department !== null){
+      reset();
+      setFilter({
+        ...filter,
+        department: department?.id,
+        branch: null,
+        user: null,
+        customer: null
+      });
+      if (department) {
+        dispatch(getBranch({ department: department?.id, dependency: true }));
+        dispatch(
+          getExactUser({
+            page: 0,
+            size: 50,
+            sort: 'createdDate,DESC',
+            department: department?.id || account.department.id,
+            dependency: true
+          })
+        );
+        getCustomer(department?.id, null, null);
+      }
     }
+
   }, [department]);
 
   useEffect(() => {
@@ -222,7 +232,7 @@ const CustomerReport = props => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
-          branch: branch?.id,
+          branch: isBranchManager ? account.branch.id : branch?.id,
           dependency: true
         })
       );
@@ -258,8 +268,6 @@ const CustomerReport = props => {
     });
   }, [customer]);
 
-
-
   useEffect(() => {
     if (Object.keys(filter).length > 2) {
       getTop10(filter);
@@ -285,7 +293,7 @@ const CustomerReport = props => {
         sort: 'createdDate,DESC',
         code: value,
         department: department?.id || account.department.id,
-        branch: branch?.id,
+        branch: isBranchManager ? account.branch.id : branch?.id,
         dependency: true
       })
     );
@@ -309,14 +317,15 @@ const CustomerReport = props => {
         code: value,
         name: value,
         address: value,
+        type: userType?.id,
         department: department?.id || account.department.id,
         branch: branch?.id,
-        sale: isEmployee ? account.id : sale,
+        sale: isEmployee ? account.id : user?.id,
         dependency: true,
         activated: true
       })
     ).then(resp => {
-      if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
+      if (resp && resp.payload && Array.isArray(resp.payload.data)) {
         setFilteredCustomer(resp.payload.data);
       }
     });
@@ -377,10 +386,17 @@ const CustomerReport = props => {
                   onChange={e => {
                     setDepartment(e?.value || null);
                   }}
-                  value={{
-                    value: department,
-                    label: department?.name
-                  }}
+                  value={
+                    initialState.allChild.length > 1
+                      ? {
+                          value: department,
+                          label: department?.name
+                        }
+                      : {
+                          value: initialState.allChild[0],
+                          label: initialState.allChild[0]?.name
+                        }
+                  }
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Chi nhánh"
@@ -398,10 +414,17 @@ const CustomerReport = props => {
                   onChange={e => {
                     setBranch(e?.value || null);
                   }}
-                  value={{
-                    value: branch,
-                    label: branch?.name
-                  }}
+                  value={
+                    branches.length > 1
+                      ? {
+                          value: branch,
+                          label: branch?.name
+                        }
+                      : {
+                          value: branches[0],
+                          label: branches[0]?.name
+                        }
+                  }
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Phòng ban"
@@ -435,28 +458,28 @@ const CustomerReport = props => {
               </CCol>
             </CRow>
             <CRow sm={12} md={12} className="mt-2">
-            <CCol sm={4} md={4}>
-              <p>Loại khách hàng</p>
-              <Select
-                isSearchable
-                name="userType"
-                onChange={e => {
-                  setUserType(e?.value || null);
-                }}
-                value={{
-                  value: userType,
-                  label: userType?.name
-                }}
-                isClearable={true}
-                openMenuOnClick={false}
-                placeholder="Chọn khách hàng"
-                options={userTypes.map(item => ({
-                  value: item,
-                  label: item.name
-                }))}
-              />
-            </CCol>
               <CCol sm={4} md={4}>
+                <p>Loại khách hàng</p>
+                <Select
+                  isSearchable
+                  name="userType"
+                  onChange={e => {
+                    setUserType(e?.value || null);
+                  }}
+                  value={{
+                    value: userType,
+                    label: userType?.name
+                  }}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  placeholder="Chọn khách hàng"
+                  options={userTypes.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
+              </CCol>
+              <CCol sm={8} md={8}>
                 <p>Khách hàng</p>
                 <Select
                   isSearchable
@@ -474,7 +497,7 @@ const CustomerReport = props => {
                   placeholder="Chọn khách hàng"
                   options={filteredCustomer.map(item => ({
                     value: item,
-                    label: `${item.code}-${item.name}`
+                    label: `${item.code}-${item.name}-${item.address}`
                   }))}
                 />
               </CCol>

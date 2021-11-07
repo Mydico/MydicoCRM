@@ -143,6 +143,7 @@ const Receipt = props => {
   }, [date,activePage, size]);
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
 
   // useEffect(() => {

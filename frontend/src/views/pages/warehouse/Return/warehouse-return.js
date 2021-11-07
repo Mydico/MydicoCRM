@@ -116,6 +116,7 @@ const WarehouseImport = props => {
   }, [date]);
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
 
   useEffect(() => {
@@ -159,9 +160,7 @@ const WarehouseImport = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
+
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getWarehouseReturn({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
@@ -426,62 +425,77 @@ const WarehouseImport = props => {
                   <CCardBody>
                     <h5>Thông tin đơn nhập</h5>
                     {item.type === 'RETURN' ? (
-                      <Table striped responsive>
-                        <thead>
-                          <tr>
-                            <th className="center">STT</th>
-                            <th>Tên sản phẩm</th>
-                            <th className="center">Số lượng</th>
-                            <th className="right">Đơn giá</th>
-                            <th className="right">Chiết khấu(%)</th>
-                            <th className="right">Tổng</th>
-                            <th className="right">Giá chiết khấu</th>
-                            <th className="right">Thành tiền</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {JSON.parse(JSON.stringify(item.storeInputDetails || [])).map((detail, index) => {
-                            return (
-                              <tr key={index}>
-                                <td> {(activePage - 1) * size + index + 1}</td>
-                                <td>{detail.product?.name}</td>
-                                <td>{detail.quantity}</td>
-                                <td>
-                                  {Number(detail.price || detail.product?.price).toLocaleString('it-IT', {
-                                    style: 'currency',
-                                    currency: 'VND'
-                                  }) || ''}
-                                </td>
-                                <td>{detail.reducePercent}%</td>
-                                <td>
-                                  {(Number(detail.priceReal || detail.product?.price) * detail.quantity).toLocaleString('it-IT', {
-                                    style: 'currency',
-                                    currency: 'VND'
-                                  }) || ''}
-                                </td>
-                                <td>
-                                  {(
-                                    (Number(detail.priceReal || detail.product?.price) * detail.quantity * detail.reducePercent) /
-                                    100
-                                  ).toLocaleString('it-IT', {
-                                    style: 'currency',
-                                    currency: 'VND'
-                                  }) || ''}
-                                </td>
-                                <td>
-                                  {(
-                                    Number(detail.priceReal || detail.product?.price) * detail.quantity -
-                                    (Number(detail.priceReal || detail.product?.price) * detail.quantity * detail.reducePercent) / 100
-                                  ).toLocaleString('it-IT', {
-                                    style: 'currency',
-                                    currency: 'VND'
-                                  }) || ''}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </Table>
+                      <div>
+                        <CRow className="mb-4">
+                          <CCol sm="4">
+                            <h6 className="mb-3">Chương trình bán hàng:</h6>
+                            <div>
+                              <strong> {item?.promotion?.name}</strong>
+                            </div>
+                            <div>
+                              {item?.promotion?.description?.length > 10
+                                ? `${item?.promotion?.description.substring(0, 30)}...`
+                                : item?.promotion?.description}
+                            </div>
+                          </CCol>
+                        </CRow>
+                        <Table striped responsive>
+                          <thead>
+                            <tr>
+                              <th className="center">STT</th>
+                              <th>Tên sản phẩm</th>
+                              <th className="center">Số lượng</th>
+                              <th className="right">Đơn giá</th>
+                              <th className="right">Chiết khấu(%)</th>
+                              <th className="right">Tổng</th>
+                              <th className="right">Giá chiết khấu</th>
+                              <th className="right">Thành tiền</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {JSON.parse(JSON.stringify(item.storeInputDetails || [])).map((detail, index) => {
+                              return (
+                                <tr key={index}>
+                                  <td> {(activePage - 1) * size + index + 1}</td>
+                                  <td>{detail.product?.name}</td>
+                                  <td>{detail.quantity}</td>
+                                  <td>
+                                    {Number(detail.price || detail.product?.price).toLocaleString('it-IT', {
+                                      style: 'currency',
+                                      currency: 'VND'
+                                    }) || ''}
+                                  </td>
+                                  <td>{detail.reducePercent}%</td>
+                                  <td>
+                                    {(Number(detail.priceReal || detail.product?.price) * detail.quantity).toLocaleString('it-IT', {
+                                      style: 'currency',
+                                      currency: 'VND'
+                                    }) || ''}
+                                  </td>
+                                  <td>
+                                    {(
+                                      (Number(detail.priceReal || detail.product?.price) * detail.quantity * detail.reducePercent) /
+                                      100
+                                    ).toLocaleString('it-IT', {
+                                      style: 'currency',
+                                      currency: 'VND'
+                                    }) || ''}
+                                  </td>
+                                  <td>
+                                    {(
+                                      Number(detail.priceReal || detail.product?.price) * detail.quantity -
+                                      (Number(detail.priceReal || detail.product?.price) * detail.quantity * detail.reducePercent) / 100
+                                    ).toLocaleString('it-IT', {
+                                      style: 'currency',
+                                      currency: 'VND'
+                                    }) || ''}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </Table>
+                      </div>
                     ) : (
                       <Table striped responsive>
                         <thead>

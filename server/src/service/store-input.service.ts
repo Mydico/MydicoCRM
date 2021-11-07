@@ -44,10 +44,8 @@ export class StoreInputService {
     constructor(
         @InjectRepository(StoreInputRepository) private storeInputRepository: StoreInputRepository,
         private readonly productQuantityService: ProductQuantityService,
-        private readonly storeInputDetailsService: StoreInputDetailsService,
         private readonly transactionService: TransactionService,
         private readonly orderService: OrderService,
-        private readonly incomeDashboardService: IncomeDashboardService
     ) { }
 
     async findById(id: string): Promise<StoreInput | undefined> {
@@ -141,6 +139,7 @@ export class StoreInputService {
             .leftJoinAndSelect('StoreInput.department', 'department')
             .leftJoinAndSelect('StoreInput.customer', 'customer')
             .leftJoinAndSelect('StoreInput.sale', 'sale')
+            .leftJoinAndSelect('StoreInput.promotion', 'promotion')
             .leftJoinAndSelect('StoreInput.storeInputDetails', 'storeInputDetails')
             .leftJoinAndSelect('storeInputDetails.product', 'product')
             .leftJoinAndSelect('StoreInput.storeTransfer', 'storeTransfer')

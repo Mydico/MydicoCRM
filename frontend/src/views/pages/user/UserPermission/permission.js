@@ -28,6 +28,7 @@ const PermissionGroups = props => {
 
   useEffect(() => {
     dispatch(reset());
+    localStorage.removeItem('params');
   }, []);
 
   useEffect(() => {
@@ -99,9 +100,7 @@ const PermissionGroups = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-      Object.keys(value).forEach(key => {
-        if (!value[key]) delete value[key];
-      });
+
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getPermissionGroups({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
