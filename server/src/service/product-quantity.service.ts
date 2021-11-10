@@ -67,8 +67,6 @@ export class ProductQuantityService {
 
   async countProduct(filter = {}, departmentVisible = [], options: FindManyOptions<ProductQuantity>): Promise<[ProductQuantity[], number]> {
     let queryString = '';
-
-
     if (departmentVisible.length > 0) {
       queryString += `ProductQuantity.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
@@ -81,7 +79,7 @@ export class ProductQuantityService {
       } else if (item === 'code') {
         queryString += ` AND product.code like '%${filter[item]}%' `;
       } else if (item === 'volume') {
-          queryString += ` AND product.volume = ${filter[item]} `;
+          queryString += ` AND product.volume like '%${filter[item]}%' `;
       } else {
         queryString += ` AND ProductQuantity.${item} like '%${filter[item]}%'`;
       }
@@ -99,21 +97,6 @@ export class ProductQuantityService {
   async filter(filter = {}, options: FindManyOptions<ProductQuantity>): Promise<[ProductQuantity[], number]> {
     let queryString = '';
     Object.keys(filter).forEach((item, index) => {
-      // if(item === 'name'){
-      //   // const listWord = filter[item].split(" ");
-      //   // console.log(listWord);
-      //   // listWord.forEach((element, index) => {
-      //   //   queryString += `product.name like '%${element}%' ${listWord.length - 1 === index ? '' : 'OR '} `
-      //   // });
-      //   queryString += `MATCH(name) AGAINST ('${filter[item]}' IN BOOLEAN MODE)`
-      // }
-
-      // return userRepository.createQueryBuilder().select()
-      // .where(`MATCH(fullName) AGAINST ('${searchQuery}' IN BOOLEAN MODE)`)
-      // .orWhere(`MATCH(username) AGAINST ('${searchQuery}' IN BOOLEAN MODE)`)
-      // .orWhere(`MATCH(description) AGAINST ('${searchQuery}' IN BOOLEAN MODE)`)
-      // .getMany();
-      
       if (item === 'store') return;
       if (item === 'status') return;
       queryString += `product.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'OR '} `;
@@ -144,11 +127,11 @@ export class ProductQuantityService {
     let queryString = '1=1 ';
     Object.keys(filter).forEach((item, index) => {
       if (item === 'store') {
-        queryString += `AND ProductQuantity.store = ${filter[item]} `;
+        queryString += ` AND ProductQuantity.store = ${filter[item]} `;
       } else if (item === 'code') {
-        queryString += `AND product.code like '%${filter[item]}%' `;
+        queryString += ` AND product.code like '%${filter[item]}%' `;
       } else if (item === 'volume') {
-        queryString += `AND product.volume = ${filter[item]} `;
+        queryString += ` AND product.volume = '%${filter[item]}%' `;
       } else {
         queryString += ` AND ProductQuantity.${item} like '%${filter[item]}%'`;
       }

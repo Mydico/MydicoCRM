@@ -51,7 +51,6 @@ const Report = props => {
     dispatch(getChildTreeDepartmentByUser());
     if(isManager){
       dispatch(getBranch({ department: account.department.id, dependency: true }));
-
     }
   }, []);
 
@@ -60,6 +59,18 @@ const Report = props => {
       if (JSON.parse(account.department.externalChild).includes(department.id)) {
         dispatch(setAll([account.branch]));
       }
+    }
+    if(branches.length === 1){
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          branch: branches[0].id,
+          dependency: true
+        })
+      );
     }
   }, [branches]);
 

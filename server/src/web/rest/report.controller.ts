@@ -390,6 +390,7 @@ export class ReportController {
     return res.send(await this.reportService.getCustomerCount(filter));
   }
 
+
   async buildFilter(req): Promise<any> {
     const filter = {};
     Object.keys(req.query).forEach(item => {

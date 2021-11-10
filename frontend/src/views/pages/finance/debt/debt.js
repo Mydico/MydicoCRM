@@ -13,6 +13,7 @@ import _ from 'lodash';
 import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import Download from '../../../components/excel/DownloadExcel';
+import { setParams } from '../../../../App.reducer.js';
 
 const { selectAll } = globalizedDebtsSelectors;
 
@@ -69,8 +70,7 @@ const computedItems = items => {
 const Debt = props => {
   const { initialState } = useSelector(state => state.debt);
   const [activePage, setActivePage] = useState(1);
-  const { account } = useSelector(userSafeSelector);
-  const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+  const { params } = useSelector(state => state.app);
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -80,9 +80,10 @@ const Debt = props => {
 
   useEffect(() => {
     if (date.endDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, ...date };
-      dispatch(getCustomerDebts(params));
-      dispatch(getCustomerDebtsTotalDebit({ ...paramRef.current, ...date })).then(resp => {
+      let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+      paramsLocal = { ...paramsLocal, ...params?.debt, ...date };
+      dispatch(getCustomerDebts(paramsLocal));
+      dispatch(getCustomerDebtsTotalDebit(paramsLocal)).then(resp => {
         setTotal(Number(resp.payload.data.sum));
       });
     }
@@ -93,14 +94,36 @@ const Debt = props => {
     dispatch(getCustomerDebtsTotalDebit({ ...paramRef.current, ...date })).then(resp => {
       setTotal(Number(resp.payload.data.sum));
     });
+    return () => {
+      saveParams();
+    };
   }, []);
 
+  const saveParams = () => {
+    const orderParams = {
+      page: activePage - 1,
+      size,
+      sort: 'createdDate,DESC',
+      ...paramRef.current,
+      startDate: date.startDate?.format('YYYY-MM-DD'),
+      endDate: date.endDate?.format('YYYY-MM-DD')
+    };
+    dispatch(
+      setParams({
+        ...params,
+        debt: orderParams
+      })
+    );
+    // localStorage.setItem('params', JSON.stringify(params));
+  };
+
   useEffect(() => {
-    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    paramsLocal = { ...paramsLocal, ...params?.debt };
     if (date.endDate && date.startDate) {
-      params = { ...params, ...date };
+      paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }
-    dispatch(getCustomerDebts(params));
+    dispatch(getCustomerDebts(paramsLocal));
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
@@ -108,7 +131,6 @@ const Debt = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getCustomerDebtsTotalDebit({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date })).then(resp => {
         setTotal(Number(resp.payload.data.sum));
@@ -176,6 +198,7 @@ const Debt = props => {
           itemsPerPage={size}
           hover
           sorter
+          columnFilterValue={params.debt}
           noItemsView={{
             noResults: 'Không tìm thấy kết quả',
             noItems: 'Không có dữ liệu'

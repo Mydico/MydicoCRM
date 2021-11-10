@@ -91,6 +91,9 @@ const StoreHistory = props => {
 
   useEffect(() => {
     dispatch(reset());
+    return () => {
+      saveParams();
+    }
   }, []);
 
   useEffect(() => {
@@ -138,7 +141,6 @@ const StoreHistory = props => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getStoreHistory({ page: 0, size, sort: 'lastModifiedDate,DESC', ...value }));
-      saveParams();
     }
   }, 300);
 

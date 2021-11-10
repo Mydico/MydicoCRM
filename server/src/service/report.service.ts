@@ -743,18 +743,16 @@ export class ReportService {
       .cache(3 * 3600);
     const result = await queryBuilder.getRawMany();
 
-    const count = await this.orderRepository
+    const count = await this.transactionRepository
       .createQueryBuilder('Transaction')
-      .select('count(*)', 'count')
-      .where(queryString)
-      .groupBy('Transaction.customerId')
+      .select(['customer.id', 'customer.code', 'customer.name', 'customer.address', 'customer.tel'])
       .leftJoin('Transaction.customer', 'customer')
       .leftJoin('customer.type', 'type')
-      .leftJoin('Transaction.sale', 'sale')
-      .cache(3 * 3600)
-      .getRawOne();
+      .where(queryString)
+      .groupBy('Transaction.customerId, customer.code, customer.name, customer.id ')
+      .getCount();
 
-    return [result, count.count];
+    return [result, count];
   }
 
   async getPromotionPrice(filter): Promise<any> {

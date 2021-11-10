@@ -108,7 +108,6 @@ const CreatePermission = loadable(() => import('./views/pages/user/UserPermissio
 const EditPermission = loadable(() => import('./views/pages/user/UserPermission/edit-permission'));
 
 const Debts = loadable(() => import('./views/pages/finance/debt/debt'));
-const CreateDebts = loadable(() => import('./views/pages/finance/debt/create-deb'));
 
 const Transaction = loadable(() => import('./views/pages/finance/debt/transaction'));
 
@@ -140,7 +139,6 @@ const routes = [
   {path: '/invoice/', name: 'Thống kê', component: Invoice},
   {path: '/print/', name: 'Hoa don', component: PrintBill},
   {path: '/transactions', name: 'Công nợ', component: Debts, exact: true},
-  {path: '/transactions/new', name: 'Thêm mới công nợ', component: CreateDebts},
   {path: '/transactions/:id/detail/order/:orderId', name: 'Chi tiết đơn hàng', component: ViewOrder},
   {path: '/transactions/:id/detail/receipt/:receiptId', name: 'Chi tiết phiếu thu', component: ViewReceipt},
   {path: '/transactions/:id/detail/store/:storeId', name: 'Chi tiết trả kho', component: ViewWarehouseReturn},

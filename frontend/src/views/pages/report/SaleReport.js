@@ -100,6 +100,18 @@ const SaleReport = props => {
         dispatch(setAll([account.branch]));
       }
     }
+    if(branches.length === 1){
+      dispatch(
+        getExactUser({
+          page: 0,
+          size: 50,
+          sort: 'createdDate,DESC',
+          department: department?.id || account.department.id,
+          branch: branches[0].id,
+          dependency: true
+        })
+      );
+    }
   }, [branches]);
 
   const getTop10 = filter => {

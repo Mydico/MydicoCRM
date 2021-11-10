@@ -124,13 +124,13 @@ export class OrderController {
         HeaderUtil.addEntityUpdatedStatusHeaders(res, 'Order', order.id);
         const currentUser = req.user as User;
         order.lastModifiedBy = currentUser.login;
-        let departmentVisible = [];
-        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-        if (currentUser.department) {
-            departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-            departmentVisible = departmentVisible.map(item => item.id);
-        }
-        return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
+        // let departmentVisible = [];
+        // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+        // if (currentUser.department) {
+        //     departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        //     departmentVisible = departmentVisible.map(item => item.id);
+        // }
+        return res.send(await this.orderService.update(order));
     }
 
     @Put('/cancel')
@@ -144,13 +144,13 @@ export class OrderController {
         HeaderUtil.addEntityUpdatedStatusHeaders(res, 'Order', order.id);
         const currentUser = req.user as User;
         order.lastModifiedBy = currentUser.login;
-        let departmentVisible = [];
-        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-        if (currentUser.department) {
-            departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-            departmentVisible = departmentVisible.map(item => item.id);
-        }
-        return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
+        // let departmentVisible = [];
+        // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+        // if (currentUser.department) {
+        //     departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        //     departmentVisible = departmentVisible.map(item => item.id);
+        // }
+        return res.send(await this.orderService.update(order));
     }
 
     @Put('/delete')
@@ -164,13 +164,13 @@ export class OrderController {
         HeaderUtil.addEntityUpdatedStatusHeaders(res, 'Order', order.id);
         const currentUser = req.user as User;
         order.lastModifiedBy = currentUser.login;
-        let departmentVisible = [];
-        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-        if (currentUser.department) {
-            departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-            departmentVisible = departmentVisible.map(item => item.id);
-        }
-        return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
+        // let departmentVisible = [];
+        // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+        // if (currentUser.department) {
+        //     departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        //     departmentVisible = departmentVisible.map(item => item.id);
+        // }
+        return res.send(await this.orderService.update(order));
     }
 
     @Put('/create-cod')
@@ -184,19 +184,18 @@ export class OrderController {
         HeaderUtil.addEntityUpdatedStatusHeaders(res, 'Order', order.id);
         const currentUser = req.user as User;
         order.lastModifiedBy = currentUser.login;
-        let departmentVisible = [];
-        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-        if (currentUser.department) {
-            departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-            departmentVisible = departmentVisible.map(item => item.id);
-        }
+        // let departmentVisible = [];
+        // if (currentUser.department) {
+        //     departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        //     departmentVisible = departmentVisible.map(item => item.id);
+        // }
         if (order.status === OrderStatus.CREATE_COD) {
             const canExport = await this.orderService.canExportStore(order);
             if (!canExport) {
                 throw new HttpException('Sản phẩm trong kho không đủ để tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
             }
         }
-        return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
+        return res.send(await this.orderService.update(order));
     }
 
     @Put('/status')
@@ -210,12 +209,12 @@ export class OrderController {
         HeaderUtil.addEntityUpdatedStatusHeaders(res, 'Order', order.id);
         const currentUser = req.user as User;
         order.lastModifiedBy = currentUser.login;
-        let departmentVisible = [];
-        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-        if (currentUser.department) {
-            departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-            departmentVisible = departmentVisible.map(item => item.id);
-        }
+        // let departmentVisible = [];
+        // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+        // if (currentUser.department) {
+        //     departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        //     departmentVisible = departmentVisible.map(item => item.id);
+        // }
         if (order.status === OrderStatus.CREATE_COD) {
             const canExport = await this.orderService.canExportStore(order);
             if (!canExport) {
@@ -223,7 +222,7 @@ export class OrderController {
             }
         }
 
-        return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
+        return res.send(await this.orderService.update(order));
     }
 
     @Put('/self-edit')
@@ -239,13 +238,13 @@ export class OrderController {
         order.lastModifiedBy = currentUser.login;
         const isAdmin = currentUser.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
         if((currentUser.branch && currentUser.branch.allow) || isAdmin || currentUser.login === order.createdBy){
-            let departmentVisible = [];
-            const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-            if (currentUser.department) {
-                departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-                departmentVisible = departmentVisible.map(item => item.id);
-                }
-            return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
+            // let departmentVisible = [];
+            // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+            // if (currentUser.department) {
+            //     departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+            //     departmentVisible = departmentVisible.map(item => item.id);
+            //     }
+            return res.send(await this.orderService.update(order));
         } else if (!isAdmin && currentUser.login !== order.createdBy) {
             throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -262,13 +261,13 @@ export class OrderController {
         HeaderUtil.addEntityUpdatedHeaders(res, 'Order', order.id);
         const currentUser = req.user as User;
         order.lastModifiedBy = currentUser.login;
-        let departmentVisible = [];
-        const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-        if (currentUser.department) {
-            departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-            departmentVisible = departmentVisible.map(item => item.id);
-        }
-        return res.send(await this.orderService.update(order, departmentVisible, isEmployee, currentUser));
+        // let departmentVisible = [];
+        // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+        // if (currentUser.department) {
+        //     departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+        //     departmentVisible = departmentVisible.map(item => item.id);
+        // }
+        return res.send(await this.orderService.update(order));
     }
 
     @Delete('/:id')

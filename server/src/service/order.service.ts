@@ -212,7 +212,8 @@ export class OrderService {
       return false;
     }
     let canCreateBill = true;
-    merged.forEach(item => {
+    for (let index = 0; index < merged.length; index++) {
+      const item = merged[index];
       const founded = foundedProductInStore.filter(store => store.product.id === item.product.id);
       if (founded.length > 0) {
         if (founded[0].quantity < item.quantity) {
@@ -220,7 +221,7 @@ export class OrderService {
           return;
         }
       }
-    });
+    }
     return canCreateBill;
   }
 
@@ -278,7 +279,7 @@ export class OrderService {
     return await this.orderRepository.save(order);
   }
 
-  async update(order: Order, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Order> {
+  async update(order: Order): Promise<Order> {
     const foundedOrder = await this.findById(order.id);
 
     if (foundedOrder.status === OrderStatus.CREATE_COD && order.status === OrderStatus.CREATE_COD) {

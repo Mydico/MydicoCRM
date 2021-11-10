@@ -103,6 +103,7 @@ const ProductReport = () => {
         dispatch(setAll([account.branch]));
       }
     }
+
   }, [branches]);
 
   useEffect(() => {

@@ -180,18 +180,15 @@ const Order = props => {
 
   useEffect(() => {
     dispatch(reset());
-    // localStorage.setItem('order', JSON.stringify({}));
+    return () => {
+      saveParams();
+    }
   }, []);
 
   useEffect(() => {
     if (activePage > 0) {
       let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
-
       paramsLocal = { ...paramsLocal, ...params?.order };
-      // if (localParams) {
-      //   setActivePage(params.page + 1);
-      //   // localStorage.removeItem('params');
-      // }
       if (date.endDate && date.startDate) {
         paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
       }
@@ -225,7 +222,6 @@ const Order = props => {
   };
 
   const toCreateOrder = () => {
-    saveParams();
     history.push(`${props.match.url}/new`);
   };
 
@@ -243,7 +239,6 @@ const Order = props => {
           endDate: date.endDate?.format('YYYY-MM-DD')
         })
       );
-      saveParams();
     } else {
       clearSearchParams();
     }
@@ -259,7 +254,6 @@ const Order = props => {
   };
 
   const toEditOrder = typeId => {
-    saveParams();
     dispatch(getDetailOrder({ id: typeId, dependency: true }));
 
     history.push(`${props.match.url}/${typeId}/edit`);
@@ -284,7 +278,6 @@ const Order = props => {
   };
 
   const toSeeBill = item => {
-    saveParams();
     history.push({
       pathname: `${props.match.url}/print`,
       state: {
@@ -609,7 +602,6 @@ const Order = props => {
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
   const toDetailOrder = id => {
-    saveParams();
     history.push(`${props.match.url}/${id}/detail`);
   };
 

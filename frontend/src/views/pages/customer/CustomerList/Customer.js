@@ -115,10 +115,12 @@ const Customer = props => {
   const selectedPro = useRef({ id: null, activated: true });
   const [primary, setPrimary] = useState(false);
   useEffect(() => {
-    // localStorage.removeItem('params');
     dispatch(reset());
     dispatch(getCustomerType({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getChildTreeDepartmentByUser({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+    return () => {
+      saveParams();
+    }
   }, []);
 
   const computedItems = items => {
@@ -135,9 +137,8 @@ const Customer = props => {
   };
 
   useEffect(() => {
-    dispatch(reset());
     let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
-    paramsLocal = { ...paramsLocal, ...params?.order };
+    paramsLocal = { ...paramsLocal, ...params?.customer };
     dispatch(getCustomer(paramsLocal));
     window.scrollTo(0, 100);
   }, [activePage, size]);
@@ -182,7 +183,6 @@ const Customer = props => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
-      saveParams()
     }else {
       clearSearchParams()
     }
