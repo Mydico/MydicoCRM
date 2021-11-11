@@ -67,8 +67,8 @@ class PrintBill extends Component {
                       <td>{item.product?.name}</td>
                       <td>{item.product?.unit}</td>
                       <td>{item.quantity}</td>
-                      <td>{Number(item.product?.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
-                      <td>{(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
+                      <td>{Number(item.priceReal || item.product?.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
+                      <td>{((item.priceReal || item.product?.price) * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}</td>
                       <td>{item.reducePercent}%</td>
                     </tr>
                   );

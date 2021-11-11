@@ -97,12 +97,13 @@ const StoreHistory = props => {
   }, []);
 
   useEffect(() => {
-    let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
-    paramsLocal = { ...paramsLocal, ...params?.history };
+    let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.history };
+    paramsLocal = { ...paramsLocal, ...paramRef.current  };
     if (date.endDate && date.startDate) {
       paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }
     dispatch(getStoreHistory(paramsLocal));
+    saveParams();
     window.scrollTo(0, 100);
   }, [activePage, size]);
 

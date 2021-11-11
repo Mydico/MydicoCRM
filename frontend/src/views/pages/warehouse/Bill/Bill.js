@@ -713,16 +713,16 @@ const Bill = props => {
                               <td>{item.product?.name}</td>
                               <td>{item.quantity}</td>
 
-                              <td>{item.product?.price}</td>
+                              <td>{(item.priceReal || item.product?.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
                               <td>{item.reducePercent}%</td>
                               <td>
-                                {(item.product?.price * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
+                                {Number((item.priceReal || item.product?.price) * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
                                   ''}
                               </td>
                               <td>
-                                {(
-                                  item.product?.price * item.quantity -
-                                  (item.product?.price * item.quantity * item.reducePercent) / 100
+                                {Number(
+                                  (item.priceReal || item.product?.price) * item.quantity -
+                                  ((item.priceReal || item.product?.price) * item.quantity * item.reducePercent) / 100
                                 ).toLocaleString('it-IT', {
                                   style: 'currency',
                                   currency: 'VND'
@@ -745,8 +745,7 @@ const Bill = props => {
                                 <strong>Tổng tiền</strong>
                               </td>
                               <td className="right">
-                                {item?.order?.orderDetails
-                                  .reduce((sum, current) => sum + current.product?.price * current.quantity, 0)
+                                {Number(item?.order?.totalMoney || 0)
                                   .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                               </td>
                             </tr>
@@ -755,11 +754,7 @@ const Bill = props => {
                                 <strong>Chiết khấu</strong>
                               </td>
                               <td className="right">
-                                {item?.order?.orderDetails
-                                  .reduce(
-                                    (sum, current) => sum + (current.product?.price * current.quantity * current.reducePercent) / 100,
-                                    0
-                                  )
+                                {Number(item?.order?.reduceMoney || 0)
                                   .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                               </td>
                             </tr>
@@ -769,14 +764,7 @@ const Bill = props => {
                               </td>
                               <td className="right">
                                 <strong>
-                                  {item?.order?.orderDetails
-                                    .reduce(
-                                      (sum, current) =>
-                                        sum +
-                                        (current.product?.price * current.quantity -
-                                          (current.product?.price * current.quantity * current.reducePercent) / 100),
-                                      0
-                                    )
+                                  {Number(item?.order?.realMoney || 0)
                                     .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                                 </strong>
                               </td>

@@ -147,6 +147,19 @@ export const getBadge = status => {
       return 'primary';
   }
 };
+
+const computedItems = items => {
+  return items.map(item => {
+    return {
+      ...item,
+      customerName: item.customer?.name,
+      createdBy: item.createdBy || '',
+      quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
+      createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
+      total: Number(item.realMoney)?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''
+    };
+  });
+};
 const Order = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.order);
@@ -182,33 +195,21 @@ const Order = props => {
     dispatch(reset());
     return () => {
       saveParams();
-    }
+    };
   }, []);
 
   useEffect(() => {
     if (activePage > 0) {
-      let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
-      paramsLocal = { ...paramsLocal, ...params?.order };
+      let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.order };
+      paramsLocal = { ...paramsLocal, ...paramRef.current };
       if (date.endDate && date.startDate) {
         paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
       }
+      saveParams();
       dispatch(getOrder(paramsLocal));
       window.scrollTo(0, 100);
     }
   }, [activePage, size, date]);
-
-  const computedItems = items => {
-    return items.map(item => {
-      return {
-        ...item,
-        customerName: item.customer?.name,
-        createdBy: item.createdBy || '',
-        quantity: item.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0),
-        createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY'),
-        total: Number(item.realMoney)?.toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''
-      };
-    });
-  };
 
   const toggleDetails = index => {
     const position = details.indexOf(index);
@@ -600,7 +601,7 @@ const Order = props => {
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
-  const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
+  // const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
   const toDetailOrder = id => {
     history.push(`${props.match.url}/${id}/detail`);
   };
@@ -683,7 +684,7 @@ const Order = props => {
           </CRow>
         </CRow> */}
         <AdvancedTable
-          items={memoListed}
+          items={computedItems(orders)}
           fields={fields}
           columnFilter
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
@@ -710,8 +711,8 @@ const Order = props => {
                   isClearable
                   placeholder="Chọn trạng thái"
                   value={{
-                    value: params?.order?.status,
-                    label: statusList.filter(item => item.value === params?.order?.status)[0]?.label
+                    value: paramRef.current.status || params?.order?.status,
+                    label: statusList.filter(item => item.value === (paramRef.current.status || params?.order?.status))[0]?.label
                   }}
                   options={statusList.map(item => ({
                     value: item.value,
