@@ -111,34 +111,51 @@ const EditOrder = props => {
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
       if (Array.isArray(order.orderDetails)) {
         const productArr = JSON.parse(JSON.stringify(order.orderDetails));
-        setProductList(productArr);
+        // setProductList(productArr);
         const copyArr = [...productArr];
         if (order.orderDetails.length > 0) {
-          dispatch(
-            getProductWarehouseByField({
-              store: order.store?.id,
-              product: JSON.stringify(order.orderDetails.map(item => item.product.id)),
-              dependency: true
-            })
-          ).then(numberOfQuantityInStore => {
-            if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
-              numberOfQuantityInStore.payload.forEach(element => {
-                const foundedIndex = copyArr.findIndex(item => item.product.id === element.product.id);
-                if (foundedIndex !== -1) {
-                  copyArr[foundedIndex].quantityInStore = element.quantity;
-                }
-              });
-            }
-            setProductList(copyArr);
-          });
+          updateProductQuantity(copyArr);
+          // dispatch(
+          //   getProductWarehouseByField({
+          //     store: order.store?.id,
+          //     product: JSON.stringify(order.orderDetails.map(item => item.product.id)),
+          //     dependency: true
+          //   })
+          // ).then(numberOfQuantityInStore => {
+          //   if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+          //     numberOfQuantityInStore.payload.forEach(element => {
+          //       const foundedIndex = copyArr.findIndex(item => item.product.id === element.product.id);
+          //       if (foundedIndex !== -1) {
+          //         copyArr[foundedIndex].quantityInStore = element.quantity;
+          //       }
+          //     });
+          //   }
+          //   setProductList(copyArr);
+          // });
         }
       }
     }
   }, [order]);
 
-  // useEffect(() => {
-
-  // }, [initialState.orderDetails]);
+  const updateProductQuantity = copyArr => {
+    dispatch(
+      getProductWarehouseByField({
+        store: order.store?.id,
+        product: JSON.stringify(order.orderDetails.map(item => item.product.id)),
+        dependency: true
+      })
+    ).then(numberOfQuantityInStore => {
+      if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+        numberOfQuantityInStore.payload.forEach(element => {
+          const foundedIndex = copyArr.findIndex(item => item.product.id === element.product.id);
+          if (foundedIndex !== -1) {
+            copyArr[foundedIndex].quantityInStore = element.quantity;
+          }
+        });
+      }
+      setProductList(copyArr);
+    });
+  };
 
   const onSubmit = (values, {}) => () => {
     values = JSON.parse(JSON.stringify(values));
@@ -186,6 +203,7 @@ const EditOrder = props => {
       copyArr[index].product = arr[0].product;
       setProductList(copyArr);
       onChangeQuantity({ target: { value: 1 } }, index);
+      updateProductQuantity(copyArr);
     }
   };
 

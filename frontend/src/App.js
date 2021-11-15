@@ -45,12 +45,14 @@ export const App = () => {
     socket.on('order', onOrderListen);
   });
   const onOrderListen = res => {
-    let account = Storage.local.get(USER_INFO);
-    if (account != null) {
-      if (res.departmentVisible.includes(account.department.id)) {
-        if (account.role.filter(rol => rol.method === 'GET' && rol.entity === '/api/orders').length > 0) {
-          const params = { page: 0, size: 50, sort: 'createdDate,DESC' };
-          dispatch(getOrder(params));
+    if (window.location.href === 'https://mydicocrm.vn/orders') {
+      let account = Storage.local.get(USER_INFO);
+      if (account != null) {
+        if (res.departmentVisible.includes(account.department.id)) {
+          if (account.role.filter(rol => rol.method === 'GET' && rol.entity === '/api/orders').length > 0) {
+            const params = { page: 0, size: 50, sort: 'createdDate,DESC' };
+            dispatch(getOrder(params));
+          }
         }
       }
     }

@@ -105,7 +105,7 @@ const ViewOrder = props => {
                 <div>Loại khách hàng: {invoice?.promotion?.customerType?.name}</div>
               </CCol>
             </CRow>
-            <Table striped responsive>
+            <Table striped bordered responsive>
               <thead>
                 <tr>
                   <th className="center">STT</th>

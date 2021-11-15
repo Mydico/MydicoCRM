@@ -71,7 +71,7 @@ export class OrderService {
     isEmployee: boolean,
     currentUser: User
   ): Promise<[Order[], number]> {
-    const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, filter, options, 'order');
+    // const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, filter, options, 'order');
 
     let andQueryString = '';
     let queryString = '';

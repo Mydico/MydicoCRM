@@ -31,6 +31,7 @@ const slice = createSlice({
       state.initialState.orderDetails = []
       state.initialState.loading = false;
       orderAdapter.setAll(state, []);
+      state.initialState.updateStatusSuccess = false;
       state.initialState.updatingSuccess = false;
     },
     orderAddOne: orderAdapter.addOne,
