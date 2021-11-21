@@ -261,13 +261,13 @@ export class OrderController {
         HeaderUtil.addEntityUpdatedHeaders(res, 'Order', order.id);
         const currentUser = req.user as User;
         order.lastModifiedBy = currentUser.login;
-        // let departmentVisible = [];
-        // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-        // if (currentUser.department) {
-        //     departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-        //     departmentVisible = departmentVisible.map(item => item.id);
-        // }
-        return res.send(await this.orderService.update(order));
+        const currentOrder = await this.orderService.findById(order.id)
+        if(currentOrder.status === OrderStatus.WAITING || currentOrder.status === OrderStatus.APPROVED){
+            return res.send(await this.orderService.update(order));
+        }else{
+            throw new HttpException('Không thể chỉnh sửa đơn hàng đã lên vận đơn.', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+       
     }
 
     @Delete('/:id')

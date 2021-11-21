@@ -765,11 +765,14 @@ const Order = props => {
                       <CCol sm="4">
                         <h6 className="mb-3">Tới:</h6>
                         <div>
-                          <strong>{item?.customer?.name}</strong>
+                          <strong>Tên cửa hàng: {item?.customer?.name}</strong>
                         </div>
-                        <div>{item?.address}</div>
-                        <div>{`${memoizedGetDistrictName(item?.customer?.district)}, ${memoizedGetCityName(item?.customer?.city)}`}</div>{' '}
-                        <div>Phone: {item?.customer?.tel}</div>
+                        <div>Mã KH:  <strong>{item?.customer?.code}</strong></div>
+                        <div>Tên liên lạc:  <strong>{item?.customer?.contactName}</strong></div>
+                        <div>Mạng xã hội:  <strong>{item?.customer?.social}</strong></div>
+                        <div>Địa chỉ:  <strong>{item?.address}</strong></div>
+                        <div><strong>{`${memoizedGetDistrictName(item?.customer?.district)}, ${memoizedGetCityName(item?.customer?.city)}`}</strong></div>{' '}
+                        <div>Số điện thoại:  <strong>{item?.customer?.tel}</strong></div>
                       </CCol>
                       <CCol sm="4">
                         <h6 className="mb-3">Chương trình bán hàng:</h6>

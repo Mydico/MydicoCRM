@@ -713,10 +713,10 @@ const Bill = props => {
                               <td>{item.product?.name}</td>
                               <td>{item.quantity}</td>
 
-                              <td>{(item.priceReal || item.product?.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
+                              <td>{(item.priceReal || item.product?.price || 0).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
                               <td>{item.reducePercent}%</td>
                               <td>
-                                {Number((item.priceReal || item.product?.price) * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
+                                {Number((item.priceReal || item.product?.price || 0) * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
                                   ''}
                               </td>
                               <td>
