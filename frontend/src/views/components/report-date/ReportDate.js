@@ -2,6 +2,8 @@ import { CButton, CCardBody, CCol } from '@coreui/react';
 import React from 'react';
 import { DateRangePicker } from 'react-dates';
 import moment from 'moment'
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
 const dateMode = {
   lastweek: 'lastweek',
   lastmonth: 'lastmonth',

@@ -628,7 +628,7 @@ export class ReportService {
         if (index >= 0) {
           return {
             ...item,
-            count: Number(item.count) - Number(returnProduct[index].count),
+            count: Number(item.count || 0) - Number(returnProduct[index].count || 0),
             return: Number(returnProduct[index].return)
           };
         }

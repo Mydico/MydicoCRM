@@ -64,7 +64,7 @@ const Transaction = props => {
         };
       })
       .sort((a, b) => {
-        return new Date(b.createdDate) - new Date(a.createdDate);
+        return b.id - a.id;
       });
   };
 

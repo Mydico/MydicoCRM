@@ -1,14 +1,17 @@
 import loadable from '@loadable/component'
-import CustomerReport from './views/pages/report/CustomerReport';
-import DepartmentDetailReport from './views/pages/report/DepartmentDetailReport';
-import DepartmentReport from './views/pages/report/DepartmentReport';
-import OrderCustomerHistory from './views/pages/report/OrderCustomerHistory';
-import OrderProductHistory from './views/pages/report/OrderProductHistory';
 
-import ProductReport from './views/pages/report/ProductReport';
-import PromotionReport from './views/pages/report/PromotionReport';
-import Report from './views/pages/report/Report';
-import SaleReport from './views/pages/report/SaleReport';
+
+const Report = loadable(() => import('./views/pages/report/Report'));
+
+const CustomerReport =loadable(() => import('./views/pages/report/CustomerReport'));
+const DepartmentDetailReport =loadable(() => import('./views/pages/report/DepartmentDetailReport'));
+const DepartmentReport =loadable(() => import('./views/pages/report/DepartmentReport'));
+const OrderCustomerHistory =loadable(() => import('./views/pages/report/OrderCustomerHistory'));
+const OrderProductHistory =loadable(() => import('./views/pages/report/OrderProductHistory'));
+
+const ProductReport =loadable(() => import('./views/pages/report/ProductReport'));
+const PromotionReport =loadable(() => import('./views/pages/report/PromotionReport'));
+const SaleReport =loadable(() => import('./views/pages/report/SaleReport'));
 
 const ChangePassword = loadable(() => import('./views/pages/user/UserList/change-password'));
 const EditUserProfile = loadable(() => import('./views/pages/user/UserList/edit-user-profile'));

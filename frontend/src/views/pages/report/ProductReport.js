@@ -332,6 +332,7 @@ const ProductReport = () => {
     return (items || []).map((item, index) => {
       return {
         ...item,
+        count: Number(item.count),
         real: Number(item.total) - Number(item.return || 0)
       };
     });
@@ -536,7 +537,6 @@ const ProductReport = () => {
               loading={initialState.loading}
               onPaginationChange={val => setSize(val)}
               sorter
-              // onSorterValueChange={sortItem}
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,

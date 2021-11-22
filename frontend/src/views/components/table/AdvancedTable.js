@@ -263,7 +263,6 @@ export const AdvancedTable = props => {
 
   const sortedItems = useMemo(() => {
     const col = sorterState.column;
-
     if (!col || !itemsDataColumns.includes(col) || (sorter && sorter.external)) {
       return tableFiltered;
     }

@@ -32,7 +32,8 @@ import { globalizedUserSelectors } from '../../user/UserList/user.reducer';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer';
 import _ from 'lodash';
-import { CFormGroup, CInput } from '@coreui/react';
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 import { DateRangePicker } from 'react-dates';
 

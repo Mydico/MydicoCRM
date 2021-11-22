@@ -79,7 +79,7 @@ export class ProductQuantityService {
       } else if (item === 'code') {
         queryString += ` AND product.code like '%${filter[item]}%' `;
       } else if (item === 'volume') {
-          queryString += ` AND product.volume like '%${filter[item]}%' `;
+          queryString += ` AND product.volume like '${filter[item]}' `;
       } else {
         queryString += ` AND ProductQuantity.${item} like '%${filter[item]}%'`;
       }
@@ -131,7 +131,7 @@ export class ProductQuantityService {
       } else if (item === 'code') {
         queryString += ` AND product.code like '%${filter[item]}%' `;
       } else if (item === 'volume') {
-        queryString += ` AND product.volume = '%${filter[item]}%' `;
+        queryString += ` AND product.volume = '${filter[item]}' `;
       } else {
         queryString += ` AND ProductQuantity.${item} like '%${filter[item]}%'`;
       }
