@@ -244,6 +244,7 @@ const EditOrder = props => {
         size: 20,
         sort: 'name,ASC',
         name: value,
+        code: value,
         dependency: true
       })
     );
@@ -366,11 +367,10 @@ const EditOrder = props => {
   };
 
   useEffect(() => {
-    if (initialState.updatingSuccess) {
-      socket.emit('order', order);
+    if (initialState.updatingSuccess || initialState.updateStatusSuccess) {
       history.goBack();
     }
-  }, [initialState.updatingSuccess]);
+  }, [initialState.updatingSuccess, initialState.updateStatusSuccess]);
 
   const debouncedSearchPromotion = _.debounce(value => {
     if (initValuesState.customer) {

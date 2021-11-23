@@ -199,9 +199,10 @@ const Order = props => {
   }, []);
 
   useEffect(() => {
+    console.log(activePage)
     if (activePage > 0) {
       let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.order };
-      paramsLocal = { ...paramsLocal, ...paramRef.current };
+      paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1 };
       if (date.endDate && date.startDate) {
         paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
       }

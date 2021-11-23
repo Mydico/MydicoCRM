@@ -95,11 +95,11 @@ const slice = createSlice({
     },
     [editSelfOrder.fulfilled]: state => {
       state.initialState.loading = false;
-      state.initialState.updatingSuccess = true;
+      state.initialState.updateStatusSuccess = true;
     },
     [editSelfOrder.rejected]: state => {
       state.initialState.loading = false;
-      state.initialState.updatingSuccess = false;
+      state.initialState.updateStatusSuccess = false;
     }
   }
 });

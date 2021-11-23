@@ -138,7 +138,7 @@ const Customer = props => {
 
   useEffect(() => {
     let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.customer };
-    paramsLocal = { ...paramsLocal, ...paramRef.current };
+    paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1 };
     dispatch(getCustomer(paramsLocal));
     saveParams();
     window.scrollTo(0, 100);
