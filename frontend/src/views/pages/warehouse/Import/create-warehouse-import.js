@@ -97,7 +97,7 @@ const CreateWarehouse = () => {
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({ value ,index }, selectedProductIndex) => {
+  const onSelectedProduct = ({ value, index }, selectedProductIndex) => {
     const tempArr = [...products];
     const tempVar = tempArr[0];
     tempArr[0] = tempArr[index];
@@ -119,11 +119,11 @@ const CreateWarehouse = () => {
   }, 300);
 
   const onSearchProduct = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchProduct(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchProduct("");
+    if (action.action === 'input-blur') {
+      debouncedSearchProduct('');
     }
   };
 
@@ -212,10 +212,6 @@ const CreateWarehouse = () => {
               </CCardBody>
             </CCard>
 
-            <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
-              <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-              Thêm sản phẩm
-            </CButton>
             <CCard>
               <CCardBody>
                 <Table responsive striped>
@@ -282,6 +278,10 @@ const CreateWarehouse = () => {
                   </tbody>
                 </Table>
               </CCardBody>
+              <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
+                <CIcon name={'cilArrowCircleRight'} className="mr-2" />
+                Thêm sản phẩm
+              </CButton>
             </CCard>
             <CCard>
               <CCardBody>

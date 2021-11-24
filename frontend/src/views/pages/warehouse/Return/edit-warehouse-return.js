@@ -131,16 +131,14 @@ const EditWarehouseReturn = props => {
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].quantity = Number(target.value).toString();
-    copyArr[index].priceTotal =
-    (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
+    copyArr[index].priceTotal = (copyArr[index].price * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].price = Number(target.value.replace(/\D/g, ''));
-    copyArr[index].priceTotal =
-    (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
+    copyArr[index].priceTotal = (copyArr[index].price * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
@@ -150,7 +148,7 @@ const EditWarehouseReturn = props => {
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({ value ,index }, selectedProductIndex) => {
+  const onSelectedProduct = ({ value, index }, selectedProductIndex) => {
     const tempArr = [...products];
     const tempVar = tempArr[0];
     tempArr[0] = tempArr[index];
@@ -213,8 +211,7 @@ const EditWarehouseReturn = props => {
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].reducePercent = Number(target.value).toString();
-    copyArr[index].priceTotal =
-    (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
+    copyArr[index].priceTotal = (copyArr[index].price * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
@@ -497,10 +494,7 @@ const EditWarehouseReturn = props => {
                 )}
               </CCardBody>
             </CCard>
-            <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
-              <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-              Thêm sản phẩm
-            </CButton>
+
             <CCard>
               <CCardBody>
                 <Table responsive striped>
@@ -596,6 +590,10 @@ const EditWarehouseReturn = props => {
                   </tbody>
                 </Table>
               </CCardBody>
+              <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
+                <CIcon name={'cilArrowCircleRight'} className="mr-2" />
+                Thêm sản phẩm
+              </CButton>
             </CCard>
             <CCard>
               <CCardHeader>

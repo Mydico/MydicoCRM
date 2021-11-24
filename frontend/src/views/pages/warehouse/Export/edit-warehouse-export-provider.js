@@ -18,7 +18,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDetailWarehouseImport, updateWarehouseImport } from '../Import/warehouse-import.api';
-import _ from 'lodash'
+import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
@@ -57,8 +57,6 @@ const { selectAll: selectAllProvider } = globalizedProviderSelectors;
 const EditWarehouseExportProvider = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
   const { account } = useSelector(userSafeSelector);
-
-
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -102,7 +100,7 @@ const EditWarehouseExportProvider = props => {
     values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT_TO_PROVIDER;
-    values.totalMoney = Number(values.totalMoney.replace(/\D/g, ''))
+    values.totalMoney = Number(values.totalMoney.replace(/\D/g, ''));
     dispatch(fetching());
     dispatch(updateWarehouseImport(values));
   };
@@ -124,15 +122,15 @@ const EditWarehouseExportProvider = props => {
   }, 300);
 
   const onSearchProduct = (value, action) => {
-    if (action.action === "input-change" &&  value) {
+    if (action.action === 'input-change' && value) {
       debouncedSearchProduct(value);
     }
-    if (action.action === "input-blur") {
-      debouncedSearchProduct("");
+    if (action.action === 'input-blur') {
+      debouncedSearchProduct('');
     }
   };
 
-  const onSelectedProduct = ({ value ,index }, selectedProductIndex) => {
+  const onSelectedProduct = ({ value, index }, selectedProductIndex) => {
     const tempArr = [...products];
     const tempVar = tempArr[0];
     tempArr[0] = tempArr[index];
@@ -192,7 +190,12 @@ const EditWarehouseExportProvider = props => {
 
   return (
     <CCard>
-      <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={editAlert}>
+      <Formik
+        initialValues={initValuesState || initialValues}
+        enableReinitialize
+        validate={validate(validationSchema)}
+        onSubmit={editAlert}
+      >
         {({ values, handleChange, handleBlur, handleSubmit, setFieldValue, handleReset }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
@@ -297,10 +300,6 @@ const EditWarehouseExportProvider = props => {
               </CCardBody>
             </CCard>
 
-            <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
-              <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-              Thêm sản phẩm
-            </CButton>
             <CCard>
               <CCardBody>
                 <Table responsive striped>
@@ -379,6 +378,10 @@ const EditWarehouseExportProvider = props => {
                   </tbody>
                 </Table>
               </CCardBody>
+              <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
+                <CIcon name={'cilArrowCircleRight'} className="mr-2" />
+                Thêm sản phẩm
+              </CButton>
             </CCard>
             <CCard>
               <CCardHeader>

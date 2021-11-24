@@ -356,10 +356,6 @@ const CreateReceipt = () => {
               </CCardBody>
             </CCard>
 
-            <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
-              <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-              Thêm sản phẩm
-            </CButton>
             <CCard>
               <CCardBody>
                 <Table striped>
@@ -384,7 +380,7 @@ const CreateReceipt = () => {
                               : {}
                           }
                         >
-                          <td style={{ minWidth: 600}} >
+                          <td style={{ minWidth: 600 }}>
                             <Select
                               value={{
                                 value: item.product,
@@ -452,6 +448,10 @@ const CreateReceipt = () => {
                   </tbody>
                 </Table>
               </CCardBody>
+              <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
+                <CIcon name={'cilArrowCircleRight'} className="mr-2" />
+                Thêm sản phẩm
+              </CButton>
             </CCard>
             <CCard>
               <CCardHeader>

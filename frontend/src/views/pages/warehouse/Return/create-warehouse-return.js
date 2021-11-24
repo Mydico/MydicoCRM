@@ -161,8 +161,7 @@ const CreateWarehouse = () => {
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = Number(target.value).toString();
-    copyArr[index].priceTotal =
-    (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
+    copyArr[index].priceTotal = (copyArr[index].price * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
@@ -175,12 +174,11 @@ const CreateWarehouse = () => {
   const onChangePrice = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].price = Number(target.value.replace(/\D/g, ''));
-    copyArr[index].priceTotal =
-    (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
+    copyArr[index].priceTotal = (copyArr[index].price * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
     setProductList(copyArr);
   };
 
-  const onSelectedProduct = ({ value ,index }, selectedProductIndex) => {
+  const onSelectedProduct = ({ value, index }, selectedProductIndex) => {
     const tempArr = [...products];
     const tempVar = tempArr[0];
     tempArr[0] = tempArr[index];
@@ -196,9 +194,8 @@ const CreateWarehouse = () => {
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].reducePercent = Number(target.value).toString();
-    copyArr[index].priceTotal =
-      (copyArr[index].price * copyArr[index].quantity  * (100 - copyArr[index].reducePercent || 0)) / 100;
-      // (copyArr[index].price * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
+    copyArr[index].priceTotal = (copyArr[index].price * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
+    // (copyArr[index].price * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
     setProductList(copyArr);
   };
 
@@ -462,10 +459,7 @@ const CreateWarehouse = () => {
                 )}
               </CCardBody>
             </CCard>
-            <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
-              <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-              Thêm sản phẩm
-            </CButton>
+
             <CCard>
               <CCardBody>
                 <Table responsive striped>
@@ -539,13 +533,10 @@ const CreateWarehouse = () => {
                             />
                           </td>
                           <td style={{ width: 100 }}>
-                            {(item?.priceTotal || 0).toLocaleString(
-                              'it-IT',
-                              {
-                                style: 'currency',
-                                currency: 'VND'
-                              }
-                            ) || ''}
+                            {(item?.priceTotal || 0).toLocaleString('it-IT', {
+                              style: 'currency',
+                              currency: 'VND'
+                            }) || ''}
                           </td>
                           <td style={{ width: 100 }}>
                             <CButton
@@ -565,6 +556,10 @@ const CreateWarehouse = () => {
                   </tbody>
                 </Table>
               </CCardBody>
+              <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
+                <CIcon name={'cilArrowCircleRight'} className="mr-2" />
+                Thêm sản phẩm
+              </CButton>
             </CCard>
             <CCard>
               <CCardHeader>

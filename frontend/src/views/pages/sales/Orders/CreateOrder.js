@@ -303,6 +303,7 @@ const CreateOrder = props => {
         size: 20,
         sort: 'name,ASC',
         name: value,
+        code: value,
         dependency: true
       })
     );

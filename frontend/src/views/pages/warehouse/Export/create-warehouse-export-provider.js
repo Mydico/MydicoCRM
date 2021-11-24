@@ -42,7 +42,7 @@ const validationSchema = function() {
     store: Yup.object()
       .required('Kho không để trống')
       .nullable(),
-      provider: Yup.object()
+    provider: Yup.object()
       .required('Kho nhận không để trống')
       .nullable()
   });
@@ -285,10 +285,6 @@ const CreateWarehouseExportProvider = () => {
               </CCardBody>
             </CCard>
 
-            <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
-              <CIcon name={'cilArrowCircleRight'} className="mr-2" />
-              Thêm sản phẩm
-            </CButton>
             <CCard>
               <CCardBody>
                 <Table responsive striped>
@@ -374,6 +370,10 @@ const CreateWarehouseExportProvider = () => {
                   </tbody>
                 </Table>
               </CCardBody>
+              <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
+                <CIcon name={'cilArrowCircleRight'} className="mr-2" />
+                Thêm sản phẩm
+              </CButton>
             </CCard>
             <CCard>
               <CCardHeader>
