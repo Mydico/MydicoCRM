@@ -302,6 +302,7 @@ export class CustomerService {
   }
 
   async save(customer: Customer): Promise<Customer | undefined> {
+    let error = '';
     await this.customerRepository.removeCache(['customer']);
     if (customer.id) {
       const foundedCustomer = await this.customerRepository.findOne({
@@ -341,13 +342,13 @@ export class CustomerService {
         contact_vocative: '',
         customer_created: customer.createdBy
       });
-      await result.toPromise().catch(e => console.log(e));
+      await result.toPromise().catch(e => error = e.message);
     }
     const foundedCustomer = await this.customerRepository.find({
       code: Like(`%${customer.code}%`)
     });
     const newCustomer = checkCodeContext(customer, foundedCustomer);
-
+    newCustomer.errorLogs = error;
     return await this.customerRepository.save(newCustomer);
   }
 

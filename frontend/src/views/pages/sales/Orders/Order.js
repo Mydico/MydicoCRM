@@ -11,7 +11,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { userSafeSelector, addPermission } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
-import { CFormGroup, CInput, CLabel, CTextarea } from '@coreui/react';
+import { CFormGroup, CInput, CLabel, CLink, CTextarea } from '@coreui/react';
 import Select from 'react-select';
 import AdvancedTable from '../../../components/table/AdvancedTable';
 import { Td, Table, Thead, Th, Tr, Tbody } from '../../../components/super-responsive-table';
@@ -199,9 +199,9 @@ const Order = props => {
   }, []);
 
   useEffect(() => {
-    console.log(activePage)
+    console.log(activePage);
     if (activePage > 0) {
-      let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.order };
+      let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.order, customerId: props.customerId };
       paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1 };
       if (date.endDate && date.startDate) {
         paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
@@ -236,6 +236,7 @@ const Order = props => {
           page: 0,
           size: size,
           sort: 'createdDate,DESC',
+          customerId: props.customerId,
           ...paramRef.current,
           startDate: date.startDate?.format('YYYY-MM-DD'),
           endDate: date.endDate?.format('YYYY-MM-DD')
@@ -295,6 +296,7 @@ const Order = props => {
         page: activePage - 1,
         size,
         sort: 'createdDate,DESC',
+        customerId: props.customerId,
         ...paramRef.current,
         startDate: date.startDate?.format('YYYY-MM-DD'),
         endDate: date.endDate?.format('YYYY-MM-DD')
@@ -700,7 +702,7 @@ const Order = props => {
           loading={initialState.loading}
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
-          onRowClick={val => toDetailOrder(val.id)}
+          // onRowClick={val => toDetailOrder(val.id)}
           columnFilterValue={params.order}
           columnFilterSlot={{
             status: (
@@ -731,7 +733,16 @@ const Order = props => {
               </Td>
             ),
             createdDate: item => <Td>{item.createdDate}</Td>,
-
+            customerName: item => (
+              <Td>
+                <CLink to={`customers/${item.customer.id}/edit`}>{item.customerName}</CLink>
+              </Td>
+            ),
+            code: item => (
+              <Td>
+                <CLink onClick={val => toDetailOrder(val.id)}>{item.code}</CLink>
+              </Td>
+            ),
             show_details: item => {
               return (
                 <Td className="py-2 d-flex">
@@ -768,12 +779,20 @@ const Order = props => {
                         <div>
                           <strong>Tên cửa hàng: {item?.customer?.name}</strong>
                         </div>
-                        <div>Mã KH:  <strong>{item?.customer?.code}</strong></div>
-                        <div>Tên liên lạc:  <strong>{item?.customer?.contactName}</strong></div>
-                        <div>Mạng xã hội:  <strong>{item?.customer?.social}</strong></div>
-                        <div>Địa chỉ:  <strong>{item?.address}</strong></div>
-                        <div><strong>{`${memoizedGetDistrictName(item?.customer?.district)}, ${memoizedGetCityName(item?.customer?.city)}`}</strong></div>{' '}
-                        <div>Số điện thoại:  <strong>{item?.customer?.tel}</strong></div>
+                        <div>
+                          Mã KH: <strong>{item?.customer?.code}</strong>
+                        </div>
+                        <div>
+                          Địa chỉ: <strong>{item?.address}</strong>
+                        </div>
+                        <div>
+                          <strong>{`${memoizedGetDistrictName(item?.customer?.district)}, ${memoizedGetCityName(
+                            item?.customer?.city
+                          )}`}</strong>
+                        </div>{' '}
+                        <div>
+                          Số điện thoại: <strong>{item?.customer?.tel}</strong>
+                        </div>
                       </CCol>
                       <CCol sm="4">
                         <h6 className="mb-3">Chương trình bán hàng:</h6>

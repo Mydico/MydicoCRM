@@ -87,7 +87,7 @@ const statusList = [
     label: 'ĐÃ DUYỆT'
   }
 ];
-const WarehouseImport = props => {
+const WarehouseReturn = props => {
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const [details, setDetails] = useState([]);
@@ -107,6 +107,7 @@ const WarehouseImport = props => {
         page: activePage - 1,
         size,
         sort: 'createdDate,DESC',
+        customerId: props.customerId,
         ...paramRef.current,
         startDate: date.startDate?.format('YYYY-MM-DD'),
         endDate: date.endDate?.format('YYYY-MM-DD')
@@ -116,11 +117,10 @@ const WarehouseImport = props => {
   }, [date]);
   useEffect(() => {
     dispatch(reset());
-    localStorage.removeItem('params');
   }, []);
 
   useEffect(() => {
-    dispatch(getWarehouseReturn({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    dispatch(getWarehouseReturn({ page: activePage - 1, size,customerId: props.customerId, sort: 'createdDate,DESC', ...paramRef.current }));
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
@@ -162,7 +162,7 @@ const WarehouseImport = props => {
     if (Object.keys(value).length > 0) {
 
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getWarehouseReturn({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getWarehouseReturn({ page: 0, size: size, sort: 'createdDate,DESC',customerId: props.customerId, ...value }));
     }
   }, 300);
 
@@ -279,7 +279,7 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC',customerId: props.customerId, ...paramRef.current };
       dispatch(getWarehouseReturn(params));
       dispatch(reset());
     }
@@ -586,4 +586,4 @@ const WarehouseImport = props => {
   );
 };
 
-export default WarehouseImport;
+export default WarehouseReturn;

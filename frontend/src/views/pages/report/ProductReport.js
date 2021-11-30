@@ -542,7 +542,7 @@ const ProductReport = () => {
                 order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
                 real: (item, index) => (
                   <Td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(item.real || 0))}</div>
+                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.real || 0)}</div>
                   </Td>
                 ),
                 total: (item, index) => (

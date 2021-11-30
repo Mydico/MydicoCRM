@@ -636,7 +636,12 @@ export class ReportService {
       });
       return [final, Number(countBuilder?.count || 0)];
     } else {
-      return [returnProduct, Number(returnProduct?.length || 0)];
+      const returnProductTemp = returnProduct.map(item => ({
+        ...item,
+        count: 0 - Number(item.count || 0),
+        total: 0,
+      }))
+      return [returnProductTemp, Number(returnProduct?.length || 0)];
     }
 
   }
@@ -841,7 +846,7 @@ export class ReportService {
       .cache(3 * 3600)
       .getCount();
     const result = await queryBuilder.getRawMany();
-    
+
     return [result, count]
     // const customerIds = result.map(item => item.customer_id);
     // if (filter['endDate'] && filter['startDate']) {
