@@ -605,7 +605,7 @@ const Order = props => {
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   // const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
-  const toDetailOrder = id => {
+  const toDetailOrder = id => () => {
     history.push(`${props.match.url}/${id}/detail`);
   };
 
@@ -740,7 +740,7 @@ const Order = props => {
             ),
             code: item => (
               <Td>
-                <CLink onClick={val => toDetailOrder(val.id)}>{item.code}</CLink>
+                <CLink onClick={toDetailOrder(item.id)}>{item.code}</CLink>
               </Td>
             ),
             show_details: item => {

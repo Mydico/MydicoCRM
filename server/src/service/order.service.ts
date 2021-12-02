@@ -279,7 +279,7 @@ export class OrderService {
     return await this.orderRepository.save(order);
   }
 
-  async update(order: Order): Promise<Order> {
+  async createCOD(order: Order): Promise<Order> {
     const foundedOrder = await this.findById(order.id);
 
     if (foundedOrder.status === OrderStatus.CREATE_COD && order.status === OrderStatus.CREATE_COD) {
@@ -324,13 +324,6 @@ export class OrderService {
             ? Number(latestTransaction.earlyDebt) + Number(foundedOrder.realMoney)
             : Number(foundedOrder.realMoney);
           await this.transactionService.save(transaction);
-          // const incomeItem = new IncomeDashboard();
-          // incomeItem.amount = foundedOrder.realMoney;
-          // incomeItem.departmentId = foundedOrder.department.id;
-          // incomeItem.branchId = foundedOrder.branch.id;
-          // incomeItem.type = DashboardType.ORDER;
-          // incomeItem.saleId = foundedOrder.sale.id || null;
-          // await this.incomeDashboardService.save(incomeItem);
         } else {
           throw new HttpException('Đon hàng không thể tạo vận đơn.Số lượng sản phẩm trong kho không đủ', HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -338,6 +331,74 @@ export class OrderService {
         throw new HttpException('Vận đơn đã tồn tại', HttpStatus.UNPROCESSABLE_ENTITY);
       }
     }
+    let result = await this.orderRepository.save(order);
+    if (result.status != OrderStatus.CREATE_COD) {
+      result.status = OrderStatus.CREATE_COD;
+      result = await this.orderRepository.save(result);
+    }
+    await this.emitMessage(result, order);
+    return result;
+  }
+
+  async update(order: Order): Promise<Order> {
+    // const foundedOrder = await this.findById(order.id);
+
+    // if (foundedOrder.status === OrderStatus.CREATE_COD && order.status === OrderStatus.CREATE_COD) {
+    //   throw new HttpException('Đơn hàng đã tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
+    // }
+    // if (order.status === OrderStatus.CREATE_COD) {
+    //   const exist = await this.billService.findByfields({
+    //     where: {
+    //       order: order
+    //     }
+    //   });
+    //   if (!exist) {
+    //     const canCreateBill = await this.exportStore(foundedOrder);
+    //     if (canCreateBill) {
+    //       const bill = new Bill();
+    //       bill.code = `VD-${foundedOrder.code}`;
+    //       bill.customer = foundedOrder.customer;
+    //       bill.order = foundedOrder;
+    //       bill.store = foundedOrder.store;
+    //       bill.customerName = foundedOrder.customer.name;
+    //       bill.department = foundedOrder.department;
+    //       bill.createdBy = foundedOrder.createdBy;
+    //       const createdBill = await this.billService.save(bill);
+    //       const latestTransaction = await this.transactionService.findByfields({
+    //         where: { customer: foundedOrder.customer },
+    //         order: { createdDate: 'DESC' }
+    //       });
+    //       const transaction = new Transaction();
+    //       transaction.customer = foundedOrder.customer;
+    //       transaction.customerCode = foundedOrder.customer.code;
+    //       transaction.customerName = foundedOrder.customer.name;
+    //       transaction.sale = foundedOrder.sale;
+    //       transaction.saleName = foundedOrder.sale.code;
+    //       transaction.branch = foundedOrder.branch;
+    //       transaction.department = foundedOrder.department;
+    //       transaction.order = foundedOrder;
+    //       transaction.bill = createdBill;
+    //       transaction.totalMoney = foundedOrder.realMoney;
+    //       transaction.type = TransactionType.DEBIT;
+    //       transaction.previousDebt = latestTransaction ? latestTransaction.earlyDebt : 0;
+    //       transaction.earlyDebt = latestTransaction
+    //         ? Number(latestTransaction.earlyDebt) + Number(foundedOrder.realMoney)
+    //         : Number(foundedOrder.realMoney);
+    //       await this.transactionService.save(transaction);
+    //       // const incomeItem = new IncomeDashboard();
+    //       // incomeItem.amount = foundedOrder.realMoney;
+    //       // incomeItem.departmentId = foundedOrder.department.id;
+    //       // incomeItem.branchId = foundedOrder.branch.id;
+    //       // incomeItem.type = DashboardType.ORDER;
+    //       // incomeItem.saleId = foundedOrder.sale.id || null;
+    //       // await this.incomeDashboardService.save(incomeItem);
+    //     } else {
+    //       throw new HttpException('Đon hàng không thể tạo vận đơn.Số lượng sản phẩm trong kho không đủ', HttpStatus.UNPROCESSABLE_ENTITY);
+    //     }
+    //   } else {
+    //     throw new HttpException('Vận đơn đã tồn tại', HttpStatus.UNPROCESSABLE_ENTITY);
+    //   }
+    // }
     const result = await this.orderRepository.save(order);
     await this.emitMessage(result, order);
     return result;

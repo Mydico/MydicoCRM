@@ -195,7 +195,7 @@ export class OrderController {
                 throw new HttpException('Sản phẩm trong kho không đủ để tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
             }
         }
-        return res.send(await this.orderService.update(order));
+        return res.send(await this.orderService.createCOD(order));
     }
 
     @Put('/status')
