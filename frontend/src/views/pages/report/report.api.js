@@ -100,9 +100,19 @@ export const getCountTotalPriceProduct = createAsyncThunk('api/reports/count-tot
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
 export const getProductReport = createAsyncThunk('api/reports/product-report', async (params, thunkAPI) => {
   try {
     const result = await axios.get('api/reports/product-report', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
+export const getProductDetailReport = createAsyncThunk('api/reports/product-report', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/product-detail-report', { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

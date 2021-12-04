@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CDataTable, CPagination } from '@coreui/react';
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CDataTable, CPagination, CLink } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
@@ -540,6 +540,11 @@ const ProductReport = () => {
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
+                product_name: (item, index) => (
+                  <Td>
+                    <div><CLink to={`product-report/${item.product_id}/detail`}>{item.product_name}</CLink></div>
+                  </Td>
+                ),
                 real: (item, index) => (
                   <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.real || 0)}</div>

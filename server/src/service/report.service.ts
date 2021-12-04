@@ -17,6 +17,7 @@ import _ from 'lodash';
 import { User } from '../domain/user.entity';
 import { BillRepository } from '../repository/bill.repository';
 import Department from '../domain/department.entity';
+import OrderDetails from 'src/domain/order-details.entity';
 @Injectable()
 export class ReportService {
   constructor(
@@ -643,7 +644,80 @@ export class ReportService {
       }))
       return [returnProductTemp, Number(returnProduct?.length || 0)];
     }
+  }
 
+  async getProductDetailReport(options, filter): Promise<[OrderDetails[],number]> {
+    let queryString = queryBuilderFunc('orderDetails', filter);
+    queryString = queryString.replace('orderDetails.departmentId', 'order.departmentId');
+    // queryString = queryString.replace('Transaction.brandId', 'brand.id');
+    // queryString = queryString.replace('Transaction.productGroupId', 'productGroup.id');
+    //order_details.price_real * quantity * (100 - reduce_percent) / 100
+    return await this.orderDetailsRepository
+      .createQueryBuilder('orderDetails')
+      // .select(['order.customer.id', 'order.customer.name'])
+      // .select(['orderDetails.createdDate','orderDetails.priceReal', 'orderDetails.quantity'])
+      
+      .leftJoinAndSelect('orderDetails.order', 'order')
+      .leftJoinAndSelect('order.customer', 'customer')
+      .where(queryString)
+      .skip(options.skip)
+      .take(options.take)
+      // .cache(3 * 3600)
+      .getManyAndCount();
+    // const productIds = queryBuilder.map(item => item.product_id);
+
+    // const countBuilder = await this.transactionRepository.manager.connection
+    //   .createQueryBuilder()
+    //   .from(Transaction, 'Transaction')
+    //   .select('count(*)', 'count')
+    //   .leftJoin('Transaction.order', 'order')
+    //   .leftJoin('order.orderDetails', 'orderDetails')
+    //   .leftJoin('orderDetails.product', 'product')
+    //   .leftJoin('product.productBrand', 'brand')
+    //   .leftJoin('product.productGroup', 'productGroup')
+    //   .where(queryString)
+    //   .andWhere(`Transaction.orderId is not null`)
+    //   .groupBy('orderDetails.productId')
+    //   .cache(3 * 3600)
+    //   .getRawOne();
+
+    // const returnProduct = await this.transactionRepository
+    //   .createQueryBuilder('Transaction')
+    //   .select(['product.name', 'product.id'])
+    //   .addSelect('sum(storeInputDetails.priceTotal)', 'return')
+    //   .addSelect('sum(storeInputDetails.quantity)', 'count')
+    //   .leftJoin('Transaction.storeInput', 'storeInput')
+    //   .leftJoin('storeInput.storeInputDetails', 'storeInputDetails')
+    //   .leftJoin('storeInputDetails.product', 'product')
+    //   .leftJoin('product.productBrand', 'brand')
+    //   .leftJoin('product.productGroup', 'productGroup')
+    //   .andWhere(queryString)
+    //   .andWhere('storeInputDetails.product IN (:saleIds)', { saleIds: productIds.length > 0 ? productIds : JSON.parse(filter['product']).length > 0 ? JSON.parse(filter['product']) : '' })
+    //   .andWhere(`Transaction.storeInputId is not null`)
+    //   .cache(3 * 3600)
+    //   .groupBy('storeInputDetails.productId')
+    //   .getRawMany();
+    // if (queryBuilder.length > 0) {
+    //   const final = queryBuilder.map(item => {
+    //     const index = returnProduct.findIndex(product => product.product_id === item.product_id);
+    //     if (index >= 0) {
+    //       return {
+    //         ...item,
+    //         count: Number(item.count || 0) - Number(returnProduct[index].count || 0),
+    //         return: Number(returnProduct[index].return)
+    //       };
+    //     }
+    //     return item;
+    //   });
+    //   return [final, Number(countBuilder?.count || 0)];
+    // } else {
+    //   const returnProductTemp = returnProduct.map(item => ({
+    //     ...item,
+    //     count: 0 - Number(item.count || 0),
+    //     total: 0,
+    //   }))
+    //   return [returnProductTemp, Number(returnProduct?.length || 0)];
+    // }
   }
 
   async getSaleSummary(filter): Promise<any> {

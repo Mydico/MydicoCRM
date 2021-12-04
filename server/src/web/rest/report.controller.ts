@@ -268,6 +268,25 @@ export class ReportController {
     return res.send(await this.reportService.getProductReport(options, filter));
   }
 
+  @Get('/product-detail-report')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getProductDetailReport(@Req() req: Request, @Res() res): Promise<any> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const options = {
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder()
+    };
+    delete req.query['page'];
+    delete req.query['size'];
+    delete req.query['sort'];
+    const filter = await this.buildFilterForReport(req);
+    return res.send(await this.reportService.getProductDetailReport(options, filter));
+  }
+
   @Get('/user-report')
   @ApiResponse({
     status: 200,

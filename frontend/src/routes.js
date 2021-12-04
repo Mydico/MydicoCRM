@@ -10,6 +10,7 @@ const OrderCustomerHistory =loadable(() => import('./views/pages/report/OrderCus
 const OrderProductHistory =loadable(() => import('./views/pages/report/OrderProductHistory'));
 
 const ProductReport =loadable(() => import('./views/pages/report/ProductReport'));
+const ProductDetailReport =loadable(() => import('./views/pages/report/ProductDetailReport'));
 const PromotionReport =loadable(() => import('./views/pages/report/PromotionReport'));
 const SaleReport =loadable(() => import('./views/pages/report/SaleReport'));
 
@@ -131,6 +132,7 @@ const routes = [
   {path: '/department-report', exact: true, name: 'Báo cáo theo chi nhánh', component: DepartmentReport},
   {path: '/department-report/:id/detail',name: 'Báo cáo theo chi nhánh', component: DepartmentDetailReport},
   {path: '/product-report', exact: true, name: 'Báo cáo theo sản phẩm', component: ProductReport},
+  {path: '/product-report/:id/detail', exact: true, name: 'Báo cáo theo sản phẩm', component: ProductDetailReport},
   {path: '/sale-report', exact: true, name: 'Báo cáo theo nhân viên', component: SaleReport},
   {path: '/sale-report/order-histories/:id', exact: true, name: 'Báo cáo', component: OrderHistory},
   {path: '/customer-report', exact: true, name: 'Báo cáo theo sản phẩm', component: CustomerReport},
