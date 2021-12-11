@@ -649,6 +649,10 @@ export class ReportService {
   async getProductDetailReport(options, filter): Promise<[OrderDetails[],number]> {
     let queryString = queryBuilderFunc('orderDetails', filter);
     queryString = queryString.replace('orderDetails.departmentId', 'order.departmentId');
+    queryString = queryString.replace('orderDetails.saleId', 'order.saleId');
+    queryString = queryString.replace('orderDetails.branchId', 'order.branchId');
+
+    
     // queryString = queryString.replace('Transaction.brandId', 'brand.id');
     // queryString = queryString.replace('Transaction.productGroupId', 'productGroup.id');
     //order_details.price_real * quantity * (100 - reduce_percent) / 100

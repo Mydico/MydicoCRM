@@ -9,6 +9,7 @@ import { getCustomerTotalDebit, getTransaction, getTransactionListDetail } from 
 import _ from 'lodash';
 import { getDetailCustomer } from '../../customer/customer.api';
 import { reset } from './debt.reducer';
+import AdvancedTable from '../../../components/table/AdvancedTable';
 const getBadge = status => {
   switch (status) {
     case 'PAYMENT':
@@ -74,21 +75,21 @@ const Transaction = props => {
     }
   }, [])
   useEffect(() => {
-    if (props.location.state?.customer) {
+    if (props.location?.state?.customer) {
       setDebt(props.location.state?.customer);
     }
-  }, [props.location.state?.customer]);
+  }, [props.location?.state?.customer]);
 
   useEffect(() => {
     dispatch(
-      getTransactionListDetail({ customer: props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current })
+      getTransactionListDetail({ customer: props.customerId || props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current })
     );
-    dispatch(getDetailCustomer({ id: props.match.params.id, dependency: true  })).then(resp => {
+    dispatch(getDetailCustomer({ id: props.customerId || props.match.params.id, dependency: true  })).then(resp => {
       if(resp && resp.payload){
         setCustomer(resp.payload);
       }
     });
-    dispatch(getCustomerTotalDebit({ id: props.match.params.id, dependency: true })).then(resp => {
+    dispatch(getCustomerTotalDebit({ id: props.customerId || props.match.params.id, dependency: true })).then(resp => {
       if(resp && resp.payload){
         setDebt(resp.payload.sum);
       }
@@ -100,7 +101,7 @@ const Transaction = props => {
     if (Object.keys(value).length > 0) {
 
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getTransaction({ customer: props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getTransaction({ customer: props.customerId || props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   }, 300);
 
@@ -113,19 +114,19 @@ const Transaction = props => {
     let href = '';
     if (item.order) {
       link = `Đơn hàng ${item.order.code}`;
-      href = `${props.match.url}/order/${item.order?.id}`;
+      href = `/orders/${item.order?.id}/detail`;
     } else if (item.receipt) {
       link = `Phiếu thu ${item.receipt.code}`;
-      href = `${props.match.url}/receipt/${item.receipt?.id}`;
+      href = `/receipts/${item.receipt?.id}/detail`;
     } else if (item.storeInput) {
       link = `Đơn trả hàng`;
-      href = `${props.match.url}/store/${item.storeInput?.id}`;
+      href = `/store-inputs/return/${item.storeInput?.id}/detail/`;
     } else {
       link = `Công nợ ban đầu`;
       href = ``;
     }
     return (
-      <CLink onClick={() => history.push({ pathname: href })} target="_blank">
+      <CLink to={href}>
         {link}
       </CLink>
     );
@@ -183,7 +184,7 @@ const Transaction = props => {
           <CCardTitle>Lịch sử công nợ</CCardTitle>
         </CCardHeader>
         <CCardBody>
-          <CDataTable
+          <AdvancedTable
             items={memoListed}
             fields={fields}
             columnFilter

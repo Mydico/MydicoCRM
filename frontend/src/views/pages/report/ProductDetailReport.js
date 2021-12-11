@@ -76,7 +76,7 @@ const ProductDetailReport = props => {
   };
 
   useEffect(() => {
-    if (Object.keys(filter).length > 4) {
+    if (Object.keys(filter).length > 5) {
       getTop10(filter);
     }
   }, [filter]);

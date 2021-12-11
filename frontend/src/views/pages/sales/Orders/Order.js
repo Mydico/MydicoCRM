@@ -199,7 +199,6 @@ const Order = props => {
   }, []);
 
   useEffect(() => {
-    console.log(activePage);
     if (activePage > 0) {
       let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.order, customerId: props.customerId };
       paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1 };

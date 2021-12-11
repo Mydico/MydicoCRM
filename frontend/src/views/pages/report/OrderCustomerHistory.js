@@ -20,6 +20,8 @@ import Download from '../../components/excel/DownloadExcel.js';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../shared/utils/helper.js';
 import Order from '../sales/Orders/Order';
 import WarehouseReturn from '../warehouse/Return/warehouse-return';
+import Transaction from '../finance/debt/transaction';
+import Receipt from '../finance/receipt/receipt';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -265,6 +267,12 @@ const OrderCustomerHistory = props => {
           <CNavItem>
             <CNavLink>Danh sách trả hàng</CNavLink>
           </CNavItem>
+          <CNavItem>
+            <CNavLink>Danh sách phiếu thu</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink>Lịch sử công nợ</CNavLink>
+          </CNavItem>
         </CNav>
         <CTabContent>
           <CTabPane>
@@ -272,6 +280,12 @@ const OrderCustomerHistory = props => {
           </CTabPane>
           <CTabPane>
             <WarehouseReturn customerId ={props.match.params.id} />
+          </CTabPane>
+          <CTabPane>
+            <Receipt customerId ={props.match.params.id} />
+          </CTabPane>
+          <CTabPane>
+            <Transaction customerId ={props.match.params.id} />
           </CTabPane>
         </CTabContent>
       </CTabs>

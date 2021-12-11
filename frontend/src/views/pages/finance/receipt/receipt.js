@@ -16,6 +16,7 @@ import Select from 'react-select';
 import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 import Download from '../../../components/excel/DownloadExcel';
 import ReportDate from '../../../components/report-date/ReportDate.js';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 
 const getBadge = status => {
   switch (status) {
@@ -116,7 +117,7 @@ const Receipt = props => {
   const { initialState } = useSelector(state => state.receipt);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const paramRef = useRef({});
+  const paramRef = useRef({customer: props.customerId});
   const dispatch = useDispatch();
   const history = useHistory();
   const [total, setTotal] = useState(0);
@@ -381,7 +382,7 @@ const Receipt = props => {
           <CLabel>Tổng tiền:</CLabel>
           <strong>{`\u00a0\u00a0${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}`}</strong>
         </CRow>
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter

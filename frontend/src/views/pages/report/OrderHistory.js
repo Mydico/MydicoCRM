@@ -11,7 +11,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { userSafeSelector, addPermission } from '../login/authenticate.reducer.js';
 import _ from 'lodash';
-import { CFormGroup, CInput, CLabel, CTextarea } from '@coreui/react';
+import { CFormGroup, CInput, CLabel, CLink, CTextarea } from '@coreui/react';
 import Select from 'react-select';
 import AdvancedTable from '../../components/table/AdvancedTable';
 import { Td, Table, Thead, Th, Tr, Tbody } from '../../components/super-responsive-table';
@@ -223,7 +223,6 @@ const OrderHistory = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(
         getOrder({ page: 0, size: size, saleId: props.match.params.id, dependency: true, sort: 'createdDate,DESC', ...value, ...date })
@@ -638,7 +637,6 @@ const OrderHistory = props => {
           loading={initialState.loading}
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
-          onRowClick={val => toDetailOrder(val.id)}
           columnFilterSlot={{
             status: (
               <div style={{ minWidth: 200 }}>
@@ -664,7 +662,13 @@ const OrderHistory = props => {
               </Td>
             ),
             createdDate: item => <Td>{item.createdDate}</Td>,
-
+            customerName: item => (
+              <Td>
+                <CLink to={`/customer-report/order-customer-histories/${item.customer.id}`}>
+                  {item.customerName}
+                </CLink>
+              </Td>
+            ),
             show_details: item => {
               return (
                 <Td className="py-2 d-flex">

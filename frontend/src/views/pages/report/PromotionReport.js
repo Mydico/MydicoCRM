@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CDataTable, CPagination } from '@coreui/react';
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CDataTable, CPagination, CLink } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
@@ -52,7 +52,7 @@ const PromotionReport = () => {
   const isBranchManager = account.roles.filter(item => item.authority.includes('BRANCH_MANAGER')).length > 0;
 
   const specialRole = JSON.parse(account.department.reportDepartment || '[]').length > 0;
-  const branches = ((isEmployee || isBranchManager) && !specialRole) ? [account.branch] : useSelector(selectAll);
+  const branches = (isEmployee || isBranchManager) && !specialRole ? [account.branch] : useSelector(selectAll);
   const users = isEmployee ? [account] : useSelector(selectUserAll);
 
   const promotions = useSelector(selectPromotionAll);
@@ -76,7 +76,7 @@ const PromotionReport = () => {
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(getPromotion());
-    if(isManager){
+    if (isManager) {
       dispatch(getBranch({ department: account.department.id, dependency: true }));
     }
   }, []);
@@ -87,7 +87,7 @@ const PromotionReport = () => {
         dispatch(setAll([account.branch]));
       }
     }
-    if(branches.length === 1){
+    if (branches.length === 1) {
       dispatch(
         getExactUser({
           page: 0,
@@ -386,13 +386,17 @@ const PromotionReport = () => {
                   onChange={e => {
                     setDepartment(e?.value || null);
                   }}
-                  value={initialState.allChild.length > 1 ? {
-                    value: department,
-                    label: department?.name
-                  } : {
-                    value: initialState.allChild[0],
-                    label: initialState.allChild[0]?.name
-                  }}
+                  value={
+                    initialState.allChild.length > 1
+                      ? {
+                          value: department,
+                          label: department?.name
+                        }
+                      : {
+                          value: initialState.allChild[0],
+                          label: initialState.allChild[0]?.name
+                        }
+                  }
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Chi nhánh"
@@ -410,13 +414,17 @@ const PromotionReport = () => {
                   onChange={e => {
                     setBranch(e?.value || null);
                   }}
-                  value={branches.length > 1 ?{
-                    value: branch,
-                    label: branch?.name
-                  }:{
-                    value: branches[0],
-                    label: branches[0]?.name
-                  }}
+                  value={
+                    branches.length > 1
+                      ? {
+                          value: branch,
+                          label: branch?.name
+                        }
+                      : {
+                          value: branches[0],
+                          label: branches[0]?.name
+                        }
+                  }
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Phòng ban"
@@ -561,6 +569,16 @@ const PromotionReport = () => {
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
+                customer_code: (item, index) => (
+                  <Td>
+                    <CLink to={`/customer-report/order-customer-histories/${item.customerId}`}>{item.customer_code}</CLink>
+                  </Td>
+                ),
+                customer_name: (item, index) => (
+                  <Td>
+                    <CLink to={`/customer-report/order-customer-histories/${item.customerId}`}>{item.customer_name}</CLink>
+                  </Td>
+                ),
                 name: (item, index) => (
                   <Td>
                     <div>{`${item.sale_lastName || ''} ${item.sale_firstName || ''}`}</div>

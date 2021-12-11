@@ -245,7 +245,7 @@ const SaleReport = props => {
 
   const renderLink = item => {
     return (
-      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-histories/${item.sale_id}` })} target="_blank">
+      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-histories/${item.sale_id}` })} >
         {item.sale_code}
       </CLink>
     );

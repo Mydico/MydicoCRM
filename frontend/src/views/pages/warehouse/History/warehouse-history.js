@@ -172,14 +172,13 @@ const StoreHistory = props => {
     let href = '';
     if (item.entity === 'ORDER') {
       link = `Đơn hàng ${item.entityCode || ''}`;
-      href = `orders/${item.entityId}/detail`;
+      href = `/orders/${item.entityId}/detail`;
     } else {
       link = `Phiếu ${mappingType[item.entityType] || 'kho'} ${item.entityCode || ''}`;
-      href = `store-inputs/${item.entityId}/detail`;
+      href = `/store-inputs/${item.entityId}/detail`;
     }
-
     return (
-      <CLink onClick={() => (document.location.href = href)} target="_blank">
+      <CLink to={href}>
         {link}
       </CLink>
     );

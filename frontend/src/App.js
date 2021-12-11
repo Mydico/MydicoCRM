@@ -34,6 +34,7 @@ export const socket = io({ transports: ['websocket'], path: '/socket' });
 
 export const App = () => {
   const dispatch = useDispatch();
+  const { params } = useSelector(state => state.app);
 
   useEffect(() => {
     dispatch(getSession());
@@ -50,8 +51,8 @@ export const App = () => {
       if (account != null) {
         if (res.departmentVisible.includes(account.department.id)) {
           if (account.role.filter(rol => rol.method === 'GET' && rol.entity === '/api/orders').length > 0) {
-            const params = { page: 0, size: 50, sort: 'createdDate,DESC' };
-            dispatch(getOrder(params));
+            const paramsLocal = { page: 0, size: 50, sort: 'createdDate,DESC', ...params?.order };
+            dispatch(getOrder(paramsLocal));
           }
         }
       }

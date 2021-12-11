@@ -236,8 +236,6 @@ export const AdvancedTable = props => {
       const columnFilter = String(value).toLowerCase();
       if (columnFilter && itemsDataColumns.includes(key)) {
         items = items.filter(item => {
-          console.log(String(item[key].toLowerCase()))
-          console.log(columnFilter.toLowerCase())
           return String(item[key].toLowerCase()).includes(columnFilter.toLowerCase());
         });
       }
@@ -269,8 +267,10 @@ export const AdvancedTable = props => {
     //if values in column are to be sorted by numeric value they all have to be type number
     const flip = sorterState.asc ? 1 : -1;
     const sorted = tableFiltered.slice().sort((item, item2) => {
-      const value = item[col];
-      const value2 = item2[col];
+      let value = item[col];
+      let value2 = item2[col];
+      value = !isNaN(value.replace(/[^0-9\.-]+/g, '')) ? Number(value.replace(/[^0-9\.-]+/g, '')) : value;
+      value2 = !isNaN(value2.replace(/[^0-9\.-]+/g, '')) ? Number(value2.replace(/[^0-9\.-]+/g, '')) : value2;
       const a = typeof value === 'number' ? value : String(value).toLowerCase();
       const b = typeof value2 === 'number' ? value2 : String(value2).toLowerCase();
       return a > b ? 1 * flip : b > a ? -1 * flip : 0;

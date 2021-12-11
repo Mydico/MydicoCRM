@@ -9,13 +9,12 @@ import { mapper } from './mappingRoleToRoutes';
 export const PrivateRouteComponent = ({ component: Component, ...rest }) => {
   const { isAuthenticated, sessionHasBeenFetched, account } = useSelector(userSafeSelector);
   const checkAuthorities = props => {
-
     const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
     const isWhiteList = whiteList.includes(props.location.pathname);
     const isManager = account.roles.filter(item => item.authority.includes('MANAGER')).length > 0;
     const isHasPermission =
       props.location.pathname.includes('report') ||
-      account.role.filter(item => item.method === 'GET' && item.entity.includes(props.location.pathname)).length > 0 ||
+      account.role.filter(item => item.method === 'GET' && item.entity.replace('/api','') == props.location.pathname).length > 0 ||
       (account.role.filter(item => item.method === 'GET' && item.entity.includes(props.location.pathname.split('/')[1])).length > 0 &&
         props.location.pathname.includes('detail')) ||
       account.role.filter(

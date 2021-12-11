@@ -62,7 +62,7 @@ const ProductReport = () => {
   const users = isEmployee ? [account] : useSelector(selectUserAll);
   const isBranchManager = account.roles.filter(item => item.authority.includes('BRANCH_MANAGER')).length > 0;
   const specialRole = JSON.parse(account.department.reportDepartment || '[]').length > 0;
-  const branches = ((isEmployee || isBranchManager) && !specialRole) ? [account.branch] : useSelector(selectAll);
+  const branches = (isEmployee || isBranchManager) && !specialRole ? [account.branch] : useSelector(selectAll);
   const productGroups = useSelector(selectAllProductGroup);
   const productBrands = useSelector(selectAllProductBrand);
   const products = useSelector(selectAllProduct);
@@ -91,7 +91,7 @@ const ProductReport = () => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(filterProduct());
     dispatch(getProductBrand({ page: 0, size: 50, sort: 'createdDate,DESC' }));
-    if(isManager){
+    if (isManager) {
       dispatch(getBranch({ department: account.department.id, dependency: true }));
     }
     // dispatch(getProductGroup({ page: 0, size: 50, sort: 'createdDate,DESC' }));
@@ -103,7 +103,16 @@ const ProductReport = () => {
         dispatch(setAll([account.branch]));
       }
     }
-
+    dispatch(
+      getExactUser({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        department: department?.id || account.department.id,
+        branch: isBranchManager ? (specialRole ? branches[0]?.id : account.branch.id) : branch?.id,
+        dependency: true
+      })
+    );
   }, [branches]);
 
   useEffect(() => {
@@ -218,6 +227,7 @@ const ProductReport = () => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
+          branch: isBranchManager ? (specialRole ? branches[0]?.id : account.branch.id) : branch?.id,
           dependency: true
         })
       );
@@ -239,7 +249,7 @@ const ProductReport = () => {
           size: 50,
           sort: 'createdDate,DESC',
           department: department?.id || account.department.id,
-          branch: isBranchManager ? account.branch.id : branch?.id,
+          branch: isBranchManager ? (specialRole ? branch?.id : account.branch.id) : branch?.id,
           dependency: true
         })
       );
@@ -370,13 +380,17 @@ const ProductReport = () => {
                   onChange={e => {
                     setDepartment(e?.value || null);
                   }}
-                  value={initialState.allChild.length > 1 ? {
-                    value: department,
-                    label: department?.name
-                  } : {
-                    value: initialState.allChild[0],
-                    label: initialState.allChild[0]?.name
-                  }}
+                  value={
+                    initialState.allChild.length > 1
+                      ? {
+                          value: department,
+                          label: department?.name
+                        }
+                      : {
+                          value: initialState.allChild[0],
+                          label: initialState.allChild[0]?.name
+                        }
+                  }
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Chi nhánh"
@@ -394,13 +408,17 @@ const ProductReport = () => {
                   onChange={e => {
                     setBranch(e?.value || null);
                   }}
-                  value={branches.length > 1 ?{
-                    value: branch,
-                    label: branch?.name
-                  }:{
-                    value: branches[0],
-                    label: branches[0]?.name
-                  }}
+                  value={
+                    branches.length > 1
+                      ? {
+                          value: branch,
+                          label: branch?.name
+                        }
+                      : {
+                          value: branches[0],
+                          label: branches[0]?.name
+                        }
+                  }
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Phòng ban"
@@ -542,7 +560,9 @@ const ProductReport = () => {
                 order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
                 product_name: (item, index) => (
                   <Td>
-                    <div><CLink to={`product-report/${item.product_id}/detail`}>{item.product_name}</CLink></div>
+                    <div>
+                      <CLink to={`product-report/${item.product_id}/detail`}>{item.product_name}</CLink>
+                    </div>
                   </Td>
                 ),
                 real: (item, index) => (

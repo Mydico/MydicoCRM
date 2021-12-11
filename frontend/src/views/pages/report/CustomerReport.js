@@ -191,7 +191,7 @@ const CustomerReport = props => {
 
   const renderCustomerLink = item => {
     return (
-      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-customer-histories/${item.customer_id}` })} target="_blank">
+      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-customer-histories/${item.customer_id}` })}>
         {item.customer_code}
       </CLink>
     );

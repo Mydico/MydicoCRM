@@ -198,7 +198,7 @@ const Report = props => {
 
   const renderLink = item => {
     return (
-      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-histories/${item.sale_id}` })} target="_blank">
+      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-histories/${item.sale_id}` })} >
         {item.sale_code}
       </CLink>
     );
@@ -206,7 +206,7 @@ const Report = props => {
 
   const renderCustomerLink = item => {
     return (
-      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-customer-histories/${item.id}` })} target="_blank">
+      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-customer-histories/${item.id}` })} >
         {item.code}
       </CLink>
     );
@@ -214,7 +214,7 @@ const Report = props => {
 
   const renderProductLink = item => {
     return (
-      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-product-histories/${item.id}` })} target="_blank">
+      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-product-histories/${item.id}` })} >
         {item.code}
       </CLink>
     );

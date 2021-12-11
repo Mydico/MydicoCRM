@@ -14,6 +14,7 @@ import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import Download from '../../../components/excel/DownloadExcel';
 import { setParams } from '../../../../App.reducer.js';
+import AdvancedTable from '../../../components/table/AdvancedTable';
 
 const { selectAll } = globalizedDebtsSelectors;
 
@@ -191,7 +192,7 @@ const Debt = props => {
             </CCol>
           </CFormGroup>
         </CFormGroup>
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter

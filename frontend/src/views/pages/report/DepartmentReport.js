@@ -210,7 +210,7 @@ const DepartmentReport = props => {
                     </Td>
                     <Td>
                       <div>
-                        <CLink onClick={onDetail(item)} target="_blank">
+                        <CLink onClick={onDetail(item)} >
                           {item.name}
                         </CLink>
                       </div>
