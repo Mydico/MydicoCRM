@@ -267,12 +267,18 @@ export const AdvancedTable = props => {
     //if values in column are to be sorted by numeric value they all have to be type number
     const flip = sorterState.asc ? 1 : -1;
     const sorted = tableFiltered.slice().sort((item, item2) => {
-      let value = item[col];
-      let value2 = item2[col];
-      value = !isNaN(value.replace(/[^0-9\.-]+/g, '')) ? Number(value.replace(/[^0-9\.-]+/g, '')) : value;
-      value2 = !isNaN(value2.replace(/[^0-9\.-]+/g, '')) ? Number(value2.replace(/[^0-9\.-]+/g, '')) : value2;
-      const a = typeof value === 'number' ? value : String(value).toLowerCase();
-      const b = typeof value2 === 'number' ? value2 : String(value2).toLowerCase();
+      const value = item[col];
+      const value2 = item2[col];
+      let a = String(value).toLowerCase();
+      let b =  String(value2).toLowerCase();
+      console.log(a,b)
+      a = !isNaN(a.replace(/[^0-9\.-]+/g, ''))
+        ? Number(a.replace(/[^0-9\.-]+/g, ''))
+        : a;
+      b = !isNaN(b.replace(/[^0-9\.-]+/g, ''))
+        ? Number(b.replace(/[^0-9\.-]+/g, ''))
+        : b;
+ 
       return a > b ? 1 * flip : b > a ? -1 * flip : 0;
     });
     return sorted;

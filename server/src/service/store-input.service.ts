@@ -171,11 +171,16 @@ export class StoreInputService {
             queryBuilder.andWhere(`customer.name like '%${filter['customerName']}%'`)
             count.andWhere(`customer.name like '%${filter['customerName']}%'`)
         }
+        if (filter['customerId']) {
+            queryBuilder.andWhere(`customer.id = ${filter['customerId']}`)
+            count.andWhere(`customer.id = ${filter['customerId']}`)
+        }
         delete filter['sale']
         delete filter['customerName']
-
+        delete filter['endDate']
+        delete filter['startDate']
+        delete filter['customerId']
         Object.keys(filter).forEach((item, index) => {
-            if (item === 'endDate' || item === 'startDate') return;
             queryString += `StoreInput.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
         });
         if (queryString) {
@@ -190,9 +195,10 @@ export class StoreInputService {
                 })
             );
         }
-        const result = await queryBuilder.getManyAndCount();
+        const result:[StoreInput[], number] = [[],0]
+        const data = await queryBuilder.getMany();
         result[1] = await count.getCount();
-        result[0] = result[0].map(item => ({
+        result[0] = data.map(item => ({
             ...item,
             orderDetails: item.storeInputDetails.sort((a, b) => {
               return Number(a.id) - Number(b.id);

@@ -40,11 +40,14 @@ const MainChart = attributes => {
             ticks: {
               beginAtZero: false,
               maxTicksLimit: 5,
-              stepSize: Math.ceil(250 / 5)
+              stepSize: Math.ceil(250 / 5),
+              callback: function(value, index, values) {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+              }
             },
             gridLines: {
               display: true
-            }
+          }
           }
         ]
       },

@@ -206,6 +206,7 @@ const Order = props => {
         paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
       }
       saveParams();
+      dispatch(fetching());
       dispatch(getOrder(paramsLocal));
       window.scrollTo(0, 100);
     }
@@ -734,12 +735,12 @@ const Order = props => {
             createdDate: item => <Td>{item.createdDate}</Td>,
             customerName: item => (
               <Td>
-                <CLink to={`customers/${item.customer.id}/edit`}>{item.customerName}</CLink>
+                <CLink to={`/customers/${item.customer.id}/edit`}>{item.customerName}</CLink>
               </Td>
             ),
             code: item => (
               <Td>
-                <CLink onClick={toDetailOrder(item.id)}>{item.code}</CLink>
+                <CLink to={`/orders/${item.id}/detail`} >{item.code}</CLink>
               </Td>
             ),
             show_details: item => {
