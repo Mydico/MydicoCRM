@@ -81,7 +81,8 @@ const CreateProduct = () => {
     }
 
     values.image = JSON.stringify(images.current);
-    values.price = Number(values.price.replace(/\D/g, ''));
+    values.volume = values.volume || 0;
+    values.price = Number(values.price.toString().replace(/\D/g, ''));
     values.agentPrice = Number(values.agentPrice.replace(/\D/g, ''));
     dispatch(creatingProduct(values));
   };
