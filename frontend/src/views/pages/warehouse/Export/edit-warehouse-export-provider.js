@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -61,7 +61,8 @@ const EditWarehouseExportProvider = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-  const [,] = useState(null);
+  const ref = useRef(null);
+
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
   const [initValuesState, setInitValuesState] = useState(null);
 
@@ -97,18 +98,20 @@ const EditWarehouseExportProvider = props => {
   }, [warehouseImport]);
 
   const onSubmit = (values, { resetForm }) => () => {
+    console.log(ref.current.values)
     values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT_TO_PROVIDER;
-    values.totalMoney = Number(values.totalMoney.replace(/\D/g, ''));
+    values.totalMoney = productList.reduce((sum, current) => sum + current.price * current.quantity, 0);
     dispatch(fetching());
     dispatch(updateWarehouseImport(values));
   };
 
   const onChangeQuantity = ({ target }, index) => {
-    const copyArr = [...productList];
+    const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].quantity = target.value;
     setProductList(copyArr);
+    productList.reduce((sum, current) => sum + current.price * current.quantity, 0)
   };
 
   const onRemoveProduct = index => {
@@ -193,6 +196,7 @@ const EditWarehouseExportProvider = props => {
       <Formik
         initialValues={initValuesState || initialValues}
         enableReinitialize
+        innerRef={ref}
         validate={validate(validationSchema)}
         onSubmit={editAlert}
       >
@@ -309,6 +313,7 @@ const EditWarehouseExportProvider = props => {
                       <th>Đơn vị</th>
                       <th>Dung tích</th>
                       <th>Số lượng</th>
+                      <th>Đơn giá</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -333,16 +338,6 @@ const EditWarehouseExportProvider = props => {
                           </td>
                           <td>{item?.product?.unit}</td>
                           <td>{item?.product?.volume}</td>
-                          <td>
-                            {
-                              <MaskedInput
-                                mask={currencyMask}
-                                onChange={event => onChangePrice(event, index)}
-                                value={Number(item.price || item?.product?.price || 0)}
-                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
-                              />
-                            }
-                          </td>
                           <td style={{ minWidth: 300 }}>
                             {item.followIndex >= 0 ? (
                               item.quantity
@@ -358,6 +353,16 @@ const EditWarehouseExportProvider = props => {
                                 value={item.quantity}
                               />
                             )}
+                          </td>
+                          <td>
+                            {
+                              <MaskedInput
+                                mask={currencyMask}
+                                onChange={event => onChangePrice(event, index)}
+                                value={Number(item.price || item?.product?.price || 0)}
+                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
+                              />
+                            }
                           </td>
 
                           <td style={{ width: 100 }}>
@@ -424,7 +429,7 @@ const EditWarehouseExportProvider = props => {
                                 onChange={event => {
                                   setFieldValue('totalMoney', event.target.value);
                                 }}
-                                value={Number(values?.totalMoney?.replace(/\D/g, '') || 0)}
+                                value={Number(productList.reduce((sum, current) => sum + current.price * current.quantity, 0) || 0)}
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }

@@ -49,6 +49,7 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { getProductInstore } from '../Product/product-warehouse.api';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -112,6 +113,8 @@ const CreateWarehouseExportProvider = () => {
     const copyArr = [...productList];
     copyArr[index].quantity = target.value;
     setProductList(copyArr);
+    onSearchProductInstore(copyArr, index);
+
   };
   useEffect(() => {
     if (formikRef.current) {
@@ -149,6 +152,24 @@ const CreateWarehouseExportProvider = () => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].price = Number(target.value.replace(/\D/g, ''));
     setProductList(copyArr);
+  };
+
+  const debouncedSearchProductInStore = _.debounce((copyArr, index) => {
+    dispatch(
+      getProductInstore({
+        storeId: selectedWarehouse.id,
+        productId: copyArr[index].product.id
+      })
+    ).then(numberOfQuantityInStore => {
+      if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+        copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
+        setProductList(copyArr);
+      }
+    });
+  }, 300);
+
+  const onSearchProductInstore = (copyArr, index) => {
+    debouncedSearchProductInStore(copyArr, index);
   };
 
   const debouncedSearchProduct = _.debounce(value => {
@@ -300,7 +321,16 @@ const CreateWarehouseExportProvider = () => {
                   <tbody>
                     {productList.map((item, index) => {
                       return (
-                        <tr key={index}>
+                        <tr
+                          key={index}
+                          style={
+                            item.quantityInStore !== undefined && Number(item.quantity) > item.quantityInStore
+                              ? {
+                                  boxShadow: '0px 0px 6px 5px red'
+                                }
+                              : {}
+                          }
+                        >
                           <td style={{ minWidth: 600 }}>
                             <Select
                               value={{
@@ -333,6 +363,9 @@ const CreateWarehouseExportProvider = () => {
                                 onBlur={handleBlur}
                                 value={item.quantity}
                               />
+                            )}
+                            {item.quantity > item.quantityInStore && (
+                              <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
                             )}
                           </td>
                           <td>
@@ -370,7 +403,7 @@ const CreateWarehouseExportProvider = () => {
                   </tbody>
                 </Table>
               </CCardBody>
-              <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
+              <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mr-3 mb-3" onClick={onAddProduct}>
                 <CIcon name={'cilArrowCircleRight'} className="mr-2" />
                 Thêm sản phẩm
               </CButton>

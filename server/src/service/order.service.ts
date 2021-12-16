@@ -341,6 +341,14 @@ export class OrderService {
   }
 
   async update(order: Order): Promise<Order> {
+    const exist = await this.billService.findByfields({
+      where: {
+        order: order
+      }
+    });
+    if (exist) {
+      throw new HttpException('Đơn hàng đã tạo vận đơn. Không thể chỉnh sửa', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
     // const foundedOrder = await this.findById(order.id);
 
     // if (foundedOrder.status === OrderStatus.CREATE_COD && order.status === OrderStatus.CREATE_COD) {

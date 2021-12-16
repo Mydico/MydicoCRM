@@ -364,7 +364,7 @@ const EditWarehouseExport = props => {
                     </tbody>
                   </Table>
                 </CCardBody>
-                <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mb-3" onClick={onAddProduct}>
+                <CButton color="primary" variant="outline" shape="square" size="sm" className="ml-3 mr-3 mb-3" onClick={onAddProduct}>
                   <CIcon name={'cilArrowCircleRight'} className="mr-2" />
                   Thêm sản phẩm
                 </CButton>
