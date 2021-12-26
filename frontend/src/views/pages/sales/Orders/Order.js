@@ -554,7 +554,7 @@ const Order = props => {
       case OrderStatus.CANCEL:
         return (
           <CRow>
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders' && !rol.isSelf).length > 0) && (
+            {(item.createdBy === account.login || isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders')) && (
               <CButton
                 onClick={event => {
                   event.stopPropagation();

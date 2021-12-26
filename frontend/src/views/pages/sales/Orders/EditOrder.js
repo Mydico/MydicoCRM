@@ -68,6 +68,7 @@ const EditOrder = props => {
   const { initialState } = useSelector(state => state.order);
   const { initialState: promotionState } = useSelector(state => state.promotion);
   const { account } = useSelector(userSafeSelector);
+  const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
 
   const initialValues = {
     customer: null,
@@ -655,7 +656,7 @@ const EditOrder = props => {
                                       )
                                     : productList[index].priceReal
                                 }
-                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
+                                render={(ref, props) => <CInput disabled={isEmployee} innerRef={ref} {...props} />}
                               />
                             }
                           </Td>

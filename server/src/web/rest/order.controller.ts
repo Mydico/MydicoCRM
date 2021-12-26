@@ -239,7 +239,11 @@ export class OrderController {
     const isAdmin = currentUser.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
     if ((currentUser.branch && currentUser.branch.allow) || isAdmin || currentUser.login === order.createdBy) {
       const currentOrder = await this.orderService.findById(order.id);
-      if (currentOrder.status === OrderStatus.WAITING || currentOrder.status === OrderStatus.APPROVED || currentOrder.status === OrderStatus.CANCEL) {
+      if (
+        currentOrder.status === OrderStatus.WAITING ||
+        currentOrder.status === OrderStatus.APPROVED ||
+        currentOrder.status === OrderStatus.CANCEL
+      ) {
         return res.send(await this.orderService.update(order));
       } else {
         throw new HttpException('Không thể chỉnh sửa đơn hàng đã lên vận đơn.', HttpStatus.UNPROCESSABLE_ENTITY);
@@ -260,8 +264,16 @@ export class OrderController {
     HeaderUtil.addEntityUpdatedHeaders(res, 'Order', order.id);
     const currentUser = req.user as User;
     order.lastModifiedBy = currentUser.login;
+    const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
+    if (isEmployee && order.status === OrderStatus.APPROVED) {
+      throw new HttpException('Không thể chỉnh sửa đơn hàng đã duyệt', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
     const currentOrder = await this.orderService.findById(order.id);
-    if (currentOrder.status === OrderStatus.WAITING || currentOrder.status === OrderStatus.APPROVED || currentOrder.status === OrderStatus.CANCEL) {
+    if (
+      currentOrder.status === OrderStatus.WAITING ||
+      currentOrder.status === OrderStatus.APPROVED ||
+      currentOrder.status === OrderStatus.CANCEL
+    ) {
       return res.send(await this.orderService.update(order));
     } else {
       throw new HttpException('Không thể chỉnh sửa đơn hàng đã lên vận đơn.', HttpStatus.UNPROCESSABLE_ENTITY);

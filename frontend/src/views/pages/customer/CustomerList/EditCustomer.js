@@ -22,8 +22,7 @@ import Select from 'react-select';
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedCustomerSelectors } from '../customer.reducer';
 import { getChildTreeDepartment, getDepartment } from '../../user/UserDepartment/department.api';
-import { globalizedDepartmentSelectors } from '../../user/UserDepartment/department.reducer';
-import { getCodeByCustomer, validate } from '../../../../shared/utils/normalize';
+import { validate } from '../../../../shared/utils/normalize';
 import cities from '../../../../shared/utils/city';
 import district from '../../../../shared/utils/district.json';
 import { userSafeSelector } from '../../login/authenticate.reducer';
@@ -122,11 +121,6 @@ const EditCustomer = props => {
     }
   }, [initialState.updatingSuccess]);
 
-  const renderCustomerCode = () => {
-    const codeName = getCodeByCustomer(ref.current.values.name);
-    const code = `${ref.current.values.department?.code || ''}_${ref.current.values.type?.code || ''}_${codeName}`;
-    ref.current.setFieldValue('code', `${code}`);
-  };
 
   return (
     <CCard>
@@ -180,7 +174,6 @@ const EditCustomer = props => {
                       required
                       onChange={async e => {
                         await handleChange(e);
-                        // renderCustomerCode();
                       }}
                       onBlur={handleBlur}
                       value={values.name}

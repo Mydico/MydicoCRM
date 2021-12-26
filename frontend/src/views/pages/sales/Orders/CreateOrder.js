@@ -95,7 +95,7 @@ const CreateOrder = props => {
   const warehouses = useSelector(selectAllWarehouse);
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
   const isMobile = useMediaQuery({ maxWidth: '40em' });
-
+  const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
   const [initFormState, setInitFormState] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
@@ -696,7 +696,7 @@ const CreateOrder = props => {
                                     ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceReal)
                                     : item.priceReal
                                 }
-                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
+                                render={(ref, props) => <CInput disabled={isEmployee} innerRef={ref} {...props} />}
                               />
                             }
                           </td>
