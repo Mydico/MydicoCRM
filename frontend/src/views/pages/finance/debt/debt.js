@@ -119,8 +119,8 @@ const Debt = props => {
   };
 
   useEffect(() => {
-    let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.debt};
-    paramsLocal = { ...paramsLocal, ...paramRef.current,page: activePage - 1  };
+    let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.debt };
+    paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1, size };
     if (date.endDate && date.startDate) {
       paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }

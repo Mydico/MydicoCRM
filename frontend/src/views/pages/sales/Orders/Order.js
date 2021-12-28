@@ -242,6 +242,7 @@ const Order = props => {
           endDate: date.endDate?.format('YYYY-MM-DD')
         })
       );
+      saveParams()
     } else {
       clearSearchParams();
     }
@@ -503,7 +504,7 @@ const Order = props => {
                 TẠO VẬN ĐƠN
               </CButton>
             )}
-            {(isAdmin || account.branch?.allow) && (
+            {(isAdmin || account.branch?.allow ) && (
               <CButton
                 onClick={event => {
                   event.stopPropagation();

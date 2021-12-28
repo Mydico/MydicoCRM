@@ -66,19 +66,31 @@ export class ReceiptService {
     } else {
       andQueryString += ` ${andQueryString.length === 0? "":" AND "}  AND Receipt.branch is NULL `;
     }
+    if (filter['sale']){
+      queryString += `sale.code like '%${filter['sale']}%'`;
+    }
     delete filter['startDate']
     delete filter['endDate']
-    Object.keys(filter).forEach((item, index) => {
-      queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
-    });
+    delete filter['sale']
+    // Object.keys(filter).forEach((item, index) => {
+    //   queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+    // });
+    // console.log(andQueryString)
+    // console.log(queryString)
     const count = this.receiptRepository
     .createQueryBuilder('Receipt')
     .select('sum(Receipt.money)','money')
+    .leftJoin('Receipt.sale','sale')
     .where(andQueryString)
     if (queryString) {
       count.andWhere(
         new Brackets(sqb => {
           sqb.where(queryString);
+
+          Object.keys(filter).forEach((item, index) => {
+            sqb.andWhere(`Receipt.${item} like '%${filter[item]}%'`);
+            // queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+          });
         })
       );
     }
