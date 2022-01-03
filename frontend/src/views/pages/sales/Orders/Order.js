@@ -199,6 +199,18 @@ const Order = props => {
   }, []);
 
   useEffect(() => {
+    const orderParams = {
+      page: activePage - 1,
+      size,
+      sort: 'createdDate,DESC',
+      ...paramRef.current,
+      startDate: date.startDate?.format('YYYY-MM-DD'),
+      endDate: date.endDate?.format('YYYY-MM-DD')
+    };
+    localStorage.setItem('orderParams', JSON.stringify(orderParams));
+  }, [orders]);
+
+  useEffect(() => {
     if (activePage > 0) {
       let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.order, customerId: props.customerId };
       paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1 };
@@ -227,11 +239,10 @@ const Order = props => {
     history.push(`${props.match.url}/new`);
   };
 
-  const debouncedSearchColumn = _.debounce(value => {
+  const debouncedSearchColumn = _.debounce(async value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
-
-      dispatch(
+      await dispatch(
         getOrder({
           page: 0,
           size: size,
@@ -242,7 +253,6 @@ const Order = props => {
           endDate: date.endDate?.format('YYYY-MM-DD')
         })
       );
-      saveParams()
     } else {
       clearSearchParams();
     }
@@ -278,6 +288,7 @@ const Order = props => {
         order: orderParams
       })
     );
+
     // localStorage.setItem('params', JSON.stringify(params));
   };
 
@@ -504,7 +515,7 @@ const Order = props => {
                 TẠO VẬN ĐƠN
               </CButton>
             )}
-            {(isAdmin || account.branch?.allow ) && (
+            {(isAdmin || account.branch?.allow) && (
               <CButton
                 onClick={event => {
                   event.stopPropagation();
@@ -555,7 +566,9 @@ const Order = props => {
       case OrderStatus.CANCEL:
         return (
           <CRow>
-            {(item.createdBy === account.login || isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders')) && (
+            {(item.createdBy === account.login ||
+              isAdmin ||
+              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders')) && (
               <CButton
                 onClick={event => {
                   event.stopPropagation();
@@ -741,7 +754,7 @@ const Order = props => {
             ),
             code: item => (
               <Td>
-                <CLink to={`/orders/${item.id}/detail`} >{item.code}</CLink>
+                <CLink to={`/orders/${item.id}/detail`}>{item.code}</CLink>
               </Td>
             ),
             show_details: item => {

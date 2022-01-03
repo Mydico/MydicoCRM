@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CCardBody, CButton, CDataTable, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
+import { CCardBody, CButton,  CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -134,10 +134,10 @@ const Debt = props => {
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getCustomerDebtsTotalDebit({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date })).then(resp => {
+      dispatch(getCustomerDebtsTotalDebit({ page: 0, sort: 'createdDate,DESC', ...value, ...date, size: size })).then(resp => {
         setTotal(Number(resp.payload.data.sum));
       });
-      dispatch(getCustomerDebts({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date }));
+      dispatch(getCustomerDebts({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date, size: size }));
     }
   }, 300);
 
@@ -149,9 +149,6 @@ const Debt = props => {
     history.push({ pathname: `${props.match.url}/${item.customerId}/detail` });
   };
 
-  const toCreate = item => {
-    history.push({ pathname: `${props.match.url}/new` });
-  };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(debts), [debts]);

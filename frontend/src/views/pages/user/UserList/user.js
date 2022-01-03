@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +22,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import { CSVLink } from 'react-csv';
 import Download from '../../../components/excel/DownloadExcel.js';
 import ReportDate from '../../../components/report-date/ReportDate.js';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 
 moment.locale('vi'); // Polish
 
@@ -348,7 +349,7 @@ const User = props => {
           </CFormGroup>
         </CFormGroup> */}
 
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter

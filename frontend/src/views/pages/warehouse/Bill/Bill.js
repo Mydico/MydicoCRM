@@ -4,7 +4,6 @@ import {
   CBadge,
   CButton,
   CCollapse,
-  CDataTable,
   CCard,
   CCardHeader,
   CRow,
@@ -36,6 +35,7 @@ import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 import { DateRangePicker } from 'react-dates';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
@@ -616,7 +616,7 @@ const Bill = props => {
             </CCol>
           </CFormGroup>
         </CFormGroup> */}
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter

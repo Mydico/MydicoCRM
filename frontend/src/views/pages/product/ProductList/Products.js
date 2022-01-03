@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +11,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import Select from 'react-select';
 import Download from '../../../components/excel/DownloadExcel.js';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -197,7 +198,7 @@ const Product = props => {
       {/* <CSVLink headers={excelFields} data={memoExcelListed} filename={'product.csv'} className="btn">
           Tải excel (.csv) ⬇
         </CSVLink> */}
-        <CDataTable
+        <AdvancedTable
           responsive={true}
           items={memoListed}
           fields={fields}

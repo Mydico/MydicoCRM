@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import Select from 'react-select';
 import { computedExcelItemsWarehouse, fieldsExcelWarehouse } from '../Import/warehouse-import.js';
 import Download from '../../../components/excel/DownloadExcel';
 import ReportDate from '../../../components/report-date/ReportDate';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -345,7 +346,7 @@ const WarehouseReturn = props => {
             </CCol>
           </CFormGroup>
         </CFormGroup> */}
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter

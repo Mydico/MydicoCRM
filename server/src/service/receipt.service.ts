@@ -41,59 +41,59 @@ export class ReceiptService {
     return await this.receiptRepository.findOne(options);
   }
 
-  async countReceipt(
-    filter,
-    departmentVisible = [],
-    isEmployee: boolean,
-    currentUser: User): Promise<Receipt> {
-    let queryString = '';
+  async countReceipt(filter, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Receipt> {
     let andQueryString = '';
+    console.log(filter)
     if (departmentVisible.length > 0) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.department IN ${JSON.stringify(departmentVisible)
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Receipt.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.createdDate  >= '${filter['startDate']}' AND Receipt.createdDate <= '${filter['endDate']} 23:59:59'`;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Receipt.createdDate  >= '${
+        filter['startDate']
+      }' AND Receipt.createdDate <= '${filter['endDate']} 23:59:59'`;
     }
     if (isEmployee) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.sale = ${currentUser.id}`;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Receipt.sale = ${currentUser.id}`;
     }
     if (currentUser.branch) {
       if (!currentUser.branch.seeAll) {
-        andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.branch = ${currentUser.branch.id}`;
+        andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Receipt.branch = ${currentUser.branch.id}`;
       }
     } else {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  AND Receipt.branch is NULL `;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  AND Receipt.branch is NULL `;
     }
-    if (filter['sale']){
-      queryString += `sale.code like '%${filter['sale']}%'`;
-    }
-    delete filter['startDate']
-    delete filter['endDate']
-    delete filter['sale']
+    // if (filter['sale']) {
+    //   queryString += `sale.code like '%${filter['sale']}%'`;
+    // }
+    delete filter['startDate'];
+    delete filter['endDate'];
+    // delete filter['sale'];
     // Object.keys(filter).forEach((item, index) => {
     //   queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
     // });
     // console.log(andQueryString)
     // console.log(queryString)
     const count = this.receiptRepository
-    .createQueryBuilder('Receipt')
-    .select('sum(Receipt.money)','money')
-    .leftJoin('Receipt.sale','sale')
-    .where(andQueryString)
-    if (queryString) {
+      .createQueryBuilder('Receipt')
+      .select('sum(Receipt.money)', 'money')
+      .leftJoin('Receipt.sale', 'sale')
+      .where(andQueryString);
+    if (Object.keys(filter).length > 0) {
       count.andWhere(
         new Brackets(sqb => {
-          sqb.where(queryString);
-
           Object.keys(filter).forEach((item, index) => {
-            sqb.andWhere(`Receipt.${item} like '%${filter[item]}%'`);
-            // queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+            if (item === 'sale') {
+              sqb.andWhere(`sale.code like '%${filter[item]}%'`);
+            } else {
+              sqb.andWhere(`Receipt.${item} like '%${filter[item]}%'`);
+            }
           });
         })
       );
     }
+
     const result = await count.getRawOne();
     return result;
   }
@@ -105,33 +105,33 @@ export class ReceiptService {
     isEmployee: boolean,
     currentUser: User
   ): Promise<[Receipt[], number]> {
-    let queryString = '';
-
     let andQueryString = '';
 
     if (departmentVisible.length > 0) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.department IN ${JSON.stringify(departmentVisible)
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Receipt.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.createdDate  >= '${filter['startDate']}' AND Receipt.createdDate <= '${filter['endDate']} 23:59:59'`;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Receipt.createdDate  >= '${
+        filter['startDate']
+      }' AND Receipt.createdDate <= '${filter['endDate']} 23:59:59'`;
     }
     if (isEmployee) {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.sale = ${currentUser.id}`;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Receipt.sale = ${currentUser.id}`;
     }
     if (currentUser.branch) {
       if (!currentUser.branch.seeAll) {
-        andQueryString += ` ${andQueryString.length === 0? "":" AND "}  Receipt.branch = ${currentUser.branch.id}`;
+        andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Receipt.branch = ${currentUser.branch.id}`;
       }
     } else {
-      andQueryString += ` ${andQueryString.length === 0? "":" AND "}  AND Receipt.branch is NULL `;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  AND Receipt.branch is NULL `;
     }
-    delete filter['startDate']
-    delete filter['endDate']
-    Object.keys(filter).forEach((item, index) => {
-      queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
-    });
+    delete filter['startDate'];
+    delete filter['endDate'];
+    // Object.keys(filter).forEach((item, index) => {
+    //   queryString += `Receipt.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+    // });
     const queryBuilder = this.receiptRepository
       .createQueryBuilder('Receipt')
       .leftJoinAndSelect('Receipt.customer', 'customer')
@@ -141,10 +141,16 @@ export class ReceiptService {
       .orderBy(`Receipt.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);
-    if (queryString) {
+    if (Object.keys(filter).length > 0) {
       queryBuilder.andWhere(
         new Brackets(sqb => {
-          sqb.where(queryString);
+          Object.keys(filter).forEach((item, index) => {
+            if (item === 'sale') {
+              sqb.andWhere(`sale.code like '%${filter[item]}%'`);
+            } else {
+              sqb.andWhere(`Receipt.${item} like '%${filter[item]}%'`);
+            }
+          });
         })
       );
     }
@@ -183,7 +189,7 @@ export class ReceiptService {
       transaction.customerName = entity.customer.name;
       transaction.sale = entity.sale;
       transaction.saleName = entity.sale.code;
-      transaction.branch= entity.sale.branch;
+      transaction.branch = entity.sale.branch;
       transaction.department = entity.department;
       transaction.receipt = entity;
       transaction.collectMoney = entity.money;

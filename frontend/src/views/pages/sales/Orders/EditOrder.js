@@ -611,7 +611,7 @@ const EditOrder = props => {
                   <Tbody>
                     {productList.map((item, index) => {
                       return (
-                        <Tr key={index} style={checkProductIsNotEnough(item, productList)}>
+                        <Tr key={index} style={checkProductIsNotEnough(item, productList) ? { boxShadow: '0px 0px 6px 5px red' } : {}}>
                           <Td style={{ minWidth: 500 }}>
                             <Select
                               value={{

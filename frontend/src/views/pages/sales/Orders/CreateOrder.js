@@ -66,11 +66,7 @@ export const checkProductIsNotEnough = (item, productList) => {
     }
     return Number(prev);
   }, 0);
-  return item.quantityInStore !== undefined && Number(currentQuantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore
-    ? {
-        boxShadow: '0px 0px 6px 5px red'
-      }
-    : {};
+  return item.quantityInStore !== undefined && Number(currentQuantity) + (Number(item.quantityAndGift) || 0) > item.quantityInStore;
 };
 
 const CreateOrder = props => {
@@ -188,13 +184,18 @@ const CreateOrder = props => {
   };
 
   const onSubmit = (values, {}) => {
-    let isValidProduct = true;
+    let haveInValidProduct = null;
     productList.forEach(element => {
-      if (element.quantity > element.quantityInStore) {
-        isValidProduct = false;
+      if (checkProductIsNotEnough(element, productList)) {
+        haveInValidProduct = element;
         return;
       }
     });
+    if (haveInValidProduct) {
+      alert(`${haveInValidProduct.product.name} đã hết trong kho. Vui lòng điều chỉnh `);
+      return
+    }
+
     if (selectedPromotion && selectedPromotion.type === 'LONGTERM' && !selectedPromotionItem) {
       alert('Bạn phải chọn doanh số');
       return;
@@ -207,7 +208,6 @@ const CreateOrder = props => {
       alert('Không để sản phẩm có số lượng bằng 0 khi tạo đơn hàng');
       return;
     }
-    if (!isValidProduct) return;
     if (!values.address) values.address = selectedCustomer.address;
     values.customer = selectedCustomer;
     values.store = selectedWarehouse;
@@ -654,7 +654,7 @@ const CreateOrder = props => {
                   <Tbody>
                     {productList.map((item, index) => {
                       return (
-                        <tr key={index} style={checkProductIsNotEnough(item, productList)}>
+                        <tr key={index} style={checkProductIsNotEnough(item, productList) ? { boxShadow: '0px 0px 6px 5px red' } : {}}>
                           <td className="text-info" style={{ maxWidth: 200 }}>
                             {`${item.product.productBrand?.code || ''}-${item.product.name || ''}-${item.product.volume || ''}`}
                             {/* <Select

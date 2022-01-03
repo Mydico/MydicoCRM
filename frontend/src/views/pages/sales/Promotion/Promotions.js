@@ -4,7 +4,7 @@ import {
   CBadge,
   CButton,
   CCollapse,
-  CDataTable,
+  
   CCard,
   CCardHeader,
   CRow,
@@ -26,6 +26,7 @@ import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import moment from 'moment';
 import { Td, Table, Thead, Th, Tr, Tbody } from 'react-super-responsive-table';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 
 const { selectAll } = globalizedPromotionSelectors;
 
@@ -186,7 +187,7 @@ const Promotion = props => {
         )}
       </CCardHeader>
       <CCardBody>
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter

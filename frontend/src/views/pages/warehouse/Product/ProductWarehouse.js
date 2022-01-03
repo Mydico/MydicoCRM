@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 import _ from 'lodash';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import Download from '../../../components/excel/DownloadExcel';
 import { CCardTitle, CLabel } from '@coreui/react';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -128,7 +129,7 @@ const ProductWarehouse = props => {
           <CLabel>Tổng sản phẩm:</CLabel>
           <strong>{`\u00a0\u00a0${total}`}</strong>
         </CRow>
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter

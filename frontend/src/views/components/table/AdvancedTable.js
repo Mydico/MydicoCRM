@@ -232,8 +232,9 @@ export const AdvancedTable = props => {
     if (columnFilter && columnFilter.external) {
       return items;
     }
+
     Object.entries(columnFilterState).forEach(([key, value]) => {
-      const columnFilter = String(value).toLowerCase();
+      const columnFilter = String(value || '').toLowerCase();
       if (columnFilter && itemsDataColumns.includes(key)) {
         items = items.filter(item => {
           return String(item[key].toLowerCase()).includes(columnFilter.toLowerCase());
@@ -270,15 +271,10 @@ export const AdvancedTable = props => {
       const value = item[col];
       const value2 = item2[col];
       let a = String(value).toLowerCase();
-      let b =  String(value2).toLowerCase();
-      console.log(a,b)
-      a = !isNaN(a.replace(/[^0-9\.-]+/g, ''))
-        ? Number(a.replace(/[^0-9\.-]+/g, ''))
-        : a;
-      b = !isNaN(b.replace(/[^0-9\.-]+/g, ''))
-        ? Number(b.replace(/[^0-9\.-]+/g, ''))
-        : b;
- 
+      let b = String(value2).toLowerCase();
+      a = !isNaN(a.replace(/[^0-9\.-]+/g, '')) ? Number(a.replace(/[^0-9\.-]+/g, '')) : a;
+      b = !isNaN(b.replace(/[^0-9\.-]+/g, '')) ? Number(b.replace(/[^0-9\.-]+/g, '')) : b;
+
       return a > b ? 1 * flip : b > a ? -1 * flip : 0;
     });
     return sorted;
@@ -548,7 +544,7 @@ export const AdvancedTable = props => {
                         (scopedSlots[colName] &&
                           React.cloneElement(scopedSlots[colName](item, itemIndex + firstItemIndex), { key: index })) || (
                           <Td className={classNames(cellClass(item, colName, index))} key={index}>
-                            {String(item[colName])}
+                            {String(item[colName] || '')}
                           </Td>
                         )
                       );

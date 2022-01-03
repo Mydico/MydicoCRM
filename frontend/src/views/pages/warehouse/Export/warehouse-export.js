@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,6 +17,7 @@ import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 import Download from '../../../components/excel/DownloadExcel';
 import { computedExcelItemsWarehouse, fieldsExcelWarehouse } from '../Import/warehouse-import.js';
 import ReportDate from '../../../components/report-date/ReportDate.js';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -334,7 +335,7 @@ const WarehouseImport = props => {
             </CCol>
           </CFormGroup>
         </CFormGroup> */}
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter
@@ -403,7 +404,7 @@ const WarehouseImport = props => {
                 <CCollapse show={details.includes(item.id)}>
                   <CCardBody>
                     <h5>Thông tin đơn nhập</h5>
-                    <CDataTable
+                    <AdvancedTable
                       items={item.storeInputDetails.map(item => {
                         return {
                           code: item.product?.code || '',

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
+import AdvancedTable from '../../../components/table/AdvancedTable';
 
 import moment from 'moment';
 const mappingStatus = {
@@ -131,7 +132,7 @@ const Warehouse = props => {
       </CCardHeader>
       <CCardBody>
 
-        <CDataTable
+        <AdvancedTable
           items={computedItems(warehouses)}
           fields={fields}
           columnFilter

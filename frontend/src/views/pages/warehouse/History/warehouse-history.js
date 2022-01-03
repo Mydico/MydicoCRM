@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CCard, CCardHeader, CPagination, CCol, CDataTable, CFormGroup, CInput, CLabel } from '@coreui/react/lib';
+import { CCardBody, CBadge, CCard, CCardHeader, CPagination, CFormGroup, CInput, CLabel } from '@coreui/react/lib';
 import _ from 'lodash';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +12,7 @@ import { CLink } from '@coreui/react';
 import { useHistory } from 'react-router';
 import ReportDate from '../../../components/report-date/ReportDate';
 import { setParams } from '../../../../App.reducer.js';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 
 const mappingStatus = {
   EXPORT: 'XUẤT KHO',
@@ -116,6 +117,7 @@ const StoreHistory = props => {
       };
     });
   };
+
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(storeHistorys), [storeHistorys]);
@@ -235,7 +237,7 @@ const StoreHistory = props => {
             </CCol>
           </CFormGroup>
         </CFormGroup> */}
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter

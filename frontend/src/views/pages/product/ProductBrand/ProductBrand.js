@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProductBrand } from './product-brand.api';
@@ -7,6 +7,7 @@ import { globalizedproductBrandsSelectors, reset } from './product-brand.reducer
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash'
+import AdvancedTable from '../../../components/table/AdvancedTable';
 const { selectAll } = globalizedproductBrandsSelectors;
 
 const ProductBrand = props => {
@@ -106,7 +107,7 @@ const ProductBrand = props => {
       </CCardHeader>
       <CCardBody>
 
-        <CDataTable
+        <AdvancedTable
           items={productBrandss}
           fields={fields}
           columnFilter

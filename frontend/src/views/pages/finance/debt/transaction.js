@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CBadge, CCard, CCardHeader, CCardBody, CCol, CDataTable, CRow, CPagination, CCardTitle, CLink } from '@coreui/react/lib';
+import { CBadge, CCard, CCardHeader, CCardBody, CCol,  CRow, CPagination, CCardTitle, CLink } from '@coreui/react/lib';
 
 import { useDispatch, useSelector } from 'react-redux';
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CPagination } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 // import { getCustomerStatus } from '../customer.api.js';
@@ -7,6 +7,8 @@ import { useHistory } from 'react-router-dom';
 import { getCustomerStatus } from './customer-status.api.js';
 import { globalizedcustomerStatuselectors, reset } from './customer-status.reducer.js';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
+
 const { selectAll } = globalizedcustomerStatuselectors;
 
 const CustomerStatus = props => {
@@ -101,7 +103,7 @@ const CustomerStatus = props => {
       </CCardHeader>
       <CCardBody>
 
-        <CDataTable
+        <AdvancedTable
           items={customerStatuses}
           fields={fields}
           columnFilter

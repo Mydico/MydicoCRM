@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UserRolesData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import moment from 'moment';
 import _ from 'lodash';
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -111,7 +112,7 @@ const UserRole = props => {
       </CCardHeader>
       <CCardBody>
 
-        <CDataTable
+        <AdvancedTable
           items={computedItems(users)}
           fields={fields}
           columnFilter

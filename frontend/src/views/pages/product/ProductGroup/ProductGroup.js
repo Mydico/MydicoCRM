@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProductGroup } from './product-group.api';
@@ -8,6 +8,8 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash'
+import AdvancedTable from '../../../components/table/AdvancedTable';
+
 const { selectAll } = globalizedproductGroupsSelectors;
 
 const ProductGroup = props => {
@@ -119,7 +121,7 @@ const ProductGroup = props => {
       </CCardHeader>
       <CCardBody>
 
-        <CDataTable
+        <AdvancedTable
           items={computedItems(productGroups)}
           fields={fields}
           columnFilter

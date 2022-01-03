@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse, CDataTable, CCard, CCardHeader, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CPagination } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerType } from './customer-type.api';
 import { globalizedcustomerTypeSelectors, reset } from './customer-type.reducer';
 import { useHistory } from 'react-router-dom';
 import { userSafeSelector } from '../../login/authenticate.reducer';
+import AdvancedTable from '../../../components/table/AdvancedTable';
 const { selectAll } = globalizedcustomerTypeSelectors;
 
 const CustomerType = props => {
@@ -102,7 +103,7 @@ const CustomerType = props => {
       </CCardHeader>
       <CCardBody>
 
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter

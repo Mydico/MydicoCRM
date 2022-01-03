@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CDataTable, CPagination, CRow, CCol } from '@coreui/react/lib';
+import { CButton, CCard, CCardBody, CCardHeader, CCollapse,  CPagination, CRow, CCol } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBranch } from './branch.api.js';
@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash'
+import AdvancedTable from '../../../components/table/AdvancedTable.js';
 const StyledNode = styled.div`
   padding: 5px;
   border-radius: 8px;
@@ -142,7 +143,7 @@ const Branch = props => {
       </CCardHeader>
       <CCardBody>
 
-        <CDataTable
+        <AdvancedTable
           items={memoListed}
           fields={fields}
           columnFilter

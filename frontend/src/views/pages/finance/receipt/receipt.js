@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { CCardBody, CBadge, CButton, CDataTable, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton,  CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -117,7 +117,7 @@ const Receipt = props => {
   const { initialState } = useSelector(state => state.receipt);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const paramRef = useRef({customer: props.customerId});
+  const paramRef = useRef({ customer: props.customerId });
   const dispatch = useDispatch();
   const history = useHistory();
   const [total, setTotal] = useState(0);
@@ -128,20 +128,19 @@ const Receipt = props => {
     if (date.endDate && date.startDate) {
       params = { ...params, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }
-      dispatch(getReceipt(params));
-      dispatch(
-        getCountReceipt({
-          ...paramRef.current,
-          startDate: date.startDate?.format('YYYY-MM-DD'),
-          endDate: date.endDate?.format('YYYY-MM-DD'),
-          dependency: true
-        })
-      ).then(resp => {
-        setTotal(Number(resp.payload.data.money));
-      });
-      window.scrollTo(0, 100);
-
-  }, [date,activePage, size]);
+    dispatch(getReceipt(params));
+    dispatch(
+      getCountReceipt({
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD'),
+        dependency: true
+      })
+    ).then(resp => {
+      setTotal(Number(resp.payload.data.money));
+    });
+    window.scrollTo(0, 100);
+  }, [date, activePage, size]);
   useEffect(() => {
     dispatch(reset());
     localStorage.removeItem('params');
@@ -173,7 +172,16 @@ const Receipt = props => {
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getReceipt());
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD'),
+        dependency: true
+      };
+      dispatch(getReceipt(params));
       dispatch(
         getCountReceipt({
           ...value,
