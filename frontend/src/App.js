@@ -50,10 +50,10 @@ export const App = () => {
       if (account != null) {
         if (res.departmentVisible.includes(account.department.id)) {
           if (account.role.filter(rol => rol.method === 'GET' && rol.entity === '/api/orders').length > 0) {
-            let paramOrder = '{"page":0,"size":50,"sort":"createdDate,DESC"}'
-            paramOrder = localStorage.getItem('orderParams');
-            if (!paramOrder) {
-              paramOrder = JSON.parse(paramOrder);
+            let paramOrder = {}
+            const localParams = localStorage.getItem('orderParams');
+            if (localParams) {
+              paramOrder = JSON.parse(localParams);
             }
 
             const paramsLocal = { page: 0, size: 50, sort: 'createdDate,DESC', ...paramOrder };
