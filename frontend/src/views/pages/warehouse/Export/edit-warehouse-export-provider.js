@@ -44,6 +44,7 @@ const validationSchema = function() {
 import { validate } from '../../../../shared/utils/normalize';
 import { globalizedProviderSelectors } from '../Provider/provider.reducer';
 import { getProvider } from '../Provider/provider.api';
+import { getProductInstore } from '../Product/product-warehouse.api';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -98,7 +99,7 @@ const EditWarehouseExportProvider = props => {
   }, [warehouseImport]);
 
   const onSubmit = (values, { resetForm }) => () => {
-    console.log(ref.current.values)
+    console.log(ref.current.values);
     values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT_TO_PROVIDER;
@@ -110,8 +111,11 @@ const EditWarehouseExportProvider = props => {
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = JSON.parse(JSON.stringify(productList));
     copyArr[index].quantity = target.value;
-    setProductList(copyArr);
-    productList.reduce((sum, current) => sum + current.price * current.quantity, 0)
+    productList.reduce((sum, current) => sum + current.price * current.quantity, 0);
+    if (selectedWarehouse && copyArr[index].product) {
+      setProductList(copyArr);
+      onSearchProductInstore(copyArr, index);
+    }
   };
 
   const onRemoveProduct = index => {
@@ -146,16 +150,23 @@ const EditWarehouseExportProvider = props => {
     setProductList(copyArr);
   };
 
-  // const onSelectedProduct = ({ value }, index) => {
-  //   const arr = productList.filter(item => item.product.id === value.id);
-  //   if (arr.length === 0) {
-  //     const copyArr = [...productList];
-  //     copyArr[index].product = value;
-  //     copyArr[index].price = Number(value.price);
-  //     copyArr[index].quantity = 1;
-  //     setProductList(copyArr);
-  //   }
-  // };
+  const debouncedSearchProductInStore = _.debounce((copyArr, index) => {
+    dispatch(
+      getProductInstore({
+        storeId: selectedWarehouse.id,
+        productId: copyArr[index].product.id
+      })
+    ).then(numberOfQuantityInStore => {
+      if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+        copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
+        setProductList(copyArr);
+      }
+    });
+  }, 300);
+
+  const onSearchProductInstore = (copyArr, index) => {
+    debouncedSearchProductInStore(copyArr, index);
+  };
 
   const onAddProduct = () => {
     const data = { product: {}, quantity: 1 };
@@ -319,7 +330,16 @@ const EditWarehouseExportProvider = props => {
                   <tbody>
                     {productList.map((item, index) => {
                       return (
-                        <tr key={index}>
+                        <tr
+                          key={index}
+                          style={
+                            item.quantityInStore !== undefined && Number(item.quantity) > item.quantityInStore
+                              ? {
+                                  boxShadow: '0px 0px 6px 5px red'
+                                }
+                              : {}
+                          }
+                        >
                           <td style={{ minWidth: 500 }}>
                             <Select
                               value={{
@@ -352,6 +372,9 @@ const EditWarehouseExportProvider = props => {
                                 onBlur={handleBlur}
                                 value={item.quantity}
                               />
+                            )}
+                            {item.quantity > item.quantityInStore && (
+                              <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
                             )}
                           </td>
                           <td>

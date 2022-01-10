@@ -42,6 +42,7 @@ const validationSchema = function() {
 
 import { validate } from '../../../../shared/utils/normalize';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
+import { getProductInstore } from '../Product/product-warehouse.api';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -102,7 +103,10 @@ const EditWarehouseExport = props => {
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
     copyArr[index].quantity = target.value;
-    setProductList(copyArr);
+    if (selectedWarehouse && copyArr[index].product) {
+      setProductList(copyArr);
+      onSearchProductInstore(copyArr, index);
+    }
   };
 
   const onRemoveProduct = index => {
@@ -171,6 +175,24 @@ const EditWarehouseExport = props => {
       ],
       closeOnEscape: true
     });
+  };
+
+  const debouncedSearchProductInStore = _.debounce((copyArr, index) => {
+    dispatch(
+      getProductInstore({
+        storeId: selectedWarehouse.id,
+        productId: copyArr[index].product.id
+      })
+    ).then(numberOfQuantityInStore => {
+      if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+        copyArr[index].quantityInStore = numberOfQuantityInStore?.payload[0]?.quantity || 0;
+        setProductList(copyArr);
+      }
+    });
+  }, 300);
+
+  const onSearchProductInstore = (copyArr, index) => {
+    debouncedSearchProductInStore(copyArr, index);
   };
 
   return (
@@ -300,7 +322,16 @@ const EditWarehouseExport = props => {
                     <tbody>
                       {productList?.map((item, index) => {
                         return (
-                          <tr key={index}>
+                          <tr
+                            key={index}
+                            style={
+                              item.quantityInStore !== undefined && Number(item.quantity) > item.quantityInStore
+                                ? {
+                                    boxShadow: '0px 0px 6px 5px red'
+                                  }
+                                : {}
+                            }
+                          >
                             <td style={{ minWidth: 500 }}>
                               <Select
                                 value={{
@@ -343,6 +374,9 @@ const EditWarehouseExport = props => {
                                   onBlur={handleBlur}
                                   value={item.quantity}
                                 />
+                              )}
+                              {item.quantity > item.quantityInStore && (
+                                <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
                               )}
                             </td>
 

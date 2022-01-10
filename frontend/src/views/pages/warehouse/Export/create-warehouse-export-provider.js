@@ -110,11 +110,17 @@ const CreateWarehouseExportProvider = () => {
   };
 
   const onChangeQuantity = ({ target }, index) => {
+    // const copyArr = [...productList];
+    // copyArr[index].quantity = target.value;
+    // setProductList(copyArr);
+    // onSearchProductInstore(copyArr, index);
+    const quantity = target.value;
     const copyArr = [...productList];
-    copyArr[index].quantity = target.value;
-    setProductList(copyArr);
-    onSearchProductInstore(copyArr, index);
-
+    copyArr[index].quantity = Number(quantity).toString();
+    if (selectedWarehouse && copyArr[index].product) {
+      setProductList(copyArr);
+      onSearchProductInstore(copyArr, index);
+    }
   };
   useEffect(() => {
     if (formikRef.current) {

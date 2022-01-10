@@ -204,7 +204,8 @@ const CreateOrder = props => {
       alert('Không để tổng số lượng bằng 0');
       return;
     }
-    if (productList.filter(item => item.quantity === 0).length > 0) {
+    console.log(productList)
+    if (productList.filter(item => Number(item.quantity) === 0).length > 0) {
       alert('Không để sản phẩm có số lượng bằng 0 khi tạo đơn hàng');
       return;
     }
@@ -430,6 +431,7 @@ const CreateOrder = props => {
                         onInputChange={onSearchCustomer}
                         onChange={item => {
                           setFieldValue('customer', item.value);
+                          setFieldValue('address', item.value.address);
                           onSelectCustomer(item.value);
                         }}
                         value={{
