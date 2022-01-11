@@ -124,6 +124,7 @@ const EditWarehouseReturn = props => {
     );
     values.reduceMoney = productList.reduce((sum, current) => sum + (current.price * current.quantity * current.reducePercent) / 100, 0);
     values.type = WarehouseImportType.RETURN;
+    values.customerName = values.customer?.name || values.customerName;
     dispatch(fetching());
     dispatch(updateWarehouseReturn(values));
   };

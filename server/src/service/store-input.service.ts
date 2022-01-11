@@ -6,19 +6,15 @@ import StoreInput from '../domain/store-input.entity';
 import { StoreInputRepository } from '../repository/store-input.repository';
 import { ProductQuantityService } from './product-quantity.service';
 import { StoreImportType } from '../domain/enumeration/store-import-type';
-import { StoreHistoryService } from './store-history.service';
 import { StoreHistoryType } from '../domain/enumeration/store-history-type';
-import { StoreInputDetailsService } from './store-input-details.service';
 import ProductQuantity from '../domain/product-quantity.entity';
 import { TransactionService } from './transaction.service';
 import Transaction from '../domain/transaction.entity';
 import { TransactionType } from '../domain/enumeration/transaction-type';
 import { OrderService } from './order.service';
-import IncomeDashboard from '../domain/income-dashboard.entity';
-import { DashboardType } from '../domain/enumeration/dashboard-type';
-import { IncomeDashboardService } from './income-dashboard.service';
 import { User } from '../domain/user.entity';
 import { generateCacheKey } from './utils/helperFunc';
+import { CustomerService } from './customer.service';
 
 const relationshipNames = [];
 relationshipNames.push('approver');
@@ -46,6 +42,7 @@ export class StoreInputService {
         private readonly productQuantityService: ProductQuantityService,
         private readonly transactionService: TransactionService,
         private readonly orderService: OrderService,
+        private readonly customerService: CustomerService,
     ) { }
 
     async findById(id: string): Promise<StoreInput | undefined> {
@@ -260,13 +257,6 @@ export class StoreInputService {
                 await this.importStore(founded, entity);
                 if (entity.type === StoreImportType.RETURN) {
                     await this.createDebit(entity);
-                    // const incomeItem = new IncomeDashboard();
-                    // incomeItem.amount = entity.realMoney;
-                    // incomeItem.departmentId = entity.department.id;
-                    // incomeItem.branchId = entity.customer?.branch?.id;
-                    // incomeItem.type = DashboardType.RETURN;
-                    // incomeItem.saleId = entity.customer.sale.id;
-                    // await this.incomeDashboardService.save(incomeItem);
                 }
             } else {
                 await this.exportStore(founded, entity, currentUser);
