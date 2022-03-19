@@ -1,69 +1,115 @@
 import { CButton, CCardBody, CCol } from '@coreui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { DateRangePicker } from 'react-dates';
-import moment from 'moment'
+import moment from 'moment';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReportDate } from '../../../App.reducer';
+import { useMediaQuery } from 'react-responsive';
+
 const dateMode = {
   lastweek: 'lastweek',
   lastmonth: 'lastmonth',
   last3month: 'last3month'
 };
-export default function ReportDate(props) {
-  const { date, setDate, setFocused, focused } = props;
+export function ReportDate(props) {
+  const { reportDate } = useSelector(state => state.app);
+  const dispatch = useDispatch();
+  const { date, setDate, setFocused, focused, isReport, isFirstReport } = props;
+  const isMobile = useMediaQuery({ maxWidth: '40em' });
+
   const setDateMode = mode => () => {
     switch (mode) {
       case dateMode.lastweek:
-        setDate({
+        const week = {
           startDate: moment()
             .subtract(1, 'weeks')
             .startOf('week'),
           endDate: moment()
             .subtract(1, 'weeks')
             .endOf('week')
-        });
+        };
+        isReport
+          ? dispatch(
+              setReportDate({
+                startDate: week.startDate.format('YYYY-MM-DD'),
+                endDate: week.endDate.format('YYYY-MM-DD')
+              })
+            )
+          : setDate(week);
         break;
       case dateMode.last3month:
-        setDate({
+        const last3month = {
           startDate: moment()
             .subtract(3, 'months')
             .startOf('month'),
           endDate: moment()
             .subtract(1, 'months')
             .endOf('month')
-        });
+        };
+
+        isReport
+          ? dispatch(
+              setReportDate({
+                startDate: last3month.startDate.format('YYYY-MM-DD'),
+                endDate: last3month.endDate.format('YYYY-MM-DD')
+              })
+            )
+          : setDate(last3month);
         break;
       case dateMode.lastmonth:
-        setDate({
+        const month = {
           startDate: moment()
             .subtract(1, 'months')
             .startOf('month'),
           endDate: moment()
             .subtract(1, 'months')
             .endOf('month')
-        });
+        };
+        isReport
+          ? dispatch(
+              setReportDate({
+                startDate: month.startDate.format('YYYY-MM-DD'),
+                endDate: month.endDate.format('YYYY-MM-DD')
+              })
+            )
+          : setDate(month);
         break;
       default:
         break;
     }
   };
+
+  useEffect(() => {
+    if (isFirstReport) {
+      setReportDate({
+        startDate: moment().startOf('month'),
+        endDate: moment()
+      });
+    }
+  }, [isFirstReport]);
+
   return (
     <CCardBody>
-      <CCol style={{paddingLeft: 0}}>
+      <CCol style={{ paddingLeft: 0 }}>
         <DateRangePicker
-          startDate={date.startDate}
-          minDate={moment("01-01-2020","DD-MM-YYYY")}
+          startDate={isReport ? moment(reportDate.startDate) : date.startDate}
+          minDate={moment('01-01-2020', 'DD-MM-YYYY')}
           startDateId="startDate"
-          endDate={date.endDate}
+          endDate={isReport ? moment(reportDate.endDate) : date.endDate}
           endDateId="endDate"
           minimumNights={0}
-          onDatesChange={value => setDate(value)}
+          onDatesChange={value => {
+            console.log(value)
+            isReport ? dispatch(setReportDate(value)) : setDate(value);
+          }}
           focusedInput={focused}
           isOutsideRange={() => false}
           startDatePlaceholderText="Từ ngày"
           endDatePlaceholderText="Đến ngày"
           onFocusChange={focusedInput => setFocused(focusedInput)}
-          orientation="horizontal"
+          orientation={isMobile ? 'vertical' : 'horizontal'}
           block={false}
           openDirection="down"
         />
@@ -80,3 +126,4 @@ export default function ReportDate(props) {
     </CCardBody>
   );
 }
+export default React.memo(ReportDate)

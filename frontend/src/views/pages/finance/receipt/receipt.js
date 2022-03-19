@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { CCardBody, CBadge, CButton,  CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -121,7 +121,7 @@ const Receipt = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [total, setTotal] = useState(0);
-  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
+  const [date, setDate] = React.useState({ startDate: props.startDate || moment().startOf('month'), endDate: props.endDate || moment() });
   const [focused, setFocused] = React.useState();
   useEffect(() => {
     let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current, dependency: true };

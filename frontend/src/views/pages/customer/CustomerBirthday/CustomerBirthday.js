@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -68,7 +68,6 @@ const fieldExcel = [
   { key: 'district', label: 'quận huyện' }
 ];
 
-
 const Customer = props => {
   const [details, setDetails] = useState([]);
   const { initialState } = useSelector(state => state.customer);
@@ -76,6 +75,8 @@ const Customer = props => {
   const [size, setSize] = useState(50);
   const dispatch = useDispatch();
   const paramRef = useRef({});
+  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+
   useEffect(() => {
     dispatch(reset());
     localStorage.removeItem('params');
@@ -124,7 +125,6 @@ const Customer = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getCustomerBirthday({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
@@ -145,7 +145,13 @@ const Customer = props => {
         <CIcon name="cil-grid" /> Danh sách khách hàng sinh nhật 7 ngày tới
       </CCardHeader>
       <CCardBody>
-        <Download data={memoExcelListed} headers={fieldExcel} name={'customer'} />
+        <Download
+          data={memoExcelListed}
+          headers={fieldExcel}
+          name={`bao_cao_theo_kh tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format(
+            'DD-MM-YYYY'
+          )} `}
+        />
 
         <AdvancedTable
           items={memoListed}

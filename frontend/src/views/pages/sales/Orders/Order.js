@@ -175,7 +175,7 @@ const Order = props => {
   const orders = useSelector(selectAll);
   const isMobile = useMediaQuery({ maxWidth: '40em' });
   const [focused, setFocused] = React.useState();
-  const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
+  const [date, setDate] = React.useState({ startDate: props.startDate || moment().startOf('month'), endDate: props.endDate || moment() });
 
   // useEffect(() => {
   //   if (date.endDate && date.startDate) {
@@ -841,22 +841,22 @@ const Order = props => {
                               <Td>{item.product?.name}</Td>
                               <Td>{item.quantity}</Td>
                               <Td>
-                                {Number(item.priceReal || item.product?.price).toLocaleString('it-IT', {
+                                {Number(item.priceReal || 0).toLocaleString('it-IT', {
                                   style: 'currency',
                                   currency: 'VND'
                                 }) || ''}
                               </Td>
                               <Td>{item.reducePercent}%</Td>
                               <Td>
-                                {(Number(item.priceReal || item.product?.price) * item.quantity).toLocaleString('it-IT', {
+                                {(Number(item.priceReal || 0) * item.quantity).toLocaleString('it-IT', {
                                   style: 'currency',
                                   currency: 'VND'
                                 }) || ''}
                               </Td>
                               <Td>
                                 {(
-                                  Number(item.priceReal || item.product?.price) * item.quantity -
-                                  (Number(item.priceReal || item.product?.price) * item.quantity * item.reducePercent) / 100
+                                  Number(item.priceReal || 0) * item.quantity -
+                                  (Number(item.priceReal || 0) * item.quantity * item.reducePercent) / 100
                                 ).toLocaleString('it-IT', {
                                   style: 'currency',
                                   currency: 'VND'

@@ -42,8 +42,7 @@ import { blockInvalidChar, memoizedGetCityName, memoizedGetDistrictName } from '
 const validationSchema = function() {
   return Yup.object().shape({
     customer: Yup.object()
-      .required('Khách hàng  không để trống')
-      .nullable(),
+      .required('Khách hàng  không để trống').nullable(),
     promotion: Yup.object()
       .required('Chương trình bán hàng không để trống')
       .nullable()
@@ -414,6 +413,7 @@ const CreateOrder = props => {
         handleSubmit,
         setFieldValue
       }) => {
+        console.log(values)
         return (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-primary">
@@ -445,7 +445,7 @@ const CreateOrder = props => {
                       />
                     </CCol>
                   </CRow>
-                  <FormFeedback className="d-block">{errors.customer}</FormFeedback>
+                  {!values.customer && <FormFeedback className="d-block">{errors.customer}</FormFeedback>}
                 </CFormGroup>
 
                 <CRow>

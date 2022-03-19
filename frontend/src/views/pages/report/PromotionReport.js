@@ -280,6 +280,18 @@ const PromotionReport = () => {
     }
   }, [date]);
 
+  const { reportDate } = useSelector(state => state.app);
+
+  useEffect(() => {
+    if (reportDate.startDate && reportDate.endDate) {
+      setFilter({
+        ...filter,
+        startDate: moment(reportDate.startDate).format('YYYY-MM-DD'),
+        endDate: moment(reportDate.endDate).format('YYYY-MM-DD')
+      });
+    }
+  }, [reportDate]);
+
   const debouncedSearchPromotion = _.debounce(value => {
     dispatch(
       getPromotion({
@@ -373,7 +385,7 @@ const PromotionReport = () => {
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
+          <ReportDate setDate={setDate} isFirstReport date={date} setFocused={setFocused} isReport focused={focused} />
         </CCard>
         <CCard>
           <CCardBody>

@@ -65,6 +65,17 @@ const DepartmentReport = props => {
       });
     }
   }, [date]);
+  const { reportDate } = useSelector(state => state.app);
+
+  useEffect(() => {
+    if (reportDate.startDate && reportDate.endDate) {
+      // setFilter({
+      //   ...filter,
+      //   startDate: moment(reportDate.startDate).format('YYYY-MM-DD'),
+      //   endDate: moment(reportDate.endDate).format('YYYY-MM-DD')
+      // });
+    }
+  }, [reportDate]);
 
   useEffect(() => {
     if (Object.keys(filter).length > 1) {
@@ -84,7 +95,7 @@ const DepartmentReport = props => {
       <CCol sm={12} md={12}>
         <CCard>
           {/* <CCardHeader>React-Dates</CCardHeader> */}
-          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
+          <ReportDate setDate={setDate} isFirstReport date={date} setFocused={setFocused} isReport focused={focused} />
         </CCard>
         <CCardGroup columns className="cols-2">
           <CCard>

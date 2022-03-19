@@ -206,6 +206,7 @@ export class CustomerController {
     }
     customer.branch = currentUser.branch;
     customer.sale = currentUser;
+    customer.createdBy = currentUser.code;
     customer.saleName = currentUser.login;
     const created = await this.customerService.save(customer);
     HeaderUtil.addEntityCreatedHeaders(res, 'Customer', created.id);

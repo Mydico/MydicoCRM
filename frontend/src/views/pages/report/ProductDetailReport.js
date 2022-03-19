@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle,  CPagination, CLink } from '@coreui/react';
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CPagination, CLink } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
@@ -28,6 +28,7 @@ const fields = [
   { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false },
   { key: 'priceReal', label: 'Đơn giá', _style: { width: '15%' }, filter: false },
   { key: 'priceTotal', label: 'Tổng tiền', _style: { width: '15%' }, filter: false },
+  { key: 'saleName', label: 'Người phụ trách', _style: { width: '15%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false }
 ];
 
@@ -48,27 +49,20 @@ const ProductDetailReport = props => {
   const [focused, setFocused] = React.useState();
   const [top10Product, setTop10Product] = useState([[], 0]);
 
-  // useEffect(() => {
-  //   dispatch(
-  //     getProductDetailReport({
-  //       page: 0,
-  //       product: props.match.params.id,
-  //       size: 50,
-  //       sort: 'createdDate,DESC',
-  //       startDate: date.startDate?.format('YYYY-MM-DD'),
-  //       endDate: date.endDate?.format('YYYY-MM-DD')
-  //     })
-  //   ).then(data => {
-  //     if (data && data.payload) {
-  //       setTop10Product(data.payload);
-  //     }
-  //   });
-  // }, []);
+  const { reportDate } = useSelector(state => state.app);
+
+  useEffect(() => {
+    if (reportDate.startDate && reportDate.endDate) {
+      setFilter({
+        ...filter,
+        startDate: moment(reportDate.startDate).format('YYYY-MM-DD'),
+        endDate: moment(reportDate.endDate).format('YYYY-MM-DD')
+      });
+    }
+  }, [reportDate]);
 
   const getTop10 = (filter = {}) => {
-    dispatch(
-      getProductDetailReport(filter)
-    ).then(data => {
+    dispatch(getProductDetailReport(filter)).then(data => {
       if (data && data.payload) {
         setTop10Product(data.payload);
       }
@@ -85,17 +79,18 @@ const ProductDetailReport = props => {
     setFilter({
       ...filter,
       page: activePage - 1,
-      startDate: date.startDate?.format('YYYY-MM-DD'),
-      endDate: date.endDate?.format('YYYY-MM-DD'),
-      size
+      size,
+      startDate: moment(reportDate?.startDate).format('YYYY-MM-DD'),
+      endDate: moment(reportDate?.endDate).format('YYYY-MM-DD')
     });
-  }, [activePage, size, date]);
+  }, [activePage, size]);
 
   const computedExcelItems = React.useCallback(items => {
     return (items || []).map((item, index) => {
       return {
         ...item,
         customerName: item.order?.customer?.name || '',
+        saleName: item.order?.customer?.saleName || '',
         createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY')
       };
     });
@@ -119,7 +114,7 @@ const ProductDetailReport = props => {
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
+          <ReportDate setDate={setDate} date={date} setFocused={setFocused} isReport focused={focused} />
         </CCard>
         <CCard>
           <CCardHeader>
@@ -151,7 +146,11 @@ const ProductDetailReport = props => {
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
-                customerName: item =><Td><CLink to={`/customer-report/order-customer-histories/${item.order.customer.id}`}>{item.customerName}</CLink></Td>,
+                customerName: item => (
+                  <Td>
+                    <CLink to={`/customer-report/order-customer-histories/${item.order.customer.id}`}>{item.customerName}</CLink>
+                  </Td>
+                ),
                 priceReal: (item, index) => (
                   <Td>
                     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceReal || 0)}</div>

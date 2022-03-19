@@ -98,7 +98,7 @@ const WarehouseReturn = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const paramRef = useRef({});
-  const [date, setDate] = React.useState({ startDate: null, endDate: null });
+  const [date, setDate] = React.useState({ startDate: props.startDate, endDate: props.endDate });
   const warehouses = useSelector(selectAll);
   const [focused, setFocused] = React.useState();
 

@@ -618,7 +618,7 @@ export class ReportService {
       .leftJoin('product.productBrand', 'brand')
       .leftJoin('product.productGroup', 'productGroup')
       .andWhere(queryString)
-      .andWhere('storeInputDetails.product IN (:saleIds)', { saleIds: productIds.length > 0 ? productIds : JSON.parse(filter['product']).length > 0 ? JSON.parse(filter['product']) : '' })
+      .andWhere('storeInputDetails.product IN (:saleIds)', { saleIds: productIds.length > 0 ? productIds : filter['product']?.length > 0 ? JSON.parse(filter['product']).length > 0 ? JSON.parse(filter['product']) : '' : '' })
       .andWhere(`Transaction.storeInputId is not null`)
       .cache(3 * 3600)
       .groupBy('storeInputDetails.productId')

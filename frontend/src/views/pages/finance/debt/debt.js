@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CCardBody, CButton,  CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
+import { CCardBody, CButton, CCard, CCardHeader, CRow, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -149,7 +149,6 @@ const Debt = props => {
     history.push({ pathname: `${props.match.url}/${item.customerId}/detail` });
   };
 
-
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(debts), [debts]);
 
@@ -162,7 +161,11 @@ const Debt = props => {
         <CIcon name="cil-grid" /> Danh sách Công nợ
       </CCardHeader>
       <CCardBody>
-        <Download data={memoExcelListed} headers={excelFields} name={'order'} />
+        <Download
+          data={memoExcelListed}
+          headers={excelFields}
+          name={`bao_cao_theo_cong_no tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `}
+        />
 
         <CRow className="ml-0 mt-4">
           <CLabel>Tổng nợ:</CLabel>

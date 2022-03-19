@@ -170,6 +170,23 @@ const OrderProductHistory = props => {
     }
   }, [date]);
 
+  const { reportDate } = useSelector(state => state.app);
+
+  useEffect(() => {
+    if (reportDate.startDate && reportDate.endDate) {
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        product: props.match.params.id,
+        dependency: true,
+        ...paramRef.current,
+        ...reportDate
+      };
+      dispatch(getOrderwithproduct(params));
+    }
+  }, [reportDate]);
+
   useEffect(() => {
     dispatch(reset());
     localStorage.setItem('order', JSON.stringify({}));

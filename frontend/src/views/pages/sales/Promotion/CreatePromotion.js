@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { creatingPromotion } from './promotion.api';
 import _ from 'lodash';
 import { blockInvalidChar } from '../../../../shared/utils/helper';
+import Select from 'react-select';
 
 import { useHistory } from 'react-router-dom';
 import { fetching } from './promotion.reducer';
@@ -30,7 +31,6 @@ import { PromotionStatus } from './contants';
 
 import { getCustomerType } from '../../customer/CustomerType/customer-type.api';
 import { globalizedcustomerTypeSelectors } from '../../customer/CustomerType/customer-type.reducer';
-import Select from 'react-select';
 import { filterProduct, getProduct } from '../../product/ProductList/product.api';
 import { globalizedProductSelectors } from '../../product/ProductList/product.reducer';
 
@@ -40,11 +40,13 @@ const validationSchema = function() {
       .min(5, `Tên phải lớn hơn 5 kí tự`)
       .required('Tên không để trống'),
     startTime: Yup.string().required('Ngày bắt đầu không để trống'),
-    endTime: Yup.string().required('Ngày kết thúc không để trống')
+    endTime: Yup.string().required('Ngày kết thúc không để trống'),
+    customerType: Yup.object().required('Loại khách hàng không để trống')
   });
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { FormFeedback } from 'reactstrap';
 const { selectAll } = globalizedcustomerTypeSelectors;
 const { selectAll: selectAllProduct } = globalizedProductSelectors;
 
@@ -75,7 +77,7 @@ const CreatePromotion = () => {
   }, 300);
 
   const onSearchProduct = value => {
-    if(value){
+    if (value) {
       debouncedSearchProduct(value);
     }
   };
@@ -109,7 +111,6 @@ const CreatePromotion = () => {
 
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
-    values.customerType = values.customerType ? initialValues.current.customerType : values.customerType;
     values.promotionProduct = productList;
     values.type = 'SHORTTERM';
     dispatch(creatingPromotion(values));
@@ -183,8 +184,24 @@ const CreatePromotion = () => {
                     <CInvalidFeedback>{errors.description}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
-                    <CLabel htmlFor="customerType">Đối tượng khách hàng áp dụng</CLabel>
-                    <CSelect
+                    <CLabel htmlFor="lastName">Đối tượng khách hàng áp dụng</CLabel>
+                    <Select
+                      name="customerType"
+                      onChange={item => {
+                        setFieldValue('customerType', item.value);
+                      }}
+                      value={{
+                        value: values.customerType || customerType[0],
+                        label: `${values.customerType?.name || customerType[0]?.name}`
+                      }}
+                      options={customerType.map(item => ({
+                        value: item,
+                        label: `${item.name}`
+                      }))}
+                    />
+                    <FormFeedback className="d-block">{errors.customerType}</FormFeedback>
+                    {/* <CLabel htmlFor="customerType">Đối tượng khách hàng áp dụng</CLabel> */}
+                    {/* <CSelect
                       custom
                       name="customerType"
                       id="customerType"
@@ -200,7 +217,7 @@ const CreatePromotion = () => {
                           </option>
                         ))}
                     </CSelect>
-                    <CInvalidFeedback>{errors.customerType}</CInvalidFeedback>
+                    <CInvalidFeedback>{errors.customerType}</CInvalidFeedback> */}
                   </CFormGroup>
                 </CCol>
                 <CCol lg="6">

@@ -18,6 +18,7 @@ import { Td, Table, Thead, Th, Tr, Tbody } from '../../components/super-responsi
 import { useMediaQuery } from 'react-responsive';
 import Download from '../../components/excel/DownloadExcel.js';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../shared/utils/helper.js';
+import ReportDate from '../../components/report-date/ReportDate';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -152,7 +153,7 @@ const OrderHistory = props => {
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
   const orders = useSelector(selectAll);
   const isMobile = useMediaQuery({ maxWidth: '40em' });
-
+  const [focused, setFocused] = React.useState();
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
 
   useEffect(() => {
@@ -169,6 +170,28 @@ const OrderHistory = props => {
       dispatch(getOrder(params));
     }
   }, [date]);
+
+  const { reportDate } = useSelector(state => state.app);
+
+  useEffect(() => {
+    if (reportDate.startDate && reportDate.endDate) {
+      setDate({
+        startDate: moment(reportDate.startDate).format('YYYY-MM-DD'),
+        endDate: moment(reportDate.endDate).format('YYYY-MM-DD')
+      })
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        saleId: props.match.params.id,
+        dependency: true,
+        ...paramRef.current,
+        startDate: moment(reportDate.startDate).format('YYYY-MM-DD'),
+        endDate: moment(reportDate.endDate).format('YYYY-MM-DD')
+      };
+      dispatch(getOrder(params));
+    }
+  }, [reportDate]);
 
   useEffect(() => {
     dispatch(reset());
@@ -234,325 +257,8 @@ const OrderHistory = props => {
     if (value) debouncedSearchColumn(value);
   };
 
-  useEffect(() => {
-    if (initialState.updatingSuccess) {
-      dispatch(reset());
-      const params = {
-        page: activePage - 1,
-        size,
-        saleId: props.match.params.id,
-        dependency: true,
-        sort: 'createdDate,DESC',
-        ...paramRef.current,
-        ...date
-      };
-      dispatch(getOrder(params));
-    }
-  }, [initialState.updatingSuccess]);
-
-  const approveOrder = order => () => {
-    dispatch(fetching());
-    const newOrder = {
-      id: order.id,
-      status: OrderStatus.APPROVED,
-      action: 'approve',
-      customer: order.customer
-    };
-    dispatch(updateStatusOrder(newOrder));
-  };
-
-  const cancelOrder = order => {
-    dispatch(fetching());
-    const newOrder = {
-      id: order.id,
-      status: OrderStatus.CANCEL,
-      action: 'cancel',
-      customer: order.customer,
-      createdBy: order.createdBy,
-      reject: rejectRef.current
-    };
-    if (order.createdBy !== account.login && (!account.branch || !account.branch.allow)) {
-      dispatch(updateStatusOrder(newOrder));
-    } else {
-      dispatch(editSelfOrder(newOrder));
-    }
-  };
-
-  const deleteOrder = order => () => {
-    dispatch(fetching());
-    const newOrder = {
-      id: order.id,
-      status: OrderStatus.DELETED,
-      action: 'delete',
-      customer: order.customer
-    };
-    dispatch(updateStatusOrder(newOrder));
-  };
-
-  const createCodOrder = order => () => {
-    dispatch(fetching());
-    const newOrder = {
-      id: order.id,
-      status: OrderStatus.CREATE_COD,
-      action: 'create-cod',
-      customer: order.customer
-    };
-    dispatch(updateStatusOrder(newOrder));
-  };
-
-  const approveAlert = item => {
-    confirmAlert({
-      title: 'Xác nhận',
-      message: 'Bạn có chắc chắn muốn duyệt đơn hàng này?',
-      buttons: [
-        {
-          label: 'Đồng ý',
-          onClick: approveOrder(item)
-        },
-        {
-          label: 'Hủy'
-        }
-      ]
-    });
-  };
-
-  const cancelAlert = item => {
-    confirmAlert({
-      customUI: ({ onClose }) => {
-        return (
-          <div className="react-confirm-alert-body">
-            <h1>Xác nhận</h1>
-            <p>Bạn có chắc chắn muốn hủy đơn hàng này?</p>
-            <CTextarea placeholder="Nhập lý do hủy" onChange={event => (rejectRef.current = event.target.value)} />
-            <div className="react-confirm-alert-button-group">
-              <button onClick={onClose}>Không</button>
-              <button
-                onClick={() => {
-                  cancelOrder(item);
-                  onClose();
-                }}
-              >
-                Đồng ý
-              </button>
-            </div>
-          </div>
-        );
-      }
-    });
-  };
-
-  const deleteAlert = item => {
-    confirmAlert({
-      title: 'Xác nhận',
-      message: 'Bạn có chắc chắn muốn xóa đơn hàng này?',
-      buttons: [
-        {
-          label: 'Đồng ý',
-          onClick: deleteOrder(item)
-        },
-        {
-          label: 'Hủy'
-        }
-      ]
-    });
-  };
-
-  const codAlert = item => {
-    confirmAlert({
-      title: 'Xác nhận',
-      message: 'Bạn có chắc chắn muốn tạo vận đơn cho đơn hàng này?',
-      buttons: [
-        {
-          label: 'Đồng ý',
-          onClick: createCodOrder(item)
-        },
-        {
-          label: 'Hủy'
-        }
-      ]
-    });
-  };
-  //   const renderButtonStatus = item => {
-  //     switch (item.status) {
-  //       case OrderStatus.WAITING:
-  //         return (
-  //           <CRow>
-  //             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/approve').length > 0) && (
-  //               <CButton
-  //                 onClick={event => {
-  //                   event.stopPropagation();
-  //                   approveAlert(item);
-  //                 }}
-  //                 color="success"
-  //                 variant="outline"
-  //                 shape="square"
-  //                 size="sm"
-  //                 className="mr-1"
-  //               >
-  //                 DUYỆT ĐƠN HÀNG
-  //               </CButton>
-  //             )}
-  //             {(isAdmin ||
-  //               item.createdBy === account.login ||
-  //               account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/cancel').length > 0) && (
-  //               <CButton
-  //                 onClick={event => {
-  //                   event.stopPropagation();
-  //                   cancelAlert(item);
-  //                 }}
-  //                 color="danger"
-  //                 variant="outline"
-  //                 shape="square"
-  //                 size="sm"
-  //                 className="mr-1"
-  //               >
-  //                 HỦY ĐƠN HÀNG
-  //               </CButton>
-  //             )}
-  //             {(item.createdBy === account.login ||
-  //               isAdmin ||
-  //               account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders').length > 0) && (
-  //               <CButton
-  //                 onClick={event => {
-  //                   event.stopPropagation();
-  //                   dispatch(addPermission({ method: 'PUT', entity: '/api/orders', isSelf: true }));
-  //                   toEditOrder(item.id);
-  //                 }}
-  //                 color="warning"
-  //                 variant="outline"
-  //                 shape="square"
-  //                 className="mr-1"
-  //                 size="sm"
-  //               >
-  //                 <CIcon name="cil-pencil" />
-  //                 CHỈNH SỬA
-  //               </CButton>
-  //             )}
-  //           </CRow>
-  //         );
-  //       case OrderStatus.APPROVED:
-  //         return (
-  //           <CRow>
-  //             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/create-cod').length > 0) && (
-  //               <CButton
-  //                 onClick={event => {
-  //                   event.stopPropagation();
-  //                   codAlert(item);
-  //                 }}
-  //                 color="primary"
-  //                 variant="outline"
-  //                 shape="square"
-  //                 size="sm"
-  //                 className="mr-1"
-  //               >
-  //                 TẠO VẬN ĐƠN
-  //               </CButton>
-  //             )}
-  //             {(isAdmin || account.branch?.allow) && (
-  //               <CButton
-  //                 onClick={event => {
-  //                   event.stopPropagation();
-  //                   toEditOrder(item.id);
-  //                 }}
-  //                 color="warning"
-  //                 variant="outline"
-  //                 shape="square"
-  //                 size="sm"
-  //                 className="mr-1"
-  //               >
-  //                 <CIcon name="cil-pencil" />
-  //                 CHỈNH SỬA
-  //               </CButton>
-  //             )}
-  //             {(isAdmin || account.branch?.allow) && (
-  //               <CButton
-  //                 onClick={event => {
-  //                   event.stopPropagation();
-  //                   cancelAlert(item);
-  //                 }}
-  //                 color="danger"
-  //                 variant="outline"
-  //                 shape="square"
-  //                 size="sm"
-  //                 className="mr-1"
-  //               >
-  //                 HỦY ĐƠN HÀNG
-  //               </CButton>
-  //             )}
-  //           </CRow>
-  //         );
-  //       case OrderStatus.CREATE_COD:
-  //         return (
-  //           <CButton
-  //             color="info"
-  //             variant="outline"
-  //             shape="square"
-  //             size="sm"
-  //             onClick={event => {
-  //               event.stopPropagation();
-  //               toSeeBill(item);
-  //             }}
-  //           >
-  //             XEM VẬN ĐƠN
-  //           </CButton>
-  //         );
-  //       case OrderStatus.CANCEL:
-  //         return (
-  //           <CRow>
-  //             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders' && !rol.isSelf).length > 0) && (
-  //               <CButton
-  //                 onClick={event => {
-  //                   event.stopPropagation();
-  //                   toEditOrder(item.id);
-  //                 }}
-  //                 color="warning"
-  //                 variant="outline"
-  //                 shape="square"
-  //                 size="sm"
-  //                 className="mr-1"
-  //               >
-  //                 <CIcon name="cil-pencil" />
-  //                 CHỈNH SỬA
-  //               </CButton>
-  //             )}
-  //             <CButton
-  //               onClick={event => {
-  //                 event.stopPropagation();
-  //                 deleteAlert(item);
-  //               }}
-  //               color="secondary"
-  //               variant="outline"
-  //               shape="square"
-  //               size="sm"
-  //               className="mr-1"
-  //             >
-  //               XÓA ĐƠN
-  //             </CButton>
-  //           </CRow>
-  //         );
-  //       default:
-  //         return (
-  //           <CButton
-  //             color="info"
-  //             variant="outline"
-  //             shape="square"
-  //             size="sm"
-  //             onClick={event => {
-  //               event.stopPropagation();
-  //               toSeeBill(item);
-  //             }}
-  //           >
-  //             XEM VẬN ĐƠN
-  //           </CButton>
-  //         );
-  //     }
-  //   };
-
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(orders), [orders]);
-  const toDetailOrder = id => {
-    history.push(`${props.match.url}/${id}/detail`);
-  };
 
   const computedExcelItems = React.useCallback(items => {
     return items.map((item, index) => {
@@ -581,46 +287,9 @@ const OrderHistory = props => {
           <CLabel>Tổng :</CLabel>
           <strong>{`\u00a0\u00a0${initialState.totalItem}`}</strong>
         </CRow>
-        <CRow row className="d-flex justify-content-between ml-1" style={{ width: '50%' }}>
-          <CRow row>
-            <CCol>
-              <CLabel htmlFor="date-input">Từ ngày</CLabel>
-            </CCol>
-            <CCol xs="12" md="9" lg="12">
-              <CInput
-                type="date"
-                id="date-input"
-                onChange={e =>
-                  setDate({
-                    ...date,
-                    startDate: e.target.value
-                  })
-                }
-                name="date-input"
-                placeholder="date"
-              />
-            </CCol>
-          </CRow>
-          <CRow row>
-            <CCol>
-              <CLabel htmlFor="date-input">Đến ngày</CLabel>
-            </CCol>
-            <CCol xs="12" md="9" lg="12">
-              <CInput
-                type="date"
-                id="date-input"
-                onChange={e =>
-                  setDate({
-                    ...date,
-                    endDate: e.target.value
-                  })
-                }
-                name="date-input"
-                placeholder="date"
-              />
-            </CCol>
-          </CRow>
-        </CRow>
+        <CCard>
+          <ReportDate setDate={setDate} date={date} isReport setFocused={setFocused} focused={focused} />
+        </CCard>
         <AdvancedTable
           items={memoListed}
           fields={fields}
@@ -664,9 +333,7 @@ const OrderHistory = props => {
             createdDate: item => <Td>{item.createdDate}</Td>,
             customerName: item => (
               <Td>
-                <CLink to={`/customer-report/order-customer-histories/${item.customer.id}`}>
-                  {item.customerName}
-                </CLink>
+                <CLink to={`/customer-report/order-customer-histories/${item.customer.id}`}>{item.customerName}</CLink>
               </Td>
             ),
             show_details: item => {

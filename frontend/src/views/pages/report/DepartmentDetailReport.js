@@ -60,6 +60,18 @@ const DepartmentDetailReport = props => {
     }
   }, [date]);
 
+  const { reportDate } = useSelector(state => state.app);
+
+  useEffect(() => {
+    if (reportDate.startDate && reportDate.endDate) {
+      setFilter({
+        ...filter,
+        startDate: moment(reportDate.startDate).format('YYYY-MM-DD'),
+        endDate: moment(reportDate.endDate).format('YYYY-MM-DD')
+      });
+    }
+  }, [reportDate]);
+
   const memoTop10Sale = React.useMemo(() => top10Sale, [top10Sale]);
   const memoTop10Customer = React.useMemo(() => top10Customer, [top10Customer]);
   const memoTop10Product = React.useMemo(() => top10Product, [top10Product]);
@@ -71,7 +83,7 @@ const DepartmentDetailReport = props => {
           <CCardHeader>
             <CCardTitle>{department?.name || ''}</CCardTitle>
           </CCardHeader>
-          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
+          <ReportDate setDate={setDate} date={date} setFocused={setFocused} isReport focused={focused} />
         </CCard>
         <CCard>
           <CCardBody>

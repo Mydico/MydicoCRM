@@ -42,7 +42,6 @@ export class StoreInputService {
         private readonly productQuantityService: ProductQuantityService,
         private readonly transactionService: TransactionService,
         private readonly orderService: OrderService,
-        private readonly customerService: CustomerService,
     ) { }
 
     async findById(id: string): Promise<StoreInput | undefined> {

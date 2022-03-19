@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { socket } from './App';
+import moment from 'moment';
 
 const initialState = {
   sidebarShow: 'responsive',
   asideShow: false,
   darkMode: false,
-  params: {}
+  params: {},
+  reportDate: { startDate: moment().startOf('month').format('YYYY-MM-DD'), endDate: moment().format('YYYY-MM-DD') }
 };
 const slice = createSlice({
   name: 'app',
@@ -22,6 +23,9 @@ const slice = createSlice({
     },
     setParams: (state, action) => {
       state.params = action.payload;
+    },
+    setReportDate: (state, action) => {
+      state.reportDate = action.payload;
     }
   }
 });
@@ -30,4 +34,4 @@ export default slice.reducer;
 
 // Actions
 
-export const { setAsideShow, setSidebarShow, setDarkMode, setToatsList, setParams } = slice.actions;
+export const { setAsideShow, setSidebarShow, setDarkMode, setToatsList, setParams, setReportDate } = slice.actions;

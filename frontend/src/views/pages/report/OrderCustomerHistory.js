@@ -172,6 +172,18 @@ const OrderCustomerHistory = props => {
     }
   }, [date]);
 
+  const { reportDate } = useSelector(state => state.app);
+
+  // useEffect(() => {
+  //   if (reportDate.startDate && reportDate.endDate) {
+  //     setFilter({
+  //       ...filter,
+  //       startDate: moment(reportDate.startDate).format('YYYY-MM-DD'),
+  //       endDate: moment(reportDate.endDate).format('YYYY-MM-DD')
+  //     });
+  //   }
+  // }, [reportDate]);
+
   useEffect(() => {
     dispatch(reset());
     localStorage.setItem('order', JSON.stringify({}));
@@ -276,16 +288,16 @@ const OrderCustomerHistory = props => {
         </CNav>
         <CTabContent>
           <CTabPane>
-            <Order customerId ={props.match.params.id} />
+            <Order customerId ={props.match.params.id} startDate={moment(reportDate.startDate)} endDate={moment(reportDate.endDate)} />
           </CTabPane>
           <CTabPane>
-            <WarehouseReturn customerId ={props.match.params.id} />
+            <WarehouseReturn customerId ={props.match.params.id} startDate={moment(reportDate.startDate)} endDate={moment(reportDate.endDate)} />
           </CTabPane>
           <CTabPane>
-            <Receipt customerId ={props.match.params.id} />
+            <Receipt customerId ={props.match.params.id} startDate={moment(reportDate.startDate)} endDate={moment(reportDate.endDate)} />
           </CTabPane>
           <CTabPane>
-            <Transaction customerId ={props.match.params.id} />
+            <Transaction customerId ={props.match.params.id}  />
           </CTabPane>
         </CTabContent>
       </CTabs>

@@ -40,6 +40,7 @@ const Report = props => {
 
   const [filter, setFilter] = useState({ dependency: true, department: null, branch: null, user: null });
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
+
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
   const [department, setDepartment] = useState(null);
@@ -173,6 +174,18 @@ const Report = props => {
     }
   }, [date]);
 
+  const { reportDate } = useSelector(state => state.app);
+
+  useEffect(() => {
+    if (reportDate.startDate && reportDate.endDate) {
+      setFilter({
+        ...filter,
+        startDate: moment(reportDate.startDate).format('YYYY-MM-DD'),
+        endDate: moment(reportDate.endDate).format('YYYY-MM-DD')
+      });
+    }
+  }, [reportDate]);
+
   const debouncedSearchUser = _.debounce(value => {
     dispatch(
       getExactUser({
@@ -228,7 +241,7 @@ const Report = props => {
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
+          <ReportDate setDate={setDate} date={date} setFocused={setFocused} isReport focused={focused} />
           {/* <CCardBody>
             <DateRangePicker
               startDate={date.startDate}
