@@ -5,6 +5,7 @@ import { Brackets, FindManyOptions, FindOneOptions } from 'typeorm';
 import Transaction from '../domain/transaction.entity';
 import { TransactionRepository } from '../repository/transaction.repository';
 import Customer from '../domain/customer.entity';
+import { queryBuilderFunc } from '../utils/helper/permission-normalization';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -97,8 +98,56 @@ export class TransactionService {
     return await queryBuilder.getRawOne();
   }
 
-  async findAndCountDetail(options: FindManyOptions<Transaction>): Promise<[Transaction[], number]> {
+  async findAndCountDetail(options: FindManyOptions<Transaction>, filter: {}): Promise<[Transaction[], number]> {
     options.relations = relationshipNames;
+    let customQuery = ''
+    if(filter['entity']){
+      customQuery += `order.code like '%${filter['entity']}%' OR receipt.code like '%${filter['entity']}%'`
+    }
+    delete filter['entity']
+    // console.log(filter)
+    let queryString = queryBuilderFunc('Transaction', filter);
+
+
+    // if(filter['entity']){
+    //   customQuery += `order.code like '%${filter['entity']}%' AND receipt.code like '%${filter['entity']}%'`
+    // }
+    const queryBuilder = this.transactionRepository
+      .createQueryBuilder('Transaction')
+      .leftJoinAndSelect('Transaction.customer', 'customer')
+      .leftJoinAndSelect('Transaction.order', 'order')
+      .leftJoinAndSelect('Transaction.receipt', 'receipt')
+      .leftJoinAndSelect('Transaction.storeInput', 'storeInput')
+      .cache(3 * 3600)
+      .skip(options.skip)
+      .take(options.take)
+      .where(queryString)
+      .orderBy({
+        'Transaction.createdDate': options.order[Object.keys(options.order)[0]] || 'DESC',
+      })
+
+      if(customQuery){
+        queryBuilder.andWhere(
+          new Brackets(sqb => {
+            sqb.where(customQuery);
+          })
+        );
+      }
+     return  queryBuilder.getManyAndCount()
+    // const count = this.transactionRepository
+    //   .createQueryBuilder('Order')
+    //   .leftJoinAndSelect('Order.customer', 'customer')
+    //   .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
+    //   .leftJoinAndSelect('orderDetails.product', 'product')
+    //   .leftJoinAndSelect('Order.promotion', 'promotion')
+    //   .leftJoinAndSelect('promotion.customerType', 'customerType')
+    //   .leftJoinAndSelect('Order.sale', 'sale')
+    //   .leftJoinAndSelect('Order.department', 'department')
+    //   .where(queryString)
+    //   .orderBy(`Order.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+    //   .skip(options.skip)
+    //   .take(options.take)
+    //   .cache(3 * 3600)
     return await this.transactionRepository.findAndCount(options);
   }
 
@@ -133,8 +182,10 @@ export class TransactionService {
         }
       }
     }
+
     delete filter['startDate'];
     delete filter['endDate'];
+;
     Object.keys(filter).forEach((item, index) => {
       queryString += ` Transaction.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : ' AND '}`;
     });
@@ -172,7 +223,7 @@ export class TransactionService {
     }
     const rawData = await queryBuilder.getRawMany();
     const countMany = await count.getRawMany();
-    const convertedEntity: Transaction[] = rawData.map(item => ({
+    const convertedEntity: Transaction[] = rawData?.map(item => ({
       id: item.id,
       customerCode: item.customer_code,
       customerId: item.customerId,

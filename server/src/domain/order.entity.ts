@@ -56,6 +56,8 @@ export default class Order extends BaseEntity {
   @ManyToOne(type => PromotionItem, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT', createForeignKeyConstraints: false })
   promotionItem?: PromotionItem;
 
+  @Column({ name: 'bill_date', nullable: true })
+  billDate?: Date;
   /**
    * tổng tiền
    */

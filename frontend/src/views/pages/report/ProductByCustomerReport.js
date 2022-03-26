@@ -52,7 +52,7 @@ const fields = [
   { key: 'real', label: 'Doanh thu thuần', _style: { width: '15%' }, filter: false }
 ];
 
-const ProductReport = () => {
+const ProductByCustomerReport = (props) => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
   const { account } = useSelector(state => state.authentication);
@@ -73,7 +73,8 @@ const ProductReport = () => {
     dependency: true,
     page: activePage - 1,
     size,
-    sort: 'createdDate,DESC'
+    sort: 'createdDate,DESC',
+    customer: props.customerId
   });
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
@@ -88,32 +89,32 @@ const ProductReport = () => {
   const [selectedProduct, setSelectedProduct] = useState([]);
 
   useEffect(() => {
-    dispatch(getChildTreeDepartmentByUser());
+    // dispatch(getChildTreeDepartmentByUser());
     dispatch(filterProduct());
     dispatch(getProductBrand({ page: 0, size: 50, sort: 'createdDate,DESC' }));
-    if (isManager) {
-      dispatch(getBranch({ department: account.department.id, dependency: true }));
-    }
+    // if (isManager) {
+    //   dispatch(getBranch({ department: account.department.id, dependency: true }));
+    // }
     // dispatch(getProductGroup({ page: 0, size: 50, sort: 'createdDate,DESC' }));
   }, []);
 
-  useEffect(() => {
-    if (account.department.externalChild && department && branches.length > 1) {
-      if (JSON.parse(account.department.externalChild).includes(department.id)) {
-        dispatch(setAll([account.branch]));
-      }
-    }
-    dispatch(
-      getExactUser({
-        page: 0,
-        size: 50,
-        sort: 'createdDate,DESC',
-        department: department?.id || account.department.id,
-        branch: isBranchManager ? (specialRole ? branches[0]?.id : account.branch.id) : branch?.id,
-        dependency: true
-      })
-    );
-  }, [branches]);
+//   useEffect(() => {
+//     if (account.department.externalChild && department && branches.length > 1) {
+//       if (JSON.parse(account.department.externalChild).includes(department.id)) {
+//         dispatch(setAll([account.branch]));
+//       }
+//     }
+//     dispatch(
+//       getExactUser({
+//         page: 0,
+//         size: 50,
+//         sort: 'createdDate,DESC',
+//         department: department?.id || account.department.id,
+//         branch: isBranchManager ? (specialRole ? branches[0]?.id : account.branch.id) : branch?.id,
+//         dependency: true
+//       })
+//     );
+//   }, [branches]);
 
   useEffect(() => {
     setFilter({
@@ -138,16 +139,16 @@ const ProductReport = () => {
     delete copyFilter['page'];
     delete copyFilter['size'];
     delete copyFilter['sort'];
-    dispatch(getCountTotalProduct(copyFilter)).then(data => {
-      if (data && data.payload) {
-        setNumOfProduct(data.payload.sum || 0);
-      }
-    });
-    dispatch(getCountTotalPriceProduct(copyFilter)).then(data => {
-      if (data && data.payload) {
-        setNumOfPriceProduct(data.payload.sum || 0);
-      }
-    });
+    // dispatch(getCountTotalProduct(copyFilter)).then(data => {
+    //   if (data && data.payload) {
+    //     setNumOfProduct(data.payload.sum || 0);
+    //   }
+    // });
+    // dispatch(getCountTotalPriceProduct(copyFilter)).then(data => {
+    //   if (data && data.payload) {
+    //     setNumOfPriceProduct(data.payload.sum || 0);
+    //   }
+    // });
     // dispatch(getProductReport(filter)).then(data => {
     //   if (data && data.payload) {
     //     setTop10Product(data.payload);
@@ -211,57 +212,57 @@ const ProductReport = () => {
     setBranch(null);
     setUser(null);
   };
-  useEffect(() => {
-    reset();
-    setFilter({
-      ...filter,
-      department: department?.id,
-      branch: null,
-      user: null
-    });
-    if (department) {
-      dispatch(getBranch({ department: department?.id, dependency: true }));
-      dispatch(
-        getExactUser({
-          page: 0,
-          size: 50,
-          sort: 'createdDate,DESC',
-          department: department?.id || account.department.id,
-          branch: isBranchManager ? (specialRole ? branches[0]?.id : account.branch.id) : branch?.id,
-          dependency: true
-        })
-      );
-    }
-  }, [department]);
+//   useEffect(() => {
+//     reset();
+//     setFilter({
+//       ...filter,
+//       department: department?.id,
+//       branch: null,
+//       user: null
+//     });
+//     if (department) {
+//       dispatch(getBranch({ department: department?.id, dependency: true }));
+//       dispatch(
+//         getExactUser({
+//           page: 0,
+//           size: 50,
+//           sort: 'createdDate,DESC',
+//           department: department?.id || account.department.id,
+//           branch: isBranchManager ? (specialRole ? branches[0]?.id : account.branch.id) : branch?.id,
+//           dependency: true
+//         })
+//       );
+//     }
+//   }, [department]);
 
-  useEffect(() => {
-    setUser(null);
-    setFilter({
-      ...filter,
-      branch: branch?.id,
-      user: null
-    });
+//   useEffect(() => {
+//     setUser(null);
+//     setFilter({
+//       ...filter,
+//       branch: branch?.id,
+//       user: null
+//     });
 
-    if (branch) {
-      dispatch(
-        getExactUser({
-          page: 0,
-          size: 50,
-          sort: 'createdDate,DESC',
-          department: department?.id || account.department.id,
-          branch: isBranchManager ? (specialRole ? branch?.id : account.branch.id) : branch?.id,
-          dependency: true
-        })
-      );
-    }
-  }, [branch]);
+//     if (branch) {
+//       dispatch(
+//         getExactUser({
+//           page: 0,
+//           size: 50,
+//           sort: 'createdDate,DESC',
+//           department: department?.id || account.department.id,
+//           branch: isBranchManager ? (specialRole ? branch?.id : account.branch.id) : branch?.id,
+//           dependency: true
+//         })
+//       );
+//     }
+//   }, [branch]);
 
-  useEffect(() => {
-    setFilter({
-      ...filter,
-      sale: user?.id
-    });
-  }, [user]);
+//   useEffect(() => {
+//     setFilter({
+//       ...filter,
+//       sale: user?.id
+//     });
+//   }, [user]);
 
   useEffect(() => {
     setFilter({
@@ -379,90 +380,11 @@ const ProductReport = () => {
     <CRow>
       <CCol sm={12} md={12}>
         <CCard>
-          <ReportDate setDate={setDate}  date={date} isFirstReport setFocused={setFocused} isReport focused={focused} />
+          <ReportDate setDate={setDate}  date={date}  setFocused={setFocused} isReport focused={focused} />
         </CCard>
         <CCard>
           <CCardBody>
-            <CRow sm={12} md={12}>
-              <CCol sm={4} md={4}>
-                <p>Chi nhánh</p>
-                <Select
-                  isSearchable
-                  name="department"
-                  onChange={e => {
-                    setDepartment(e?.value || null);
-                  }}
-                  value={
-                    initialState.allChild.length > 1
-                      ? {
-                          value: department,
-                          label: department?.name
-                        }
-                      : {
-                          value: initialState.allChild[0],
-                          label: initialState.allChild[0]?.name
-                        }
-                  }
-                  isClearable={true}
-                  openMenuOnClick={false}
-                  placeholder="Chọn Chi nhánh"
-                  options={initialState.allChild.map(item => ({
-                    value: item,
-                    label: item.name
-                  }))}
-                />
-              </CCol>
-              <CCol sm={4} md={4}>
-                <p>Phòng ban</p>
-                <Select
-                  isSearchable
-                  name="branch"
-                  onChange={e => {
-                    setBranch(e?.value || null);
-                  }}
-                  value={
-                    branches.length > 1
-                      ? {
-                          value: branch,
-                          label: branch?.name
-                        }
-                      : {
-                          value: branches[0],
-                          label: branches[0]?.name
-                        }
-                  }
-                  isClearable={true}
-                  openMenuOnClick={false}
-                  placeholder="Chọn Phòng ban"
-                  options={branches.map(item => ({
-                    value: item,
-                    label: item.name
-                  }))}
-                />
-              </CCol>
-              <CCol sm={4} md={4}>
-                <p>Nhân viên</p>
-                <Select
-                  isSearchable
-                  name="user"
-                  onChange={e => {
-                    setUser(e?.value || null);
-                  }}
-                  value={{
-                    value: user,
-                    label: user?.code
-                  }}
-                  isClearable={true}
-                  openMenuOnClick={false}
-                  onInputChange={onSearchUser}
-                  placeholder="Chọn Nhân viên"
-                  options={users.map(item => ({
-                    value: item,
-                    label: item.code
-                  }))}
-                />
-              </CCol>
-            </CRow>
+
             <CRow className="mt-2">
               <CCol sm={4} md={4}>
                 <p>Thương hiệu</p>
@@ -527,19 +449,7 @@ const ProductReport = () => {
             </CRow>
           </CCardBody>
         </CCard>
-        <CRow sm={12} md={12}>
-          <CCol sm="12" lg="12">
-            <CWidgetBrand
-              rightHeader={numOfProduct}
-              rightFooter="Sản phẩm đã bán"
-              leftHeader={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(numOfPriceProduct)}
-              leftFooter="Doanh thu thuần"
-              color="gradient-primary"
-            >
-              <CIcon name="cil3d" height="76" className="my-4" />
-            </CWidgetBrand>
-          </CCol>
-        </CRow>
+
         <CCard>
           <CCardHeader>
             <CCardTitle>Danh sách sản phẩm</CCardTitle>
@@ -632,4 +542,4 @@ const ProductReport = () => {
   );
 };
 
-export default ProductReport;
+export default ProductByCustomerReport;

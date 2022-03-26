@@ -78,28 +78,31 @@ export class TransactionController {
 
   @Get('/find')
   @ApiResponse({
-      status: 200,
-      description: 'List all records',
-      type: Transaction,
+    status: 200,
+    description: 'List all records',
+    type: Transaction
   })
   async getAllDetail(@Req() req: Request, @Res() res): Promise<Transaction[]> {
-      const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-      const filter = {};
-      Object.keys(req.query).forEach(item => {
-          if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-              filter[item] = Equal(`${req.query[item]}`);
-          }
-      });
-      const [results, count] = await this.transactionService.findAndCountDetail({
-          skip: +pageRequest.page * pageRequest.size,
-          take: +pageRequest.size,
-          order: pageRequest.sort.asOrder(),
-          where: {
-              ...filter,
-          },
-      });
-      HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
-      return res.send(results);
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter = {};
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        filter[item] = `${req.query[item]}`;
+      }
+    });
+    const [results, count] = await this.transactionService.findAndCountDetail(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder(),
+        where: {
+          ...filter
+        }
+      },
+      filter
+    );
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
   }
 
   @Get('/')

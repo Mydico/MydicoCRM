@@ -282,6 +282,7 @@ export class OrderService {
   async createCOD(order: Order): Promise<Order> {
     const foundedOrder = await this.findById(order.id);
     order.status = OrderStatus.CREATE_COD;
+    order.billDate = new Date()
     if (foundedOrder.status === OrderStatus.CREATE_COD && order.status === OrderStatus.CREATE_COD) {
       throw new HttpException('Đơn hàng đã tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
     }

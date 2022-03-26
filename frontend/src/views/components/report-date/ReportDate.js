@@ -83,10 +83,10 @@ export function ReportDate(props) {
 
   useEffect(() => {
     if (isFirstReport) {
-      setReportDate({
+      dispatch(setReportDate({
         startDate: moment().startOf('month'),
         endDate: moment()
-      });
+      }));
     }
   }, [isFirstReport]);
 
@@ -101,7 +101,6 @@ export function ReportDate(props) {
           endDateId="endDate"
           minimumNights={0}
           onDatesChange={value => {
-            console.log(value)
             isReport ? dispatch(setReportDate(value)) : setDate(value);
           }}
           focusedInput={focused}

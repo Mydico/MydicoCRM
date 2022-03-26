@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CBadge, CCard, CCardHeader, CCardBody, CCol,  CRow, CPagination, CCardTitle, CLink } from '@coreui/react/lib';
+import { CBadge, CCard, CCardHeader, CCardBody, CCol, CRow, CPagination, CCardTitle, CLink } from '@coreui/react/lib';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -35,12 +35,12 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
-  { key: 'type', label: 'Loại chứng từ', _style: { width: '10%' } },
+  { key: 'type', label: 'Loại chứng từ', _style: { width: '10%' }, filter: false },
   { key: 'entity', label: 'Diễn giải', _style: { width: '15%' } },
-  { key: 'previousDebt', label: 'Số dư ban đầu', _style: { width: '15%' } },
-  { key: 'issueDebt', label: 'Phát sinh', _style: { width: '10%' } },
-  { key: 'earlyDebt', label: 'Số dư cuối kì', _style: { width: '15%' } },
-  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' } }
+  { key: 'previousDebt', label: 'Số dư ban đầu', _style: { width: '15%' }, filter: false },
+  { key: 'issueDebt', label: 'Phát sinh', _style: { width: '10%' } , filter: false},
+  { key: 'earlyDebt', label: 'Số dư cuối kì', _style: { width: '15%' }, filter: false },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false }
 ];
 const Transaction = props => {
   const { initialState } = useSelector(state => state.debt);
@@ -48,10 +48,22 @@ const Transaction = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [debt, setDebt] = useState(0);
-  const [customer, setCustomer] = useState(null)
+  const [customer, setCustomer] = useState(null);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const paramRef = useRef({});
+  const [date, setDate] = useState({
+  })
+  const { reportDate } = useSelector(state => state.app);
+
+  useEffect(() => {
+    if (reportDate.startDate && reportDate.endDate && props.isReport) {
+      setDate({
+        startDate: moment(reportDate.startDate),
+        endDate: moment(reportDate.endDate)
+      });
+    }
+  }, [reportDate]);
   const computedItems = items => {
     return items
       .map(item => {
@@ -71,9 +83,9 @@ const Transaction = props => {
 
   useEffect(() => {
     return () => {
-      dispatch(reset())
-    }
-  }, [])
+      dispatch(reset());
+    };
+  }, []);
   useEffect(() => {
     if (props.location?.state?.customer) {
       setDebt(props.location.state?.customer);
@@ -82,31 +94,49 @@ const Transaction = props => {
 
   useEffect(() => {
     dispatch(
-      getTransactionListDetail({ customer: props.customerId || props.match.params.id, page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current })
+      getTransactionListDetail({
+        customer: props.customerId || props.match.params.id,
+        page: activePage - 1,
+        size,
+        ...date,
+        sort: 'createdDate,DESC',
+        ...paramRef.current
+      })
     );
-    dispatch(getDetailCustomer({ id: props.customerId || props.match.params.id, dependency: true  })).then(resp => {
-      if(resp && resp.payload){
+    dispatch(getDetailCustomer({ id: props.customerId || props.match.params.id, dependency: true })).then(resp => {
+      if (resp && resp.payload) {
         setCustomer(resp.payload);
       }
     });
     dispatch(getCustomerTotalDebit({ id: props.customerId || props.match.params.id, dependency: true })).then(resp => {
-      if(resp && resp.payload){
+      if (resp && resp.payload) {
         setDebt(resp.payload.sum);
       }
-    })
+    });
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const debouncedSearchColumn = _.debounce(value => {
-    if (Object.keys(value).length > 0) {
-
-      paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getTransaction({ customer: props.customerId || props.match.params.id, page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }
+    paramRef.current = { ...paramRef.current, ...value };
+    dispatch(
+      getTransactionListDetail({
+        customer: props.customerId || props.match.params.id,
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...date,
+        ...value
+      })
+    );
   }, 300);
 
   const onFilterColumn = value => {
-    if(value) debouncedSearchColumn(value);
+    console.log(value);
+    Object.keys(value).forEach(element => {
+      if (!value[element]) delete value[element];
+    });
+    console.log(value);
+    debouncedSearchColumn(value);
   };
 
   const renderLink = item => {
@@ -125,11 +155,7 @@ const Transaction = props => {
       link = `Công nợ ban đầu`;
       href = ``;
     }
-    return (
-      <CLink to={href}>
-        {link}
-      </CLink>
-    );
+    return <CLink to={href}>{link}</CLink>;
   };
 
   const renderPreviousDebt = item => {
@@ -138,10 +164,10 @@ const Transaction = props => {
       debt = item.order.realMoney;
     } else if (item.receipt) {
       debt = item.receipt.money;
-    } else if (item.storeInput){
+    } else if (item.storeInput) {
       debt = item.storeInput.realMoney;
-    }else{
-      debt = item.earlyDebt
+    } else {
+      debt = item.earlyDebt;
     }
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(debt);
   };
@@ -212,25 +238,6 @@ const Transaction = props => {
                 </td>
               ),
               issueDebt: item => <td>{renderPreviousDebt(item)}</td>
-              // debt: item => <td>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.debt)}</td>,
-              // action: item => {
-              //   return (
-              //     <CRow style={{ justifyContent: 'center' }}>
-              //       <CButton
-              //         onClick={() => {
-              //           toDetail(item);
-              //         }}
-              //         color="warning"
-              //         variant="outline"
-              //         shape="square"
-              //         size="md"
-              //         className="mt-1"
-              //       >
-              //         Xem chi tiết
-              //       </CButton>
-              //     </CRow>
-              //   );
-              // }
             }}
           />
           <CPagination

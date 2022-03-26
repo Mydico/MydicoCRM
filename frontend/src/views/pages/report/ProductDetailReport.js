@@ -15,6 +15,7 @@ import AdvancedTable from '../../components/table/AdvancedTable';
 
 import ReportDate from '../../../views/components/report-date/ReportDate';
 import { Td } from '../../../views/components/super-responsive-table';
+import { useQuery } from '../../../shared/utils/helper';
 
 moment.locale('vi');
 const fields = [
@@ -50,6 +51,7 @@ const ProductDetailReport = props => {
   const [top10Product, setTop10Product] = useState([[], 0]);
 
   const { reportDate } = useSelector(state => state.app);
+  let query = useQuery();
 
   useEffect(() => {
     if (reportDate.startDate && reportDate.endDate) {
@@ -80,6 +82,7 @@ const ProductDetailReport = props => {
       ...filter,
       page: activePage - 1,
       size,
+      sale: query.get('sale'),
       startDate: moment(reportDate?.startDate).format('YYYY-MM-DD'),
       endDate: moment(reportDate?.endDate).format('YYYY-MM-DD')
     });

@@ -3,6 +3,8 @@ import {createBrowserHistory} from 'history'
 import cities from '../../shared/utils/city';
 import district from '../../shared/utils/district.json';
 import memoize from 'fast-memoize';
+import { useLocation } from 'react-router-dom';
+import React from 'react';
 function preserveQueryParameters(history, preserve, location) {
   const currentQuery = queryString.parse(history.location.search);
   if (currentQuery) {
@@ -20,7 +22,11 @@ function preserveQueryParameters(history, preserve, location) {
   }
   return location;
 }
+export function useQuery() {
+  const { search } = useLocation();
 
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 function createLocationDescriptorObject(location, state) {
   return typeof location === 'string' ? { pathname: location, state } : location;
 }
@@ -46,7 +52,7 @@ const getExcelData = (headers = [], data = []) => {
   const dataSheet = {
     columns: headers.map(item =>  item.label),
     data: data.map(item => headers.map(header => ({
-      value: item[header.key]?.toString() || '',
+      value: item[header.key]?.toString() || '' ,
       style: {font: {name: "Times New Roman"}}
     })))
   }

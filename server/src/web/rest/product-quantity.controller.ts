@@ -150,7 +150,8 @@ export class ProductQuantityController {
     const filter: any = {};
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter[item] = req.query[item];
+        const searchString = req.query[item].includes('%') ? req.query[item].replace('%', '\\%') : req.query[item];
+        filter[item] = searchString;
       }
     });
     const currentUser = req.user as User;

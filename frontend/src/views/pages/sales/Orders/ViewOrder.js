@@ -10,6 +10,8 @@ import { Table } from 'reactstrap';
 import moment from 'moment';
 import { CBadge } from '@coreui/react';
 import { getBadge } from './Order';
+
+
 const { selectById } = globalizedOrdersSelectors;
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
@@ -29,6 +31,7 @@ const mappingStatusDesc = {
   SHIPPING: 'Đang vận chuyển tới khách hàng',
   SUCCESS: 'Giao thành công. Đóng vận đơn'
 };
+
 const ViewOrder = props => {
   const dispatch = useDispatch();
   const ref = useRef(null);
@@ -36,6 +39,7 @@ const ViewOrder = props => {
 
   const [invoice, setInvoice] = useState(null);
   const [codLog, setCodLog] = useState([]);
+  const [orderExcel, setOrderExcel] = useState([]);
 
   useEffect(() => {
     dispatch(getDetailOrder({ id: props.match.params.orderId, dependency: true }));
@@ -54,8 +58,15 @@ const ViewOrder = props => {
     }
   }, [order]);
 
+
   return (
     <div>
+      {/* {invoice?.status === OrderStatus.CREATE_COD && (
+        <div style={{ marginBottom: 12 }}>
+          <Download data={orderExcel} headers={excelFields} name={invoice?.customer?.name} />
+        </div>
+      )} */}
+
       <div className="animated fadeIn" ref={el => (ref.current = el)}>
         <CCard>
           <CCardHeader>
@@ -144,7 +155,7 @@ const ViewOrder = props => {
             <CRow>
               <CCol lg="4" sm="5">
                 Ghi chú: <strong>{invoice?.note}</strong>
-                {invoice?.status === 'CANCEL' && (
+                {invoice?.none === 'CANCEL' && (
                   <div>
                     Lý do hủy: <strong>{invoice?.reject}</strong>
                   </div>
@@ -207,9 +218,9 @@ const ViewOrder = props => {
                     <td>{index + 1}</td>
                     <td>{moment(item.createdDate).format('DD-MM-YYYY HH:mm')}</td>
                     <td>{item.transporter?.code || ''}</td>
-                    <td>{mappingStatusDesc[item.status]}</td>
+                    <td>{mappingStatusDesc[item.none]}</td>
                     <td>
-                      <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
+                      <CBadge color={getBadge(item.none)}>{mappingStatus[item.none]}</CBadge>
                     </td>
                   </tr>
                 );

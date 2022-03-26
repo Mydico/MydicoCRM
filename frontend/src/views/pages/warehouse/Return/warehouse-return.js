@@ -101,7 +101,16 @@ const WarehouseReturn = props => {
   const [date, setDate] = React.useState({ startDate: props.startDate, endDate: props.endDate });
   const warehouses = useSelector(selectAll);
   const [focused, setFocused] = React.useState();
+  const { reportDate } = useSelector(state => state.app);
 
+  useEffect(() => {
+    if (reportDate.startDate && reportDate.endDate && props.isReport) {
+      setDate({
+        startDate: moment(reportDate.startDate),
+        endDate: moment(reportDate.endDate)
+      });
+    }
+  }, [reportDate]);
   useEffect(() => {
     if (date.endDate && date.startDate) {
       const params = {
@@ -116,12 +125,15 @@ const WarehouseReturn = props => {
       dispatch(getWarehouseReturn(params));
     }
   }, [date]);
+
   useEffect(() => {
     dispatch(reset());
   }, []);
 
   useEffect(() => {
-    dispatch(getWarehouseReturn({ page: activePage - 1, size,customerId: props.customerId, sort: 'createdDate,DESC', ...paramRef.current }));
+    dispatch(
+      getWarehouseReturn({ page: activePage - 1, size, customerId: props.customerId, sort: 'createdDate,DESC', ...paramRef.current })
+    );
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
@@ -161,9 +173,8 @@ const WarehouseReturn = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getWarehouseReturn({ page: 0, size: size, sort: 'createdDate,DESC',customerId: props.customerId, ...value }));
+      dispatch(getWarehouseReturn({ page: 0, size: size, sort: 'createdDate,DESC', customerId: props.customerId, ...value }));
     }
   }, 300);
 
@@ -280,7 +291,7 @@ const WarehouseReturn = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC',customerId: props.customerId, ...paramRef.current };
+      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', customerId: props.customerId, ...paramRef.current };
       dispatch(getWarehouseReturn(params));
       dispatch(reset());
     }

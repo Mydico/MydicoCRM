@@ -34,6 +34,7 @@
     "react-avatar-editor": "^12.0.0",
     "react-confirm-alert": "^2.7.0",
     "react-csv": "^2.0.3",
+    "react-data-export": "^0.6.0",
     "react-dates": "^21.8.0",
     "react-dom": "^16.13.1",
     "react-dropzone-uploader": "^2.11.0",
