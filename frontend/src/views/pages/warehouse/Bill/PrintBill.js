@@ -4,7 +4,7 @@ import { Card, CardHeader, CardBody, Row, Col, Table } from 'reactstrap';
 import { DocTienBangChu } from '../../../../shared/utils/toMoneyString';
 import ReactToPrint from 'react-to-print';
 import Download from '../../../components/excel/DownloadExcel.js';
-import { OrderStatus } from '../../sales/Orders/order-status';
+import moment from 'moment';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 
 const excelFields = [
@@ -63,10 +63,10 @@ const PrintBill = props => {
   const [orderExcel, setOrderExcel] = useState([]);
   const ref = useRef(null);
   useEffect(() => {
-    generateOrder(item)
-  }, [])
-  
-  const generateOrder = (invoice) => {
+    generateOrder(item);
+  }, []);
+
+  const generateOrder = invoice => {
     const data = invoice?.orderDetails.map((item, index) => {
       return {
         key1: '0',
@@ -80,21 +80,22 @@ const PrintBill = props => {
         key9: '632',
         key10: '1561',
         key11: 'OB',
-        billDate: invoice.billDate || '',
-        code: invoice?.code,
-        exportCode: invoice?.code,
-        description:invoice?.promotion?.name,
+        billDate: invoice.billDate ? moment(invoice.billDate).format('DD/MM/YYYY') : '',
+        code: `VD-${invoice?.code}`,
+        exportCode: `VD-${invoice?.code}`,
+        description: invoice?.promotion?.name,
         customerCode: invoice?.customer?.code,
         customerName: invoice?.customer?.name,
-        address: `${memoizedGetDistrictName(invoice?.customer?.district)}, ${memoizedGetCityName(invoice?.customer?.city)} ${invoice
-          ?.customer?.tel || ''}`,
+        address: `${invoice?.customer?.address} ${memoizedGetDistrictName(invoice?.customer?.district)}, ${memoizedGetCityName(
+          invoice?.customer?.city
+        )} ${invoice?.customer?.tel || ''}`,
         sale: invoice?.sale?.code,
         productCode: item.product.code,
         productName: item.product.name,
         unit: item.product.unit,
         quantity: Number(item.quantity),
         price: Number(item.priceReal),
-        totalPrice: Number(item.priceTotal),
+        totalPrice: Number(item.priceReal) * Number(item.quantity),
         discount: Number(item.reducePercent),
         discountPrice: Number(item.reduce)
       };
@@ -103,11 +104,10 @@ const PrintBill = props => {
   };
   return (
     <div className="animated fadeIn" ref={el => (ref.current = el)}>
-      {item?.status === OrderStatus.CREATE_COD && (
-        <div style={{ marginBottom: 12 }}>
-          <Download data={orderExcel} headers={excelFields} name={item?.customer?.name} />
-        </div>
-      )}
+      <div style={{ marginBottom: 12 }}>
+        <Download data={orderExcel} headers={excelFields} name={`${item?.customer?.name.replace(/[^\w\s]/gi, '')}-${item?.code}`} />
+      </div>
+
       <Card>
         <CardHeader>
           <div>CÔNG TY TNHH THƯƠNG MẠI VÀ DỊCH VỤ MỸ ĐÌNH</div>
@@ -122,7 +122,7 @@ const PrintBill = props => {
               );
             }}
             content={() => ref.current}
-            />
+          />
           <div>P 301, nhà CT5, khu đô thị Mỹ Đình - Mễ Trì, Phương Mỹ Đình 1, Quận Nam Từ Liêm, Thành phố Hà Nội, Việt Nam</div>
         </CardHeader>
         <CardBody>

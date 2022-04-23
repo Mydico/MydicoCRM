@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle,  CPagination, CLink } from '@coreui/react';
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CPagination, CLink } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
@@ -97,8 +97,8 @@ const CustomerReport = props => {
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(getCustomerType());
-    if(branches.length === 1){
-      setBranch(branches[0])
+    if (branches.length === 1) {
+      setBranch(branches[0]);
     }
     if (isManager) {
       dispatch(getBranch({ department: account.department.id, dependency: true }));
@@ -131,23 +131,27 @@ const CustomerReport = props => {
   }, [activePage, size]);
 
   useEffect(() => {
+   
     if (account.department.externalChild && department && branches.length > 1) {
       if (JSON.parse(account.department.externalChild).includes(department.id)) {
         dispatch(setAll([account.branch]));
       }
     }
-    if(branches.length === 1){
-      dispatch(
-        getExactUser({
-          page: 0,
-          size: 50,
-          sort: 'createdDate,DESC',
-          department: department?.id || account.department.id,
-          branch: branches[0].id,
-          dependency: true
-        })
-      );
-      getCustomer(department?.id, branches[0].id, null);
+    if (branches.length === 1) {
+      setBranch( branches[0])
+      // dispatch(
+      //   getExactUser({
+      //     page: 0,
+      //     size: 50,
+      //     sort: 'createdDate,DESC',
+      //     department: department?.id || account.department.id,
+      //     branch: branches[0].id,
+      //     dependency: true
+      //   })
+      // ).then(resp => {
+      //   console.log('get customer')
+      //   // getCustomer(department?.id, branches[0].id, null);
+      // });
     }
   }, [branches]);
 
@@ -203,7 +207,7 @@ const CustomerReport = props => {
     setCustomer(null);
   };
   useEffect(() => {
-    if(department !== null){
+    if (department !== null) {
       reset();
       setFilter({
         ...filter,
@@ -226,7 +230,6 @@ const CustomerReport = props => {
         getCustomer(department?.id, null, null);
       }
     }
-
   }, [department]);
 
   useEffect(() => {

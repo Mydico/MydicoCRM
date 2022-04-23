@@ -2,8 +2,8 @@ import React from 'react';
 
 import MaskedInput from 'react-text-mask';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask';
-import {Field} from 'formik';
-import {CInput} from '@coreui/react/lib';
+import { Field } from 'formik';
+import { CInput } from '@coreui/react/lib';
 
 export const defaultMaskOptions = {
   prefix: '',
@@ -15,23 +15,26 @@ export const defaultMaskOptions = {
   decimalLimit: 0, // how many digits allowed after the decimal
   integerLimit: 100, // limit length of integer numbers
   allowNegative: true,
-  allowLeadingZeroes: false,
+  allowLeadingZeroes: false
 };
 export const currencyMask = createNumberMask({
-  ...defaultMaskOptions,
+  ...defaultMaskOptions
 });
-const CurrencyInput = ({name, handleChange, ...inputProps}) => {
+const CurrencyInput = ({ name, handleChange, value, ...inputProps }) => {
   return (
     <Field
       name={name}
-      render={({field}) => {
+      render={({ field }) => {
         return (
           <MaskedInput
             {...field}
             mask={currencyMask}
             onChange={handleChange}
             {...inputProps}
-            render={(ref, props) => <CInput name={name} innerRef={ref} {...props} />}
+            value={value}
+            render={(ref, props) => {
+              return <CInput name={name} innerRef={ref} value={value} {...props} />;
+            }}
           />
         );
       }}

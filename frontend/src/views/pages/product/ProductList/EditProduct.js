@@ -251,12 +251,12 @@ const EditProduct = (props) => {
                 <CCol lg="6">
                   <CFormGroup>
                     <CLabel htmlFor="password">Giá đại lý</CLabel>
-                    <CurrencyInput name="agentPrice" handleChange={handleChange} />
+                    <CurrencyInput name="agentPrice" value={values.agentPrice || 0} handleChange={handleChange} />
                     <CInvalidFeedback className="d-block">{errors.agentPrice}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="password">Giá Salon</CLabel>
-                    <CurrencyInput name="price" handleChange={handleChange} />
+                    <CurrencyInput name="price" value={values.price || 0} handleChange={handleChange} />
                     <CInvalidFeedback className="d-block">{errors.price}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>

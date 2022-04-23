@@ -10,5 +10,6 @@ export enum UnitType {
     'Hũ' = 'Hũ',
     'Lọ' = 'Lọ',
     'Cặp' = 'Cặp',
-    'Thùng' = 'Thùng'
+    'Thùng' = 'Thùng',
+    'Can' = 'Can'
 }
