@@ -61,8 +61,6 @@ export class RoleService {
   }
 
   public async getPermissions(login: string) {
-    // await this.enforcer.loadPolicy();
-
     const groupPolicy = await this.enforcer.getFilteredNamedGroupingPolicy('g', 1, login);
     const groupNestedPolicy = await Promise.all(
       groupPolicy.map(async gPer => await this.enforcer.getFilteredNamedGroupingPolicy('g', 1, gPer[0]))

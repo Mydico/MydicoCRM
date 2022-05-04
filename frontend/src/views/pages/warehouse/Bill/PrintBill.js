@@ -141,6 +141,11 @@ const PrintBill = props => {
               <div style={{ fontSize: '1rem' }}>Nhân viên: &nbsp;&nbsp;&nbsp;{item.sale.code || ''} </div>
             </Col>
           </div>
+          <div className="d-flex mb-4">
+            <Col sm="12">
+              <div style={{ fontSize: '1rem' }}>CT Bán hàng: &nbsp;&nbsp;&nbsp;{item?.promotion.name || ''}</div>
+            </Col>
+          </div>
           <div className="mr-3 ml-3">
             <Table bordered responsive>
               <thead>
@@ -264,6 +269,11 @@ const PrintBill = props => {
               <div>
                 <i className="text-center">(Ký, họ tên)</i>
               </div>
+            </Col>
+          </div>
+          <div className="d-flex mb-4">
+            <Col sm="12">
+              <div style={{ fontSize: '1rem' }}>Ghi chú: &nbsp;&nbsp;&nbsp;{item.note || ''}</div>
             </Col>
           </div>
         </CardBody>

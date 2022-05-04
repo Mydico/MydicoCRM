@@ -54,9 +54,11 @@ export default class Promotion extends BaseEntity {
     orders? : Order[];
 
     @OneToMany(type => PromotionItem, other => other.promotion)
+    @JoinColumn({ name: "promotionId", referencedColumnName: "id"})
     promotionItems? : PromotionItem[];
 
     @OneToMany(type => PromotionProduct, other => other.promotion)
+    @JoinColumn({ name: "promotionId", referencedColumnName: "id"})
     promotionProduct? : PromotionProduct[];
 
     @ManyToOne(type => CustomerType, { createForeignKeyConstraints: false })

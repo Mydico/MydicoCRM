@@ -28,6 +28,7 @@ export class PromotionService {
     async findById(id: string): Promise<Promotion | undefined> {
         const options = { relations: relationshipNames };
         const founded = await this.promotionRepository.findOne(id, options);
+        console.log(founded)
         if (founded.type === PromotionType.SHORTTERM) {
             const productList = await this.promotionProductService.findManyByfields({ where: { promotion: id } });
             founded.promotionProduct = productList;
@@ -61,10 +62,11 @@ export class PromotionService {
                     await this.promotionProductService.saveList(promoteProduct);
                 }
             }else {
-                // const promotionItemList = await this.promotionItemService.findManyByfields({ where: { promotion: saved.id } });
-                // // await this.promotionItemService.deleteMany(promotionItemList);
+                const promotionItemList = await this.promotionItemService.findManyByfields({ where: { promotion: saved.id } });
+                await this.promotionItemService.deleteMany(promotionItemList);
                 if (Array.isArray(promotion.promotionItems) &&  promotion.promotionItems.length > 0) {
-                    await this.promotionItemService.saveList(promotion.promotionItems);
+                    const promoteItems = promotion.promotionItems.map(item => ({ ...item, promotion: saved }));
+                    await this.promotionItemService.saveList(promoteItems);
                 }
             }
         }
