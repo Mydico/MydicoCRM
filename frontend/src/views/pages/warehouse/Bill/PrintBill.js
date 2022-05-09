@@ -5,7 +5,7 @@ import { DocTienBangChu } from '../../../../shared/utils/toMoneyString';
 import ReactToPrint from 'react-to-print';
 import Download from '../../../components/excel/DownloadExcel.js';
 import moment from 'moment';
-import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
+import { memoizedGetCityName, memoizedGetDistrictName, removeSpecialChars, stringToSlug } from '../../../../shared/utils/helper.js';
 
 const excelFields = [
   { key: 'none', label: 'Hiển thị trên sổ' },
@@ -105,7 +105,7 @@ const PrintBill = props => {
   return (
     <div className="animated fadeIn" ref={el => (ref.current = el)}>
       <div style={{ marginBottom: 12 }}>
-        <Download data={orderExcel} headers={excelFields} name={`${item?.customer?.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\D/g,'')}-${item?.code}`} />
+        <Download data={orderExcel} headers={excelFields} name={`${removeSpecialChars(stringToSlug(item?.customer?.name))}-${item?.code}`} />
       </div>
 
       <Card>
