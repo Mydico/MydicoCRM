@@ -105,7 +105,7 @@ const PrintBill = props => {
   return (
     <div className="animated fadeIn" ref={el => (ref.current = el)}>
       <div style={{ marginBottom: 12 }}>
-        <Download data={orderExcel} headers={excelFields} name={`${item?.customer?.name.replace(/[^\w\s]/gi, '')}-${item?.code}`} />
+        <Download data={orderExcel} headers={excelFields} name={`${item?.customer?.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\D/g,'')}-${item?.code}`} />
       </div>
 
       <Card>

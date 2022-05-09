@@ -31,6 +31,14 @@ export const UnitType = [
     title: 'Cặp',
     value: 'Cặp',
   },
+  {
+    title: 'Can',
+    value: 'Can',
+  },
+  {
+    title: 'Thùng',
+    value: 'Thùng',
+  },
 ];
 
 export const PromotionStatus = [
