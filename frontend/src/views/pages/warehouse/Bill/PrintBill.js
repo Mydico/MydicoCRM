@@ -105,7 +105,7 @@ const PrintBill = props => {
   return (
     <div className="animated fadeIn" ref={el => (ref.current = el)}>
       <div style={{ marginBottom: 12 }}>
-        <Download data={orderExcel} headers={excelFields} name={`${removeSpecialChars(stringToSlug(item?.customer?.name))}-${item?.code}`} />
+        <Download data={orderExcel} headers={excelFields} name={`${item?.code}-${removeSpecialChars(stringToSlug(item?.customer?.name))}`} />
       </div>
 
       <Card>

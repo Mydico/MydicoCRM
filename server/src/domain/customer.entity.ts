@@ -75,7 +75,7 @@ export default class Customer extends BaseEntity {
     @Index()
     social?: string;
 
-    @Column({ name: 'code', length: 256, nullable: false, unique: true })
+    @Column({ name: 'code', length: 256, nullable: false})
     code: string;
 
     @Column({ name: 'contact_name', length: 256, nullable: true })

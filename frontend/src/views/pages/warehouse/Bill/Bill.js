@@ -707,7 +707,7 @@ const Bill = props => {
                         </tr>
                       </thead>
                       <tbody>
-                        {[...(item?.order?.orderDetails || [])].map((item, index) => {
+                        {[...(item?.order?.orderDetails || [])].reverse().map((item, index) => {
                           return (
                             <tr key={index}>
                               <td> {(activePage - 1) * size + index + 1}</td>

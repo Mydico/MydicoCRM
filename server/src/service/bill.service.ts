@@ -80,6 +80,16 @@ export class BillService {
         })
       );
     }
+    // const result =  await queryBuilder.getManyAndCount()
+    // result[0] = result[0].map(item => ({
+    //   ...item,
+    //   order: {
+    //     ...item.order,
+    //     orderDetails:item.order.orderDetails.sort((a, b) => {
+    //       return Number(b.id) - Number(a.id);
+    //     })
+    //   }
+    // }));
     return await queryBuilder.getManyAndCount();
   }
 

@@ -237,7 +237,7 @@ export const AdvancedTable = props => {
       const columnFilter = String(value || '').toLowerCase();
       if (columnFilter && itemsDataColumns.includes(key)) {
         items = items.filter(item => {
-          return String(item[key].toLowerCase()).includes(columnFilter.toLowerCase());
+          return String(item[key]).toLowerCase().includes(columnFilter.toLowerCase());
         });
       }
     });

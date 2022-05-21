@@ -342,10 +342,11 @@ export class CustomerService {
         contact_vocative: '',
         customer_created: customer.createdBy
       });
-      await result.toPromise().catch(e => error = e.message);
+      await result.toPromise().catch(e => (error = e.message));
     }
     const foundedCustomer = await this.customerRepository.find({
-      code: Like(`%${customer.code}%`)
+      code: Like(`%${customer.code}%`),
+      activated: true
     });
     const newCustomer = checkCodeContext(customer, foundedCustomer);
     newCustomer.errorLogs = error;

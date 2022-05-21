@@ -203,7 +203,6 @@ const CreateOrder = props => {
       alert('Không để tổng số lượng bằng 0');
       return;
     }
-    console.log(productList)
     if (productList.filter(item => Number(item.quantity) === 0).length > 0) {
       alert('Không để sản phẩm có số lượng bằng 0 khi tạo đơn hàng');
       return;
@@ -391,7 +390,6 @@ const CreateOrder = props => {
     copyArr[index].reducePercent = target.value === '' ? 0 : target.value > 100 ? 100 : Number(target.value).toString();
     copyArr[index].reduce = (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     copyArr[index].priceTotal = (copyArr[index].priceReal * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
-    // (copyArr[index].priceReal * copyArr[index].quantity * copyArr[index].reducePercent || 0) / 100;
     setProductList(copyArr);
   };
 
@@ -413,7 +411,6 @@ const CreateOrder = props => {
         handleSubmit,
         setFieldValue
       }) => {
-        console.log(values)
         return (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-primary">
