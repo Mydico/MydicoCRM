@@ -45,7 +45,7 @@ export default class Product extends BaseEntity {
     order: number;
 
     @Column({ type: 'integer', name: 'volume', default: 0 })
-    @Index({ fulltext: true })
+    @Index()
     volume: number;
 
     /**

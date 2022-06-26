@@ -22,7 +22,7 @@ export class BillSubscriber implements EntitySubscriberInterface<Bill> {
             event.entity.lastModifiedBy = 'hệ thống';
             const codLog = new Codlog();
             const updateEntity = event.entity;
-            codLog.bill = updateEntity;
+            codLog.bill = updateEntity as Bill;
             codLog.code = updateEntity.code;
             codLog.transporter = updateEntity.transporter;
             codLog.status = updateEntity.status;

@@ -30,6 +30,9 @@ import { PermissionStatus } from './domain/enumeration/permission-status';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import compression from 'fastify-compress';
 import { contentParser } from 'fastify-multer';
+import * as admin from 'firebase-admin';
+import { ServiceAccount } from 'firebase-admin';
+import * as firebaseConfig from '../mydicocrm.json';
 
 const logger: Logger = new Logger('Main');
 const port = process.env.NODE_SERVER_PORT || config.get('server.port');
@@ -41,6 +44,19 @@ const useJHipsterRegistry = config.get('eureka.client.enabled');
 //   key: fs.readFileSync(path.resolve(__dirname, './secrets/private-key.pem')),
 //   cert: fs.readFileSync(path.resolve(__dirname, './secrets/public-certificate.pem')),
 // };
+const firebase_params = {
+  type: firebaseConfig.type,
+  projectId: firebaseConfig.project_id,
+  privateKeyId: firebaseConfig.private_key_id,
+  privateKey: firebaseConfig.private_key,
+  clientEmail: firebaseConfig.client_email,
+  clientId: firebaseConfig.client_id,
+  authUri: firebaseConfig.auth_uri,
+  tokenUri: firebaseConfig.token_uri,
+  authProviderX509CertUrl: firebaseConfig.auth_provider_x509_cert_url,
+  clientC509CertUrl: firebaseConfig.client_x509_cert_url
+};
+
 async function bootstrap(): Promise<void> {
   // loadCloudConfig();
   // registerAsEurekaService();
@@ -100,6 +116,11 @@ async function bootstrap(): Promise<void> {
 //       headerPairs: 2000 // Max number of header key=>value pairs
 //     }
 //   });
+  // Initialize the firebase admin app
+  admin.initializeApp({
+    credential: admin.credential.cert(firebase_params),
+  });
+
   const staticClientPath = path.join(__dirname, '../dist/classes/static');
   const staticFilePath = path.join(__dirname, '../uploads');
   if (fs.existsSync(staticClientPath)) {

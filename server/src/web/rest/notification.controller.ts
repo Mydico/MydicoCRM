@@ -11,35 +11,34 @@ import {
     Req,
     UseInterceptors,
     Res,
-    CacheInterceptor,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import Promotion from '../../domain/promotion.entity';
-import { PromotionService } from '../../service/promotion.service';
+import Notification from '../../domain/notification.entity';
+import { NotificationService } from '../../service/notification.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { Like } from 'typeorm';
 
-@Controller('api/promotions')
+@Controller('api/notifications')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor, CacheInterceptor)
+@UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-export class PromotionController {
-    logger = new Logger('PromotionController');
+export class NotificationController {
+    logger = new Logger('NotificationController');
 
-    constructor(private readonly promotionService: PromotionService) {}
+    constructor(private readonly notificationService: NotificationService) {}
 
     @Get('/')
     @Roles(RoleType.USER)
     @ApiResponse({
         status: 200,
         description: 'List all records',
-        type: Promotion,
+        type: Notification,
     })
-    async getAll(@Req() req, @Res() res): Promise<Promotion[]> {
+    async getAll(@Req() req, @Res() res): Promise<Notification[]> {
         const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
         const filter = {};
         Object.keys(req.query).forEach(item => {
@@ -47,11 +46,13 @@ export class PromotionController {
                 filter[item] = Like(`%${req.query[item]}%`);
             }
         });
-        const [results, count] = await this.promotionService.findAndCount({
+        const [results, count] = await this.notificationService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
-            where: filter,
+            where: {
+                ...filter,
+            },
         });
         HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return res.send(results);
@@ -62,10 +63,10 @@ export class PromotionController {
     @ApiResponse({
         status: 200,
         description: 'The found record',
-        type: Promotion,
+        type: Notification,
     })
     async getOne(@Param('id') id: string, @Res() res: Response): Promise<Response> {
-        return res.send(await this.promotionService.findById(id));
+        return res.send(await this.notificationService.findById(id));
     }
 
     @PostMethod('/')
@@ -73,12 +74,12 @@ export class PromotionController {
     @ApiResponse({
         status: 201,
         description: 'The record has been successfully created.',
-        type: Promotion,
+        type: Notification,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async post(@Res() res: Response, @Body() promotion: Promotion): Promise<Response> {
-        const created = await this.promotionService.save(promotion);
-        HeaderUtil.addEntityCreatedHeaders(res, 'Promotion', created.id);
+    async post(@Res() res: Response, @Body() notification: Notification): Promise<Response> {
+        const created = await this.notificationService.save(notification);
+        HeaderUtil.addEntityCreatedHeaders(res, 'Notification', created.id);
         return res.send(created);
     }
 
@@ -87,11 +88,11 @@ export class PromotionController {
     @ApiResponse({
         status: 200,
         description: 'The record has been successfully updated.',
-        type: Promotion,
+        type: Notification,
     })
-    async put(@Res() res: Response, @Body() promotion: Promotion): Promise<Response> {
-        HeaderUtil.addEntityUpdatedHeaders(res, 'Promotion', promotion.id);
-        return res.send(await this.promotionService.update(promotion));
+    async put(@Res() res: Response, @Body() notification: Notification): Promise<Response> {
+        HeaderUtil.addEntityCreatedHeaders(res, 'Notification', notification.id);
+        return res.send(await this.notificationService.update(notification));
     }
 
     @Delete('/:id')
@@ -100,9 +101,9 @@ export class PromotionController {
         status: 204,
         description: 'The record has been successfully deleted.',
     })
-    async remove(@Res() res: Response, @Param('id') id: string): Promise<Promotion> {
-        HeaderUtil.addEntityDeletedHeaders(res, 'Promotion', id);
-        const toDelete = await this.promotionService.findById(id);
-        return await this.promotionService.delete(toDelete);
+    async remove(@Res() res: Response, @Param('id') id: string): Promise<Response> {
+        HeaderUtil.addEntityDeletedHeaders(res, 'Notification', id);
+        const toDelete = await this.notificationService.findById(id);
+        return res.send(await this.notificationService.delete(toDelete));
     }
 }

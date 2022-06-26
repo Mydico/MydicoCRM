@@ -77,7 +77,7 @@ export class DepartmentController {
     description: 'List all records',
     type: Department
   })
-  async getAll(@Req() req: Request, @Res() res): Promise<Department[]> {
+  async getAll(@Req() req, @Res() res): Promise<Department[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = [];
     Object.keys(req.query).forEach(item => {

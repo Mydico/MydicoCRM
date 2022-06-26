@@ -55,5 +55,6 @@
     "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": ["src/**/*", "**/*spec.ts"],
-  "exclude": ["e2e"]
+  "exclude": ["e2e"],
+  
 }

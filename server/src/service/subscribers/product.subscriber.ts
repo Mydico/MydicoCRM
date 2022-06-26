@@ -16,7 +16,7 @@ export class ProductSubscriber implements EntitySubscriberInterface<Product> {
         await event.manager.connection.queryResultCache.remove(['cache_count_get_products']);
     }
 
-    async afterUpdate(event: InsertEvent<Product>): Promise<any> {
+    async afterUpdate(event: UpdateEvent<Product>): Promise<any> {
         await event.manager.connection.queryResultCache.remove(['get_products']);
     }
 }

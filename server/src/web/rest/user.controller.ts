@@ -44,7 +44,7 @@ export class UserController {
     description: 'List all records',
     type: User
   })
-  async getTransporter(@Req() req: Request, @Res() res): Promise<User[]> {
+  async getTransporter(@Req() req, @Res() res): Promise<User[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
     Object.keys(req.query).forEach(item => {
@@ -73,7 +73,7 @@ export class UserController {
       description: 'List all records',
       type: User,
   })
-  async findExact(@Req() req: Request, @Res() res): Promise<User[]> {
+  async findExact(@Req() req, @Res() res): Promise<User[]> {
       const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
       const filter: any = {};
       Object.keys(req.query).forEach(item => {
@@ -109,7 +109,7 @@ export class UserController {
     description: 'List all records',
     type: User
   })
-  async getAllUsers(@Req() req: Request, @Res() res): Promise<User[]> {
+  async getAllUsers(@Req() req, @Res() res): Promise<User[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const filter = {};
     const currentUser = req.user as User;
@@ -184,6 +184,17 @@ export class UserController {
     }
     HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.login);
     return res.send(await this.userService.resetPassword(user));
+  }
+
+  @Put('/update-token')
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: User
+  })
+  async updateToken(@Req() req: Request, @Res() res: Response, @Body() user: User): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.id);
+    return res.send(await this.userService.update(user));
   }
 
   @Put('/')

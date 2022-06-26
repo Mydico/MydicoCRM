@@ -39,7 +39,7 @@ export class BranchController {
     description: 'List all records',
     type: Branch
   })
-  async getAll(@Req() req: Request, @Res() res): Promise<Branch[]> {
+  async getAll(@Req() req, @Res() res): Promise<Branch[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const currentUser = req.user as User;
     const isBranchManager = currentUser.roles.filter(item => item.authority === RoleType.BRANCH_MANAGER).length > 0;

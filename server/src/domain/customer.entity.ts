@@ -64,7 +64,7 @@ export default class Customer extends BaseEntity {
     @Index()
     marriage?: boolean;
 
-    @Column({ name: 'error_logs', nullable: true, length: "MAX" })
+    @Column({ name: 'error_logs', nullable: true, length: "255" })
     errorLogs?: string;
 
     @Column({ type: 'boolean', name: 'activated', nullable: true, default: true })

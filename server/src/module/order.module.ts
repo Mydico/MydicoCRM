@@ -11,6 +11,8 @@ import { CustomerModule } from './customer.module';
 import { OrderSubscriber } from '../service/subscribers/order.subscriber';
 import { BillModule } from './bill.module';
 import { EventsGateway } from './provider/events.gateway';
+import { NotificationModule } from './notification.module';
+import { FirebaseService } from '../service/firebase.services';
 
 @Module({
   imports: [
@@ -22,9 +24,10 @@ import { EventsGateway } from './provider/events.gateway';
     DepartmentModule,
     IncomeDashboardModule,
     CustomerModule,
+    NotificationModule,
   ],
   controllers: [OrderController],
-  providers: [OrderService, OrderSubscriber, EventsGateway],
+  providers: [OrderService, OrderSubscriber, EventsGateway, FirebaseService],
   exports: [OrderService]
 })
 export class OrderModule {}

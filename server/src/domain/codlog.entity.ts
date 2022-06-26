@@ -26,6 +26,7 @@ export default class Codlog extends BaseEntity {
 
     @ManyToOne(type => Order, {createForeignKeyConstraints: false })
     order: Order;
+    codLog: any;
 
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

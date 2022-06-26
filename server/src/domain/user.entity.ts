@@ -90,6 +90,11 @@ export class User extends BaseEntity {
     @Column({ nullable: true })
     @Index()
     imageUrl?: string;
+
+    @Column({ nullable: true })
+    @Index()
+    fcmToken?: string;
+
     @Column({ nullable: true })
     @Index()
     resetDate?: Date;

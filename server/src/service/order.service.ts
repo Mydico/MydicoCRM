@@ -13,20 +13,18 @@ import _ from 'lodash';
 import { TransactionService } from './transaction.service';
 import Transaction from '../domain/transaction.entity';
 import { TransactionType } from '../domain/enumeration/transaction-type';
-import { IncomeDashboardService } from './income-dashboard.service';
-import IncomeDashboard from '../domain/income-dashboard.entity';
-import { DashboardType } from '../domain/enumeration/dashboard-type';
-import { CustomerService } from './customer.service';
 import { User } from '../domain/user.entity';
 import { EventsGateway } from '../module/provider/events.gateway';
 import { DepartmentService } from './department.service';
-import { generateCacheKey } from './utils/helperFunc';
+import { NotificationService } from './notification.service';
+import { FirebaseService } from './firebase.services';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
 relationshipNames.push('orderDetails');
 relationshipNames.push('orderDetails.product');
 relationshipNames.push('promotion');
+relationshipNames.push('promotion.promotionItems');
 relationshipNames.push('promotion.customerType');
 relationshipNames.push('store');
 relationshipNames.push('sale');
@@ -44,6 +42,8 @@ export class OrderService {
     private readonly productQuantityService: ProductQuantityService,
     private readonly transactionService: TransactionService,
     private readonly departmentService: DepartmentService,
+    private readonly notificationService: NotificationService,
+    private readonly firebaseService: FirebaseService,
     private readonly eventsGateway: EventsGateway
   ) {}
 
@@ -276,13 +276,50 @@ export class OrderService {
   }
 
   async updateStatus(order: Order): Promise<Order | undefined> {
+    let content = '';
+    switch (order.status) {
+      case OrderStatus.APPROVED:
+        content = `Đơn hàng ${order.code} đã được duyệt`;
+
+        break;
+      case OrderStatus.CANCEL:
+        content = `Đơn hàng ${order.code} đã bị hủy`;
+        break;
+      case OrderStatus.COD_APPROVED:
+        content = `Vận đơn của đơn hàng ${order.code} đã được duyệt`;
+        break;
+      case OrderStatus.SHIPPING:
+        content = `Đơn hàng ${order.code} đang được vận chuyển`;
+        break;
+      case OrderStatus.SUCCESS:
+        content = `Đơn hàng ${order.code} đang giao thành công`;
+        break;
+      default:
+        break;
+    }
+    await this.notificationService.save({
+      content,
+      type: 'ORDER',
+      entityId: order.id,
+      user: order.sale
+    });
+    await this.firebaseService.sendFirebaseMessages(
+      [
+        {
+          token: order.sale.fcmToken,
+          title: 'Thông báo',
+          message: content
+        }
+      ],
+      true
+    );
     return await this.orderRepository.save(order);
   }
 
   async createCOD(order: Order): Promise<Order> {
     const foundedOrder = await this.findById(order.id);
     order.status = OrderStatus.CREATE_COD;
-    order.billDate = new Date()
+    order.billDate = new Date();
     if (foundedOrder.status === OrderStatus.CREATE_COD && order.status === OrderStatus.CREATE_COD) {
       throw new HttpException('Đơn hàng đã tạo vận đơn', HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -338,6 +375,22 @@ export class OrderService {
       result = await this.orderRepository.save(result);
     }
     await this.emitMessage(result, order);
+    await this.notificationService.save({
+      content: `Đơn hàng ${order.code} đã được tạo vận đơn`,
+      type: 'ORDER',
+      entityId: order.id,
+      user: order.sale
+    });
+    await this.firebaseService.sendFirebaseMessages(
+      [
+        {
+          token: order.sale.fcmToken,
+          title: 'Thông báo',
+          message: `Đơn hàng ${order.code} đã được tạo vận đơn`
+        }
+      ],
+      true
+    );
     return result;
   }
 

@@ -158,8 +158,8 @@ const CustomerUser = props => {
           size: customerSize,
           sort: 'createdDate,DESC',
           sale: selectedUser.id,
-          department: selectedUser.department.id,
-          branch: selectedUser.branch.id,
+          department: JSON.stringify([selectedUser.department.id, selectedUser.mainDepartment?.id]),
+          branch: JSON.stringify([selectedUser.branch.id]),
           dependency: true
         })
       ).then(resp => {

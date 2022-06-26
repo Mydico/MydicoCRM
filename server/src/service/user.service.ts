@@ -76,6 +76,7 @@ export class UserService {
           .createQueryBuilder('User')
           .leftJoinAndSelect('User.branch', 'branch')
           .leftJoinAndSelect('User.department', 'department')
+          .leftJoinAndSelect('User.mainDepartment', 'mainDepartment')
           .where(andQueryString)
           .andWhere(`User.login <> 'admin'`)
           .orderBy(`User.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')

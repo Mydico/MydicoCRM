@@ -78,7 +78,7 @@ if (process.env.NODE_ENV === 'dev') {
         username: 'root',
         password: 'Dunghd@123',
         logging: true,
-        synchronize: false,
+        synchronize: true,
         entities: commonConf.ENTITIES,
         migrations: commonConf.MIGRATIONS,
         cli: commonConf.CLI,

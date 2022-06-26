@@ -48,7 +48,8 @@ import { ReportModule } from './module/report.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './module/task.module';
 import { EventsModule } from './module/event.module';
-
+import { NotificationModule } from './module/notification.module';
+import { FirebaseService } from './service/firebase.services';
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
 // jhipster-needle-add-service-module-to-main-import - JHipster will import service modules here, do not remove
@@ -105,7 +106,8 @@ import { EventsModule } from './module/event.module';
         IncomeDashboardModule,
         DebtDashboardModule,
         BranchModule,
-        EventsModule
+        EventsModule,
+        NotificationModule,
     // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
     ],
     controllers: [

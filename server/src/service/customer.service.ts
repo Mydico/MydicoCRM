@@ -59,10 +59,23 @@ export class CustomerService {
       andQueryString += ` AND Customer.sale = ${filter['sale']}`;
     }
     if (filter['department']) {
-      andQueryString += ` AND Customer.department = ${filter['department']}`;
+      if(Array.isArray(JSON.parse(filter['department']))){
+        andQueryString += ` AND Customer.department IN ${filter['department']
+          .replace('[', '(')
+          .replace(']', ')')}`;
+      }else {
+        andQueryString += ` AND Customer.department = ${filter['department']}`;
+      }
+
     }
     if (filter['branch']) {
-      andQueryString += ` AND Customer.branch = ${filter['branch']}`;
+      if(Array.isArray(JSON.parse(filter['branch']))){
+        andQueryString += ` AND Customer.branch IN ${filter['branch']
+        .replace('[', '(')
+        .replace(']', ')')}`;
+      }else {
+        andQueryString += ` AND Customer.branch = ${filter['branch']}`;
+      }
     }
     if (filter['type']) {
       andQueryString += ` AND Customer.type = ${filter['type']}`;
