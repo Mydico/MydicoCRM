@@ -13,6 +13,7 @@ import { BillModule } from './bill.module';
 import { EventsGateway } from './provider/events.gateway';
 import { NotificationModule } from './notification.module';
 import { FirebaseService } from '../service/firebase.services';
+import { UserModule } from './user.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { FirebaseService } from '../service/firebase.services';
     IncomeDashboardModule,
     CustomerModule,
     NotificationModule,
+    UserModule,
   ],
   controllers: [OrderController],
   providers: [OrderService, OrderSubscriber, EventsGateway, FirebaseService],

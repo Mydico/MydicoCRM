@@ -49,3 +49,11 @@ export class ResetPasswordDTO {
     @IsString()
     newPassword?: string;
 }
+
+export class UpdateTokenDTO {
+    @IsString()
+    login?: string;
+
+    @IsString()
+    fcmToken?: string;
+}

@@ -31,8 +31,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import compression from 'fastify-compress';
 import { contentParser } from 'fastify-multer';
 import * as admin from 'firebase-admin';
-import { ServiceAccount } from 'firebase-admin';
-import * as firebaseConfig from '../mydicocrm.json';
+import * as firebaseConfig from './mydicocrm.json';
 
 const logger: Logger = new Logger('Main');
 const port = process.env.NODE_SERVER_PORT || config.get('server.port');

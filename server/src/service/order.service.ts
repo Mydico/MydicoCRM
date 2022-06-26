@@ -18,6 +18,7 @@ import { EventsGateway } from '../module/provider/events.gateway';
 import { DepartmentService } from './department.service';
 import { NotificationService } from './notification.service';
 import { FirebaseService } from './firebase.services';
+import { UserService } from './user.service';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -44,7 +45,8 @@ export class OrderService {
     private readonly departmentService: DepartmentService,
     private readonly notificationService: NotificationService,
     private readonly firebaseService: FirebaseService,
-    private readonly eventsGateway: EventsGateway
+    private readonly eventsGateway: EventsGateway,
+    private readonly userService: UserService
   ) {}
 
   async findById(id: string): Promise<Order | undefined> {
@@ -276,43 +278,6 @@ export class OrderService {
   }
 
   async updateStatus(order: Order): Promise<Order | undefined> {
-    let content = '';
-    switch (order.status) {
-      case OrderStatus.APPROVED:
-        content = `Đơn hàng ${order.code} đã được duyệt`;
-
-        break;
-      case OrderStatus.CANCEL:
-        content = `Đơn hàng ${order.code} đã bị hủy`;
-        break;
-      case OrderStatus.COD_APPROVED:
-        content = `Vận đơn của đơn hàng ${order.code} đã được duyệt`;
-        break;
-      case OrderStatus.SHIPPING:
-        content = `Đơn hàng ${order.code} đang được vận chuyển`;
-        break;
-      case OrderStatus.SUCCESS:
-        content = `Đơn hàng ${order.code} đang giao thành công`;
-        break;
-      default:
-        break;
-    }
-    await this.notificationService.save({
-      content,
-      type: 'ORDER',
-      entityId: order.id,
-      user: order.sale
-    });
-    await this.firebaseService.sendFirebaseMessages(
-      [
-        {
-          token: order.sale.fcmToken,
-          title: 'Thông báo',
-          message: content
-        }
-      ],
-      true
-    );
     return await this.orderRepository.save(order);
   }
 
@@ -462,7 +427,45 @@ export class OrderService {
     //   }
     // }
     const result = await this.orderRepository.save(order);
-    await this.emitMessage(result, order);
+    let content = '';
+    switch (order.status) {
+      case OrderStatus.APPROVED:
+        content = `Đơn hàng ${result.code} đã được duyệt`;
+
+        break;
+      case OrderStatus.CANCEL:
+        content = `Đơn hàng ${result.code} đã bị hủy`;
+        break;
+      case OrderStatus.COD_APPROVED:
+        content = `Vận đơn của đơn hàng ${result.code} đã được duyệt`;
+        break;
+      case OrderStatus.SHIPPING:
+        content = `Đơn hàng ${result.code} đang được vận chuyển`;
+        break;
+      case OrderStatus.SUCCESS:
+        content = `Đơn hàng ${result.code} đang giao thành công`;
+        break;
+      default:
+        break;
+    }
+    const foundedOrder = await this.findById(order.id);
+
+    await this.notificationService.save({
+      content,
+      type: 'ORDER',
+      entityId: foundedOrder.id,
+      user: foundedOrder.sale
+    });
+    await this.firebaseService.sendFirebaseMessages(
+      [
+        {
+          token: foundedOrder.sale.fcmToken,
+          title: 'Thông báo',
+          message: content
+        }
+      ],
+      true
+    );
     return result;
   }
 

@@ -4,7 +4,7 @@ import { User } from '../domain/user.entity';
 import { UserRepository } from '../repository/user.repository';
 import { Brackets, FindManyOptions, FindOneOptions, Like, Not } from 'typeorm';
 import { RoleService } from './role.service';
-import { ChangePasswordDTO } from './dto/user.dto';
+import { ChangePasswordDTO, UpdateTokenDTO } from './dto/user.dto';
 import { checkCodeContext } from './utils/normalizeString';
 import Department from '../domain/department.entity';
 const relationshipNames = [];
@@ -239,6 +239,15 @@ export class UserService {
 
     async update(user: User): Promise<User | undefined> {
         return await this.save(user);
+    }
+
+    async updateToken(user: UpdateTokenDTO): Promise<User | undefined> {
+        const userFind = await this.findByfields({ where: { login: user.login } });
+        if (!userFind) {
+            throw new HttpException('Người dùng này không tồn tại', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        userFind.fcmToken = user.fcmToken;
+        return await this.save(userFind);
     }
 
     async delete(user: User): Promise<User | undefined> {

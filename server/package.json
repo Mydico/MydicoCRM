@@ -70,7 +70,6 @@
     "reflect-metadata": "^0.1.13",
     "resize-optimize-images": "^1.1.2",
     "rxjs": "^6.5.2",
-    "shelljs": "^0.8.5",
     "swagger-ui-express": "^4.0.7",
     "typeorm": "^0.2.34",
     "typeorm-adapter": "^1.4.0",

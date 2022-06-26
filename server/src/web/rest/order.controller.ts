@@ -124,12 +124,6 @@ export class OrderController {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'Order', order.id);
     const currentUser = req.user as User;
     order.lastModifiedBy = currentUser.login;
-    // let departmentVisible = [];
-    // const isEmployee = currentUser.roles.filter(item => item.authority === RoleType.EMPLOYEE).length > 0;
-    // if (currentUser.department) {
-    //     departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-    //     departmentVisible = departmentVisible.map(item => item.id);
-    // }
     return res.send(await this.orderService.update(order));
   }
 

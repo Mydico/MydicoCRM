@@ -23,11 +23,11 @@ import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UserService } from '../../service/user.service';
-import { ChangePasswordDTO, ResetPasswordDTO } from '../../service/dto/user.dto';
+import { ChangePasswordDTO, ResetPasswordDTO, UpdateTokenDTO } from '../../service/dto/user.dto';
 import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/users')
-@UseGuards(AuthGuard, RolesGuard, PermissionGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor, CacheInterceptor)
 @ApiBearerAuth()
 export class UserController {
@@ -192,9 +192,9 @@ export class UserController {
     description: 'The record has been successfully updated.',
     type: User
   })
-  async updateToken(@Req() req: Request, @Res() res: Response, @Body() user: User): Promise<Response> {
-    HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.id);
-    return res.send(await this.userService.update(user));
+  async updateToken(@Req() req: Request, @Res() res: Response, @Body() user: UpdateTokenDTO): Promise<Response> {
+    HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.login);
+    return res.send(await this.userService.updateToken(user));
   }
 
   @Put('/')
@@ -203,7 +203,11 @@ export class UserController {
     description: 'The record has been successfully updated.',
     type: User
   })
-  async updateUser(@Res() res: Response, @Body() user: User): Promise<Response> {
+  async updateUser(@Req() req: Request, @Res() res: Response, @Body() user: User): Promise<Response> {
+    const currentUser = req.user as User;
+    if (currentUser.login !== user.login) {
+      throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
     HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.id);
     return res.send(await this.userService.update(user));
   }
