@@ -344,7 +344,7 @@ const Receipt = props => {
       <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
 
       <CCardBody>
-        <Download data={memoExcelListed} headers={excelFields} name={'order'} />
+        <Download data={memoExcelListed} headers={excelFields} name={'lich su don hang'} />
 
         {/* <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>

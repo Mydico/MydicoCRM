@@ -18,7 +18,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingWarehouse, getDetailWarehouse } from './warehouse.api';
+import { creatingWarehouse, getDetailWarehouse, updateWarehouse } from './warehouse.api';
 
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseSelectors } from './warehouse.reducer';
@@ -74,7 +74,7 @@ const EditWarehouse = props => {
 
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
-    dispatch(creatingWarehouse(values));
+    dispatch(updateWarehouse(values));
   };
 
   useEffect(() => {

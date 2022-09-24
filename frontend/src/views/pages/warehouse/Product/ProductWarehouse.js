@@ -100,10 +100,9 @@ const ProductWarehouse = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getProductWarehouse({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-      dispatch(getCountProductWarehouse({ dependency: true,  ...value })).then(resp => {
+      dispatch(getCountProductWarehouse({ dependency: true, ...value })).then(resp => {
         setTotal(Number(resp.payload.data.count));
       });
     }
@@ -124,7 +123,11 @@ const ProductWarehouse = props => {
         </CCardTitle>
       </CCardHeader>
       <CCardBody>
-        <Download data={memoListed} headers={fields} name={'order'} />
+        <Download
+          data={memoListed}
+          headers={fields}
+          name={`san_pham_trong_kho`}
+        />
         <CRow className="ml-0 mt-4">
           <CLabel>Tổng sản phẩm:</CLabel>
           <strong>{`\u00a0\u00a0${total}`}</strong>

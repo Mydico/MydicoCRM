@@ -10,10 +10,8 @@ import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
 
 import { Table } from 'reactstrap';
-import cities from '../../../../shared/utils/city';
-import district from '../../../../shared/utils/district.json';
 import { WarehouseImportType } from './contants';
-
+import moment from 'moment'
 const validationSchema = function() {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -21,7 +19,8 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
-import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper';
+import { memoizedGetCityName, memoizedGetDistrictName, removeSpecialChars, stringToSlug } from '../../../../shared/utils/helper';
+import Download from '../../../components/excel/DownloadExcel';
 
 export const mappingStatus = {
   RETURN: 'Trả hàng',
@@ -29,9 +28,37 @@ export const mappingStatus = {
   EXPORT: 'Xuất kho'
 };
 const { selectById } = globalizedWarehouseImportSelectors;
+const excelFields = [
+  { key: 'none', label: 'Hiển thị trên sổ' },
+  { key: 'key4', label: 'Loại xuất kho' },
+  { key: 'billDate', label: 'Ngày hạch toán (*)' },
+  { key: 'billDate', label: 'Ngày chứng từ (*)' },
+  { key: 'code', label: 'Số chứng từ (*)' },
+  { key: 'storeCode', label: 'Mã đối tượng' },
+  { key: 'storeName', label: 'Tên đối tượng' },
+  { key: 'address', label: 'Địa chỉ/Bộ phận' },
+  { key: 'reason', label: 'Lý do xuất/Về việc' },
+  { key: 'none', label: 'Tên người nhận/Của' },
+  { key: 'none', label: 'Nhân viên bán hàng' },
+  { key: 'none', label: 'Xuất tại kho' },
+  { key: 'none', label: 'Nhập tại chi nhánh' },
+  { key: 'none', label: 'Nhập tại kho' },
+  { key: 'productCode', label: 'Mã hàng (*)' },
+  { key: 'productName', label: 'Tên hàng' },
+  { key: 'key5', label: 'Kho (*)' },
+  { key: 'key3', label: 'TK Nợ (*)' },
+  { key: 'key6', label: 'TK Có (*)' },
+  { key: 'unit', label: 'ĐVT' },
+  { key: 'quantity', label: 'Số lượng' },
+  { key: 'none', label: 'Đơn giá bán' },
+  { key: 'none', label: 'Thành tiền' },
+  { key: 'none', label: 'Đơn giá vốn' },
+  { key: 'none', label: 'Tiền vốn' },
 
+];
 const DetailWarehouse = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
+  const [orderExcel, setOrderExcel] = useState([]);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -50,7 +77,33 @@ const DetailWarehouse = props => {
 
   useEffect(() => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.storeId, dependency: true }));
+   
+
   }, []);
+
+  const generateOrder = () => {
+    const data = productList.map((item, index) => {
+      return {
+
+        key5: '156',
+        key6: '1561',
+        key4: '3',
+        key3: '1361',
+        billDate: warehouseImport.createdDate ? moment(warehouseImport.createdDate).format('DD/MM/YYYY') : '',
+        code: `Z-VD-${warehouseImport?.code}`,
+        reason: `${warehouseImport.storeTransfer?.name}`,
+        address: `${warehouseImport.storeTransfer?.address}`,
+        storeCode: `${warehouseImport.storeTransfer?.code}`,
+        storeName: `${warehouseImport.storeTransfer?.name}`,
+        productCode: item.product.code,
+        productName: item.product.name,
+        unit: item.product.unit,
+        quantity: Number(item.quantity),
+      };
+    });
+    console.log(data)
+    setOrderExcel(data);
+  };
 
   useEffect(() => {
     if (warehouseImport) {
@@ -58,6 +111,7 @@ const DetailWarehouse = props => {
       setSelectedWarehouse(warehouseImport.store);
       setSelectedCustomer(warehouseImport.customer);
       setProductList(warehouseImport.storeInputDetails);
+      generateOrder();
     }
   }, [warehouseImport]);
 
@@ -75,14 +129,99 @@ const DetailWarehouse = props => {
     }
   }, [initialState.updatingSuccess]);
 
+  const renderInfo = React.useMemo(() => {
+    switch (warehouseImport?.type) {
+      case 'EXPORT':
+        return (
+          <CCard className="card-accent-primary">
+            <CCardHeader>
+              <CCardTitle>Kho nhận</CCardTitle>
+            </CCardHeader>
+
+            <CCardBody>
+              <CRow>
+                <CCol lg="6">
+                  <dl className="row">
+                    <dt className="col-sm-3">Mã kho:</dt>
+                    <dd className="col-sm-9">{warehouseImport?.storeTransfer?.code}</dd>
+                  </dl>
+                  <dl className="row">
+                    <dt className="col-sm-3">Tên kho:</dt>
+                    <dd className="col-sm-9">{warehouseImport?.storeTransfer?.name}</dd>
+                  </dl>
+                </CCol>
+              </CRow>
+            </CCardBody>
+          </CCard>
+        );
+
+      default:
+        return (
+          <CCard className="card-accent-primary">
+            <CCardHeader>
+              <CCardTitle>Thông tin khách hàng</CCardTitle>
+            </CCardHeader>
+
+            <CCardBody>
+              <CRow>
+                <CCol lg="6">
+                  <dl className="row">
+                    <dt className="col-sm-3">Mã khách hàng:</dt>
+                    <dd className="col-sm-9">{selectedCustomer?.code}</dd>
+                  </dl>
+                  <dl className="row">
+                    <dt className="col-sm-3">Họ tên:</dt>
+                    <dd className="col-sm-9">{selectedCustomer?.name}</dd>
+                  </dl>
+                  <dl className="row">
+                    <dt className="col-sm-3">Số điện thoại:</dt>
+                    <dd className="col-sm-9">{selectedCustomer?.tel}</dd>
+                  </dl>
+                  <dl className="row">
+                    <dt className="col-sm-3">Chi nhánh:</dt>
+                    <dd className="col-sm-9">{selectedCustomer?.department?.name}</dd>
+                  </dl>
+                </CCol>
+                <CCol lg="6">
+                  <dl className="row">
+                    <dt className="col-sm-3">Địa chỉ:</dt>
+                    <dd className="col-sm-9">{selectedCustomer?.address}</dd>
+                  </dl>
+                  <dl className="row">
+                    <dt className="col-sm-3">Thành phố:</dt>
+                    <dd className="col-sm-9">{memoizedGetCityName(selectedCustomer?.city)}</dd>
+                  </dl>
+                  <dl className="row">
+                    <dt className="col-sm-3">Quận huyện:</dt>
+                    <dd className="col-sm-9">{memoizedGetDistrictName(selectedCustomer?.district)}</dd>
+                  </dl>
+                  <dl className="row">
+                    <dt className="col-sm-3">Loại khách hàng: </dt>
+                    <dd className="col-sm-9">{selectedCustomer?.type?.name}</dd>
+                  </dl>
+                </CCol>
+              </CRow>
+            </CCardBody>
+          </CCard>
+        );
+    }
+  }, [warehouseImport]);
+
   return (
     <CCard>
+      <div style={{ marginLeft: 12, marginTop: 12, marginBottom: 12 }}>
+        <Download
+          data={orderExcel}
+          headers={excelFields}
+          name={`${warehouseImport?.code}-${removeSpecialChars(stringToSlug(warehouseImport?.storeTransfer?.name || ''))}`}
+        />
+      </div>
       <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
         {({ values, handleSubmit }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
               <CCardHeader>
-                <CCardTitle>Kho hàng</CCardTitle>
+                <CCardTitle>Kho nguồn</CCardTitle>
               </CCardHeader>
               <CCardBody>
                 <CRow>
@@ -109,52 +248,7 @@ const DetailWarehouse = props => {
                 </CRow>
               </CCardBody>
             </CCard>
-            <CCard className="card-accent-primary">
-              <CCardHeader>
-                <CCardTitle>Thông tin khách hàng</CCardTitle>
-              </CCardHeader>
-
-              <CCardBody>
-                <CRow>
-                  <CCol lg="6">
-                    <dl className="row">
-                      <dt className="col-sm-3">Mã khách hàng:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.code}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Họ tên:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.name}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Số điện thoại:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.tel}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Chi nhánh:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.department?.name}</dd>
-                    </dl>
-                  </CCol>
-                  <CCol lg="6">
-                    <dl className="row">
-                      <dt className="col-sm-3">Địa chỉ:</dt>
-                      <dd className="col-sm-9">{selectedCustomer?.address}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Thành phố:</dt>
-                      <dd className="col-sm-9">{memoizedGetCityName(selectedCustomer?.city)}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Quận huyện:</dt>
-                      <dd className="col-sm-9">{memoizedGetDistrictName(selectedCustomer?.district)}</dd>
-                    </dl>
-                    <dl className="row">
-                      <dt className="col-sm-3">Loại khách hàng: </dt>
-                      <dd className="col-sm-9">{selectedCustomer?.type?.name}</dd>
-                    </dl>
-                  </CCol>
-                </CRow>
-              </CCardBody>
-            </CCard>
+            {renderInfo}
             <CCard>
               <CCardBody>
                 <Table responsive striped>
@@ -184,20 +278,21 @@ const DetailWarehouse = props => {
                           </td>
                           <td style={{ minWidth: 100 }}>{item.quantity}</td>
                           <td style={{ minWidth: 100 }}>
-                            {(Number(item?.price || item?.product?.price) *
-                              Number(item.quantity)).toLocaleString('it-IT', {
-                                style: 'currency',
-                                currency: 'VND'
-                              }) || ''}
+                            {(Number(item?.price || item?.product?.price) * Number(item.quantity)).toLocaleString('it-IT', {
+                              style: 'currency',
+                              currency: 'VND'
+                            }) || ''}
                           </td>
                           <td style={{ minWidth: 100 }}>{item.reducePercent}</td>
                           <td style={{ minWidth: 100 }}>
-                            {(Number(item?.price || item?.product?.price) *
+                            {(
+                              Number(item?.price || item?.product?.price) *
                               Number(item.quantity) *
-                              ((100 - Number(item.reducePercent)) / 100)).toLocaleString('it-IT', {
-                                style: 'currency',
-                                currency: 'VND'
-                              }) || ''}
+                              ((100 - Number(item.reducePercent)) / 100)
+                            ).toLocaleString('it-IT', {
+                              style: 'currency',
+                              currency: 'VND'
+                            }) || ''}
                           </td>
                         </tr>
                       );

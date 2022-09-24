@@ -66,3 +66,11 @@ export const getIncomeChart = createAsyncThunk('api/getincomechart', async (para
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+export const getManager = createAsyncThunk('api/users/manager', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/users/manager', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

@@ -145,7 +145,7 @@ const Promotion = props => {
     if (Object.keys(value).length > 0) {
 
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getOrder({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getPromotion({ page: 0, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
     }
   }, 300);
 
@@ -159,6 +159,7 @@ const Promotion = props => {
       return;
     }
     dispatch(updatePromotion({ id: selectedPro.current.id, isLock: !selectedPro.current.isLock }));
+    setPrimary(false)
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);

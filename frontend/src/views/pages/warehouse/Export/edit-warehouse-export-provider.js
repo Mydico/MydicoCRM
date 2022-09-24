@@ -324,7 +324,6 @@ const EditWarehouseExportProvider = props => {
                       <th>Đơn vị</th>
                       <th>Dung tích</th>
                       <th>Số lượng</th>
-                      <th>Đơn giá</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -377,16 +376,7 @@ const EditWarehouseExportProvider = props => {
                               <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
                             )}
                           </td>
-                          <td>
-                            {
-                              <MaskedInput
-                                mask={currencyMask}
-                                onChange={event => onChangePrice(event, index)}
-                                value={Number(item.price || item?.product?.price || 0)}
-                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
-                              />
-                            }
-                          </td>
+
 
                           <td style={{ width: 100 }}>
                             <CButton

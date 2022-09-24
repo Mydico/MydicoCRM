@@ -42,7 +42,7 @@ const validationSchema = function() {
 
 import { validate } from '../../../../shared/utils/normalize';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
-import { getProductInstore } from '../Product/product-warehouse.api';
+import { getProductInstore, getProductWarehouseByField } from '../Product/product-warehouse.api';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -89,6 +89,10 @@ const EditWarehouseExport = props => {
       setInitValuesState(warehouseImport);
       setSelectedWarehouse(warehouseImport.store);
       setProductList(Array.isArray(warehouseImport.storeInputDetails) ? JSON.parse(JSON.stringify(warehouseImport.storeInputDetails)) : []);
+      if (warehouseImport.storeInputDetails.length > 0) {
+        const productArr = JSON.parse(JSON.stringify(warehouseImport.storeInputDetails));
+        updateProductQuantity(productArr);
+      }
     }
   }, [warehouseImport]);
 
@@ -125,7 +129,10 @@ const EditWarehouseExport = props => {
     copyArr[selectedProductIndex].product = value;
     copyArr[selectedProductIndex].quantity = 1;
     copyArr[selectedProductIndex].price = Number(value.price);
-    setProductList(copyArr);
+    // setProductList(copyArr);
+    onSearchProductInstore(copyArr, selectedProductIndex);
+
+    updateProductQuantity(copyArr);
   };
 
   const debouncedSearchProduct = _.debounce(value => {
@@ -174,6 +181,26 @@ const EditWarehouseExport = props => {
         }
       ],
       closeOnEscape: true
+    });
+  };
+
+  const updateProductQuantity = copyArr => {
+    dispatch(
+      getProductWarehouseByField({
+        store: selectedWarehouse?.id,
+        product: JSON.stringify(warehouseImport.storeInputDetails.map(item => item.product.id)),
+        dependency: true
+      })
+    ).then(numberOfQuantityInStore => {
+      if (numberOfQuantityInStore && Array.isArray(numberOfQuantityInStore.payload) && numberOfQuantityInStore.payload.length > 0) {
+        numberOfQuantityInStore.payload.forEach(element => {
+          const foundedIndex = copyArr.findIndex(item => item.product.id === element.product.id);
+          if (foundedIndex !== -1) {
+            copyArr[foundedIndex].quantityInStore = element.quantity;
+          }
+        });
+      }
+      setProductList(copyArr);
     });
   };
 
@@ -315,7 +342,7 @@ const EditWarehouseExport = props => {
                         <th>Sản phẩm</th>
                         <th>Đơn vị</th>
                         <th>Dung tích</th>
-                        <th>Giá</th>
+                        <th>Tồn kho</th>
                         <th>Số lượng</th>
                       </tr>
                     </thead>
@@ -350,16 +377,7 @@ const EditWarehouseExport = props => {
                             </td>
                             <td>{item?.product?.unit}</td>
                             <td>{item?.product?.volume}</td>
-                            <td>
-                              {
-                                <MaskedInput
-                                  mask={currencyMask}
-                                  onChange={event => onChangePrice(event, index)}
-                                  value={Number(item?.price || 0)}
-                                  render={(ref, props) => <CInput innerRef={ref} {...props} />}
-                                />
-                              }
-                            </td>
+                            <td>{item?.quantityInStore}</td>
                             <td style={{ width: 100 }}>
                               {item.followIndex >= 0 ? (
                                 item.quantity

@@ -3,7 +3,7 @@ import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CRow, CCol,
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { filterCustomer, filterCustomerNotToStore, getCustomer, updateManyCustomer } from '../../customer/customer.api.js';
+import { filterCustomer, filterCustomerNotToStore, getCustomer, getCustomerBySale, updateManyCustomer } from '../../customer/customer.api.js';
 import { globalizedCustomerSelectors, reset } from '../../customer/customer.reducer';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
@@ -96,6 +96,7 @@ const CustomerUser = props => {
   const location = useLocation();
   const [modal, setModal] = useState(false);
   const [filteredCustomer, setFilteredCustomer] = useState([]);
+  const [totalFilterSelectedCustomer, setTotalFilterSelectedCustomer] = useState(0)
   const [filteredSearchCustomer, setFilteredSearchCustomer] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedTransferCustomer, setSelectedTransferCustomer] = useState([]);
@@ -144,7 +145,7 @@ const CustomerUser = props => {
       setActivePage(params.page + 1);
       localStorage.removeItem('params');
     }
-    dispatch(getCustomer(params));
+    dispatch(getCustomerBySale(params));
     dispatch(getExactUser({ page: 0, size: size, sort: 'createdDate,DESC', dependency: true, department: location.state.department.id, branch: location.state.branch.id }));
 
     window.scrollTo(0, 100);
@@ -165,6 +166,7 @@ const CustomerUser = props => {
       ).then(resp => {
         if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
           setFilteredCustomer(resp.payload.data);
+          setTotalFilterSelectedCustomer(resp.payload.total)
         }
       });
     }
@@ -195,13 +197,51 @@ const CustomerUser = props => {
     if (Object.keys(value).length > 0) {
 
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getCustomer({ page: 0, size: size, sort: 'createdDate,DESC', ...value,  dependency: true, activated: true }));
+      dispatch(getCustomerBySale({ page: 0, size: size, sort: 'createdDate,DESC', ...paramRef.current,  dependency: true }));
     }
   }, 300);
 
   const onFilterColumn = value => {
+    Object.keys(value).forEach(key => {
+      if (!value[key]) {
+        delete value[key];
+      }
+    });
     if (value) debouncedSearchColumn(value);
   };
+
+  const onFilterCustomerSelectedColumn = value => {
+    Object.keys(value).forEach(key => {
+      if (!value[key]) {
+        delete value[key];
+      }
+    });
+    if (value) debouncedSearchCustomerSelectedColumn(value);
+  };
+
+  const debouncedSearchCustomerSelectedColumn = _.debounce(value => {
+    if (Object.keys(value).length > 0) {
+      if (selectedUser) {
+        dispatch(
+          filterCustomerNotToStore({
+            page: customerActivePage - 1,
+            size: customerSize,
+            sort: 'createdDate,DESC',
+            sale: selectedUser.id,
+            department: JSON.stringify([selectedUser.department.id, selectedUser.mainDepartment?.id]),
+            branch: JSON.stringify([selectedUser.branch.id]),
+            dependency: true,
+            ...value
+          })
+        ).then(resp => {
+          if (resp && resp.payload && Array.isArray(resp.payload.data) && resp.payload.data.length > 0) {
+            setFilteredCustomer(resp.payload.data);
+            setTotalFilterSelectedCustomer(resp.payload.total)
+          }
+        });
+      }
+    }
+  }, 300);
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(customers), [customers]);
@@ -266,7 +306,7 @@ const CustomerUser = props => {
     dispatch(updateManyCustomer(filterData)).then(resp => {
       if (resp && resp.payload && resp.payload.statusCode === 200) {
         let params = { page: activePage - 1, size, sort: 'createdDate,DESC', dependency: true, ...paramRef.current };
-        dispatch(getCustomer(params));
+        dispatch(getCustomerBySale(params));
       }
     });
   };
@@ -274,7 +314,7 @@ const CustomerUser = props => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current,  dependency: true };
-      dispatch(getCustomer(params));
+      dispatch(getCustomerBySale(params));
       setFilteredCustomer([]);
       setSelectedUser(null);
     }
@@ -426,7 +466,7 @@ const CustomerUser = props => {
               // loading
 
               onPaginationChange={val => setCustomerSize(val)}
-              onColumnFilterChange={onFilterColumn}
+              onColumnFilterChange={onFilterCustomerSelectedColumn}
               columnFilterSlot={{
                 order: (
                   <div>
@@ -482,7 +522,7 @@ const CustomerUser = props => {
             />
             <CPagination
               activePage={customerActivePage}
-              pages={Math.floor(initialState.totalItem / size) + 1}
+              pages={Math.floor(totalFilterSelectedCustomer / size) + 1}
               onActivePageChange={i => setActivePage(i)}
             />
           </CCol>

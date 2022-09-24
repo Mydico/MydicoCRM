@@ -100,10 +100,10 @@ const CreateReceipt = () => {
     //   alert('Không để tổng số lượng bằng 0');
     //   return;
     // }
-    // if (productList.filter(item => item.quantity === 0).length > 0) {
-    //   alert('Không để sản phẩm có số lượng bằng 0 khi tạo đơn hàng');
-    //   return;
-    // }
+    if (productList.filter(item => item.quantity === 0).length > 0) {
+      alert('Không để sản phẩm có số lượng bằng 0 khi tạo phiếu');
+      return;
+    }
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
     values.department = account.mainDepartment || account.department;
@@ -145,6 +145,7 @@ const CreateReceipt = () => {
   // });
 
   const debouncedSearchProductInStore = _.debounce((copyArr, index) => {
+    console.log(copyArr,index)
     dispatch(
       getProductInstore({
         storeId: selectedWarehouse.id,
@@ -195,8 +196,19 @@ const CreateReceipt = () => {
     copyArr[selectedProductIndex].product = value;
     copyArr[selectedProductIndex].quantity = 1;
     copyArr[selectedProductIndex].price = Number(value.price);
-    setProductList(copyArr);
+    // setProductList(copyArr);
+    // console.log(selectedProductIndex,index)
+    onSearchProductInstore(copyArr, selectedProductIndex);
+    // setTimeout(() => {
+    //   onSearchProductInstore(copyArr, index);
+    // }, 500);
   };
+
+  // useEffect(() => {
+  //   onSearchProductInstore(productList, index);
+
+  // }, [productList])
+  
 
   const onAddProduct = () => {
     const data = { product: {}, quantity: 1 };
@@ -363,8 +375,8 @@ const CreateReceipt = () => {
                     <tr>
                       <th>Sản phẩm</th>
                       <th>Đơn vị</th>
+                      <th>Tồn kho</th>
                       <th>Số lượng</th>
-                      <th>Đơn giá</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -398,6 +410,9 @@ const CreateReceipt = () => {
                             />
                           </td>
                           <td>{item?.product?.unit}</td>
+                          <td>
+                            {item?.quantityInStore}
+                          </td>
                           <td style={{ minWidth: 100, maxWidth: 300 }}>
                             <CInput
                               type="number"
@@ -413,7 +428,8 @@ const CreateReceipt = () => {
                               <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
                             )}
                           </td>
-                          <td style={{ minWidth: 200 }}>
+
+                          {/* <td style={{ minWidth: 200 }}>
                             {
                               <MaskedInput
                                 mask={currencyMask}
@@ -428,7 +444,7 @@ const CreateReceipt = () => {
                                 render={(ref, props) => <CInput innerRef={ref} {...props} />}
                               />
                             }
-                          </td>
+                          </td> */}
 
                           <td style={{ width: 100 }}>
                             <CButton

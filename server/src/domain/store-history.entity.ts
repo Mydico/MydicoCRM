@@ -16,6 +16,14 @@ export default class StoreHistory extends BaseEntity {
     @Index()
     quantity: number;
 
+    @Column({ type: 'integer', name: 'remain', nullable: true })
+    @Index()
+    remain: number;
+
+    @Column({ type: 'integer', name: 'before_update', nullable: true })
+    @Index()
+    beforeUpdate: number;
+
     @Column({  name: 'store_name', nullable: true })
     @Index()
     storeName: string;

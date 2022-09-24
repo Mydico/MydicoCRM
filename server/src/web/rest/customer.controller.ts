@@ -140,6 +140,39 @@ export class CustomerController {
     return res.send(results);
   }
 
+  @Get('/find-by-sale')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: Customer
+  })
+  async findBySale(@Req() req: Request, @Res() res): Promise<Customer[]> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter: any = {};
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency' && item !== 'sale') {
+        filter[item] = Like(`%${req.query[item]}%`);
+      }
+    });
+
+    const [results, count] = await this.customerService.findBySale(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder(),
+        where: {
+          sale: req.query['sale'],
+          activated: true,
+          ...filter
+        }
+      },
+    );
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
+  }
+
+  
   @Get('/')
   @Roles(RoleType.USER)
   @ApiResponse({

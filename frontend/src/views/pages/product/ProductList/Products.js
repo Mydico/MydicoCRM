@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +12,7 @@ import _ from 'lodash';
 import Select from 'react-select';
 import Download from '../../../components/excel/DownloadExcel.js';
 import AdvancedTable from '../../../components/table/AdvancedTable.js';
+import { CImg } from '@coreui/react';
 
 const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -45,7 +46,7 @@ const excelFields = [
   { key: 'unit', label: 'Đơn vị', _style: { width: '10%' }, filter: false },
   { key: 'volume', label: 'Dung tích', _style: { width: '10%' }, filter: false },
   { key: 'brand', label: 'Thương hiệu', _style: { width: '10%' }, filter: false },
-  { key: 'group', label: 'Nhóm sản phẩm', _style: { width: '10%' }, filter: false },
+  { key: 'group', label: 'Nhóm sản phẩm', _style: { width: '10%' }, filter: false }
 ];
 const { selectAll } = globalizedProductSelectors;
 
@@ -57,6 +58,7 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
+  { key: 'image', label: 'Ảnh đại diện', _style: { width:'5%' }, filter: false  },
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'name', label: 'Tên sản phẩm', _style: { width: '10%' } },
   { key: 'volume', label: 'Dung tích', _style: { width: '10%' }, filter: false },
@@ -136,7 +138,6 @@ const Product = props => {
     setDetails(newDetails);
   };
 
-
   const toCreateProduct = () => {
     const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     localStorage.setItem('params', JSON.stringify(params));
@@ -153,16 +154,15 @@ const Product = props => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getProduct({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
-    }else {
-      clearSearchParams()
+    } else {
+      clearSearchParams();
     }
   }, 300);
 
   const clearSearchParams = () => {
-    paramRef.current['code'] && delete paramRef.current['code']
-    paramRef.current['name'] && delete paramRef.current['name']
-  }
-  
+    paramRef.current['code'] && delete paramRef.current['code'];
+    paramRef.current['name'] && delete paramRef.current['name'];
+  };
 
   const onFilterColumn = value => {
     if (value) debouncedSearchColumn(value);
@@ -176,7 +176,7 @@ const Product = props => {
       return {
         ...item,
         brand: item.productBrand?.name || '',
-        group:item.productGroup?.name || '',
+        group: item.productGroup?.name || ''
       };
     });
   };
@@ -194,8 +194,8 @@ const Product = props => {
         )}
       </CCardHeader>
       <CCardBody>
-      <Download data={memoExcelListed}  headers={excelFields} name={'product'} />
-      {/* <CSVLink headers={excelFields} data={memoExcelListed} filename={'product.csv'} className="btn">
+        <Download data={memoExcelListed} headers={excelFields} name={'product'} />
+        {/* <CSVLink headers={excelFields} data={memoExcelListed} filename={'product.csv'} className="btn">
           Tải excel (.csv) ⬇
         </CSVLink> */}
         <AdvancedTable
@@ -234,6 +234,22 @@ const Product = props => {
           }}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+            image: (item, index) => {
+              try {
+                const images = JSON.parse(item.image);
+                if (images.length > 0) {
+                  return (
+                    <td>
+                      <CImg src={images[0]} style={{ width: 50, height: 50 }} />
+                    </td>
+                  );
+                }
+
+                return <td></td>;
+              } catch (e) {
+                return <td></td>;
+              }
+            },
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>

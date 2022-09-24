@@ -47,6 +47,11 @@ export default [
         _tag: 'CSidebarNavItem',
         name: 'Theo chương trình',
         to: '/promotion-report'
+      },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Kho',
+        to: '/warehouse-report'
       }
     ]
   },

@@ -88,6 +88,7 @@ const EditOrder = props => {
   const productInWarehouses = useSelector(selectAllProductInWarehouse);
   const order = useSelector(state => selectById(state, props.match.params.id));
   const warehouses = useSelector(selectAllWarehouse);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -109,6 +110,7 @@ const EditOrder = props => {
       setInitValuesState(order);
       setSelectedPromotion(order.promotion);
       setSelectedWarehouse(order.store);
+      setSelectedCustomer(order.customer);
       dispatch(getDetailProductPromotion({ promotion: order.promotion.id }));
       if (Array.isArray(order.orderDetails)) {
         const productArr = JSON.parse(JSON.stringify(order.orderDetails));

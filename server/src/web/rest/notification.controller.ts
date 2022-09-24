@@ -21,6 +21,7 @@ import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../s
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { Like } from 'typeorm';
+import { User } from 'src/domain/user.entity';
 
 @Controller('api/notifications')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -46,12 +47,15 @@ export class NotificationController {
                 filter[item] = Like(`%${req.query[item]}%`);
             }
         });
+        const currentUser = req.user as User;
+
         const [results, count] = await this.notificationService.findAndCount({
             skip: +pageRequest.page * pageRequest.size,
             take: +pageRequest.size,
             order: pageRequest.sort.asOrder(),
             where: {
                 ...filter,
+                user:currentUser,
             },
         });
         HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));

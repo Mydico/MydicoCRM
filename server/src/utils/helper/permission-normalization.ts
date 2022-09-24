@@ -45,10 +45,11 @@ export const permissionDescriptionNormalize = (splitedEndpoint, isType) => {
   return desc;
 };
 
-export const queryBuilderFunc = (entity, filter = {}, isDebt = false) => {
+export const queryBuilderFunc = (entity, filter = {}, isDebt = false, ignoreDate = false) => {
   delete filter['dependency'];
   let query = '';
   Object.keys(filter).forEach((key, index) => {
+
     if (key === 'startDate' || key === 'endDate') return;
     if (Array.isArray(filter[key])) {
       if (filter[key].length > 0) {
@@ -56,22 +57,25 @@ export const queryBuilderFunc = (entity, filter = {}, isDebt = false) => {
           .replace('[', '(')
           .replace(']', ')')}`;
       }
-    } else if (Array.isArray(JSON.parse(filter[key]))) {
+    } else if (filter[key][0] === '[' &&  Array.isArray(JSON.parse(filter[key]))) {
       if (JSON.parse(filter[key]).length > 0) {
         query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${filter[key].replace('[', '(').replace(']', ')')}`;
       }
+    } else if (key.includes('name')) {
+      query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key} like '%${filter[key]}%' `;
     } else {
       query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id = ${filter[key]} `;
     }
   });
   if (filter['endDate'] && filter['startDate']) {
+    if(ignoreDate) return query
     if (entity === 'Transaction') {
       if (isDebt) {
         query += `  ${query.length > 0 ? 'AND' : ''}  ${entity}.createdDate <= '${filter['endDate']} 23:59:59'`;
         return query;
       }
     }
-    query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']}' AND  ${entity}.createdDate <= '${
+    query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']} 00:00:00' AND  ${entity}.createdDate <= '${
       filter['endDate']
     } 23:59:59'`;
   }

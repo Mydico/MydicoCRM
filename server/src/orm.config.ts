@@ -8,7 +8,7 @@ const commonConf = {
     CLI: {
         migrationsDir: 'src/migrations',
     },
-    MIGRATIONS_RUN: true,
+    MIGRATIONS_RUN: false,
 };
 
 let ormconfig: TypeOrmModuleOptions = {
@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === 'dev') {
     roleBDConfig = {
         database: 'MydicoCRM',
         type: 'mysql',
-        host: 'localhost',
+        host: '14.225.17.151',
         port: 3306,
         username: 'root',
         password: 'Dunghd@123',
@@ -73,12 +73,12 @@ if (process.env.NODE_ENV === 'dev') {
         name: 'default',
         type: 'mysql',
         database: 'MydicoCRM',
-        host: '14.225.19.30',
+        host: '14.225.17.151',
         port: 3306,
         username: 'root',
         password: 'Dunghd@123',
         logging: true,
-        synchronize: false,
+        synchronize: true,
         entities: commonConf.ENTITIES,
         migrations: commonConf.MIGRATIONS,
         cli: commonConf.CLI,

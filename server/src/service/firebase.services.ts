@@ -8,33 +8,48 @@ export interface ISendFirebaseMessages {
   token: string;
   title?: string;
   message: string;
+  data?: any
 }
 @Injectable()
 export class FirebaseService {
   logger = new Logger('FirebaseService');
-  constructor() {}
+  constructor() { }
   public async sendFirebaseMessages(firebaseMessages: ISendFirebaseMessages[], dryRun?: boolean): Promise<any> {
     const batchedFirebaseMessages = chunk(firebaseMessages, 500);
 
     const batchResponses = await mapLimit<ISendFirebaseMessages[]>(
       batchedFirebaseMessages,
-      3, // 3 is a good place to start
+      3,
       async (groupedFirebaseMessages: ISendFirebaseMessages[]): Promise<any> => {
         try {
-          const tokenMessages: firebase.messaging.TokenMessage[] = groupedFirebaseMessages.map(({ message, title, token }) => ({
+          const tokenMessages: firebase.messaging.TokenMessage[] = groupedFirebaseMessages.map(({ message, title, token, data }) => ({
             notification: { body: message, title },
+            "android": {
+              "notification": {
+                body: message, title,
+                "sound": "default"
+              }
+            },
             token,
             apns: {
               payload: {
                 aps: {
-                  'content-available': 1
-                }
-              }
+                  'content-available': 1,
+                  sound: 'default'
+                },
+                ...data
+              },
+             
+            },
+            fcmOptions: {
+
             }
           }));
-
-          return await this.sendAll(tokenMessages, dryRun);
+          const result = await this.sendAll(tokenMessages, dryRun);
+          console.log(JSON.stringify(result))
+          return result
         } catch (error) {
+          console.log(error)
           return {
             responses: groupedFirebaseMessages.map(() => ({
               success: false,

@@ -38,6 +38,21 @@ export class UserController {
     private readonly departmentService: DepartmentService
   ) {}
 
+  @Get('/manager')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: User
+  })
+  async getManager(@Req() req, @Res() res): Promise<User[]> {
+
+    const results = await this.userService.findManager(
+   
+      req.query.departmentId || 1
+     );
+    return res.send(results);
+  }
+
   @Get('/transporter')
   @ApiResponse({
     status: 200,
@@ -205,7 +220,8 @@ export class UserController {
   })
   async updateUser(@Req() req: Request, @Res() res: Response, @Body() user: User): Promise<Response> {
     const currentUser = req.user as User;
-    if (currentUser.login !== user.login) {
+    const isAdmin = currentUser.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
+    if (!isAdmin && currentUser.login !== user.login) {
       throw new HttpException('Bạn không thể thực hiện thao tác này', HttpStatus.UNPROCESSABLE_ENTITY);
     }
     HeaderUtil.addEntityUpdatedHeaders(res, 'User', user.id);

@@ -16,6 +16,10 @@ export default class Notification extends BaseEntity {
     @Index()
     content: string;
 
+    @Column({ name: 'is_read', nullable: true })
+    @Index()
+    idRead?: boolean;
+
     @Column({ name: 'type', nullable: true })
     @Index()
     type: string;

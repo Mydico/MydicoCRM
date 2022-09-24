@@ -33,7 +33,7 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
     history.productName = updateEntity.product.name;
     history.createdDate = new Date();
     history.lastModifiedDate = new Date();
-
+    history.remain = updateEntity.quantity;
     history.type = StoreHistoryType.IMPORT;
     history.quantity = updateEntity.quantity;
     const historyRepository = event.manager.getRepository(StoreHistory);
@@ -58,6 +58,8 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
     history.entityCode = updateEntity.entityCode;
     history.entityType = updateEntity.entityType;
     history.lastModifiedDate = new Date();
+    history.remain = updateEntity.quantity;
+    history.beforeUpdate = old.quantity;
     history.createdDate = new Date();
     const historyRepository = event.manager.getRepository(StoreHistory);
     await historyRepository.save(history);

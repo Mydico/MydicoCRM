@@ -193,7 +193,8 @@ const CreateWarehouse = () => {
 
   const onChangeReducePercent = ({ target }, index) => {
     const copyArr = [...productList];
-    copyArr[index].reducePercent = Number(target.value).toString();
+    copyArr[index].reducePercent = target.value > 100 ? 100 : target.value === '' ? 0 : Number(target.value).toString();
+    // copyArr[index].reducePercent = Number(target.value).toString();
     copyArr[index].priceTotal = (copyArr[index].price * copyArr[index].quantity * (100 - copyArr[index].reducePercent || 0)) / 100;
     // (copyArr[index].price * copyArr[index].quantity * copyArr[index].reducePercent) / 100;
     setProductList(copyArr);

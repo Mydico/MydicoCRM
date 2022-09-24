@@ -36,6 +36,7 @@ import 'react-dates/lib/css/_datepicker.css';
 import { memoizedGetCityName, memoizedGetDistrictName } from '../../../../shared/utils/helper.js';
 import { DateRangePicker } from 'react-dates';
 import AdvancedTable from '../../../components/table/AdvancedTable.js';
+import Download from '../../../components/excel/DownloadExcel';
 
 const mappingStatus = {
   CREATED: 'CHỜ DUYỆT',
@@ -126,6 +127,33 @@ const getBadge = status => {
       return 'primary';
   }
 };
+export const computedExcelItemsWarehouse = items => {
+  return items.map((item, index) => {
+    return {
+      ...item,
+      order: index + 1,
+      tel: item.customer?.tel,
+      transporterName: item.transporterName || '',
+      quantity: item.order?.orderDetails?.reduce((sum, prev) => sum + prev.quantity, 0) || 0,
+      total: item.order ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.order.realMoney) : 0,
+      createdDate: moment(item.createdDate).format('YYYY-MM-DD')
+    };
+  });
+};
+export const fieldsExcelWarehouse = [
+  {
+    key: 'order',
+    label: 'STT',
+    _style: { width: '1%' },
+    filter: false
+  },
+  { key: 'code', label: 'Mã vận đơn', _style: { width: '10%' } },
+  { key: 'customerName', label: 'Tên khách hàng/đại lý', _style: { width: '15%' } },
+  { key: 'quantity', label: 'Tổng sản phẩm', _style: { width: '5%' }, filter: false },
+  { key: 'total', label: 'Tiền thanh toán', _style: { width: '10%' }, filter: false },
+  { key: 'createdBy', label: 'Nhân viên quản lý', _style: { width: '10%' } },
+  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '10%' }, filter: false },
+];
 const Bill = props => {
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
@@ -172,7 +200,7 @@ const Bill = props => {
   const bills = useSelector(selectAll);
   const users = useSelector(selectUserAll);
   useEffect(() => {
-    let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+    let params = { page: activePage - 1, sort: 'createdDate,DESC', ...paramRef.current,size };
     if (date.endDate && date.startDate) {
       params = {
         ...params,
@@ -211,7 +239,6 @@ const Bill = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(
         getBill({
@@ -348,8 +375,9 @@ const Bill = props => {
       ]
     });
   };
-
-  const renderButtonStatus = item => {
+  const memoExcelComputedItems = React.useCallback(items => computedExcelItemsWarehouse(items), []);
+  const memoExelListed = React.useMemo(() => memoExcelComputedItems(bills), [bills]);
+  const renderButtonStatus = useCallback(item => {
     switch (item.status) {
       case BillStatus.CREATED:
         return (
@@ -477,7 +505,7 @@ const Bill = props => {
       default:
         break;
     }
-  };
+  }, []);
 
   const onSaveTransporter = () => {
     if (selectedBill.current && selectedTransporter.current) {
@@ -530,6 +558,8 @@ const Bill = props => {
       </CCardHeader>
 
       <CCardBody>
+      <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'danh_sach_van_don'} />
+
         <CCard>
           <CCardBody>
             <DateRangePicker
@@ -714,16 +744,23 @@ const Bill = props => {
                               <td>{item.product?.name}</td>
                               <td>{item.quantity}</td>
 
-                              <td>{(item.priceReal || item.product?.price || 0).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
+                              <td>
+                                {(item.priceReal || item.product?.price || 0).toLocaleString('it-IT', {
+                                  style: 'currency',
+                                  currency: 'VND'
+                                })}
+                              </td>
                               <td>{item.reducePercent}%</td>
                               <td>
-                                {Number((item.priceReal || item.product?.price || 0) * item.quantity).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
-                                  ''}
+                                {Number((item.priceReal || item.product?.price || 0) * item.quantity).toLocaleString('it-IT', {
+                                  style: 'currency',
+                                  currency: 'VND'
+                                }) || ''}
                               </td>
                               <td>
                                 {Number(
                                   (item.priceReal || item.product?.price) * item.quantity -
-                                  ((item.priceReal || item.product?.price) * item.quantity * item.reducePercent) / 100
+                                    ((item.priceReal || item.product?.price) * item.quantity * item.reducePercent) / 100
                                 ).toLocaleString('it-IT', {
                                   style: 'currency',
                                   currency: 'VND'
@@ -746,8 +783,7 @@ const Bill = props => {
                                 <strong>Tổng tiền</strong>
                               </td>
                               <td className="right">
-                                {Number(item?.order?.totalMoney || 0)
-                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                {Number(item?.order?.totalMoney || 0).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                               </td>
                             </tr>
                             <tr>
@@ -755,8 +791,8 @@ const Bill = props => {
                                 <strong>Chiết khấu</strong>
                               </td>
                               <td className="right">
-                                {Number(item?.order?.reduceMoney || 0)
-                                  .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                {Number(item?.order?.reduceMoney || 0).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
+                                  ''}
                               </td>
                             </tr>
                             <tr>
@@ -765,8 +801,8 @@ const Bill = props => {
                               </td>
                               <td className="right">
                                 <strong>
-                                  {Number(item?.order?.realMoney || 0)
-                                    .toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
+                                  {Number(item?.order?.realMoney || 0).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
+                                    ''}
                                 </strong>
                               </td>
                             </tr>

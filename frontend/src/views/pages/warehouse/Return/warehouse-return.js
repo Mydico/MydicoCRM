@@ -315,7 +315,7 @@ const WarehouseReturn = props => {
       </CCardHeader>
       <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
       <CCardBody>
-        <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'order'} />
+        <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'tra hang'} />
 
         {/* <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>

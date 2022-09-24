@@ -131,18 +131,22 @@ module.exports = options => ({
         SERVER_API_URL: `''`
       }
     }),
+
     new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
       process: 'process/browser',
-      JSZip: 'jszip', 
+      JSZip: 'jszip'
     }),
     new ForkTsCheckerWebpackPlugin({ eslint: true }),
-    new CopyWebpackPlugin([
-      // {from: './content/', to: 'content'},
-      { from: 'favicon.ico', to: 'favicon.ico' },
-      { from: './public/manifest.webapp', to: 'manifest.webapp' },
-      { from: './public/robots.txt', to: 'robots.txt' },
-      { from: './public/avatars', to: 'avatars' }
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        // {from: './content/', to: 'content'},
+        { from: 'favicon.ico', to: 'favicon.ico' },
+        { from: './public/manifest.webapp', to: 'manifest.webapp' },
+        { from: './public/robots.txt', to: 'robots.txt' },
+        { from: './public/avatars', to: 'avatars' }
+      ]
+    }),
     new HtmlWebpackPlugin({
       template: './public/index.html',
       chunksSortMode: 'auto',

@@ -321,7 +321,6 @@ const CreateWarehouseExportProvider = () => {
                       <th>Đơn vị</th>
                       <th>Dung tích</th>
                       <th>Số lượng</th>
-                      <th>Giá</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -374,22 +373,7 @@ const CreateWarehouseExportProvider = () => {
                               <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
                             )}
                           </td>
-                          <td>
-                            {
-                              <MaskedInput
-                                mask={currencyMask}
-                                onChange={event => onChangePrice(event, index)}
-                                value={
-                                  typeof productList[index].price !== 'number'
-                                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                                        productList[index].price
-                                      )
-                                    : productList[index].price
-                                }
-                                render={(ref, props) => <CInput innerRef={ref} {...props} />}
-                              />
-                            }
-                          </td>
+
 
                           <td style={{ width: 100 }}>
                             <CButton

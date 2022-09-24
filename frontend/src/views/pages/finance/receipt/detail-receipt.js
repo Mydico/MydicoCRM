@@ -124,7 +124,7 @@ const DetailReceipt = props => {
                 </CRow>
                 <CFormGroup>
                   <CLabel htmlFor="userName">Số tiền</CLabel>
-                  <CurrencyInput name="money" disabled handleChange={handleChange} />
+                  <CurrencyInput name="money" disabled handleChange={handleChange} value={values.money}  />
                 </CFormGroup>
                 <CFormGroup>
                   <CLabel htmlFor="userName">Ghi chú</CLabel>

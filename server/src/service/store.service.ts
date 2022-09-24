@@ -80,6 +80,8 @@ export class StoreService {
   }
 
   async update(store: Store): Promise<Store | undefined> {
+    await this.storeRepository.removeCache(['store']);
+
     return await this.save(store);
   }
 

@@ -327,6 +327,7 @@ export class StoreInputService {
             importStore.storeTransferName = entity.store.name;
             importStore.department = entity.storeTransfer.department;
             importStore.storeInputDetails = arrDetails;
+            importStore.relatedId = entity.id;
             importStore.createdBy = 'system';
             await this.save(importStore, currentUser);
         }

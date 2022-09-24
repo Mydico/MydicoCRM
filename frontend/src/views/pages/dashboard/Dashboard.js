@@ -16,7 +16,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import moment from 'moment';
 import MainChart from '../../components/charts/MainChartExample.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBestCustomer, getBestProductSale, getDebtDashboard, getIncomeChart, getIncomeDashboard } from './dashboard.api.js';
+import { getBestCustomer, getBestProductSale, getDebtDashboard, getIncomeChart, getIncomeDashboard, getManager } from './dashboard.api.js';
 import { getStyle, hexToRgba } from '@coreui/utils';
 import { userSafeSelector } from '../login/authenticate.reducer.js';
 import { CCardTitle, CFormGroup, CInput, CLabel } from '@coreui/react';
@@ -64,6 +64,10 @@ const Dashboard = () => {
         setIncomeTotal(data.payload);
       }
     });
+    dispatch(getManager()).then(data => {
+      console.log(data)
+    });
+    
     dispatch(getDebtDashboard({ startDate, endDate })).then(data => {
       if (data && Array.isArray(data.payload) && data.payload.length > 0) {
         setDebt(data.payload);

@@ -13,6 +13,7 @@ import { StoreInputRepository } from '../repository/store-input.repository';
 import { StoreInputDetailsRepository } from '../repository/store-input-details.repository';
 import { TransactionRepository } from '../repository/transaction.repository';
 import { BillRepository } from '../repository/bill.repository';
+import { StoreHistoryRepository } from '../repository/store-history.repository';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { BillRepository } from '../repository/bill.repository';
       StoreInputRepository,
       StoreInputDetailsRepository,
       TransactionRepository,
-      BillRepository
+      BillRepository,
+      StoreHistoryRepository
     ]),
     DepartmentModule,
     OrderModule

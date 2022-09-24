@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   CButton,
   CCard,
@@ -11,41 +11,48 @@ import {
   CLabel,
   CInput,
   CRow,
-
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
-import CIcon from '@coreui/icons-react/lib/CIcon';;
-import {Formik} from 'formik';
+import CIcon from '@coreui/icons-react/lib/CIcon';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {useDispatch, useSelector} from 'react-redux';
-import {getDetailProduct, updateProduct} from './product.api';
-import {getProductGroup} from '../ProductGroup/product-group.api';
+import { useDispatch, useSelector } from 'react-redux';
+import { getDetailProduct, updateProduct } from './product.api';
+import { getProductGroup } from '../ProductGroup/product-group.api';
 import Select from 'react-select';
-import {useHistory} from 'react-router-dom';
-import {fetching, globalizedProductSelectors} from './product.reducer';
-import {globalizedproductGroupsSelectors} from '../ProductGroup/product-group.reducer';
-import {ProductStatus, UnitType} from './contants';
-import {mappingStatus} from './CreateProduct';
+import { useHistory } from 'react-router-dom';
+import { fetching, globalizedProductSelectors } from './product.reducer';
+import { globalizedproductGroupsSelectors } from '../ProductGroup/product-group.reducer';
+import { ProductStatus, UnitType } from './contants';
+import { mappingStatus } from './CreateProduct';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import CurrencyInput from '../../../components/currency-input/currency-input';
-import {getCodeByName} from '../../../../shared/utils/normalize';
+import { getCodeByName } from '../../../../shared/utils/normalize';
 import { blockInvalidChar } from '../../../../shared/utils/helper';
+import S3FileUpload from 'react-s3';
 
+const config = {
+  bucketName: 'mydico-crm',
+  dirName: 'photos' /* optional */,
+  region: 'ap-southeast-1',
+  accessKeyId: 'AKIA2MGBWWRF3K4UEDY4',
+  secretAccessKey: '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'
+};
 const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
-        .min(5, `Tên phải lớn hơn 5 kí tự`)
-        .required('Tên không để trống'),
+      .min(5, `Tên phải lớn hơn 5 kí tự`)
+      .required('Tên không để trống')
   });
 };
 
 import { validate } from '../../../../shared/utils/normalize';
-const {selectById} = globalizedProductSelectors;
-const {selectAll} = globalizedproductGroupsSelectors;
+const { selectById } = globalizedProductSelectors;
+const { selectAll } = globalizedproductGroupsSelectors;
 
-const EditProduct = (props) => {
-  const {initialState} = useSelector((state) => state.product);
+const EditProduct = props => {
+  const { initialState } = useSelector(state => state.product);
   const initialValues = {
     agentPrice: 0,
     barcode: '',
@@ -71,43 +78,50 @@ const EditProduct = (props) => {
     name: '',
     status: '',
     unit: '',
-    volume: 0,
+    volume: 0
   };
   const ref = useRef(null);
   const images = useRef([]);
   const dispatch = useDispatch();
   const history = useHistory();
   const [initValues, setInitValues] = useState(null);
-
-  const product = useSelector((state) => selectById(state, props.match.params.id));
+  const [loading, setLoading] = useState(false)
+  const [product, setproduct] = useState(null)
   const [initImages, setInitImages] = useState([]);
   const productGroup = useSelector(selectAll);
   useEffect(() => {
-    dispatch(getDetailProduct({ id: props.match.params.id, dependency: true }));
+    dispatch(getDetailProduct({ id: props.match.params.id, dependency: true })).then(resp => {
+      setproduct(resp.payload)
+    });
     dispatch(getProductGroup({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
   }, []);
 
   useEffect(() => {
     if (product) {
-      const temp = {...product};
-      temp.image = [];
-      try {
-        temp.image = JSON.parse(product.image || []);
-      } catch (e) {}
-      const arrRequest = temp.image?.map((image) => fetch(image));
-      Promise.all(arrRequest).then((arrRes) => {
-        const arr = arrRes.map((res) => {
-          return res?.arrayBuffer().then((buf) => {
-            return new File([buf], res.url.match(/.*\/(.*)$/)[1], {type: 'image/jpeg'});
+      const temp = { ...product };
+
+      if(initImages.length == 0){
+        temp.image = [];
+        try {
+          temp.image = JSON.parse(product.image || []);
+        } catch (e) {}
+        const arrRequest = temp.image?.map(image => fetch(image));
+        Promise.all(arrRequest).then(arrRes => {
+          const arr = arrRes.map(res => {
+            return res?.arrayBuffer().then(buf => {
+              return new File([buf], res.url.match(/.*\/(.*)$/)[1], { type: 'image/jpeg' });
+            });
           });
+          Promise.all(arr).then(res => setInitImages(res));
         });
-        Promise.all(arr).then((res) => setInitImages(res));
-      });
+      }
+
       setInitValues(temp);
     }
   }, [product]);
 
-  const onSubmit = (values, {resetForm}) => {
+
+  const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
     values.price = Number(values.price?.replace(/\D/g || 0, ''));
     values.agentPrice = Number(values.agentPrice?.replace(/\D/g || 0, ''));
@@ -115,21 +129,40 @@ const EditProduct = (props) => {
     dispatch(updateProduct(values));
   };
 
-  const getUploadParams = () => {
-    return {url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/api/files' : 'http://localhost:8082/api/files'};
+  // const getUploadParams = () => {
+  //   return { url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/api/files' : 'http://localhost:8082/api/files' };
+  // };
+  const getFilesFromEvent = async (file, allFile) => {
+    setLoading(true)
+    const arr = allFile.map(item => {
+      return S3FileUpload.uploadFile(item.file, config);
+    });
+    // allFile.forEach(f => f.remove())
+    // setInitImages(undefined)
+    const data = await Promise.all(arr);
+    const updatedData = data.map(item => item.location)
+    const init = [...images.current,...updatedData]
+    images.current = init
+    ref.current.values.image = JSON.stringify(images.current);
+    dispatch(updateProduct(ref.current.values));
+    
   };
-
-  const handleChangeStatus = ({xhr}, status) => {
-    if (status === 'done') {
-      const response = JSON.parse(xhr.response);
-      const arr = [...images.current];
-      arr.push(response[0].url);
-      images.current = arr;
-    }
+  const handleChangeStatus = ({ xhr }, status) => {
+    // S3FileUpload
+    // .uploadFile(file, config)
+    // .then(data => console.log(data))
+    // .catch(err => console.error(err))
+    // if (status === 'done') {
+    //   const response = JSON.parse(xhr.response);
+    //   const arr = [...images.current];
+    //   arr.push(response[0].url);
+    //   images.current = arr;
+    // }
   };
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
+      setLoading(false)
       history.goBack();
     }
   }, [initialState.updatingSuccess]);
@@ -154,14 +187,7 @@ const EditProduct = (props) => {
           enableReinitialize
           onSubmit={onSubmit}
         >
-          {({
-            values,
-            errors,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue
-          }) => (
+          {({ values, errors, handleChange, handleBlur, handleSubmit, setFieldValue }) => (
             <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
               <CRow>
                 <CCol lg="6">
@@ -188,7 +214,7 @@ const EditProduct = (props) => {
                       autoComplete="family-name"
                       invalid={errors.name}
                       required
-                      onChange={async (e) => {
+                      onChange={async e => {
                         await handleChange(e);
                         // renderProductCode();
                       }}
@@ -216,37 +242,37 @@ const EditProduct = (props) => {
                     <CLabel htmlFor="productGroup">Nhóm sản phẩm</CLabel>
                     <Select
                       name="productGroup"
-                      onChange={async (item) => {
+                      onChange={async item => {
                         await setFieldValue('productGroup', item.value);
                         // renderProductCode();
                       }}
                       value={{
                         value: values.productGroup,
-                        label: `${values.productGroup?.productBrand?.name} - ${values.productGroup?.name}`,
+                        label: `${values.productBrand?.name} - ${values.productGroup?.name}`
                       }}
-                      options={productGroup.map((item) => ({
+                      options={productGroup.map(item => ({
                         value: item,
-                        label: `${item.productBrand?.name} - ${item.name}`,
+                        label: `${item.productBrand?.name} - ${item.name}`
                       }))}
                     />
                     <CInvalidFeedback>{errors.productGroup}</CInvalidFeedback>
                   </CFormGroup>
                   <CFormGroup>
-                      <CLabel htmlFor="productGroup">Thứ tự</CLabel>
-                      <CInput
-                        type="number"
-                        name="order"
-                        id="order"
-                        onKeyDown={blockInvalidChar}
-                        placeholder="Thứ tự"
-                        autoComplete="order"
-                        onChange={ (item) => {
-                          setFieldValue('order',Number(item.target.value).toString());
-                        }}                        
-                        onBlur={handleBlur}
-                        value={values.order}
-                      />
-                    </CFormGroup>
+                    <CLabel htmlFor="productGroup">Thứ tự</CLabel>
+                    <CInput
+                      type="number"
+                      name="order"
+                      id="order"
+                      onKeyDown={blockInvalidChar}
+                      placeholder="Thứ tự"
+                      autoComplete="order"
+                      onChange={item => {
+                        setFieldValue('order', Number(item.target.value).toString());
+                      }}
+                      onBlur={handleBlur}
+                      value={values.order}
+                    />
+                  </CFormGroup>
                 </CCol>
                 <CCol lg="6">
                   <CFormGroup>
@@ -269,7 +295,7 @@ const EditProduct = (props) => {
                       id="volume"
                       placeholder="Dung tích"
                       autoComplete="volume"
-                      onChange={async (e) => {
+                      onChange={async e => {
                         await handleChange(e);
                         // renderProductCode();
                       }}
@@ -284,16 +310,16 @@ const EditProduct = (props) => {
                     <CLabel htmlFor="userName">Đơn vị</CLabel>
                     <Select
                       name="unit"
-                      onChange={(item) => {
+                      onChange={item => {
                         setFieldValue('unit', item.value);
                       }}
                       value={{
                         value: values.unit,
-                        label: values.unit,
+                        label: values.unit
                       }}
-                      options={UnitType.map((item) => ({
+                      options={UnitType.map(item => ({
                         value: item.value,
-                        label: `${item.title}`,
+                        label: `${item.title}`
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.type}</CInvalidFeedback>
@@ -302,34 +328,23 @@ const EditProduct = (props) => {
                     <CLabel htmlFor="code">Trạng thái</CLabel>
                     <Select
                       name="status"
-                      onChange={(item) => {
+                      onChange={item => {
                         setFieldValue('status', item.value);
                       }}
                       value={{
                         value: values.status,
-                        label: mappingStatus[values.status],
+                        label: mappingStatus[values.status]
                       }}
-                      options={ProductStatus.map((item) => ({
+                      options={ProductStatus.map(item => ({
                         value: item.value,
-                        label: item.title,
+                        label: item.title
                       }))}
                     />
                     <CInvalidFeedback className="d-block">{errors.status}</CInvalidFeedback>
                   </CFormGroup>
                 </CCol>
               </CRow>
-              <CFormGroup>
-                <Dropzone
-                  getUploadParams={getUploadParams}
-                  onChangeStatus={handleChangeStatus}
-                  accept="image/*,audio/*,video/*"
-                  inputLabel="Upload Ảnh"
-                  inputContent="Kéo thả hình ảnh hoặc bấm để chọn ảnh"
-                  submitButtonContent="Hoàn thành"
-                  inputWithFilesContent="Thêm file"
-                  initialFiles={initImages}
-                />
-              </CFormGroup>
+
               <CFormGroup className="d-flex justify-content-center">
                 <CButton type="submit" color="primary" disabled={initialState.loading}>
                   <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : 'Lưu thay đổi'}
@@ -338,6 +353,19 @@ const EditProduct = (props) => {
             </CForm>
           )}
         </Formik>
+        <CFormGroup>
+          <Dropzone
+            onChangeStatus={handleChangeStatus}
+            onSubmit={getFilesFromEvent}
+            accept="image/*,audio/*,video/*"
+            inputLabel="Upload Ảnh"
+            inputContent="Kéo thả hình ảnh hoặc bấm để chọn ảnh"
+            submitButtonContent={loading?"Đang tải":"Cập nhật"}
+            submitButtonDisabled={loading}
+            inputWithFilesContent="Thêm file"
+            initialFiles={initImages}
+          />
+        </CFormGroup>
       </CCardBody>
     </CCard>
   );

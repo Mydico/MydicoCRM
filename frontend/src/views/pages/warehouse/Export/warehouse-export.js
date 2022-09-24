@@ -13,7 +13,7 @@ import moment from 'moment';
 import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import _ from 'lodash';
 import Select from 'react-select';
-import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
+import { CCol, CFormGroup, CInput, CLabel, CLink } from '@coreui/react';
 import Download from '../../../components/excel/DownloadExcel';
 import { computedExcelItemsWarehouse, fieldsExcelWarehouse } from '../Import/warehouse-import.js';
 import ReportDate from '../../../components/report-date/ReportDate.js';
@@ -106,7 +106,14 @@ const WarehouseImport = props => {
   const [focused, setFocused] = React.useState();
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
+      };
       dispatch(getWarehouseExport(params));
     }
   }, [date]);
@@ -118,7 +125,7 @@ const WarehouseImport = props => {
   useEffect(() => {
     let params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
     if (date.endDate && date.startDate) {
-      params = { ...params,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
+      params = { ...params, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }
     dispatch(getWarehouseExport(params));
     window.scrollTo(0, 100);
@@ -163,9 +170,17 @@ const WarehouseImport = props => {
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getWarehouseExport({ page: 0, size: size, sort: 'createdDate,DESC', ...value,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') }));
+      dispatch(
+        getWarehouseExport({
+          page: 0,
+          size: size,
+          sort: 'createdDate,DESC',
+          ...value,
+          startDate: date.startDate?.format('YYYY-MM-DD'),
+          endDate: date.endDate?.format('YYYY-MM-DD')
+        })
+      );
     }
   }, 300);
 
@@ -197,7 +212,7 @@ const WarehouseImport = props => {
 
   const approveTicket = bill => () => {
     dispatch(fetching());
-    const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, type: "EXPORT", action: 'approve' };
+    const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, type: 'EXPORT', action: 'approve' };
     dispatch(updateWarehouseStatusImport(data));
   };
 
@@ -208,7 +223,7 @@ const WarehouseImport = props => {
         return null;
       case WarehouseImportStatus.WAITING:
         return (
-          <CRow style={{minWidth:300}}>
+          <CRow style={{ minWidth: 300 }}>
             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export').length > 0) && (
               <CButton
                 onClick={() => {
@@ -271,7 +286,14 @@ const WarehouseImport = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current,  startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        ...paramRef.current,
+        startDate: date.startDate?.format('YYYY-MM-DD'),
+        endDate: date.endDate?.format('YYYY-MM-DD')
+      };
       dispatch(getWarehouseExport(params));
       dispatch(reset());
     }
@@ -293,7 +315,7 @@ const WarehouseImport = props => {
       </CCardHeader>
       <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
       <CCardBody>
-        <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'order'} />
+        <Download data={memoExelListed} headers={fieldsExcelWarehouse} name={'xuat kho'} />
 
         {/* <CFormGroup row xs="12" md="12" lg="12" className="ml-2 mt-3">
           <CFormGroup row>
@@ -378,7 +400,12 @@ const WarehouseImport = props => {
             action: item => {
               return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
             },
-            code: (item, index) => <td>{item.code || ''}</td>,
+
+            code: (item, index) => (
+              <td>
+                <CLink to={`/store-inputs/${item.id}/detail`}>{item.code}</CLink>
+              </td>
+            ),
             show_details: item => {
               return (
                 <td className="py-2 d-flex">
@@ -397,7 +424,11 @@ const WarehouseImport = props => {
               );
             },
             quantity: item => {
-              return <td className="py-2 d-flex">{JSON.parse(JSON.stringify(item.storeInputDetails || [])).reduce((prev, curr) => prev+ curr.quantity,0)}</td>;
+              return (
+                <td className="py-2 d-flex">
+                  {JSON.parse(JSON.stringify(item.storeInputDetails || [])).reduce((prev, curr) => prev + curr.quantity, 0)}
+                </td>
+              );
             },
             details: item => {
               return (

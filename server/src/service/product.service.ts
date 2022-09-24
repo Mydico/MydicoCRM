@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import Product from '../domain/product.entity';
 import { ProductRepository } from '../repository/product.repository';
-import { increment_alphanumeric_str } from './utils/normalizeString';
+import { checkCodeContext, increment_alphanumeric_str } from './utils/normalizeString';
 import { ProductQuantityService } from './product-quantity.service';
 import { Cache } from 'cache-manager';
 import { convertArrayToObject, generateCacheKey } from './utils/helperFunc';
@@ -108,10 +108,14 @@ export class ProductService {
   }
 
   async getNewProductCode(product: Product): Promise<Product | undefined> {
-    const foundedCustomer = await this.productRepository.find({ code: Like(`%${product.code}%`) });
-    if (foundedCustomer.length > 0) {
-      foundedCustomer.sort((a, b) => a.createdDate.valueOf() - b.createdDate.valueOf());
-      const res = increment_alphanumeric_str(foundedCustomer[foundedCustomer.length - 1].code);
+    const foundedProduct = await this.productRepository.find({ code: Like(`%${product.code}%`) });
+    if (foundedProduct.length > 0) {
+      const splitProductCode =  foundedProduct[foundedProduct.length - 1].code.split("_");
+      if(splitProductCode.length === 4){
+        foundedProduct[foundedProduct.length - 1].code = foundedProduct[foundedProduct.length - 1].code+'_0'
+      }
+      foundedProduct.sort((a, b) => a.createdDate.valueOf() - b.createdDate.valueOf());
+      const res = increment_alphanumeric_str(foundedProduct[foundedProduct.length - 1].code);
       product.code = res;
     }
     return product;

@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import ProductGroup from '../domain/product-group.entity';
 import { ProductGroupRepository } from '../repository/product-group.repository';
-import { increment_alphanumeric_str } from './utils/normalizeString';
 
 const relationshipNames = [];
 relationshipNames.push('productBrand');

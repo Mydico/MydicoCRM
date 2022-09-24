@@ -18,7 +18,7 @@ const excelFields = [
   { key: 'billDate', label: 'Ngày chứng từ (*)' },
   { key: 'code', label: 'Số chứng từ (*)' },
   { key: 'exportCode', label: 'Số phiếu xuất' },
-  { key: 'none', label: 'Lý do xuất' },
+  { key: 'key12', label: 'Lý do xuất' },
   { key: 'none', label: 'Số hóa đơn' },
   { key: 'none', label: 'Ngày hóa đơn' },
   { key: 'customerCode', label: 'Mã khách hàng' },
@@ -80,7 +80,7 @@ const PrintBill = props => {
         key11: 'OB',
         billDate: invoice.billDate ? moment(invoice.billDate).format('DD/MM/YYYY') : '',
         code: `VD-${invoice?.code}`,
-        exportCode: `VD-${invoice?.code}`,
+        exportCode: `Z-VD-${invoice?.code}`,
         description: invoice?.promotion?.name,
         customerCode: invoice?.customer?.code,
         customerName: invoice?.customer?.name,
@@ -95,7 +95,8 @@ const PrintBill = props => {
         price: Number(item.priceReal),
         totalPrice: Number(item.priceReal) * Number(item.quantity),
         discount: Number(item.reducePercent),
-        discountPrice: Number(item.reduce)
+        discountPrice: Number((Number(item.priceReal) * Number(item.quantity) * Number(item.reducePercent))/100),
+        key12:  invoice?.customer?.name
       };
     });
     setOrderExcel(data);

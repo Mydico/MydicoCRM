@@ -50,6 +50,12 @@ export class CustomerService {
     return await this.customerRepository.findOne(options);
   }
 
+  async findBySale(options: FindManyOptions<Customer>): Promise<[Customer[], number]> {
+    options.relations = relationshipNames;
+    return await this.customerRepository.findAndCount(options);
+  }
+
+
   async filterExact(options: FindManyOptions<Customer>, filter = {}): Promise<[Customer[], number]> {
     options.cache = 3600000;
 
@@ -254,6 +260,7 @@ export class CustomerService {
     if (filter['activated']) {
       andQueryString += ` AND Customer.activated = ${filter['activated']}`;
     }
+
     delete filter['activated'];
     delete filter['sale'];
     let queryString = '';

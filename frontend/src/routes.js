@@ -13,6 +13,7 @@ const ProductReport =loadable(() => import('./views/pages/report/ProductReport')
 const ProductDetailReport =loadable(() => import('./views/pages/report/ProductDetailReport'));
 const PromotionReport =loadable(() => import('./views/pages/report/PromotionReport'));
 const SaleReport =loadable(() => import('./views/pages/report/SaleReport'));
+const WarehouseReport =loadable(() => import('./views/pages/report/WarehouseReport'));
 
 const ChangePassword = loadable(() => import('./views/pages/user/UserList/change-password'));
 const EditUserProfile = loadable(() => import('./views/pages/user/UserList/edit-user-profile'));
@@ -82,6 +83,8 @@ const ViewWarehouse = loadable(() => import('./views/pages/warehouse/History/vie
 const WarehouseExport = loadable(() => import('./views/pages/warehouse/Export/warehouse-export'));
 const CreateWarehouseExport = loadable(() => import('./views/pages/warehouse/Export/create-warehouse-export'));
 const EditWarehouseExport = loadable(() => import('./views/pages/warehouse/Export/edit-warehouse-export'));
+const ViewWarehouseExport = loadable(() => import('./views/pages/warehouse/Export/view-warehouse-export'));
+
 const CreateWarehouseExportProvider = loadable(() => import('./views/pages/warehouse/Export/create-warehouse-export-provider'));
 const EditWarehouseExportProvider = loadable(() => import('./views/pages/warehouse/Export/edit-warehouse-export-provider'));
 
@@ -138,6 +141,7 @@ const routes = [
   {path: '/customer-report', exact: true, name: 'Báo cáo theo sản phẩm', component: CustomerReport},
   {path: '/customer-report/order-customer-histories/:id', exact: true, name: 'Báo cáo theo sản phẩm', component: OrderCustomerHistory},
   {path: '/promotion-report', exact: true, name: 'Báo cáo theo chương trình', component: PromotionReport},
+  {path: '/warehouse-report', exact: true, name: 'Báo cáo theo chương trình', component: WarehouseReport},
   {path: '/change-password', exact: true, name: 'Đổi mật khẩu', component: ChangePassword},
   {path: '/edit-profile', exact: true, name: 'Đổi thông tin cá nhân', component: EditUserProfile},
   {path: '/dashboard', name: 'Thống kê', component: Dashboard},
@@ -191,6 +195,7 @@ const routes = [
   {path: '/stores/new/', name: 'Thêm mới kho hàng', component: CreateWarehouse},
   {path: '/store-inputs/export', name: 'Phiếu xuất kho', component: WarehouseExport, exact: true},
   {path: '/store-inputs/export/:id/edit/', name: 'Chỉnh sửa phiếu xuất kho', component: EditWarehouseExport},
+  {path: '/store-inputs/export/:id/detail/', name: 'Xem phiếu xuất kho', component: ViewWarehouseExport},
   {path: '/store-inputs/export/new/', name: 'Thêm mới phiếu xuất kho', component: CreateWarehouseExport},
   {
     path: '/store-inputs/export/provider/:id/edit',

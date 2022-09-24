@@ -152,6 +152,7 @@ const Report = props => {
   }, [branch]);
 
   useEffect(() => {
+    console.log(filter)
     if (Object.keys(filter).length > 5) {
       getTop10(filter);
     }

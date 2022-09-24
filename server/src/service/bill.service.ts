@@ -10,11 +10,14 @@ import { User } from '../domain/user.entity';
 import { DepartmentService } from './department.service';
 import { OrderService } from './order.service';
 import { OrderStatus } from '../domain/enumeration/order-status';
+import { FirebaseService } from './firebase.services';
+import { NotificationService } from './notification.service';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
 relationshipNames.push('transporter');
 relationshipNames.push('order');
+relationshipNames.push('order.sale');
 relationshipNames.push('store');
 
 @Injectable()
@@ -24,7 +27,8 @@ export class BillService {
   constructor(
     @InjectRepository(BillRepository) private billRepository: BillRepository,
     private readonly departmentService: DepartmentService,
-
+    private readonly notificationService: NotificationService,
+    private readonly firebaseService: FirebaseService,
     @Inject(forwardRef(() => OrderService))
     private readonly orderService: OrderService
   ) {}
@@ -123,7 +127,55 @@ export class BillService {
       default:
         break;
     }
+    const foundedOrder = await this.findById(bill.id);
 
+    let content = '';
+    switch (foundedOrder.status) {
+      case BillStatus.CREATED:
+        content = `Vận đơn ${foundedOrder.code} đã được duyệt`;
+        break;
+      case BillStatus.APPROVED:
+        content = `Vận đơn ${foundedOrder.code} đã bị hủy`;
+        break;
+      case BillStatus.REJECTED:
+        content = `Vận đơn ${foundedOrder.code} đã bị từ chối`;
+        break;
+      case BillStatus.CANCEL:
+        content = `Vận đơn ${foundedOrder.code} đã bị hủy`;
+        break;
+      case BillStatus.SHIPPING:
+        content = `Vận đơn ${foundedOrder.code} đang vận chuyển`;
+        break;
+      case BillStatus.SUCCESS:
+        content = `Vận đơn ${foundedOrder.code} giao thành công`;
+        break;
+      case BillStatus.SUPPLY_WAITING:
+        content = `Vận đơn ${foundedOrder.code} đang đợi xuất kho`;
+        break;
+
+      default:
+        break;
+    }
+    await this.notificationService.save({
+      content,
+      type: 'BILL',
+      entityId: foundedOrder.id,
+      user: foundedOrder.order.sale
+    });
+    await this.firebaseService.sendFirebaseMessages(
+      [
+        {
+          token: foundedOrder.order.sale.fcmToken,
+          title: 'Thông báo',
+          message: content,
+          data: {
+            type: 'BILL',
+            entityId: foundedOrder.id,
+          }
+        }
+      ],
+      false
+    );
     await this.billRepository.removeCache(['order']);
     return await this.save(bill);
   }

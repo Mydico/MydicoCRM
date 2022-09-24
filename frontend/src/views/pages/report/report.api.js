@@ -186,3 +186,12 @@ export const getPromotionIncome = createAsyncThunk('api/reports/promotion-income
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
+export const getWarehouseReport = createAsyncThunk('api/reports/warehouse-report', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/warehouse-report', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

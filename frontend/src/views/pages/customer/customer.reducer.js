@@ -8,6 +8,7 @@ import {
   getCity,
   getCustomer,
   getCustomerBirthday,
+  getCustomerBySale,
   getCustomerStatus,
   getCustomerType,
   getDetailCustomer,
@@ -105,6 +106,14 @@ const slice = createSlice({
     },
     [filterCustomer.rejected]: (state ) => {
       state.loading = false;
+    },
+    [getCustomerBySale.fulfilled]: (state, action) => {
+      customersAdapter.setAll(state, action.payload.data);
+      state.initialState.totalItem = action.payload.total;
+      state.initialState.loading = false;
+    },
+    [getCustomerBySale.rejected]: (state ) => {
+      state.initialState.loading = false;
     },
     [getCustomerBirthday.fulfilled]: (state, action) => {
       // customersAdapter.setAll(state, action.payload.data);

@@ -99,7 +99,7 @@ const StoreHistory = props => {
 
   useEffect(() => {
     let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.history };
-    paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1 };
+    paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1, size };
     if (date.endDate && date.startDate) {
       paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
     }
@@ -242,7 +242,7 @@ const StoreHistory = props => {
           fields={fields}
           columnFilter
           itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
-          itemsPerPage={100}
+          itemsPerPage={size}
           hover
           sorter
           noItemsView={{

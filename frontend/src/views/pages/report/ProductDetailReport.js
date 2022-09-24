@@ -78,14 +78,17 @@ const ProductDetailReport = props => {
   }, [filter]);
 
   useEffect(() => {
-    setFilter({
+    const params = {
       ...filter,
       page: activePage - 1,
       size,
-      sale: query.get('sale'),
       startDate: moment(reportDate?.startDate).format('YYYY-MM-DD'),
       endDate: moment(reportDate?.endDate).format('YYYY-MM-DD')
-    });
+    }
+    if(query.get('sale') !== 'undefined'){
+      params.sale = query.get('sale')
+    }
+    setFilter(params);
   }, [activePage, size]);
 
   const computedExcelItems = React.useCallback(items => {

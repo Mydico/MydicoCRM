@@ -104,5 +104,9 @@ export default class StoreInput extends BaseEntity {
     @Index()
     storeTransferName?: string;
 
+    @Column({ name: 'related_id', length: 255, nullable: true })
+    @Index()
+    relatedId?: string;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

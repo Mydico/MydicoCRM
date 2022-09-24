@@ -23,7 +23,7 @@ export class PromotionService {
         @InjectRepository(PromotionRepository) private promotionRepository: PromotionRepository,
         private readonly promotionProductService: PromotionProductService,
         private readonly promotionItemService: PromotionItemService
-    ) {}
+    ) { }
 
     async findById(id: string): Promise<Promotion | undefined> {
         const options = { relations: relationshipNames };
@@ -54,17 +54,18 @@ export class PromotionService {
     async save(promotion: Promotion): Promise<Promotion | undefined> {
         const saved = await this.promotionRepository.save(promotion);
         if (promotion.id) {
-            if(saved.type === PromotionType.SHORTTERM){
-                const productList = await this.promotionProductService.findManyByfields({ where: { promotion: saved.id } });
-                await this.promotionProductService.deleteMany(productList);
+            if (saved.type === PromotionType.SHORTTERM) {
+
                 if (Array.isArray(promotion.promotionProduct)) {
+                    const productList = await this.promotionProductService.findManyByfields({ where: { promotion: saved.id } });
+                    await this.promotionProductService.deleteMany(productList);
                     const promoteProduct = promotion.promotionProduct.map(item => ({ ...item, promotion: saved }));
                     await this.promotionProductService.saveList(promoteProduct);
                 }
-            }else {
-                const promotionItemList = await this.promotionItemService.findManyByfields({ where: { promotion: saved.id } });
-                await this.promotionItemService.deleteMany(promotionItemList);
-                if (Array.isArray(promotion.promotionItems) &&  promotion.promotionItems.length > 0) {
+            } else {
+                if (Array.isArray(promotion.promotionItems)) {
+                    const promotionItemList = await this.promotionItemService.findManyByfields({ where: { promotion: saved.id } });
+                    await this.promotionItemService.deleteMany(promotionItemList);
                     const promoteItems = promotion.promotionItems.map(item => ({ ...item, promotion: saved }));
                     await this.promotionItemService.saveList(promoteItems);
                 }

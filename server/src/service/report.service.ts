@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderRepository } from '../repository/order.repository';
 import { Brackets } from 'typeorm';
@@ -8,27 +8,31 @@ import { queryBuilderFunc, queryBuilderCustomerForPromotionReportFunc } from '..
 import Customer from '../domain/customer.entity';
 import Order from '../domain/order.entity';
 import { IncomeDashboardRepository } from '../repository/income-dashboard.repository';
-import { DebtDashboardRepository } from '../repository/debt-dashboard.repository';
-import { StoreInputRepository } from '../repository/store-input.repository';
-import { StoreInputDetailsRepository } from '../repository/store-input-details.repository';
 import { TransactionRepository } from '../repository/transaction.repository';
 import Transaction from '../domain/transaction.entity';
 import _ from 'lodash';
 import { User } from '../domain/user.entity';
-import { BillRepository } from '../repository/bill.repository';
 import Department from '../domain/department.entity';
-import OrderDetails from 'src/domain/order-details.entity';
+import OrderDetails from '../domain/order-details.entity';
+import { StoreHistoryRepository } from '../repository/store-history.repository';
+import { StoreInputRepository } from '../repository/store-input.repository';
+import moment from 'moment';
+import { BillRepository } from '../repository/bill.repository';
+import StoreHistory from '../domain/store-history.entity';
+
 @Injectable()
 export class ReportService {
   constructor(
     @InjectRepository(OrderRepository) private orderRepository: OrderRepository,
-    @InjectRepository(StoreInputRepository) private storeInputRepository: StoreInputRepository,
-    @InjectRepository(StoreInputDetailsRepository) private storeInputDetailsRepository: StoreInputDetailsRepository,
     @InjectRepository(OrderDetailsRepository) private orderDetailsRepository: OrderDetailsRepository,
     @InjectRepository(IncomeDashboardRepository) private incomeDashboardRepository: IncomeDashboardRepository,
-    @InjectRepository(DebtDashboardRepository) private billRepository: BillRepository,
     @InjectRepository(CustomerRepository) private customerRepository: CustomerRepository,
-    @InjectRepository(TransactionRepository) private transactionRepository: TransactionRepository
+    @InjectRepository(TransactionRepository) private transactionRepository: TransactionRepository,
+    @InjectRepository(StoreHistoryRepository) private storeHistoryRepository: StoreHistoryRepository,
+    @InjectRepository(StoreInputRepository) private storeInputRepository: StoreInputRepository,
+    @InjectRepository(BillRepository) private billRepository: BillRepository
+
+
   ) { }
 
   async countDebit(
@@ -646,13 +650,13 @@ export class ReportService {
     }
   }
 
-  async getProductDetailReport(options, filter): Promise<[OrderDetails[],number]> {
+  async getProductDetailReport(options, filter): Promise<[OrderDetails[], number]> {
     let queryString = queryBuilderFunc('orderDetails', filter);
     queryString = queryString.replace('orderDetails.departmentId', 'order.departmentId');
     queryString = queryString.replace('orderDetails.saleId', 'order.saleId');
     queryString = queryString.replace('orderDetails.branchId', 'order.branchId');
 
-    
+
     // queryString = queryString.replace('Transaction.brandId', 'brand.id');
     // queryString = queryString.replace('Transaction.productGroupId', 'productGroup.id');
     //order_details.price_real * quantity * (100 - reduce_percent) / 100
@@ -660,7 +664,7 @@ export class ReportService {
       .createQueryBuilder('orderDetails')
       // .select(['order.customer.id', 'order.customer.name'])
       // .select(['orderDetails.createdDate','orderDetails.priceReal', 'orderDetails.quantity'])
-      
+
       .leftJoinAndSelect('orderDetails.order', 'order')
       .leftJoinAndSelect('order.customer', 'customer')
       .where(queryString)
@@ -983,5 +987,258 @@ export class ReportService {
       .where(queryString)
       .groupBy('Transaction.customerId, Transaction.customerName, Transaction.customerCode, Transaction.saleName')
     return await queryBuilder.getOne();
+  }
+
+  async getWarehouseReport(options, filter, department): Promise<any> {
+    // let queryString = queryBuilderFunc('StoreHistory', filter);
+    // queryString = queryString.replace('Customer.customerId', 'Customer.id');
+    // const filter = {
+    //   startDate : "2022-04-01",
+    //   enđate : "2022-08-10"
+    // };
+    console.log(filter)
+    let queryString = queryBuilderFunc('StoreHistory', filter, false, true);
+    queryString = queryString.replace('StoreHistory.productId', 'product.id');
+    queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
+    queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
+    queryString = queryString.replace('StoreHistory.product_name', 'product.name');
+
+    const count = await this.storeHistoryRepository
+    .createQueryBuilder('StoreHistory2')
+    .select("StoreHistory2.product_name,StoreHistory2.productId")
+    .addSelect("Sum(remain)", "remain")
+    .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
+      .addSelect("MAX(StoreHistory.id)", "id")
+      .from(StoreHistory, 'StoreHistory')
+      .leftJoin('StoreHistory.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+      .where(`DATE(StoreHistory.createdDate) < '${filter.startDate}'`)
+      .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
+    .groupBy(`StoreHistory2.product_name,StoreHistory2.productId`)
+    .cache(3 * 3600)
+    .getRawMany()
+    // const remainId = await this.storeHistoryRepository
+    //   .createQueryBuilder('StoreHistory')
+    //   .select(`StoreHistory.productId,StoreHistory.departmentId`)
+    //   .addSelect("MAX(StoreHistory.id)", "id")
+    //   .leftJoin('StoreHistory.product', 'product')
+    //   .leftJoin('product.productBrand', 'brand')
+    //   .leftJoin('product.productGroup', 'productGroup')
+    //   .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+    //   .where(`DATE(StoreHistory.createdDate) < '${filter.startDate}'`)
+    //   .andWhere(queryString)
+    // .offset(options.skip)
+    // .limit(options.take)
+    // .getRawMany()
+
+    // const productId = remainId.map(item => item.productId)
+    // let ids = remainId.map(item => item.id)
+    // if (productId.length === 0) return [[], 0]
+    // if (ids.length === 0) return [[], 0]
+    const remainbegin = await this.storeHistoryRepository
+      .createQueryBuilder('StoreHistory2')
+      .select("StoreHistory2.product_name,StoreHistory2.productId")
+      .addSelect("Sum(remain)", "remain")
+      .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
+        .addSelect("MAX(StoreHistory.id)", "id")
+        .from(StoreHistory, 'StoreHistory')
+        .leftJoin('StoreHistory.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+        .where(`DATE(StoreHistory.createdDate) < '${filter.startDate}'`)
+        .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
+      .groupBy(`StoreHistory2.product_name,StoreHistory2.productId`)
+      .offset(options.skip)
+      .limit(options.take)
+      .cache(3 * 3600)
+      .getRawMany()
+      const productId = remainbegin.map(item => item.productId)
+      if (productId.length === 0) return [[], 0]
+    // const remainEndId = await this.storeHistoryRepository
+    //   .createQueryBuilder('StoreHistory')
+    //   .select(`StoreHistory.productId,StoreHistory.departmentId`)
+    //   .addSelect("MAX(StoreHistory.id)", "id")
+    //   .leftJoin('StoreHistory.product', 'product')
+    //   .leftJoin('product.productBrand', 'brand')
+    //   .leftJoin('product.productGroup', 'productGroup')
+    //   // .groupBy(`StoreHistory.productId${department? ",StoreHistory.departmentId":""}`)
+    //   .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+    //   .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
+    //   .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
+    //   .orderBy("StoreHistory.productId", "ASC")
+    //   .andWhere(queryString)
+    //   .getRawMany()
+
+    // ids = remainEndId.map(item => item.id)
+    // if (ids.length === 0) return [[], 0]
+
+    // const remainEnd = this.storeHistoryRepository
+    //   .createQueryBuilder('StoreHistory')
+    //   // .select("product_name,productId,departmentId,store_name,remain as remainEnd")
+    //   .select("StoreHistory.product_name,StoreHistory.productId")
+    //   .addSelect("Sum(remain)", "remainEnd")
+    //   .where("StoreHistory.id IN(:...ids)", { ids: ids })
+    //   .groupBy(`StoreHistory.product_name,StoreHistory.productId`)
+    //   .getRawMany()
+    const remainEnd = this.storeHistoryRepository
+    .createQueryBuilder('StoreHistory2')
+    .select("StoreHistory2.product_name,StoreHistory2.productId")
+    .addSelect("Sum(remain)", "remainEnd")
+    .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
+      .addSelect("MAX(StoreHistory.id)", "id")
+      .from(StoreHistory, 'StoreHistory')
+      .leftJoin('StoreHistory.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+      .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
+      .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
+      .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
+    .groupBy(`StoreHistory2.product_name,StoreHistory2.productId`)
+    .offset(options.skip)
+    .limit(options.take)
+    .cache(3 * 3600)
+    .getRawMany()
+
+    queryString = queryBuilderFunc('StoreInput', filter);
+    queryString = queryString.replace('StoreInput.productId', 'product.id');
+    queryString = queryString.replace('StoreInput.brandId', 'brand.id');
+    queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
+    queryString = queryString.replace('StoreInput.product_name', 'product.name');
+
+    // if (filter['endDate'] && filter['startDate']) {
+    //   queryString += `StoreInput.createdDate  >= '${filter['startDate']}' AND  StoreInput.createdDate <= '${filter['endDate']} 23:59:59'`;
+    // }
+    const importProduct = this.storeInputRepository
+      .createQueryBuilder('StoreInput')
+      .select("storeInputDetails.productId")
+      .addSelect("sum(storeInputDetails.quantity)", "importProduct")
+      .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+      .leftJoin('storeInputDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+      .andWhere("StoreInput.type = 'IMPORT' AND StoreInput.status = 'APPROVED' AND StoreInput.createdBy <> 'system'")
+      .andWhere(queryString)
+      .groupBy('storeInputDetails.productId')
+      .orderBy("storeInputDetails.productId", "ASC")
+      .cache(3 * 3600)
+      .getRawMany()
+
+    const returnProduct = this.storeInputRepository
+      .createQueryBuilder('StoreInput')
+      .select("storeInputDetails.productId")
+      .addSelect("sum(storeInputDetails.quantity)", "returnProduct")
+      .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+      .leftJoin('storeInputDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+      .andWhere("StoreInput.type = 'RETURN'")
+      .andWhere(queryString)
+      .groupBy('storeInputDetails.productId')
+      .orderBy("storeInputDetails.productId", "ASC")
+      .cache(3 * 3600)
+      .getRawMany()
+    const inputProductFromExport = this.storeInputRepository
+      .createQueryBuilder('StoreInput')
+      .select("storeInputDetails.productId")
+      .addSelect("sum(storeInputDetails.quantity)", "inputProductFromExport")
+      .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+      .leftJoin('storeInputDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+      .andWhere("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED' AND StoreInput.relatedId is not null")
+      .andWhere(queryString)
+      .groupBy('storeInputDetails.productId')
+      .orderBy("storeInputDetails.productId", "ASC")
+      .cache(3 * 3600)
+      .getRawMany()
+
+    const exportStore = this.storeInputRepository
+      .createQueryBuilder('StoreInput')
+      .select("storeInputDetails.productId")
+      .addSelect("sum(storeInputDetails.quantity)", "exportStore")
+      .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+      .leftJoin('storeInputDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+      .andWhere("StoreInput.type = 'EXPORT' AND StoreInput.storeTransferId is not null AND StoreInput.status = 'APPROVED'")
+      .andWhere(queryString)
+      .groupBy('storeInputDetails.productId')
+      .orderBy("storeInputDetails.productId", "ASC")
+      .cache(3 * 3600)
+      .getRawMany()
+    const exportStoreToProvider = this.storeInputRepository
+      .createQueryBuilder('StoreInput')
+      .select("storeInputDetails.productId")
+      .addSelect("sum(storeInputDetails.quantity)", "exportStoreToProvider")
+      .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+      .leftJoin('storeInputDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+      .andWhere("StoreInput.type = 'EXPORT' AND StoreInput.providerId is not null AND StoreInput.status = 'APPROVED'")
+      .andWhere(queryString)
+      .groupBy('storeInputDetails.productId')
+      .orderBy("storeInputDetails.productId", "ASC")
+      .cache(3 * 3600)
+      .getRawMany()
+    queryString = queryString.replace('StoreInput.departmentId', 'StoreInput.storeTransferId');
+    const ontheway = this.storeInputRepository
+      .createQueryBuilder('StoreInput')
+      .select("storeInputDetails.productId")
+      .from("StoreInput", "related")
+      .addSelect("sum(storeInputDetails.quantity)", "ontheway")
+      .leftJoin('related.storeInputDetails', 'storeInputDetails')
+      .leftJoin('storeInputDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+      .andWhere("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'APPROVED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'WAITING'")
+      .andWhere(queryString)
+      .groupBy('storeInputDetails.productId')
+      .orderBy("storeInputDetails.productId", "ASC")
+      .cache(3 * 3600)
+      .getRawMany()
+    queryString = queryBuilderFunc('Bill', filter);
+    queryString = queryString.replace('Bill.productId', 'product.id');
+    queryString = queryString.replace('Bill.brandId', 'brand.id');
+    queryString = queryString.replace('Bill.productGroupId', 'productGroup.id');
+    queryString = queryString.replace('Bill.product_name', 'product.name');
+
+    const exportedProduct = this.billRepository
+      .createQueryBuilder('Bill')
+      .select("OrderDetails.productId")
+      .addSelect('Sum(OrderDetails.quantity)', 'exportedProduct')
+      .leftJoin('Bill.order', 'order')
+      .leftJoin('order.orderDetails', 'OrderDetails')
+      .leftJoin('OrderDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .groupBy('OrderDetails.productId')
+      .where("OrderDetails.product.id IN(:...ids)", { ids: productId })
+      .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
+      .andWhere(queryString)
+      .orderBy("OrderDetails.productId", "ASC")
+      .cache(3 * 3600)
+      .getRawMany()
+
+    const queryResult = await Promise.all([remainEnd, importProduct, returnProduct, inputProductFromExport, exportedProduct, exportStore, ontheway, exportStoreToProvider])
+    const arrayResult = Array.prototype.concat(...queryResult).concat(remainbegin);
+
+    const result2 = arrayResult
+      .reduce(
+        (acc, curr) => acc.set(curr.productId, { ...acc.get(curr.productId), ...curr }),
+        new Map()
+      )
+      .values()
+
+    return [Array.from(result2), count.length];
   }
 }

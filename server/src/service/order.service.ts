@@ -26,6 +26,7 @@ relationshipNames.push('orderDetails');
 relationshipNames.push('orderDetails.product');
 relationshipNames.push('promotion');
 relationshipNames.push('promotion.promotionItems');
+relationshipNames.push('promotionItem');
 relationshipNames.push('promotion.customerType');
 relationshipNames.push('store');
 relationshipNames.push('sale');
@@ -54,7 +55,7 @@ export class OrderService {
       relationshipNames.push('customer.department');
       relationshipNames.push('customer.type');
     }
-    const options = { relations: relationshipNames };
+    const options = { relations: relationshipNames, cache: true };
     const result = await this.orderRepository.findOne(id, options);
     result.orderDetails = result.orderDetails.sort((a, b) => {
       return Number(a.id) - Number(b.id);
@@ -111,6 +112,7 @@ export class OrderService {
       .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
       .leftJoinAndSelect('orderDetails.product', 'product')
       .leftJoinAndSelect('Order.promotion', 'promotion')
+      .leftJoinAndSelect('Order.promotionItem', 'promotionItem')
       .leftJoinAndSelect('promotion.customerType', 'customerType')
       .leftJoinAndSelect('Order.sale', 'sale')
       .leftJoinAndSelect('Order.department', 'department')
@@ -273,6 +275,36 @@ export class OrderService {
       order.code = `${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}-${count + 1}`;
     }
     const result = await this.orderRepository.save(order);
+    const userCanApproveOrder = await this.userService.findManager(result.department.id);
+    console.log(userCanApproveOrder)
+    const saveNotiArr = [];
+    const pushNotiArr = [];
+
+    for (let index = 0; index < userCanApproveOrder.length; index++) {
+      const element = userCanApproveOrder[index];
+      saveNotiArr.push(
+        this.notificationService.save({
+          content: `Đơn hàng ${result.code} đã được tạo. Vui lòng kiểm tra`,
+          type: 'ORDER',
+          entityId: result.id,
+          user: element
+        })
+      );
+      if(element.fcmToken){
+        pushNotiArr.push({
+          token: element.fcmToken,
+          title: 'Thông báo',
+          message: `Đơn hàng ${result.code} đã được tạo. Vui lòng kiểm tra`,
+          data: {
+            type: 'ORDER',
+            entityId: result.id
+          }
+        });
+      }
+
+    }
+    console.log(pushNotiArr)
+    await this.firebaseService.sendFirebaseMessages(pushNotiArr, false);
     await this.emitMessage(result, order);
     return result;
   }
@@ -341,20 +373,24 @@ export class OrderService {
     }
     await this.emitMessage(result, order);
     await this.notificationService.save({
-      content: `Đơn hàng ${order.code} đã được tạo vận đơn`,
+      content: `Đơn hàng ${foundedOrder.code} đã được tạo vận đơn`,
       type: 'ORDER',
-      entityId: order.id,
-      user: order.sale
+      entityId: foundedOrder.id,
+      user: foundedOrder.sale
     });
     await this.firebaseService.sendFirebaseMessages(
       [
         {
-          token: order.sale.fcmToken,
+          token: foundedOrder.sale.fcmToken,
           title: 'Thông báo',
-          message: `Đơn hàng ${order.code} đã được tạo vận đơn`
+          message: `Đơn hàng ${foundedOrder.code} đã được tạo vận đơn`,
+          data: {
+            type: 'ORDER',
+            entityId: foundedOrder.id
+          }
         }
       ],
-      true
+      false
     );
     return result;
   }
@@ -427,28 +463,35 @@ export class OrderService {
     //   }
     // }
     const result = await this.orderRepository.save(order);
+    const foundedOrder = await this.findById(order.id);
+
     let content = '';
     switch (order.status) {
       case OrderStatus.APPROVED:
-        content = `Đơn hàng ${result.code} đã được duyệt`;
-
+        content = `Đơn hàng ${foundedOrder.code} đã được duyệt`;
         break;
       case OrderStatus.CANCEL:
-        content = `Đơn hàng ${result.code} đã bị hủy`;
+        content = `Đơn hàng ${foundedOrder.code} đã bị hủy`;
         break;
       case OrderStatus.COD_APPROVED:
-        content = `Vận đơn của đơn hàng ${result.code} đã được duyệt`;
+        content = `Vận đơn của đơn hàng ${foundedOrder.code} đã được duyệt`;
         break;
       case OrderStatus.SHIPPING:
-        content = `Đơn hàng ${result.code} đang được vận chuyển`;
+        content = `Đơn hàng ${foundedOrder.code} đang được vận chuyển`;
         break;
-      case OrderStatus.SUCCESS:
-        content = `Đơn hàng ${result.code} đang giao thành công`;
+      case OrderStatus.CANCEL:
+        content = `Đơn hàng ${foundedOrder.code} đã hủy`;
         break;
+      case OrderStatus.REJECTED:
+        content = `Đơn hàng ${foundedOrder.code} đã bị từ chối`;
+        break;
+      case OrderStatus.WAITING:
+        content = `Đơn hàng ${foundedOrder.code} đang chờ duyệt`;
+        break;
+
       default:
         break;
     }
-    const foundedOrder = await this.findById(order.id);
 
     await this.notificationService.save({
       content,
@@ -461,10 +504,14 @@ export class OrderService {
         {
           token: foundedOrder.sale.fcmToken,
           title: 'Thông báo',
-          message: content
+          message: content,
+          data: {
+            type: 'ORDER',
+            entityId: foundedOrder.id
+          }
         }
       ],
-      true
+      false
     );
     return result;
   }
