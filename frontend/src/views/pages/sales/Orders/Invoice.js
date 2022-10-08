@@ -18,14 +18,15 @@ const Invoice = () => {
   const { account } = useSelector(userSafeSelector);
   const history = useHistory()
   const { initialState } = useSelector(state => state.order);
-
+  const [loading, setLoading] = useState(false)
   const [invoice, setInvoice] = useState(null);
   useEffect(() => {
     if (location.state) setInvoice(location.state);
   }, []);
 
   const onCreateOrder = () => {
-    if (invoice) {
+    if (invoice && !loading) {
+      setLoading(true)
       invoice.totalMoney = invoice?.orderDetails.reduce((sum, current) => sum + current.priceReal * current.quantity, 0);
       invoice.realMoney = invoice?.orderDetails.reduce(
         (sum, current) =>
@@ -36,12 +37,12 @@ const Invoice = () => {
         (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent || 0) / 100,
         0
       );
-      dispatch(fetching());
       dispatch(creatingOrder(invoice));
     }
   };
   useEffect(() => {
     if (initialState.updatingSuccess) {
+      setLoading(false)
       socket.emit('order', invoice);
       dispatch(reset());
       localStorage.setItem('order', JSON.stringify({}));
@@ -171,8 +172,8 @@ const Invoice = () => {
             </CCol>
           </CRow>
           <CRow className="d-flex justify-content-center mr-5">
-            <CButton type="submit" size="lg" className="btn btn-success mr-5" disabled={initialState.loading} onClick={onCreateOrder}>
-              {initialState.loading ? <CSpinner size="sm" /> : ' Tạo đơn hàng'}
+            <CButton type="submit" size="lg" className="btn btn-success mr-5" disabled={loading} onClick={onCreateOrder}>
+              {loading ? <CSpinner size="sm" /> : ' Tạo đơn hàng'}
             </CButton>
           </CRow>
         </CCardBody>

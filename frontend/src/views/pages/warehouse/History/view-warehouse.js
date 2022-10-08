@@ -65,7 +65,6 @@ const DetailWarehouse = props => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [initValuesState, setInitValuesState] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-
   const warehouseImport = useSelector(state => selectById(state, props.match.params.storeId));
 
   const [productList, setProductList] = useState([]);
@@ -76,7 +75,7 @@ const DetailWarehouse = props => {
   };
 
   useEffect(() => {
-    dispatch(getDetailWarehouseImport({ id: props.match.params.storeId, dependency: true }));
+    dispatch(getDetailWarehouseImport({ id: props.match.params.storeId, dependency: true }))
    
 
   }, []);
@@ -205,7 +204,7 @@ const DetailWarehouse = props => {
           </CCard>
         );
     }
-  }, [warehouseImport]);
+  }, [warehouseImport, selectedCustomer]);
 
   return (
     <CCard>

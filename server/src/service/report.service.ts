@@ -996,7 +996,6 @@ export class ReportService {
     //   startDate : "2022-04-01",
     //   enđate : "2022-08-10"
     // };
-    console.log(filter)
     let queryString = queryBuilderFunc('StoreHistory', filter, false, true);
     queryString = queryString.replace('StoreHistory.productId', 'product.id');
     queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
@@ -1005,7 +1004,8 @@ export class ReportService {
 
     const count = await this.storeHistoryRepository
     .createQueryBuilder('StoreHistory2')
-    .select("StoreHistory2.product_name,StoreHistory2.productId")
+    .select("StoreHistory2.productId")
+    .addSelect("MIN(StoreHistory2.product_name)", "product_name")
     .addSelect("Sum(remain)", "remain")
     .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
       .addSelect("MAX(StoreHistory.id)", "id")
@@ -1016,7 +1016,7 @@ export class ReportService {
       .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
       .where(`DATE(StoreHistory.createdDate) < '${filter.startDate}'`)
       .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
-    .groupBy(`StoreHistory2.product_name,StoreHistory2.productId`)
+    .groupBy(`StoreHistory2.productId`)
     .cache(3 * 3600)
     .getRawMany()
     // const remainId = await this.storeHistoryRepository
@@ -1039,8 +1039,9 @@ export class ReportService {
     // if (ids.length === 0) return [[], 0]
     const remainbegin = await this.storeHistoryRepository
       .createQueryBuilder('StoreHistory2')
-      .select("StoreHistory2.product_name,StoreHistory2.productId")
+      .select("StoreHistory2.productId")
       .addSelect("Sum(remain)", "remain")
+      .addSelect("MAX(product.name)", "product_name")
       .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
         .addSelect("MAX(StoreHistory.id)", "id")
         .from(StoreHistory, 'StoreHistory')
@@ -1050,7 +1051,9 @@ export class ReportService {
         .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
         .where(`DATE(StoreHistory.createdDate) < '${filter.startDate}'`)
         .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
-      .groupBy(`StoreHistory2.product_name,StoreHistory2.productId`)
+      .innerJoin("StoreHistory2.product","product")
+      .groupBy(`StoreHistory2.productId`)
+      .orderBy("product.name", "ASC")
       .offset(options.skip)
       .limit(options.take)
       .cache(3 * 3600)
@@ -1085,7 +1088,7 @@ export class ReportService {
     //   .getRawMany()
     const remainEnd = this.storeHistoryRepository
     .createQueryBuilder('StoreHistory2')
-    .select("StoreHistory2.product_name,StoreHistory2.productId")
+    .select("StoreHistory2.productId")
     .addSelect("Sum(remain)", "remainEnd")
     .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
       .addSelect("MAX(StoreHistory.id)", "id")
@@ -1097,7 +1100,7 @@ export class ReportService {
       .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
       .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
       .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
-    .groupBy(`StoreHistory2.product_name,StoreHistory2.productId`)
+    .groupBy(`StoreHistory2.productId`)
     .offset(options.skip)
     .limit(options.take)
     .cache(3 * 3600)

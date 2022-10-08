@@ -53,7 +53,7 @@ const fields = [
   { key: 'exportedProduct', label: 'Xuất bán',  filter: false },
   { key: 'exportStoreToProvider', label: 'Xuất trả NCC',  filter: false },
   { key: 'exportStore', label: 'Xuất điều chuyển', filter: false },
-  { key: 'realExport', label: 'Thực xuất', filter: false },
+  { key: 'realExport', label: 'Thực xuất bán', filter: false },
   { key: 'remainEnd', label: 'Tổng tồn cuối kì', filter: false },
   { key: 'ontheway', label: 'Hàng đi đường', filter: false },
   { key: 'total', label: 'Tổng tồn hiện tại', filter: false }

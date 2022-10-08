@@ -30,6 +30,10 @@ export class NotificationService {
         return await this.NotificationRepository.save(Notification);
     }
 
+    async saveMany(notifications: Notification[]): Promise<Notification[] | undefined> {
+        return await this.NotificationRepository.save(notifications);
+    }
+
     async update(Notification: Notification): Promise<Notification | undefined> {
         return await this.save(Notification);
     }

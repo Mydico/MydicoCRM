@@ -36,22 +36,22 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly departmentService: DepartmentService
-  ) {}
+  ) { }
 
-  @Get('/manager')
-  @ApiResponse({
-    status: 200,
-    description: 'List all records',
-    type: User
-  })
-  async getManager(@Req() req, @Res() res): Promise<User[]> {
+  // @Get('/manager')
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'List all records',
+  //   type: User
+  // })
+  // async getManager(@Req() req, @Res() res): Promise<User[]> {
 
-    const results = await this.userService.findManager(
-   
-      req.query.departmentId || 1
-     );
-    return res.send(results);
-  }
+  //   const results = await this.userService.findManager(
+
+  //     req.query.departmentId || 1
+  //   );
+  //   return res.send(results);
+  // }
 
   @Get('/transporter')
   @ApiResponse({
@@ -77,45 +77,45 @@ export class UserController {
       },
       filter,
       currentUser.department?.id || null
-     );
+    );
     return res.send(results);
   }
 
   @Get('/find/exact')
   @Roles(RoleType.USER)
   @ApiResponse({
-      status: 200,
-      description: 'List all records',
-      type: User,
+    status: 200,
+    description: 'List all records',
+    type: User,
   })
   async findExact(@Req() req, @Res() res): Promise<User[]> {
-      const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-      const filter: any = {};
-      Object.keys(req.query).forEach(item => {
-          if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-              filter[item] = req.query[item];
-          }
-      });
-      const currentUser = req.user as User;
-      const childDepartment  = await this.userService.findAllSubDepartment(filter['department'])
-      filter['department'] = [Number(filter['department']) || currentUser.department.id]
-      if(currentUser.mainDepartment){
-        filter['department'] = [...filter['department'], currentUser.mainDepartment.id]
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter: any = {};
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        filter[item] = req.query[item];
       }
-      if(childDepartment.length > 0) {
-        filter['department'] = [...filter['department'],...childDepartment]
-      }
-      filter['department'] = [...new Set(filter['department'])]
-      const [results, count] = await this.userService.filterExact(
-          {
-              skip: +pageRequest.page * pageRequest.size,
-              take: +pageRequest.size,
-              order: pageRequest.sort.asOrder(),
-          },
-          filter,
-      );
-      HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
-      return res.send(results);
+    });
+    const currentUser = req.user as User;
+    const childDepartment = await this.userService.findAllSubDepartment(filter['department'])
+    filter['department'] = [Number(filter['department']) || currentUser.department.id]
+    if (currentUser.mainDepartment) {
+      filter['department'] = [...filter['department'], currentUser.mainDepartment.id]
+    }
+    if (childDepartment.length > 0) {
+      filter['department'] = [...filter['department'], ...childDepartment]
+    }
+    filter['department'] = [...new Set(filter['department'])]
+    const [results, count] = await this.userService.filterExact(
+      {
+        skip: +pageRequest.page * pageRequest.size,
+        take: +pageRequest.size,
+        order: pageRequest.sort.asOrder(),
+      },
+      filter,
+    );
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
   }
 
   @Get('/')
@@ -136,9 +136,9 @@ export class UserController {
     });
     let departmentVisible = [];
     if (currentUser.department) {
-        departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-        departmentVisible = departmentVisible.map(item => item.id);
-        departmentVisible.push(currentUser.department.id);
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
     }
     const [results, count] = await this.userService.findAndCount(
       {

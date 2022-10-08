@@ -113,13 +113,13 @@ export class UserService {
         return queryBuilder.getMany()
     }
 
-    async findManager(departmentId): Promise<User[]> {
+    async findManager(departmentId, branchId): Promise<User[]> {
 
         const userPermission = await this.userRepository
             .createQueryBuilder('User')
             .leftJoinAndSelect('User.permissionGroups', 'permissionGroups')
             .leftJoinAndSelect('permissionGroups.permissionGroupAssociates', 'permissionGroupAssociates')
-            .where(`User.departmentId = ${departmentId} AND permissionGroupAssociates.action = 'PUT' AND permissionGroupAssociates.resource = '/api/orders/approve'`)
+            .where(`User.departmentId = ${departmentId} AND User.branchId = ${branchId} AND permissionGroupAssociates.action = 'PUT' AND permissionGroupAssociates.resource = '/api/orders/approve'`)
             .andWhere(`User.login <> 'admin'`)
             .skip(0)
             .cache(true)
@@ -130,7 +130,7 @@ export class UserService {
             .leftJoinAndSelect('User.department', 'department')
             .leftJoinAndSelect('department.permissionGroups', 'permissionGroups')
             .leftJoinAndSelect('permissionGroups.permissionGroupAssociates', 'permissionGroupAssociates')
-            .where(`User.departmentId = ${departmentId} AND permissionGroupAssociates.action = 'PUT' AND permissionGroupAssociates.resource = '/api/orders/approve'`)
+            .where(`User.departmentId = ${departmentId} AND User.branchId = ${branchId} AND permissionGroupAssociates.action = 'PUT' AND permissionGroupAssociates.resource = '/api/orders/approve'`)
             .andWhere(`User.login <> 'admin'`)
             .skip(0)
             .cache(true)
@@ -141,7 +141,7 @@ export class UserService {
             .leftJoinAndSelect('User.roles', 'roles')
             .leftJoinAndSelect('roles.permissionGroups', 'permissionGroups')
             .leftJoinAndSelect('permissionGroups.permissionGroupAssociates', 'permissionGroupAssociates')
-            .where(`User.departmentId = ${departmentId} AND permissionGroupAssociates.action = 'PUT' AND permissionGroupAssociates.resource = '/api/orders/approve'`)
+            .where(`User.departmentId = ${departmentId} AND User.branchId = ${branchId} AND permissionGroupAssociates.action = 'PUT' AND permissionGroupAssociates.resource = '/api/orders/approve'`)
             .andWhere(`User.login <> 'admin'`)
             .skip(0)
             .cache(true)

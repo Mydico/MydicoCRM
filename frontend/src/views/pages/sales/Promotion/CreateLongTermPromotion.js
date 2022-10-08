@@ -101,7 +101,10 @@ const CreatePromotion = () => {
 
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
-    values.customerType = initialValues.current?.customerType;
+    if(!values.customerType){
+      values.customerType = initialValues.current?.customerType;
+
+    }
     values.promotionItems = promotionItemList;
     values.type = 'LONGTERM';
     dispatch(creatingPromotion(values));

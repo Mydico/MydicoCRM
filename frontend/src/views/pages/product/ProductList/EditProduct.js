@@ -48,11 +48,13 @@ const validationSchema = function() {
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { CTextarea } from '@coreui/react';
 const { selectById } = globalizedProductSelectors;
 const { selectAll } = globalizedproductGroupsSelectors;
 
 const EditProduct = props => {
   const { initialState } = useSelector(state => state.product);
+  const uploadRef = useRef(null)
   const initialValues = {
     agentPrice: 0,
     barcode: '',
@@ -105,7 +107,8 @@ const EditProduct = props => {
         try {
           temp.image = JSON.parse(product.image || []);
         } catch (e) {}
-        const arrRequest = temp.image?.map(image => fetch(image));
+        images.current = temp.image
+        const arrRequest = temp.image?.map(image => fetch(image,{cache: 'no-cache'}));
         Promise.all(arrRequest).then(arrRes => {
           const arr = arrRes.map(res => {
             return res?.arrayBuffer().then(buf => {
@@ -121,10 +124,24 @@ const EditProduct = props => {
   }, [product]);
 
 
-  const onSubmit = (values, { resetForm }) => {
+  const onSubmit = async (values, { resetForm }) => {
     dispatch(fetching());
     values.price = Number(values.price?.replace(/\D/g || 0, ''));
     values.agentPrice = Number(values.agentPrice?.replace(/\D/g || 0, ''));
+    // const allFiles = []
+    // for (let i = 0; i < uploadRef.files.length; i++) {
+    //   allFiles.push(event.target.files[i]);
+    // }
+    console.log(uploadRef.current.files)
+    const arr = uploadRef.current.files.map(item => {
+      return S3FileUpload.uploadFile(item.file, config);
+    });
+
+    const data = await Promise.all(arr);
+    console.log(data)
+    const updatedData = data.map(item => item.location)
+    const init = [...updatedData]
+    images.current = init
     values.image = JSON.stringify(images.current);
     dispatch(updateProduct(values));
   };
@@ -132,10 +149,16 @@ const EditProduct = props => {
   // const getUploadParams = () => {
   //   return { url: process.env.NODE_ENV === 'development' ? 'http://localhost:8082/api/files' : 'http://localhost:8082/api/files' };
   // };
-  const getFilesFromEvent = async (file, allFile) => {
+  const getFilesFromEvent = async (event) => {
+    console.log(event.target.files)
+    event.preventDefault();
+    const allFiles = []
+    for (let i = 0; i < event.target.files.length; i++) {
+      allFiles.push(event.target.files[i]);
+    }
     setLoading(true)
-    const arr = allFile.map(item => {
-      return S3FileUpload.uploadFile(item.file, config);
+    const arr = allFiles.map(item => {
+      return S3FileUpload.uploadFile(item, config);
     });
     // allFile.forEach(f => f.remove())
     // setInitImages(undefined)
@@ -144,10 +167,15 @@ const EditProduct = props => {
     const init = [...images.current,...updatedData]
     images.current = init
     ref.current.values.image = JSON.stringify(images.current);
-    dispatch(updateProduct(ref.current.values));
+    setLoading(false)
+    return allFiles
     
   };
-  const handleChangeStatus = ({ xhr }, status) => {
+  const handleChangeStatus = (fileWithMeta) => {
+    // if(fileWithMeta.meta.status === 'removed'){
+    //   console.log(fileWithMeta)
+    // }
+   
     // S3FileUpload
     // .uploadFile(file, config)
     // .then(data => console.log(data))
@@ -159,6 +187,8 @@ const EditProduct = props => {
     //   images.current = arr;
     // }
   };
+
+  const onFileSubmit = (file, allFile) =>{}
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
@@ -225,7 +255,7 @@ const EditProduct = props => {
                   </CFormGroup>
                   <CFormGroup>
                     <CLabel htmlFor="userName">Mô tả</CLabel>
-                    <CInput
+                    <CTextarea
                       type="text"
                       name="desc"
                       id="desc"
@@ -355,13 +385,12 @@ const EditProduct = props => {
         </Formik>
         <CFormGroup>
           <Dropzone
-            onChangeStatus={handleChangeStatus}
-            onSubmit={getFilesFromEvent}
+            ref={uploadRef}
+            // onChangeStatus={handleChangeStatus}
+            // getFilesFromEvent={getFilesFromEvent}
             accept="image/*,audio/*,video/*"
             inputLabel="Upload Ảnh"
             inputContent="Kéo thả hình ảnh hoặc bấm để chọn ảnh"
-            submitButtonContent={loading?"Đang tải":"Cập nhật"}
-            submitButtonDisabled={loading}
             inputWithFilesContent="Thêm file"
             initialFiles={initImages}
           />

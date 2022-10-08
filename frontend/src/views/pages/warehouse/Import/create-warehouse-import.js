@@ -33,14 +33,17 @@ import { userSafeSelector } from '../../login/authenticate.reducer.js';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { blockInvalidChar } from '../../../../shared/utils/helper';
+import { globalizedProviderSelectors } from '../Provider/provider.reducer';
 
 const validationSchema = function() {
   return Yup.object().shape({
-    store: Yup.object().required('Kho không để trống')
+    store: Yup.object().required('Kho không để trống'),
+    provider: Yup.object().required('Nhà cung cấp không để trống')
   });
 };
 
 import { validate } from '../../../../shared/utils/normalize';
+import { getProvider } from '../Provider/provider.api';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -49,6 +52,8 @@ export const mappingStatus = {
 };
 const { selectAll: selectAllWarehouse } = globalizedWarehouseSelectors;
 const { selectAll: selectAllProduct } = globalizedProductSelectors;
+const { selectAll: selectAllProvider } = globalizedProviderSelectors;
+
 const CreateWarehouse = () => {
   const { initialState } = useSelector(state => state.warehouseImport);
   const { account } = useSelector(userSafeSelector);
@@ -60,6 +65,7 @@ const CreateWarehouse = () => {
 
   const warehouses = useSelector(selectAllWarehouse);
   const products = useSelector(selectAllProduct);
+  const providers = useSelector(selectAllProvider);
 
   const [productList, setProductList] = useState([]);
 
@@ -75,6 +81,8 @@ const CreateWarehouse = () => {
   useEffect(() => {
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getProvider({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+
   }, []);
 
   const onSubmit = (values, {}) => () => {
@@ -161,15 +169,31 @@ const CreateWarehouse = () => {
           handleBlur,
           handleSubmit,
           setFieldValue,
-
+          errors,
           handleReset
         }) => (
           <CForm onSubmit={handleSubmit} noValidate name="simpleForm">
             <CCard className="card-accent-info">
               <CCardHeader>
-                <CCardTitle>Kho hàng</CCardTitle>
+                <CCardTitle>Phiếu nhập kho</CCardTitle>
               </CCardHeader>
               <CCardBody>
+              <CRow className="mb-3">
+                  <CCol sm={4}>
+                    <CLabel htmlFor="lastName">Chọn nhà cung cấp</CLabel>
+                    <Select
+                      onChange={item => {
+                        setFieldValue('provider', item.value);
+                      }}
+                      placeholder="Chọn nhà cung cấp"
+                      options={providers.map(item => ({
+                        value: item,
+                        label: `${item.name}`
+                      }))}
+                    />
+                    <FormFeedback className="d-block">{errors.provider}</FormFeedback>
+                  </CCol>
+                </CRow>
                 <CRow className="mb-3">
                   <CCol sm={4}>
                     <CLabel htmlFor="lastName">Chọn Kho</CLabel>

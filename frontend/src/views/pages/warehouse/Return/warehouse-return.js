@@ -118,6 +118,7 @@ const WarehouseReturn = props => {
         size,
         sort: 'createdDate,DESC',
         customerId: props.customerId,
+        // branch: account.branch.id,
         ...paramRef.current,
         startDate: date.startDate?.format('YYYY-MM-DD'),
         endDate: date.endDate?.format('YYYY-MM-DD')
@@ -132,7 +133,14 @@ const WarehouseReturn = props => {
 
   useEffect(() => {
     dispatch(
-      getWarehouseReturn({ page: activePage - 1, size, customerId: props.customerId, sort: 'createdDate,DESC', ...paramRef.current })
+      getWarehouseReturn({
+        page: activePage - 1,
+        size,
+        customerId: props.customerId,
+        // branch: account.branch.id,
+        sort: 'createdDate,DESC',
+        ...paramRef.current
+      })
     );
     window.scrollTo(0, 100);
   }, [activePage, size]);
@@ -174,7 +182,16 @@ const WarehouseReturn = props => {
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getWarehouseReturn({ page: 0, size: size, sort: 'createdDate,DESC', customerId: props.customerId, ...value }));
+      dispatch(
+        getWarehouseReturn({
+          page: 0,
+          size: size,
+          sort: 'createdDate,DESC',
+          customerId: props.customerId,
+          // branch: account.branch.id,
+          ...value
+        })
+      );
     }
   }, 300);
 
@@ -291,7 +308,14 @@ const WarehouseReturn = props => {
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
-      const params = { page: activePage - 1, size, sort: 'createdDate,DESC', customerId: props.customerId, ...paramRef.current };
+      const params = {
+        page: activePage - 1,
+        size,
+        sort: 'createdDate,DESC',
+        customerId: props.customerId,
+        // branch: account.branch.id,
+        ...paramRef.current
+      };
       dispatch(getWarehouseReturn(params));
       dispatch(reset());
     }

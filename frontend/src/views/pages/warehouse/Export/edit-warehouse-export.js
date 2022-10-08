@@ -59,7 +59,6 @@ const EditWarehouseExport = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-  const [,] = useState(null);
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
   const [initValuesState, setInitValuesState] = useState(null);
 
@@ -82,6 +81,7 @@ const EditWarehouseExport = props => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
+
   }, []);
 
   useEffect(() => {
@@ -91,7 +91,7 @@ const EditWarehouseExport = props => {
       setProductList(Array.isArray(warehouseImport.storeInputDetails) ? JSON.parse(JSON.stringify(warehouseImport.storeInputDetails)) : []);
       if (warehouseImport.storeInputDetails.length > 0) {
         const productArr = JSON.parse(JSON.stringify(warehouseImport.storeInputDetails));
-        updateProductQuantity(productArr);
+        updateProductQuantity(productArr, warehouseImport.store.id);
       }
     }
   }, [warehouseImport]);
@@ -184,10 +184,10 @@ const EditWarehouseExport = props => {
     });
   };
 
-  const updateProductQuantity = copyArr => {
+  const updateProductQuantity = (copyArr, storeId) => {
     dispatch(
       getProductWarehouseByField({
-        store: selectedWarehouse?.id,
+        store: selectedWarehouse?.id || storeId,
         product: JSON.stringify(warehouseImport.storeInputDetails.map(item => item.product.id)),
         dependency: true
       })

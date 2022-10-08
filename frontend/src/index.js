@@ -9,8 +9,6 @@ import {freeSet} from '@coreui/icons';
 
 import {Provider} from 'react-redux';
 import store from './config/store';
-import setupAxiosInterceptors from './config/axios-interceptor';
-setupAxiosInterceptors();
 React.icons = freeSet;
 
 ReactDOM.render(

@@ -12,6 +12,7 @@ import { setToatsList } from './App.reducer';
 import { OrderStatus } from './views/pages/sales/Orders/order-status';
 import { Storage } from 'react-jhipster';
 import { getOrder } from './views/pages/sales/Orders/order.api';
+import setupAxiosInterceptors from './config/axios-interceptor';
 
 const loading = (
   <div className="pt-3 text-center">
@@ -34,8 +35,12 @@ export const socket = io({ transports: ['websocket'], path: '/socket' });
 
 export const App = () => {
   const dispatch = useDispatch();
-
+  const onLogout = () => {
+    dispatch(logout());
+  };
   useEffect(() => {
+    setupAxiosInterceptors(onLogout);
+
     dispatch(getSession());
     socket.on('connect', function(res) {
       console.log('Connected');

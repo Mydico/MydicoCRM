@@ -166,6 +166,10 @@ const EditOrder = props => {
       alert('Vui lòng chọn lại số lương sản phẩm');
       return;
     }
+    if (productList.filter(item => Number(item.quantity) === 0).length > 0) {
+      alert('Không để sản phẩm có số lượng bằng 0 khi tạo đơn hàng');
+      return;
+    }
     if (!values.address) values.address = selectedCustomer.address;
     if (selectedPromotion) {
       values.promotion = selectedPromotion;

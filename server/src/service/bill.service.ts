@@ -132,10 +132,10 @@ export class BillService {
     let content = '';
     switch (foundedOrder.status) {
       case BillStatus.CREATED:
-        content = `Vận đơn ${foundedOrder.code} đã được duyệt`;
+        content = `Vận đơn ${foundedOrder.code} đã được tạo`;
         break;
       case BillStatus.APPROVED:
-        content = `Vận đơn ${foundedOrder.code} đã bị hủy`;
+        content = `Vận đơn ${foundedOrder.code} đã được duyệt`;
         break;
       case BillStatus.REJECTED:
         content = `Vận đơn ${foundedOrder.code} đã bị từ chối`;
@@ -158,8 +158,8 @@ export class BillService {
     }
     await this.notificationService.save({
       content,
-      type: 'BILL',
-      entityId: foundedOrder.id,
+      type: 'ORDER',
+      entityId: foundedOrder.order.id,
       user: foundedOrder.order.sale
     });
     await this.firebaseService.sendFirebaseMessages(
@@ -169,8 +169,8 @@ export class BillService {
           title: 'Thông báo',
           message: content,
           data: {
-            type: 'BILL',
-            entityId: foundedOrder.id,
+            type: 'ORDER',
+            entityId: foundedOrder.order.id,
           }
         }
       ],

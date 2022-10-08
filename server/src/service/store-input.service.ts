@@ -126,7 +126,11 @@ export class StoreInputService {
         if (isEmployee && type.includes("RETURN")) {
             andQueryString += ` ${andQueryString.length === 0 ? "" : " AND "} StoreInput.sale = ${currentUser.id} `;
         }
-
+        if (currentUser.branch) {
+            if (!currentUser.branch.seeAll) {
+              andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  StoreInput.branch = ${currentUser.branch.id}`;
+            }
+        }
         const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, { ...filter, type }, options, 'StoreInputs');
         const queryBuilder = this.storeInputRepository
             .createQueryBuilder('StoreInput')

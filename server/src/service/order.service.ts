@@ -19,6 +19,7 @@ import { DepartmentService } from './department.service';
 import { NotificationService } from './notification.service';
 import { FirebaseService } from './firebase.services';
 import { UserService } from './user.service';
+import Notification from '../domain/notification.entity';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -48,7 +49,7 @@ export class OrderService {
     private readonly firebaseService: FirebaseService,
     private readonly eventsGateway: EventsGateway,
     private readonly userService: UserService
-  ) {}
+  ) { }
 
   async findById(id: string): Promise<Order | undefined> {
     if (!relationshipNames.includes('customer.department') && !relationshipNames.includes('customer.type')) {
@@ -85,9 +86,8 @@ export class OrderService {
         .replace(']', ')')}`;
     }
     if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.createdDate  >= '${
-        filter['startDate']
-      }' AND  Order.createdDate <= '${filter['endDate']} 23:59:59'`;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.createdDate  >= '${filter['startDate']
+        }' AND  Order.createdDate <= '${filter['endDate']} 23:59:59'`;
     }
 
     delete filter['startDate'];
@@ -143,8 +143,7 @@ export class OrderService {
         new Brackets(sqb => {
           Object.keys(filter).forEach((item, index) => {
             sqb.andWhere(
-              `Order.${item} ${item === 'saleId' || item == 'status' ? '=' : 'like'}  ${
-                item === 'saleId' || item == 'status' ? "'" + filter[item] + "'" : "'%" + filter[item] + "%'"
+              `Order.${item} ${item === 'saleId' || item == 'status' ? '=' : 'like'}  ${item === 'saleId' || item == 'status' ? "'" + filter[item] + "'" : "'%" + filter[item] + "%'"
               }`
             );
             // queryString += ` AND Order.${item} ${item === 'saleId' ? '=' : 'like'}  ${
@@ -162,8 +161,7 @@ export class OrderService {
         new Brackets(sqb => {
           Object.keys(filter).forEach((item, index) => {
             sqb.andWhere(
-              `Order.${item} ${item === 'saleId' || item == 'status' ? '=' : 'like'}  ${
-                item === 'saleId' || item == 'status' ? "'" + filter[item] + "'" : "'%" + filter[item] + "%'"
+              `Order.${item} ${item === 'saleId' || item == 'status' ? '=' : 'like'}  ${item === 'saleId' || item == 'status' ? "'" + filter[item] + "'" : "'%" + filter[item] + "%'"
               }`
             );
             // queryString += ` AND Order.${item} ${item === 'saleId' ? '=' : 'like'}  ${
@@ -275,22 +273,20 @@ export class OrderService {
       order.code = `${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}-${count + 1}`;
     }
     const result = await this.orderRepository.save(order);
-    const userCanApproveOrder = await this.userService.findManager(result.department.id);
-    console.log(userCanApproveOrder)
-    const saveNotiArr = [];
+    const userCanApproveOrder = await this.userService.findManager(result.department.id, currentUser.branch.id);
+    const saveNotiArr: Notification[] = [];
     const pushNotiArr = [];
 
     for (let index = 0; index < userCanApproveOrder.length; index++) {
       const element = userCanApproveOrder[index];
-      saveNotiArr.push(
-        this.notificationService.save({
-          content: `Đơn hàng ${result.code} đã được tạo. Vui lòng kiểm tra`,
-          type: 'ORDER',
-          entityId: result.id,
-          user: element
-        })
+      saveNotiArr.push({
+        content: `Đơn hàng ${result.code} đã được tạo. Vui lòng kiểm tra`,
+        type: 'ORDER',
+        entityId: result.id,
+        user: element
+      }
       );
-      if(element.fcmToken){
+      if (element.fcmToken) {
         pushNotiArr.push({
           token: element.fcmToken,
           title: 'Thông báo',
@@ -303,7 +299,7 @@ export class OrderService {
       }
 
     }
-    console.log(pushNotiArr)
+    await this.notificationService.saveMany(saveNotiArr);
     await this.firebaseService.sendFirebaseMessages(pushNotiArr, false);
     await this.emitMessage(result, order);
     return result;
@@ -478,9 +474,6 @@ export class OrderService {
         break;
       case OrderStatus.SHIPPING:
         content = `Đơn hàng ${foundedOrder.code} đang được vận chuyển`;
-        break;
-      case OrderStatus.CANCEL:
-        content = `Đơn hàng ${foundedOrder.code} đã hủy`;
         break;
       case OrderStatus.REJECTED:
         content = `Đơn hàng ${foundedOrder.code} đã bị từ chối`;

@@ -56,7 +56,7 @@ export const AdvancedTable = props => {
     addTableClasses,
     size,
     dark,
-    striped,
+    striped = true,
     hover,
     border,
     outlined,
