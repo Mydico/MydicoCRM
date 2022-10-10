@@ -78,14 +78,16 @@ const StoreHistory = props => {
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
+      console.log(size)
       const params = {
+        ...paramRef.current,
         page: activePage - 1,
         size,
         sort: 'createdDate,DESC',
-        ...paramRef.current,
         startDate: date.startDate?.format('YYYY-MM-DD'),
         endDate: date.endDate?.format('YYYY-MM-DD')
       };
+      paramRef.current = {...params}
       dispatch(getStoreHistory(params));
     }
   }, [date]);
@@ -101,7 +103,7 @@ const StoreHistory = props => {
     let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.history };
     paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1, size };
     if (date.endDate && date.startDate) {
-      paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
+      paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'), size  };
     }
     dispatch(getStoreHistory(paramsLocal));
     saveParams();
@@ -143,7 +145,7 @@ const StoreHistory = props => {
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getStoreHistory({ page: 0, size, sort: 'lastModifiedDate,DESC', ...value }));
+      dispatch(getStoreHistory({...paramRef.current, ...value, page: 0, size, sort: 'lastModifiedDate,DESC',  }));
     }
   }, 300);
 

@@ -1140,7 +1140,7 @@ export class ReportService {
       .leftJoin('product.productBrand', 'brand')
       .leftJoin('product.productGroup', 'productGroup')
       .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
-      .andWhere("StoreInput.type = 'RETURN'")
+      .andWhere("StoreInput.type = 'RETURN' AND StoreInput.status = 'APPROVED'")
       .andWhere(queryString)
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")
