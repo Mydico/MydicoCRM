@@ -392,7 +392,7 @@ const OrderProductHistory = props => {
   };
   //   const renderButtonStatus = item => {
   //     switch (item.status) {
-  //       case OrderStatus.WAITING:
+  //       case :
   //         return (
   //           <CRow>
   //             {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/orders/approve').length > 0) && (

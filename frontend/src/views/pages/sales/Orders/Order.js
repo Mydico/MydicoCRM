@@ -797,7 +797,7 @@ const Order = props => {
                           Mã KH: <strong>{item?.customer?.code}</strong>
                         </div>
                         <div>
-                          Địa chỉ: <strong>{item?.address}</strong>
+                          Địa chỉ: <strong>{item?.address || item?.customer?.address}</strong>
                         </div>
                         <div>
                           <strong>{`${memoizedGetDistrictName(item?.customer?.district)}, ${memoizedGetCityName(

@@ -99,7 +99,7 @@ const ViewOrder = props => {
                 <div>
                   <strong>{invoice?.customer?.name || ''}</strong>
                 </div>
-                <div>{invoice?.address}</div>
+                <div>{invoice?.address || invoice?.customer?.address}</div>
                 <div>{`${memoizedGetDistrictName(invoice?.customer?.district)}, ${memoizedGetCityName(invoice?.customer?.city)}`}</div>
                 <div>Phone: {invoice?.customer?.tel || ''}</div>
               </CCol>

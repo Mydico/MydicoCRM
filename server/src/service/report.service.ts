@@ -1017,7 +1017,6 @@ export class ReportService {
       .where(`DATE(StoreHistory.createdDate) < '${filter.startDate}'`)
       .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
     .groupBy(`StoreHistory2.productId`)
-    .cache(3 * 3600)
     .getRawMany()
     // const remainId = await this.storeHistoryRepository
     //   .createQueryBuilder('StoreHistory')
@@ -1056,7 +1055,6 @@ export class ReportService {
       .orderBy("product.name", "ASC")
       .offset(options.skip)
       .limit(options.take)
-      .cache(3 * 3600)
       .getRawMany()
       const productId = remainbegin.map(item => item.productId)
       if (productId.length === 0) return [[], 0]
@@ -1103,7 +1101,6 @@ export class ReportService {
     .groupBy(`StoreHistory2.productId`)
     .offset(options.skip)
     .limit(options.take)
-    .cache(3 * 3600)
     .getRawMany()
 
     queryString = queryBuilderFunc('StoreInput', filter);
@@ -1128,7 +1125,6 @@ export class ReportService {
       .andWhere(queryString)
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")
-      .cache(3 * 3600)
       .getRawMany()
 
     const returnProduct = this.storeInputRepository
@@ -1144,7 +1140,6 @@ export class ReportService {
       .andWhere(queryString)
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")
-      .cache(3 * 3600)
       .getRawMany()
     const inputProductFromExport = this.storeInputRepository
       .createQueryBuilder('StoreInput')
@@ -1159,7 +1154,6 @@ export class ReportService {
       .andWhere(queryString)
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")
-      .cache(3 * 3600)
       .getRawMany()
 
     const exportStore = this.storeInputRepository
@@ -1175,7 +1169,6 @@ export class ReportService {
       .andWhere(queryString)
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")
-      .cache(3 * 3600)
       .getRawMany()
     const exportStoreToProvider = this.storeInputRepository
       .createQueryBuilder('StoreInput')
@@ -1190,7 +1183,6 @@ export class ReportService {
       .andWhere(queryString)
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")
-      .cache(3 * 3600)
       .getRawMany()
     queryString = queryString.replace('StoreInput.departmentId', 'StoreInput.storeTransferId');
     const ontheway = this.storeInputRepository
@@ -1207,7 +1199,6 @@ export class ReportService {
       .andWhere(queryString)
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")
-      .cache(3 * 3600)
       .getRawMany()
     queryString = queryBuilderFunc('Bill', filter);
     queryString = queryString.replace('Bill.productId', 'product.id');
@@ -1229,7 +1220,6 @@ export class ReportService {
       .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
       .andWhere(queryString)
       .orderBy("OrderDetails.productId", "ASC")
-      .cache(3 * 3600)
       .getRawMany()
 
     const queryResult = await Promise.all([remainEnd, importProduct, returnProduct, inputProductFromExport, exportedProduct, exportStore, ontheway, exportStoreToProvider])

@@ -122,7 +122,6 @@ export class UserService {
             .where(`User.departmentId = ${departmentId} AND User.branchId = ${branchId} AND permissionGroupAssociates.action = 'PUT' AND permissionGroupAssociates.resource = '/api/orders/approve'`)
             .andWhere(`User.login <> 'admin'`)
             .skip(0)
-            .cache(true)
             .take(50)
             .getMany();
         const departmentPermission = await this.userRepository
@@ -133,7 +132,6 @@ export class UserService {
             .where(`User.departmentId = ${departmentId} AND User.branchId = ${branchId} AND permissionGroupAssociates.action = 'PUT' AND permissionGroupAssociates.resource = '/api/orders/approve'`)
             .andWhere(`User.login <> 'admin'`)
             .skip(0)
-            .cache(true)
             .take(50)
             .getMany();
         const rolePermission = await this.userRepository
@@ -144,7 +142,6 @@ export class UserService {
             .where(`User.departmentId = ${departmentId} AND User.branchId = ${branchId} AND permissionGroupAssociates.action = 'PUT' AND permissionGroupAssociates.resource = '/api/orders/approve'`)
             .andWhere(`User.login <> 'admin'`)
             .skip(0)
-            .cache(true)
             .take(50)
             .getMany();
         return [...rolePermission,...userPermission,...departmentPermission]
