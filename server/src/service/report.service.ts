@@ -1099,8 +1099,7 @@ export class ReportService {
       .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
       .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
     .groupBy(`StoreHistory2.productId`)
-    .offset(options.skip)
-    .limit(options.take)
+ 
     .getRawMany()
 
     queryString = queryBuilderFunc('StoreInput', filter);

@@ -279,7 +279,8 @@ export class CustomerController {
   })
   async putMany(@Req() req: Request, @Res() res: Response, @Body() customers: Customer[]): Promise<Response> {
     HeaderUtil.addEntityUpdatedHeaders(res, 'Customer', null);
-    return res.send(await this.customerService.saveMany(customers));
+    const currentUser = req.user as User;
+    return res.send(await this.customerService.saveMany(customers, currentUser));
   }
 
   @Delete('/:id')

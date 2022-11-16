@@ -412,7 +412,7 @@ export class CustomerService {
     return await this.save(customer);
   }
 
-  async saveMany(customers: Customer[]): Promise<Customer[] | undefined> {
+  async saveMany(customers: Customer[], currentUser: User): Promise<Customer[] | undefined> {
     await this.customerRepository.removeCache(['customer']);
     // select max(id) as ids from transaction where saleId in(4,1) group by saleId
     const getTransIds = this.transactionRepository
@@ -421,7 +421,7 @@ export class CustomerService {
       .where(
         `Transaction.customerId IN ${JSON.stringify(customers.map(item => item.id))
           .replace('[', '(')
-          .replace(']', ')')}`
+          .replace(']', ')')} AND saleId = ${currentUser.id}`
       )
       .groupBy('Transaction.customerId');
 
@@ -431,7 +431,7 @@ export class CustomerService {
         id: In(rawData.map(item => item.id))
       }
     });
-    const customerHaveDebt = debt.filter(item => item.earlyDebt > 0);
+    const customerHaveDebt = debt.filter(item => Number(item.earlyDebt) > 0);
     if (customerHaveDebt.length > 0) {
       const customerCode = `${customerHaveDebt.map(item => item.customerCode).join(', ')}`;
       throw new HttpException(

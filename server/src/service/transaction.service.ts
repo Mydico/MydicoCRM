@@ -191,23 +191,24 @@ export class TransactionService {
     });
     const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
-      .select(['Transaction.customerId, Transaction.customerName, Transaction.customerCode, Transaction.saleName'])
+      .select(['Transaction.customerId, Transaction.customerCode, Transaction.saleName'])
       .addSelect('SUM(Transaction.total_money)-SUM(Transaction.collect_money)-SUM(Transaction.refund_money)', 'debt')
       .addSelect('MAX(Transaction.id)', 'id')
+      .addSelect('MAX(Transaction.customerName)', 'customer_name')
       .addSelect('MAX(Transaction.createdDate)', 'createdDate')
       .addSelect('MAX(`Transaction`.`departmentId`)', 'departmentId')
       .addSelect('MAX(`Transaction`.`saleId`)', 'saleId')
       .addSelect('MAX(`Transaction`.`branchId`)', 'branchId')
       .where(andQueryString)
-      .groupBy('Transaction.customerId, Transaction.customerName, Transaction.customerCode, Transaction.saleName')
+      .groupBy('Transaction.customerId, Transaction.customerCode, Transaction.saleName')
       .orderBy(`MAX(Transaction.${Object.keys(options.order)[0] || 'createdDate'})`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);
     const count = this.transactionRepository
       .createQueryBuilder('Transaction')
-      .select(['Transaction.customerId, Transaction.customerName, Transaction.customerCode, Transaction.saleName'])
+      .select(['Transaction.customerId, Transaction.customerCode, Transaction.saleName'])
       .where(andQueryString)
-      .groupBy('Transaction.customerId, Transaction.customerName, Transaction.customerCode, Transaction.saleName')
+      .groupBy('Transaction.customerId, Transaction.customerCode, Transaction.saleName')
 
     if (queryString) {
       queryBuilder.andWhere(

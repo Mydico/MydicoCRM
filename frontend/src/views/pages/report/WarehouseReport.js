@@ -48,10 +48,10 @@ const fields = [
   { key: 'product_name', label: 'Tên sản phẩm', _style: { width: '20%' }, filter: true },
   { key: 'remain', label: 'Tồn đầu kì', filter: false },
   { key: 'importProduct', label: 'Nhập kho NCC', filter: false },
-  { key: 'returnProduct', label: 'Nhập kho khách trả hàng',  filter: false },
-  { key: 'inputProductFromExport', label: 'Nhập điều chuyển',filter: false },
-  { key: 'exportedProduct', label: 'Xuất bán',  filter: false },
-  { key: 'exportStoreToProvider', label: 'Xuất trả NCC',  filter: false },
+  { key: 'returnProduct', label: 'Nhập kho khách trả hàng', filter: false },
+  { key: 'inputProductFromExport', label: 'Nhập điều chuyển', filter: false },
+  { key: 'exportedProduct', label: 'Xuất bán', filter: false },
+  { key: 'exportStoreToProvider', label: 'Xuất trả NCC', filter: false },
   { key: 'exportStore', label: 'Xuất điều chuyển', filter: false },
   { key: 'realExport', label: 'Thực xuất bán', filter: false },
   { key: 'remainEnd', label: 'Tổng tồn cuối kì', filter: false },
@@ -89,11 +89,11 @@ const WarehouseReport = () => {
   const [user, setUser] = useState(null);
   const [brand, setBrand] = useState(null);
   const [productGroup, setProductGroup] = useState(null);
-  const [top10Product, setTop10Product] = useState([[],0]);
+  const [top10Product, setTop10Product] = useState([[], 0]);
   const [numOfProduct, setNumOfProduct] = useState(0);
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(filterProduct());
@@ -271,18 +271,20 @@ const WarehouseReport = () => {
   }, [selectedProduct]);
 
   useEffect(() => {
-   
     if (Object.keys(filter).length > 4) {
-      if(!loading){
-        setLoading(true)
+      if (!loading) {
+        setLoading(true);
         dispatch(getWarehouseReport({ ...filter })).then(data => {
           if (data && data.payload) {
+            const sortedArr = data.payload[0].sort((a, b) =>
+              a.product_name < b.product_name ? -1 : a.product_name > b.product_name ? 1 : 0
+            );
+            data.payload[0] = sortedArr;
             setTop10Product(data.payload);
-            setLoading(false)
+            setLoading(false);
           }
         });
       }
-
     }
   }, [filter]);
 
@@ -344,7 +346,7 @@ const WarehouseReport = () => {
     if (value) debouncedSearchColumn(value);
   };
 
-const debouncedSearchProduct = _.debounce(value => {
+  const debouncedSearchProduct = _.debounce(value => {
     dispatch(
       filterProduct({
         page: 0,
@@ -369,7 +371,6 @@ const debouncedSearchProduct = _.debounce(value => {
   };
 
   const computedExcelItems = React.useCallback(items => {
-    console.log(items);
     return (items || []).map((item, index) => {
       return {
         ...item

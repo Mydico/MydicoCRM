@@ -20,6 +20,7 @@ import { NotificationService } from './notification.service';
 import { FirebaseService } from './firebase.services';
 import { UserService } from './user.service';
 import Notification from '../domain/notification.entity';
+import { CustomerService } from './customer.service';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -48,7 +49,8 @@ export class OrderService {
     private readonly notificationService: NotificationService,
     private readonly firebaseService: FirebaseService,
     private readonly eventsGateway: EventsGateway,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly customerService: CustomerService
   ) { }
 
   async findById(id: string): Promise<Order | undefined> {
@@ -264,6 +266,10 @@ export class OrderService {
   }
 
   async save(order: Order, currentUser: User): Promise<Order | undefined> {
+    const customer = await this.customerService.findById(order.customer.id)
+    if(customer.sale.id !== currentUser.id){
+      throw new HttpException('Khách hàng này không thuộc bạn quản lý.', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
     if (!order.id) {
       const count = await this.orderRepository
         .createQueryBuilder('order')
