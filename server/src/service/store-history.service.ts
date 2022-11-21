@@ -43,6 +43,8 @@ export class StoreHistoryService {
     Object.keys(filter).forEach((item, index) => {
       if (item === 'volume') {
         queryString += `product.volume like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
+      } else if (item === 'productName') {
+        queryString += `product.name like '%${filter[item].includes('%')?filter[item].split('%').join("\\%"):filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
       } else {
         queryString += `StoreHistory.${item} like '%${filter[item]}%' ${Object.keys(filter).length - 1 === index ? '' : 'AND '}`;
       }
@@ -77,7 +79,6 @@ export class StoreHistoryService {
     }
 
     const result = await queryBuilder.getManyAndCount();
-    result[1] = await count.getCount();
     return result;
 
     // options.cache = 3600000
