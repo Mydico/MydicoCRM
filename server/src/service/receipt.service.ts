@@ -43,7 +43,6 @@ export class ReceiptService {
 
   async countReceipt(filter, departmentVisible = [], isEmployee: boolean, currentUser: User): Promise<Receipt> {
     let andQueryString = '';
-    console.log(filter)
     if (departmentVisible.length > 0) {
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Receipt.department IN ${JSON.stringify(departmentVisible)
         .replace('[', '(')

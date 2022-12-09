@@ -118,7 +118,6 @@ export class TransactionService {
       .leftJoinAndSelect('Transaction.order', 'order')
       .leftJoinAndSelect('Transaction.receipt', 'receipt')
       .leftJoinAndSelect('Transaction.storeInput', 'storeInput')
-      .cache(3 * 3600)
       .skip(options.skip)
       .take(options.take)
       .where(queryString)
@@ -133,7 +132,7 @@ export class TransactionService {
           })
         );
       }
-     return  queryBuilder.getManyAndCount()
+     return await queryBuilder.getManyAndCount()
     // const count = this.transactionRepository
     //   .createQueryBuilder('Order')
     //   .leftJoinAndSelect('Order.customer', 'customer')

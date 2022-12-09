@@ -1107,6 +1107,7 @@ export class ReportService {
     queryString = queryString.replace('StoreInput.brandId', 'brand.id');
     queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
     queryString = queryString.replace('StoreInput.product_name', 'product.name');
+    queryString = queryString.replace('StoreInput.createdDate', 'StoreInput.lastModifiedDate');
 
     // if (filter['endDate'] && filter['startDate']) {
     //   queryString += `StoreInput.createdDate  >= '${filter['startDate']}' AND  StoreInput.createdDate <= '${filter['endDate']} 23:59:59'`;

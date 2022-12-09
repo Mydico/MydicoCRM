@@ -156,6 +156,7 @@ export class ReceiptController {
     const currentUser = req.user as User;
     receipt.approver = currentUser;
     receipt.approverName = currentUser.login;
+    receipt.lastModifiedDate = new Date()
     HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', receipt.id);
     return res.send(await this.receiptService.update(receipt));
   }
@@ -183,6 +184,7 @@ export class ReceiptController {
     if (receipt.status === ReceiptStatus.APPROVED) {
       const currentUser = req.user as User;
       receipt.approver = currentUser;
+      receipt.lastModifiedDate = new Date()
     }
     HeaderUtil.addEntityCreatedHeaders(res, 'Receipt', receipt.id);
     return res.send(await this.receiptService.update(receipt));

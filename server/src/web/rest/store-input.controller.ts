@@ -256,6 +256,7 @@ export class StoreInputController {
       const currentUser = req.user as User;
       storeInput.approver = currentUser;
       storeInput.approverName = currentUser.login;
+      storeInput.lastModifiedDate = new Date()
     }
     return res.send(await this.storeInputService.update(storeInput));
   }
@@ -273,6 +274,7 @@ export class StoreInputController {
       const currentUser = req.user as User;
       storeInput.approver = currentUser;
       storeInput.approverName = currentUser.login;
+      storeInput.lastModifiedDate = new Date()
     }
     return res.send(await this.storeInputService.update(storeInput));
   }
@@ -296,6 +298,7 @@ export class StoreInputController {
       }
       storeInput.approver = currentUser;
       storeInput.approverName = currentUser.login;
+      storeInput.lastModifiedDate = new Date()
     }
     return res.send(await this.storeInputService.update(storeInput, currentUser));
   }

@@ -106,6 +106,7 @@ const computedItems = items => {
   return items.map(item => {
     return {
       ...item,
+      storeName: item.store.name || '',
       approverName: item.approverName || '',
       storeTransferName: item.storeTransferName || '',
       createdDate: moment(item.createdDate).format('HH:mm DD-MM-YYYY')

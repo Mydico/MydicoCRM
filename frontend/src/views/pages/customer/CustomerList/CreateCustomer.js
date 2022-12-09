@@ -300,7 +300,7 @@ const CreateCustomer = () => {
                         renderCustomerCode();
                       }}
                       placeholder="Chi nhánh"
-                      options={departments.map(item => ({
+                      options={departments.filter(item => item.code !== "NVKDT").map(item => ({
                         value: item,
                         label: item?.name || ''
                       }))}
