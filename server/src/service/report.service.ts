@@ -1185,6 +1185,7 @@ export class ReportService {
       .orderBy("storeInputDetails.productId", "ASC")
       .getRawMany()
     queryString = queryString.replace('StoreInput.departmentId', 'StoreInput.storeTransferId');
+    queryString = queryString.replace('StoreInput.lastModifiedDate', 'StoreInput.createdDate');
     const ontheway = this.storeInputRepository
       .createQueryBuilder('StoreInput')
       .select("storeInputDetails.productId")
