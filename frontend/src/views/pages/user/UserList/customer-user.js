@@ -303,7 +303,11 @@ const CustomerUser = props => {
       sale: location.state.id,
       saleName: location.state.login
     }));
-    dispatch(updateManyCustomer(filterData)).then(resp => {
+    const body = {
+      customers: filterData,
+      transferFrom: selectedUser
+    }
+    dispatch(updateManyCustomer(body)).then(resp => {
       if (resp && resp.payload && resp.payload.statusCode === 200) {
         let params = { page: activePage - 1, size, sort: 'createdDate,DESC', dependency: true, ...paramRef.current };
         dispatch(getCustomerBySale(params));
