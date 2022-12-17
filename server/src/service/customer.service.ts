@@ -55,7 +55,6 @@ export class CustomerService {
     return await this.customerRepository.findAndCount(options);
   }
 
-
   async filterExact(options: FindManyOptions<Customer>, filter = {}): Promise<[Customer[], number]> {
     options.cache = 3600000;
 
@@ -65,21 +64,16 @@ export class CustomerService {
       andQueryString += ` AND Customer.sale = ${filter['sale']}`;
     }
     if (filter['department']) {
-      if(Array.isArray(JSON.parse(filter['department']))){
-        andQueryString += ` AND Customer.department IN ${filter['department']
-          .replace('[', '(')
-          .replace(']', ')')}`;
-      }else {
+      if (Array.isArray(JSON.parse(filter['department']))) {
+        andQueryString += ` AND Customer.department IN ${filter['department'].replace('[', '(').replace(']', ')')}`;
+      } else {
         andQueryString += ` AND Customer.department = ${filter['department']}`;
       }
-
     }
     if (filter['branch']) {
-      if(Array.isArray(JSON.parse(filter['branch']))){
-        andQueryString += ` AND Customer.branch IN ${filter['branch']
-        .replace('[', '(')
-        .replace(']', ')')}`;
-      }else {
+      if (Array.isArray(JSON.parse(filter['branch']))) {
+        andQueryString += ` AND Customer.branch IN ${filter['branch'].replace('[', '(').replace(']', ')')}`;
+      } else {
         andQueryString += ` AND Customer.branch = ${filter['branch']}`;
       }
     }
@@ -412,7 +406,8 @@ export class CustomerService {
     return await this.save(customer);
   }
 
-  async saveMany(customers: Customer[], currentUser: User): Promise<Customer[] | undefined> {
+  async saveMany(body): Promise<Customer[] | undefined> {
+    const { customers, transferFrom } = body;
     await this.customerRepository.removeCache(['customer']);
     // select max(id) as ids from transaction where saleId in(4,1) group by saleId
     const getTransIds = this.transactionRepository
@@ -421,7 +416,7 @@ export class CustomerService {
       .where(
         `Transaction.customerId IN ${JSON.stringify(customers.map(item => item.id))
           .replace('[', '(')
-          .replace(']', ')')} AND saleId = ${currentUser.id}`
+          .replace(']', ')')} AND saleId = ${transferFrom.id}`
       )
       .groupBy('Transaction.customerId');
 
