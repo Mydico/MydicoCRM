@@ -40,6 +40,7 @@ const fields = [
   { key: 'previousDebt', label: 'Số dư ban đầu', _style: { width: '15%' }, filter: false },
   { key: 'issueDebt', label: 'Phát sinh', _style: { width: '10%' } , filter: false},
   { key: 'earlyDebt', label: 'Số dư cuối kì', _style: { width: '15%' }, filter: false },
+  { key: 'saleName', label: 'Nhân viên', _style: { width: '15%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false }
 ];
 const Transaction = props => {

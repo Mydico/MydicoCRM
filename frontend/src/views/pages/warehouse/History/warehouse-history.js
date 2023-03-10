@@ -251,6 +251,7 @@ const StoreHistory = props => {
             noResults: 'Không tìm thấy kết quả',
             noItems: 'Không có dữ liệu'
           }}
+          loading={initialState.loading}
           columnFilterValue={params.history}
           onPaginationChange={setSize}
           onColumnFilterChange={onFilterColumn}

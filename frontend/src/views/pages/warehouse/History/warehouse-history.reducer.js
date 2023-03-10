@@ -54,6 +54,9 @@ const slice = createSlice({
     [getStoreHistory.rejected]: (state ) => {
       state.loading = false;
     },
+    [getStoreHistory.pending]: (state ) => {
+      state.initialState.loading = true;
+    },
   },
 });
 

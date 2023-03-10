@@ -32,6 +32,7 @@ import compression from 'fastify-compress';
 import { contentParser } from 'fastify-multer';
 import * as admin from 'firebase-admin';
 import * as firebaseConfig from './mydicocrm.json';
+import { createServer } from 'http2';
 
 const logger: Logger = new Logger('Main');
 const port = process.env.NODE_SERVER_PORT || config.get('server.port');
@@ -142,6 +143,7 @@ async function bootstrap(): Promise<void> {
   // await sslapp.listen(portWs, (err) => {
   //   logger.error(`${err}`);
   // })
+
   await app.listen(port, (err) => {
     logger.error(`${err}`);
   })

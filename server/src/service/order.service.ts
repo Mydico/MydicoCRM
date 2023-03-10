@@ -81,26 +81,28 @@ export class OrderService {
 
     let andQueryString = '';
     let queryString = '';
-
+    const paramsObject: any = {}
     if (departmentVisible.length > 0) {
-      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '} Order.department IN ${JSON.stringify(departmentVisible)
-        .replace('[', '(')
-        .replace(']', ')')}`;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '} Order.department IN (:...departments)`;
     }
-    if (filter['endDate'] && filter['startDate']) {
-      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.createdDate  >= '${filter['startDate']
-        }' AND  Order.createdDate <= '${filter['endDate']} 23:59:59'`;
-    }
+    paramsObject.departments = departmentVisible
 
+    if (filter['endDate'] && filter['startDate']) {
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.createdDate  >= :startDate AND  Order.createdDate <= :endDate`;
+    }
+    paramsObject.startDate = filter['startDate'],
+    paramsObject.endDate = filter['endDate']+ ' 23:59:59',
     delete filter['startDate'];
     delete filter['endDate'];
 
     if (isEmployee) {
-      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.sale = ${currentUser.id}`;
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.sale = :saleId`;
     }
+    paramsObject.saleId = currentUser.id
     if (currentUser.branch) {
       if (!currentUser.branch.seeAll) {
-        andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.branch = ${currentUser.branch.id}`;
+        andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.branch = :branch`;
+        paramsObject.branch = currentUser.branch.id
       }
     } else {
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '} Order.branch is NULL `;
@@ -111,30 +113,30 @@ export class OrderService {
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .leftJoinAndSelect('Order.customer', 'customer')
-      .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
-      .leftJoinAndSelect('orderDetails.product', 'product')
-      .leftJoinAndSelect('Order.promotion', 'promotion')
-      .leftJoinAndSelect('Order.promotionItem', 'promotionItem')
-      .leftJoinAndSelect('promotion.customerType', 'customerType')
-      .leftJoinAndSelect('Order.sale', 'sale')
-      .leftJoinAndSelect('Order.department', 'department')
+      // .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
+      // .leftJoinAndSelect('orderDetails.product', 'product')
+      // .leftJoinAndSelect('Order.promotion', 'promotion')
+      // .leftJoinAndSelect('Order.promotionItem', 'promotionItem')
+      // .leftJoinAndSelect('promotion.customerType', 'customerType')
+      // .leftJoinAndSelect('Order.sale', 'sale')
+      // .leftJoinAndSelect('Order.department', 'department')
       .skip(options.skip)
       .take(options.take)
-      .where(andQueryString)
+      .where(andQueryString,paramsObject)
       .orderBy({
         'Order.createdDate': options.order[Object.keys(options.order)[0]] || 'DESC'
       });
 
     const count = this.orderRepository
       .createQueryBuilder('Order')
-      .leftJoinAndSelect('Order.customer', 'customer')
-      .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
-      .leftJoinAndSelect('orderDetails.product', 'product')
-      .leftJoinAndSelect('Order.promotion', 'promotion')
-      .leftJoinAndSelect('promotion.customerType', 'customerType')
-      .leftJoinAndSelect('Order.sale', 'sale')
-      .leftJoinAndSelect('Order.department', 'department')
-      .where(andQueryString);
+      // .leftJoinAndSelect('Order.customer', 'customer')
+      // .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
+      // .leftJoinAndSelect('orderDetails.product', 'product')
+      // .leftJoinAndSelect('Order.promotion', 'promotion')
+      // .leftJoinAndSelect('promotion.customerType', 'customerType')
+      // .leftJoinAndSelect('Order.sale', 'sale')
+      // .leftJoinAndSelect('Order.department', 'department')
+      .where(andQueryString,paramsObject)
     // .cache(
     //   `cache_count_get_orders_department_${JSON.stringify(departmentVisible)}_branch_${
     //     currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
@@ -179,15 +181,15 @@ export class OrderService {
     }
 
     const lastResult: [Order[], number] = [[], 0];
-    const result = await queryBuilder.getMany();
-    lastResult[1] = await count.getCount();
-    lastResult[0] = result.map(item => ({
-      ...item,
-      orderDetails: item.orderDetails.sort((a, b) => {
-        return Number(a.id) - Number(b.id);
-      })
-    }));
-    return lastResult;
+    const result = await queryBuilder.getManyAndCount();
+    // lastResult[1] = await count.getCount();
+    // lastResult[0] = result.map(item => ({
+    //   ...item,
+    //   orderDetails: item.orderDetails.sort((a, b) => {
+    //     return Number(a.id) - Number(b.id);
+    //   })
+    // }));
+    return result;
   }
 
   async getProductInStore(arrIds: string[], store: Store): Promise<ProductQuantity[]> {

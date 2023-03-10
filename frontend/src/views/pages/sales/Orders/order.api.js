@@ -10,6 +10,15 @@ export const getDetailOrder = createAsyncThunk('api/detail/orders', async (param
   }
 });
 
+export const getDetailOrderDirect = createAsyncThunk('api/detail/orders/direct', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/orders/' + params.id, { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const creatingOrder = createAsyncThunk('api/create/orders', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/orders', body);
