@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CCardBody, CBadge, CCard, CCardHeader, CPagination, CFormGroup, CInput, CLabel } from '@coreui/react/lib';
 import _ from 'lodash';
 import CIcon from '@coreui/icons-react/lib/CIcon';
@@ -19,10 +19,10 @@ const mappingStatus = {
   IMPORT: 'NHẬP KHO'
 };
 const mappingType = {
-  RETURN: 'TRẢ HÀNG',
-  IMPORT: 'NHẬP KHO',
-  EXPORT: 'XUẤT KHO',
-  EXPORT_TO_PROVIDER: 'XUẤT KHO TRẢ NHÀ CUNG CẤP'
+  RETURN: 'BTL',
+  IMPORT: 'NK',
+  EXPORT: 'XK',
+  EXPORT_TO_PROVIDER: 'NCC'
 };
 const getBadge = status => {
   switch (status) {
@@ -49,7 +49,8 @@ const fields = [
   { key: 'type', label: 'Hình thức', _style: { width: '15%' }, filter: false },
   { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false },
   { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false },
-  { key: 'source', label: 'Nguồn gốc', _style: { width: '15%' }, filter: false }
+  { key: 'source', label: 'Nguồn gốc', _style: { width: '15%' }, filter: false },
+  { key: 'destination', label: 'Đối tượng', _style: { width: '15%' }, filter: false }
 ];
 const excelFields = [
   {
@@ -170,15 +171,15 @@ const StoreHistory = props => {
     });
   };
 
-  const renderLink = item => {
+  const renderLink = useCallback((item) => {
     if (!item.entityId) return;
     let link = '';
     let href = '';
     if (item.entity === 'ORDER') {
-      link = `Đơn hàng ${item.entityCode || ''}`;
+      link = `ĐH ${item.entityCode || ''}`;
       href = `/orders/${item.entityId}/detail`;
     } else {
-      link = `Phiếu ${mappingType[item.entityType] || 'kho'} ${item.entityCode || ''}`;
+      link = `${mappingType[item.entityType] || 'kho'} ${item.entityCode || ''}`;
       href = `/store-inputs/${item.entityId}/detail`;
     }
     return (
@@ -186,7 +187,27 @@ const StoreHistory = props => {
         {link}
       </CLink>
     );
-  };
+  },[]);
+
+  const renderDestination = useCallback((item) => {
+    if (!item.destinationId) return;
+    let link = '';
+    let href = '';
+    if (item.entity === 'ORDER') {
+      link = `Khách hàng`;
+      href = `/customers/${item.destinationId}/edit`;
+    } else {
+   
+      link = `Kho đích đến`;
+      href = `/store-inputs/${item.destinationId}/detail`;
+    }
+    return (
+      <CLink to={href}>
+        {link}
+      </CLink>
+    );
+  },[]);
+
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(storeHistorys), [storeHistorys]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(storeHistorys), [storeHistorys]);
 
@@ -262,7 +283,8 @@ const StoreHistory = props => {
                 <CBadge color={getBadge(item.type)}>{mappingStatus[item.type]}</CBadge>
               </td>
             ),
-            source: item => <td>{renderLink(item)}</td>
+            source: item => <td>{renderLink(item)}</td>,
+            destination: item => <td>{renderDestination(item)}</td>
           }}
         />
         <CPagination

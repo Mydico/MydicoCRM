@@ -87,7 +87,7 @@ export const getRandomColor = () => {
 };
 
 export const stringToSlug = str => {
-  // remove accents
+  if(!str) return ''
   var from = 'àáãảạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệđùúủũụưừứửữựòóỏõọôồốổỗộơờớởỡợìíỉĩịäëïîöüûñçýỳỹỵỷ',
     to = 'aaaaaaaaaaaaaaaaaeeeeeeeeeeeduuuuuuuuuuuoooooooooooooooooiiiiiaeiiouuncyyyyy';
   for (var i = 0, l = from.length; i < l; i++) {

@@ -6,6 +6,8 @@ import ReactToPrint from 'react-to-print';
 import Download from '../../../components/excel/DownloadExcel.js';
 import moment from 'moment';
 import { memoizedGetCityName, memoizedGetDistrictName, removeSpecialChars, stringToSlug } from '../../../../shared/utils/helper.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { getDetailOrderDirect } from '../../sales/Orders/order.api';
 
 const excelFields = [
   { key: 'none', label: 'Hiển thị trên sổ' },
@@ -58,12 +60,23 @@ const excelFields = [
 ];
 const PrintBill = props => {
   var docTien = new DocTienBangChu();
-  const { item } = props.location.state;
+  const { item: orderDetail } = props.location.state;
+  const [item, setItem] = useState(null)
   const [orderExcel, setOrderExcel] = useState([]);
   const ref = useRef(null);
+
+  const dispatch = useDispatch()
   useEffect(() => {
-    generateOrder(item);
-  }, []);
+    if(orderDetail.id){
+      dispatch(getDetailOrderDirect({ id: orderDetail.id, dependency: true })).then(resp => {
+        generateOrder(resp.payload);
+        setItem(resp.payload)
+      })
+    }
+
+
+  }, [orderDetail])
+
 
   const generateOrder = invoice => {
     const data = invoice?.orderDetails.map((item, index) => {
@@ -88,15 +101,15 @@ const PrintBill = props => {
           invoice?.customer?.city
         )} ${invoice?.customer?.tel || ''}`,
         sale: invoice?.sale?.code,
-        productCode: item.product.code,
-        productName: item.product.name,
-        unit: item.product.unit,
-        quantity: Number(item.quantity),
-        price: Number(item.priceReal),
-        totalPrice: Number(item.priceReal) * Number(item.quantity),
-        discount: Number(item.reducePercent),
-        discountPrice: Number((Number(item.priceReal) * Number(item.quantity) * Number(item.reducePercent))/100),
-        key12:  invoice?.customer?.name
+        productCode: item?.product.code,
+        productName: item?.product.name,
+        unit: item?.product.unit,
+        quantity: Number(item?.quantity),
+        price: Number(item?.priceReal),
+        totalPrice: Number(item?.priceReal) * Number(item?.quantity),
+        discount: Number(item?.reducePercent),
+        discountPrice: Number((Number(item?.priceReal) * Number(item?.quantity) * Number(item?.reducePercent)) / 100),
+        key12: invoice?.customer?.name
       };
     });
     setOrderExcel(data);
@@ -128,16 +141,16 @@ const PrintBill = props => {
           <h2 className="text-center">HOÁ ĐƠN BÁN HÀNG</h2>
           <div className="d-flex mb-4">
             <Col sm="8">
-              <div style={{ fontSize: '1rem' }}>Tên khách hàng: &nbsp;&nbsp;&nbsp;{item.customer.name || ''}</div>
-              <div style={{ fontSize: '1rem' }}>Địa chỉ: &nbsp;&nbsp;&nbsp;{item.customer.address || ''}</div>
+              <div style={{ fontSize: '1rem' }}>Tên khách hàng: &nbsp;&nbsp;&nbsp;{item?.customer.name || ''}</div>
+              <div style={{ fontSize: '1rem' }}>Địa chỉ: &nbsp;&nbsp;&nbsp;{item?.customer.address || ''}</div>
               <div style={{ fontSize: '1rem' }}>Mã số thuế : </div>
-              <div style={{ fontSize: '1rem' }}>Số điện thoại: &nbsp;&nbsp;&nbsp;{item.customer.tel || ''}</div>
+              <div style={{ fontSize: '1rem' }}>Số điện thoại: &nbsp;&nbsp;&nbsp;{item?.customer.tel || ''}</div>
             </Col>
             <Col sm="4">
-              <div style={{ fontSize: '1rem' }}>Ngày:&nbsp;&nbsp;&nbsp;{item.createdDate || ''} </div>
-              <div style={{ fontSize: '1rem' }}>Số: &nbsp;&nbsp;&nbsp;{item.code || ''} </div>
+              <div style={{ fontSize: '1rem' }}>Ngày:&nbsp;&nbsp;&nbsp;{item?.createdDate || ''} </div>
+              <div style={{ fontSize: '1rem' }}>Số: &nbsp;&nbsp;&nbsp;{item?.code || ''} </div>
               <div style={{ fontSize: '1rem' }}>Loại tiền: &nbsp;&nbsp;&nbsp;VND</div>
-              <div style={{ fontSize: '1rem' }}>Nhân viên: &nbsp;&nbsp;&nbsp;{item.sale.code || ''} </div>
+              <div style={{ fontSize: '1rem' }}>Nhân viên: &nbsp;&nbsp;&nbsp;{item?.sale.code || ''} </div>
             </Col>
           </div>
           <div className="d-flex mb-4">
@@ -164,21 +177,21 @@ const PrintBill = props => {
                   return (
                     <tr key={index}>
                       <td> {index + 1}</td>
-                      <td>{item.product?.code}</td>
-                      <td>{item.product?.name}</td>
-                      <td>{item.product?.unit}</td>
-                      <td>{item.quantity}</td>
+                      <td>{item?.product?.code}</td>
+                      <td>{item?.product?.name}</td>
+                      <td>{item?.product?.unit}</td>
+                      <td>{item?.quantity}</td>
                       <td>
-                        {Number(item.priceReal || item.product?.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
+                        {Number(item?.priceReal || item?.product?.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) ||
                           ''}
                       </td>
                       <td>
-                        {((item.priceReal || item.product?.price) * item.quantity).toLocaleString('it-IT', {
+                        {((item?.priceReal || item?.product?.price) * item?.quantity).toLocaleString('it-IT', {
                           style: 'currency',
                           currency: 'VND'
                         }) || ''}
                       </td>
-                      <td>{item.reducePercent}%</td>
+                      <td>{item?.reducePercent}%</td>
                     </tr>
                   );
                 })}
@@ -188,17 +201,17 @@ const PrintBill = props => {
                   </td>
                   <td className="center"> {item?.orderDetails?.reduce((prev, current) => prev + current.quantity, 0)}</td>
                   <td className="right"></td>
-                  <td className="right">{Number(item.totalMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
+                  <td className="right">{Number(item?.totalMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
                   <td className="right"></td>
                 </tr>
                 <tr>
                   <td colspan="6">Số tiền chiết khấu</td>
-                  <td>{Number(item.reduceMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
+                  <td>{Number(item?.reduceMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
                   <td className="right"></td>
                 </tr>
                 <tr>
                   <td colspan="6">Cộng tiền hàng( Đã trừ chiết khấu)</td>
-                  <td>{Number(item.realMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
+                  <td>{Number(item?.realMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
                   <td className="right"></td>
                 </tr>
                 <tr>
@@ -208,12 +221,12 @@ const PrintBill = props => {
                 </tr>
                 <tr>
                   <td colspan="6">Tổng tiền thanh toán</td>
-                  <td>{Number(item.realMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
+                  <td>{Number(item?.realMoney).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</td>
                   <td className="right"></td>
                 </tr>
                 <tr>
                   <td colspan="7">
-                    <strong>Số tiền viết bằng chữ:&nbsp;&nbsp;&nbsp; {docTien.doc(Number(item.realMoney))}</strong>
+                    <strong>Số tiền viết bằng chữ:&nbsp;&nbsp;&nbsp; {docTien.doc(Number(item?.realMoney))}</strong>
                   </td>
                   <td className="right"></td>
                 </tr>
@@ -272,7 +285,7 @@ const PrintBill = props => {
           </div>
           <div className="d-flex mb-4">
             <Col sm="12">
-              <div style={{ fontSize: '1rem' }}>Ghi chú: &nbsp;&nbsp;&nbsp;{item.note || ''}</div>
+              <div style={{ fontSize: '1rem' }}>Ghi chú: &nbsp;&nbsp;&nbsp;{item?.note || ''}</div>
             </Col>
           </div>
         </CardBody>
