@@ -26,7 +26,7 @@ import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/store-histories')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor, CacheInterceptor)
+@UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class StoreHistoryController {
   logger = new Logger('StoreHistoryController');

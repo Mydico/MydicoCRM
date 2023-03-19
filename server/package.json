@@ -25,8 +25,10 @@
     "test:e2e": "jest --coverage --config ./e2e/jest.e2e.config.json"
   },
   "dependencies": {
+    "@liaoliaots/nestjs-redis": "^9.0.5",
     "@nestjs-modules/ioredis": "^1.0.0",
     "@nestjs/axios": "0.0.2",
+    "@nestjs/bull": "^0.6.3",
     "@nestjs/common": "7.5.1",
     "@nestjs/core": "7.5.1",
     "@nestjs/jwt": "7.2.0",
@@ -40,6 +42,7 @@
     "@nestjs/typeorm": "7.1.4",
     "@nestjs/websockets": "^8.0.6",
     "async": "^3.2.4",
+    "bull": "^4.10.4",
     "cache-manager": "^3.4.3",
     "cache-manager-redis-store": "^2.0.0",
     "casbin": "^5.11.3",
@@ -60,7 +63,7 @@
     "fastify-swagger": "^4.7.0",
     "firebase-admin": "^9.12.0",
     "helmet": "^4.4.1",
-    "ioredis": "^4.27.4",
+    "ioredis": "^4.28.5",
     "js-yaml": "3.13.1",
     "lodash": "^4.17.21",
     "mysql2": "^2.2.5",

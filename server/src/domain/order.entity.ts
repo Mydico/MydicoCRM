@@ -29,6 +29,7 @@ export default class Order extends BaseEntity {
   store?: Store;
 
   @ManyToOne(type => Department, { createForeignKeyConstraints: false })
+  @Index()
   department?: Department;
 
   @Column({ name: 'address', length: 255, nullable: true })
@@ -36,7 +37,6 @@ export default class Order extends BaseEntity {
   address?: string;
 
   @Column({ name: 'reject', length: 255, nullable: true })
-  @Index()
   reject?: string;
 
   @Column({ name: 'code', length: 255, nullable: true })
@@ -48,19 +48,15 @@ export default class Order extends BaseEntity {
   status?: OrderStatus;
 
   @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
+  @Index()
   branch?: Branch;
-
-  // @ManyToOne(type => StoreInput)
-  // storeInput?: StoreInput;
 
   @ManyToOne(type => PromotionItem, { onDelete: 'RESTRICT', onUpdate: 'RESTRICT', createForeignKeyConstraints: false })
   promotionItem?: PromotionItem;
 
   @Column({ name: 'bill_date', nullable: true })
   billDate?: Date;
-  /**
-   * tổng tiền
-   */
+
   @Column({ type: 'bigint', name: 'total_money', nullable: true })
   @Index()
   totalMoney?: number;
@@ -89,6 +85,4 @@ export default class Order extends BaseEntity {
   @Column({ type: 'bigint', name: 'reduce_money', nullable: true })
   @Index()
   reduceMoney?: number;
-
-  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

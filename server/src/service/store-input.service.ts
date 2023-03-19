@@ -302,6 +302,7 @@ export class StoreInputService {
                 entityId: entity?.id,
                 entityCode: entity?.code,
                 entityType: entity?.type,
+                destId: entity.storeTransfer?.id,
                 quantity: item.quantity - totalProduct > 0 ? item.quantity - totalProduct : 0,
             };
         });
@@ -350,6 +351,7 @@ export class StoreInputService {
                 entity: 'STORE',
                 entityId: entity?.id,
                 entityCode: entity?.code,
+                destId: entity.provider?.id,
                 entityType: StoreHistoryType.IMPORT,
                 type: StoreHistoryType.IMPORT,
             }));
@@ -362,6 +364,7 @@ export class StoreInputService {
                 quantity: item.quantity + totalProduct,
                 entity: 'STORE',
                 entityId: entity?.id,
+                destId: entity.provider?.id,
                 entityCode: entity?.code,
                 entityType: entity?.type,
             };

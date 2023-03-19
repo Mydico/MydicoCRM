@@ -30,7 +30,7 @@ import { DepartmentService } from '../../service/department.service';
 
 @Controller('api/orders')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor, CacheInterceptor)
+@UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class OrderController {
   logger = new Logger('OrderController');

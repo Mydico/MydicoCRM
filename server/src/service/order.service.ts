@@ -1,4 +1,4 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import { CACHE_MANAGER, forwardRef, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, FindManyOptions, FindOneOptions, In } from 'typeorm';
 import Order from '../domain/order.entity';
@@ -21,6 +21,7 @@ import { FirebaseService } from './firebase.services';
 import { UserService } from './user.service';
 import Notification from '../domain/notification.entity';
 import { CustomerService } from './customer.service';
+import Cache from 'cache-manager';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -50,10 +51,17 @@ export class OrderService {
     private readonly firebaseService: FirebaseService,
     private readonly eventsGateway: EventsGateway,
     private readonly userService: UserService,
-    private readonly customerService: CustomerService
+    private readonly customerService: CustomerService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) { }
 
   async findById(id: string): Promise<Order | undefined> {
+    const cacheKey = `orderId-${id}`
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
     if (!relationshipNames.includes('customer.department') && !relationshipNames.includes('customer.type')) {
       relationshipNames.push('customer.department');
       relationshipNames.push('customer.type');
@@ -63,6 +71,8 @@ export class OrderService {
     result.orderDetails = result.orderDetails.sort((a, b) => {
       return Number(a.id) - Number(b.id);
     });
+    await this.cacheManager.set(cacheKey, result, {ttl: 60 * 60 * 1000});
+
     return result;
   }
 
@@ -127,21 +137,21 @@ export class OrderService {
         'Order.createdDate': options.order[Object.keys(options.order)[0]] || 'DESC'
       });
 
-    const count = this.orderRepository
-      .createQueryBuilder('Order')
-      // .leftJoinAndSelect('Order.customer', 'customer')
-      // .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
-      // .leftJoinAndSelect('orderDetails.product', 'product')
-      // .leftJoinAndSelect('Order.promotion', 'promotion')
-      // .leftJoinAndSelect('promotion.customerType', 'customerType')
-      // .leftJoinAndSelect('Order.sale', 'sale')
-      // .leftJoinAndSelect('Order.department', 'department')
-      .where(andQueryString,paramsObject)
-    // .cache(
-    //   `cache_count_get_orders_department_${JSON.stringify(departmentVisible)}_branch_${
-    //     currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
-    //   }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}`
-    // );
+    // const count = this.orderRepository
+    //   .createQueryBuilder('Order')
+    //   // .leftJoinAndSelect('Order.customer', 'customer')
+    //   // .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
+    //   // .leftJoinAndSelect('orderDetails.product', 'product')
+    //   // .leftJoinAndSelect('Order.promotion', 'promotion')
+    //   // .leftJoinAndSelect('promotion.customerType', 'customerType')
+    //   // .leftJoinAndSelect('Order.sale', 'sale')
+    //   // .leftJoinAndSelect('Order.department', 'department')
+    //   .where(andQueryString,paramsObject)
+    // // .cache(
+    // //   `cache_count_get_orders_department_${JSON.stringify(departmentVisible)}_branch_${
+    // //     currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
+    // //   }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}`
+    // // );
     if (Object.keys(filter).length > 0) {
       queryBuilder.andWhere(
         new Brackets(sqb => {
@@ -161,34 +171,33 @@ export class OrderService {
           });
         })
       );
-      count.andWhere(
-        new Brackets(sqb => {
-          Object.keys(filter).forEach((item, index) => {
-            sqb.andWhere(
-              `Order.${item} ${item === 'saleId' || item == 'status' ? '=' : 'like'}  ${item === 'saleId' || item == 'status' ? "'" + filter[item] + "'" : "'%" + filter[item] + "%'"
-              }`
-            );
-            // queryString += ` AND Order.${item} ${item === 'saleId' ? '=' : 'like'}  ${
-            //   item === 'saleId' ? filter[item] : "'%" + filter[item] + "%'"
-            // }`;
-            // if (item == 'status') {
-            //   sqb.andWhere(`Order.status = ${filter['status']}`);
-            // }
-          });
-          // sqb.where(queryString);
-        })
-      );
+      // count.andWhere(
+      //   new Brackets(sqb => {
+      //     Object.keys(filter).forEach((item, index) => {
+      //       sqb.andWhere(
+      //         `Order.${item} ${item === 'saleId' || item == 'status' ? '=' : 'like'}  ${item === 'saleId' || item == 'status' ? "'" + filter[item] + "'" : "'%" + filter[item] + "%'"
+      //         }`
+      //       );
+      //       // queryString += ` AND Order.${item} ${item === 'saleId' ? '=' : 'like'}  ${
+      //       //   item === 'saleId' ? filter[item] : "'%" + filter[item] + "%'"
+      //       // }`;
+      //       // if (item == 'status') {
+      //       //   sqb.andWhere(`Order.status = ${filter['status']}`);
+      //       // }
+      //     });
+      //     // sqb.where(queryString);
+      //   })
+      // );
+    }
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
     }
 
-    const lastResult: [Order[], number] = [[], 0];
     const result = await queryBuilder.getManyAndCount();
-    // lastResult[1] = await count.getCount();
-    // lastResult[0] = result.map(item => ({
-    //   ...item,
-    //   orderDetails: item.orderDetails.sort((a, b) => {
-    //     return Number(a.id) - Number(b.id);
-    //   })
-    // }));
+    await this.cacheManager.set(cacheKey, result, {ttl: 60 * 60 * 1000});
+
     return result;
   }
 
@@ -250,7 +259,8 @@ export class OrderService {
         quantity: item.quantity - itemFounded[0].quantity,
         entity: 'ORDER',
         entityId: order.id,
-        entityCode: order.code
+        entityCode: order.code,
+        destId: order.customer?.id
       };
     });
     const checkExistInStore = productQuantityExported.filter(item => item.quantity < 0);

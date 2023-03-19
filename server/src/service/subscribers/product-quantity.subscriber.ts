@@ -29,6 +29,7 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
     history.entityId = updateEntity.entityId;
     history.entityCode = updateEntity.entityCode;
     history.entityType = updateEntity.entityType;
+    history.destinationId = updateEntity.destId;
     history.storeName = updateEntity.store.name;
     history.productName = updateEntity.product.name;
     history.createdDate = new Date();
@@ -38,6 +39,7 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
     history.quantity = updateEntity.quantity;
     const historyRepository = event.manager.getRepository(StoreHistory);
     await historyRepository.save(history);
+    await event.manager.connection.queryResultCache.remove(['StoreHistory']);
   }
 
   async beforeUpdate(event: UpdateEvent<ProductQuantity>): Promise<any> {
@@ -57,11 +59,13 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
     history.entityId = updateEntity.entityId;
     history.entityCode = updateEntity.entityCode;
     history.entityType = updateEntity.entityType;
+    history.destinationId = updateEntity.destId;
     history.lastModifiedDate = new Date();
     history.remain = updateEntity.quantity;
     history.beforeUpdate = old.quantity;
     history.createdDate = new Date();
     const historyRepository = event.manager.getRepository(StoreHistory);
     await historyRepository.save(history);
+    await event.manager.connection.queryResultCache.remove(['StoreHistory']);
   }
 }
