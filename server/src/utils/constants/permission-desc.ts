@@ -2,6 +2,7 @@ export const resourceDesc = {
     'department': 'đơn vị',
     'file': 'tập tin',
     'notification': 'thông báo',
+    'internal-notification': 'thông báo nội bộ',
     'permissionGroups': 'nhóm quyền',
     'permissiontypes': 'Loại quyền',
     'permission': 'quyền',
@@ -109,6 +110,8 @@ export const resourceDesc = {
     'return': 'trả hàng',
     'transactions': 'công nợ',
     'product-quantities': 'sản phẩm trong kho',
+    'internal-notifications': 'thông báo nội bộ',
+    'send':'gửi'
 };
 
 export const actionDesc = {
@@ -243,7 +246,6 @@ export const blackList = [
     'id-papers',
     'account',
     'push',
-    'notifications',
     'paper',
     'permission-types',
     'permissions',

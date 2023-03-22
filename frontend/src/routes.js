@@ -237,7 +237,7 @@ const routes = [
   {path: '/permission-groups/:id/edit', name: 'Chỉnh sửa', component: EditPermission},
   {path: '/permission-groups/new', name: 'Tạo mới', component: CreatePermission},
   {path: '/notification/', name: 'nhóm quyền', component: Notification, exact: true},
-  {path: '/notification/view/:id', name: 'nhóm quyền', component: ViewNotification, exact: true},
+  {path: '/notification/:id/detail', name: 'nhóm quyền', component: ViewNotification, exact: true},
   {path: '/notification/:id/edit', name: 'Chỉnh sửa', component: CreateNotification},
   {path: '/notification/new', name: 'Tạo mới', component: CreateNotification},
   {path: '/bills/', name: 'Vận đơn', component: Bill, exact: true},

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CCardBody, CBadge, CButton, CCollapse,  CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
+import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CCol, CPagination } from '@coreui/react/lib';
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import { globalizedInternalNotificationsSelectors, reset } from './notification.
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
-import { CImg} from '@coreui/react';
+import { CImg } from '@coreui/react';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer.js';
 import { globalizedDepartmentSelectors } from '../user/UserDepartment/department.reducer.js';
 import { getDepartment } from '../user/UserDepartment/department.api.js';
@@ -178,10 +178,10 @@ const Notification = props => {
   };
 
   const sendNotification = id => {
-    dispatch(send({id})).then(resp => {
+    dispatch(send({ id })).then(resp => {
       toastSuccess("Gửi thành công");
     })
-   
+
   };
 
   const debouncedSearchColumn = _.debounce(value => {
@@ -314,14 +314,14 @@ const Notification = props => {
           onPaginationChange={val => setSize(val)}
           onColumnFilterChange={onFilterColumn}
           onRowClick={val => {
-            toDetailUser(val.login);
+            toDetailUser(val.id);
           }}
           columnFilterSlot={{
             department: (
               <div style={{ minWidth: 200 }}>
                 <Select
                   onChange={item => {
-                    onFilterColumn({ ...paramRef.current, departmentId: item?.value});
+                    onFilterColumn({ ...paramRef.current, departmentId: item?.value });
                   }}
                   isClearable
                   placeholder="chọn chi nhánh"
@@ -350,11 +350,11 @@ const Notification = props => {
           }}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
-   
+
 
             departments: item => <td>{item.departments.map(item => item?.name || '').join(', ')}</td>,
             branches: item => <td>{item.branches.map(item => item?.name || '').join(', ')}</td>,
-  
+
             roles: item => <td>{item.roles?.reduce((sum, currentValue) => sum + currentValue.name, '') || ''}</td>,
             show_details: item => {
               return (
@@ -374,23 +374,24 @@ const Notification = props => {
                       <CIcon name="cil-pencil" />
                     </CButton>
                   )}
-    
-                  <CButton
-                    color="primary"
-                    variant="outline"
-                    shape="square"
-                    size="sm"
-                    onClick={event => {
-                      event.stopPropagation();
-                      sendNotification(item.id);
-                    }}
-                  >
-                    <CIcon name={'cilSend'} />
-                  </CButton>
+                  {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/internal-notifications/send').length > 0) && (
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      onClick={event => {
+                        event.stopPropagation();
+                        sendNotification(item.id);
+                      }}
+                    >
+                      <CIcon name={'cilSend'} />
+                    </CButton>
+                  )}
                 </td>
               );
             },
- 
+
           }}
         />
         <CPagination
