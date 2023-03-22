@@ -13,7 +13,9 @@ import {
   Res,
   HttpException,
   HttpStatus,
-  CacheInterceptor
+  CacheInterceptor,
+  CACHE_MANAGER,
+  Inject
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
@@ -28,7 +30,7 @@ import { PageRequest } from '../../domain/base/pagination.entity';
 
 @Controller('api/reports')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
-@UseInterceptors(LoggingInterceptor, CacheInterceptor)
+@UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
 export class ReportController {
   logger = new Logger('ReportController');

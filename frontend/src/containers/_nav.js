@@ -242,4 +242,11 @@ export default [
       },
     ],
   },
+  {
+    _tag: 'CSidebarNavItem',
+    name: 'Quản lý thông báo',
+    route: '/notification',
+    icon: 'cil-bell',
+    to: '/notification',
+  },
 ];

@@ -31,6 +31,11 @@ export class UserService {
         return this.flatAuthorities(result);
     }
 
+    async findAllByfields(options: FindOneOptions<User>): Promise<[User[], number]> {
+        const result = await this.userRepository.findAndCount(options);
+        return result;
+    }
+
     async findAllSubDepartment(department: Department): Promise<String[]> {
         const foundedDepartment = await this.userRepository.find({
           where: {

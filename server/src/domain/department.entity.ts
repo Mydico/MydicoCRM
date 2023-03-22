@@ -8,6 +8,7 @@ import Order from './order.entity';
 import PermissionGroup from './permission-group.entity';
 import Store from './store.entity';
 import { User } from './user.entity';
+import InternalNotification from './internal-notification.entity';
 
 /**
  * A Department.
@@ -47,13 +48,16 @@ export default class Department extends BaseEntity {
     // @OneToMany(type => Order, store => store.department)
     // orders?: Store[];
 
-    @ManyToMany(type => Branch, store => store.departments)
+    @ManyToMany(type => Branch, store => store.departments, {createForeignKeyConstraints: false})
     @JoinTable({
         name: 'department_branch',
         joinColumn: { name: 'department_id', referencedColumnName: 'id' },
         inverseJoinColumn: { name: 'branch_id', referencedColumnName: 'id' },
     })
     branches?: Branch[];
+
+    @ManyToMany(type => InternalNotification, store => store.departments)
+    internalNotifications?: InternalNotification[];
 
     @ManyToMany(type => PermissionGroup, other => other.departments)
     permissionGroups?: PermissionGroup[];

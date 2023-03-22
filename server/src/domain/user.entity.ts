@@ -11,6 +11,7 @@ import Bill from './bill.entity';
 import StoreInput from './store-input.entity';
 import { ProductStatus } from './enumeration/product-status';
 import Branch from './branch.entity';
+import InternalNotification from './internal-notification.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -66,11 +67,8 @@ export class User extends BaseEntity {
     @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
     branch?: Branch;
 
-    // @OneToMany(type => Bill, other => other.transporter)
-    // bill?: Bill[];
-
-    // @OneToMany(type => StoreInput, other => other.approver)
-    // storeInput?: StoreInput[];
+    @ManyToMany(type => InternalNotification, store => store.users)
+    internalNotifications?: InternalNotification[];
 
     @ManyToMany(type => PermissionGroup, other => other.users)
     permissionGroups?: PermissionGroup[];

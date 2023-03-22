@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderRepository } from '../repository/order.repository';
 import { Brackets } from 'typeorm';
@@ -16,7 +16,7 @@ import Department from '../domain/department.entity';
 import OrderDetails from '../domain/order-details.entity';
 import { StoreHistoryRepository } from '../repository/store-history.repository';
 import { StoreInputRepository } from '../repository/store-input.repository';
-import moment from 'moment';
+import Cache from 'cache-manager';
 import { BillRepository } from '../repository/bill.repository';
 import StoreHistory from '../domain/store-history.entity';
 
@@ -30,8 +30,8 @@ export class ReportService {
     @InjectRepository(TransactionRepository) private transactionRepository: TransactionRepository,
     @InjectRepository(StoreHistoryRepository) private storeHistoryRepository: StoreHistoryRepository,
     @InjectRepository(StoreInputRepository) private storeInputRepository: StoreInputRepository,
-    @InjectRepository(BillRepository) private billRepository: BillRepository
-
+    @InjectRepository(BillRepository) private billRepository: BillRepository,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
 
   ) { }
 
@@ -77,7 +77,15 @@ export class ReportService {
     if (andQueryString) {
       queryBuilder.andWhere(andQueryString);
     }
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getOrderIncludesProductId(options, filter = {}): Promise<any> {
@@ -115,6 +123,13 @@ export class ReportService {
       .take(options.take)
       .cache(3 * 3600)
 
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+
     const lastResult: [Order[], number] = [[], 0]
     const result = await queryBuilder.getMany();
     lastResult[1] = await count.getCount();
@@ -122,6 +137,7 @@ export class ReportService {
       ...item,
       orderDetails: item.orderDetails.reverse()
     }))
+    await this.cacheManager.set(cacheKey, lastResult, { ttl: 60 * 60 * 1000 });
     return lastResult;
   }
 
@@ -143,7 +159,15 @@ export class ReportService {
         })
       );
     }
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getOrderReport(filter = {}): Promise<any> {
@@ -161,7 +185,15 @@ export class ReportService {
         })
       );
     }
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getNewCustomerReport(filter = {}): Promise<any> {
@@ -179,7 +211,15 @@ export class ReportService {
           .where(queryString)
           .groupBy('Customer.id');
       }, 'totals');
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getIncome(filter = {}): Promise<any> {
@@ -195,7 +235,15 @@ export class ReportService {
       )
       .where(queryString);
 
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getDebt(filter = {}): Promise<any> {
@@ -208,7 +256,15 @@ export class ReportService {
       .createQueryBuilder('Transaction')
       .select('SUM(Transaction.total_money)-SUM(Transaction.collect_money)-SUM(Transaction.refund_money)', 'sum')
       .where(queryString);
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getSaleReportByDepartment(filter = {}): Promise<any> {
@@ -241,7 +297,15 @@ export class ReportService {
     //   .cache(3 * 3600)
     //   .groupBy('StoreInput.department');
     // const returnMoney = await storeInputQueryBuilder.getRawMany();
-    return await queryBuilder.getRawMany();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawMany();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
     // const report = reportDeprtment.map(item => {
     //   const index = returnMoney.findIndex(product => product.departmentId === item.department_id);
     //   if (index >= 0) {
@@ -287,7 +351,15 @@ export class ReportService {
     // const arr = await queryBuilder.getRawMany()
     // const arr2 = await queryBuilderExternal.getRawMany()
     // console.log(arr2)
-    return [...await queryBuilder.getRawMany(), ...await queryBuilderExternal.getRawMany()];
+    const cacheKey = queryBuilder.getQueryAndParameters().toString() + queryBuilderExternal.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = [...await queryBuilder.getRawMany(), ...await queryBuilderExternal.getRawMany()]
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
 
@@ -305,7 +377,15 @@ export class ReportService {
       .cache(3 * 3600)
       .orderBy('realMoney', 'DESC')
       .limit(10);
-    return await queryBuilder.getRawMany();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawMany();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
 
     // queryString = queryBuilderFunc('StoreInput', filter);
     // const productIds = result.map(item => item.user_id);
@@ -337,30 +417,44 @@ export class ReportService {
     // select sum(quantity), productId, p.code,p.name from order_details join product p on p.id = order_details.productId group by productId ORDER BY sum(quantity) DESC limit 10
     let queryString = queryBuilderFunc('Transaction', filter);
 
-    const queryBuilder = await this.transactionRepository
+    const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select('DATE(createdDate)', 'date')
       .addSelect(`sum(case when type = 'DEBIT' then total_money when  type = 'RETURN' then -refund_money else 0 end)`, 'sum')
       .andWhere(queryString)
       .cache(3 * 3600)
       .groupBy('DATE(Transaction.createdDate)')
-      .getRawMany();
-    return queryBuilder
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawMany();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getDebtChart(filter = {}): Promise<any> {
     // select sum(quantity), productId, p.code,p.name from order_details join product p on p.id = order_details.productId group by productId ORDER BY sum(quantity) DESC limit 10
     let queryString = queryBuilderFunc('Transaction', filter);
 
-    const queryBuilder = await this.transactionRepository
+    const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select('DATE(createdDate)', 'date')
       .addSelect(`sum(case when type = 'DEBIT' then total_money else 0 end)`, 'sum')
       .andWhere(queryString)
       .cache(3 * 3600)
       .groupBy('DATE(Transaction.createdDate)')
-      .getRawMany();
-    return queryBuilder
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawMany();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getTop10Product(filter = {}): Promise<any> {
@@ -379,7 +473,15 @@ export class ReportService {
       .cache(3 * 3600)
       .orderBy('sum(OrderDetails.quantity)', 'DESC')
       .limit(10);
-    return await queryBuilder.getRawMany();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawMany();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getTop10Customer(filter = {}): Promise<any> {
@@ -405,7 +507,15 @@ export class ReportService {
     // .groupBy('Order.customer, customer.code, customer.name')
     // .orderBy('sum(Order.real_money)', 'DESC')
     // .limit(10);
-    return await queryBuilder.getRawMany();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawMany();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getOrderSaleReportForManager(departmentVisible: string[], filter = {}): Promise<any> {
@@ -427,12 +537,20 @@ export class ReportService {
         })
       );
     }
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
   async getTop10BestSaleProduct(filter): Promise<any> {
     let queryString = queryBuilderFunc('Transaction', filter);
 
-    const queryBuilder = await this.transactionRepository
+    const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select(['product.id, product.code, product.name'])
       .addSelect('sum(orderDetails.quantity)', 'sum')
@@ -444,8 +562,17 @@ export class ReportService {
       .groupBy('orderDetails.productId')
       .orderBy('sum', 'DESC')
       .limit(10)
-      .getRawMany();
-    const productIds = queryBuilder.map(item => item.id);
+
+    let result = []
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      result = cachedQuery;
+    }
+
+    result = await queryBuilder.getRawMany();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    const productIds = result.map(item => item.id);
 
     const returnProduct = await this.transactionRepository
       .createQueryBuilder('Transaction')
@@ -457,14 +584,23 @@ export class ReportService {
       .andWhere('storeInputDetails.product IN (:saleIds)', { saleIds: productIds.length > 0 ? productIds : '' })
       .cache(3 * 3600)
       .groupBy('storeInputDetails.productId')
-      .getRawMany();
 
-    const final = queryBuilder.map(item => {
-      const index = returnProduct.findIndex(product => product.productId === item.id);
+    let returnProductResult = []
+    const returnCacheKey = returnProduct.getQueryAndParameters().toString();
+    const cachedQueryResult = await this.cacheManager.get(returnCacheKey);
+    if (cachedQueryResult) {
+      returnProductResult = cachedQuery;
+    }
+
+    returnProductResult = await queryBuilder.getRawMany();
+    await this.cacheManager.set(returnCacheKey, result, { ttl: 60 * 60 * 1000 });
+
+    const final = result.map(item => {
+      const index = returnProductResult.findIndex(product => product.productId === item.id);
       if (index >= 0) {
         return {
           ...item,
-          sum: Number(item.sum) - Number(returnProduct[index].sum)
+          sum: Number(item.sum) - Number(returnProductResult[index].sum)
         };
       }
       return item;
@@ -499,7 +635,15 @@ export class ReportService {
       .groupBy('Transaction.customer,customer.code,customer.name')
       .orderBy('sum', 'DESC')
       .limit(10);
-    return await queryBuilder.getRawMany();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawMany();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getSumProductQuantity(filter): Promise<any> {
@@ -660,7 +804,7 @@ export class ReportService {
     // queryString = queryString.replace('Transaction.brandId', 'brand.id');
     // queryString = queryString.replace('Transaction.productGroupId', 'productGroup.id');
     //order_details.price_real * quantity * (100 - reduce_percent) / 100
-    return await this.orderDetailsRepository
+    const queryBuilder = this.orderDetailsRepository
       .createQueryBuilder('orderDetails')
       // .select(['order.customer.id', 'order.customer.name'])
       // .select(['orderDetails.createdDate','orderDetails.priceReal', 'orderDetails.quantity'])
@@ -670,8 +814,16 @@ export class ReportService {
       .where(queryString)
       .skip(options.skip)
       .take(options.take)
-      // .cache(3 * 3600)
-      .getManyAndCount();
+
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getManyAndCount();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
     // const productIds = queryBuilder.map(item => item.product_id);
 
     // const countBuilder = await this.transactionRepository.manager.connection
@@ -730,14 +882,13 @@ export class ReportService {
 
   async getSaleSummary(filter): Promise<any> {
     let queryString = queryBuilderFunc('Transaction', filter);
-    const queryBuilder = await this.transactionRepository.manager.connection
+    const queryBuilder =  this.transactionRepository.manager.connection
       .createQueryBuilder()
       .addSelect(`sum(case when type = 'DEBIT' then total_money else 0 end)`, 'total')
       .addSelect(`sum(case when type = 'DEBIT' then total_money when  type = 'RETURN' then -refund_money else 0 end)`, 'real')
       .where(queryString)
       .from(Transaction, 'Transaction')
       .cache(3 * 3600)
-      .getRawOne();
     // const returnBuilder = await this.storeInputRepository.manager.connection
     //   .createQueryBuilder()
     //   .addSelect('SUM(StoreInput.realMoney)', 'return')
@@ -747,7 +898,15 @@ export class ReportService {
     //   .cache(3 * 3600)
     //   .getRawOne();
     // queryBuilder.sum = queryBuilder.sum - returnBuilder.return;
-    return queryBuilder;
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getSaleReport(options, filter): Promise<any> {
@@ -793,7 +952,15 @@ export class ReportService {
           .where(queryString)
           .groupBy('Customer.id');
       }, 'totals');
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getCustomerPriceSummary(filter): Promise<any> {
@@ -808,7 +975,15 @@ export class ReportService {
       .where(queryString)
       // .groupBy('Transaction.customerId')
       .cache(3 * 3600);
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getCustomerReport(options, filter): Promise<any> {
@@ -858,7 +1033,15 @@ export class ReportService {
       .leftJoin('Transaction.order', 'order')
       .where(queryString)
       .cache(3 * 3600);
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   //select count(*) from (select customerId from `order` group by customerId) as totals
@@ -878,7 +1061,15 @@ export class ReportService {
           .andWhere(` Order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
           .groupBy('Order.customerId');
       }, 'totals');
-    return await queryBuilder.getRawOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getPromotionReport(options, filter): Promise<any> {
@@ -968,13 +1159,20 @@ export class ReportService {
   async getCustomerCount(filter): Promise<any> {
     let queryString = queryBuilderFunc('Customer', filter);
     queryString = queryString.replace('Customer.customerId', 'Customer.id');
-    const count = await this.customerRepository
+    const queryBuilder = await this.customerRepository
       .createQueryBuilder('Customer')
       .select('count(*)', 'count')
       .where(queryString)
       .cache(3 * 3600)
-      .getRawOne();
-    return await count;
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getRawOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getCustomerDebit(filter): Promise<any> {
@@ -986,7 +1184,15 @@ export class ReportService {
       .leftJoinAndSelect('customer.customerType', 'customerType')
       .where(queryString)
       .groupBy('Transaction.customerId, Transaction.customerName, Transaction.customerCode, Transaction.saleName')
-    return await queryBuilder.getOne();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+
+    const result = await queryBuilder.getOne();
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
+    return result
   }
 
   async getWarehouseReport(options, filter, department): Promise<any> {
@@ -1003,21 +1209,21 @@ export class ReportService {
     queryString = queryString.replace('StoreHistory.product_name', 'product.name');
 
     const count = await this.storeHistoryRepository
-    .createQueryBuilder('StoreHistory2')
-    .select("StoreHistory2.productId")
-    .addSelect("MIN(StoreHistory2.product_name)", "product_name")
-    .addSelect("Sum(remain)", "remain")
-    .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
-      .addSelect("MAX(StoreHistory.id)", "id")
-      .from(StoreHistory, 'StoreHistory')
-      .leftJoin('StoreHistory.product', 'product')
-      .leftJoin('product.productBrand', 'brand')
-      .leftJoin('product.productGroup', 'productGroup')
-      .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
-      .where(`DATE(StoreHistory.createdDate) < '${filter.startDate}'`)
-      .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
-    .groupBy(`StoreHistory2.productId`)
-    .getRawMany()
+      .createQueryBuilder('StoreHistory2')
+      .select("StoreHistory2.productId")
+      .addSelect("MIN(StoreHistory2.product_name)", "product_name")
+      .addSelect("Sum(remain)", "remain")
+      .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
+        .addSelect("MAX(StoreHistory.id)", "id")
+        .from(StoreHistory, 'StoreHistory')
+        .leftJoin('StoreHistory.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+        .where(`DATE(StoreHistory.createdDate) < '${filter.startDate}'`)
+        .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
+      .groupBy(`StoreHistory2.productId`)
+      .getRawMany()
     // const remainId = await this.storeHistoryRepository
     //   .createQueryBuilder('StoreHistory')
     //   .select(`StoreHistory.productId,StoreHistory.departmentId`)
@@ -1050,14 +1256,14 @@ export class ReportService {
         .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
         .where(`DATE(StoreHistory.createdDate) < '${filter.startDate}'`)
         .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
-      .innerJoin("StoreHistory2.product","product")
+      .innerJoin("StoreHistory2.product", "product")
       .groupBy(`StoreHistory2.productId`)
       .orderBy("product.name", "ASC")
       .offset(options.skip)
       .limit(options.take)
       .getRawMany()
-      const productId = remainbegin.map(item => item.productId)
-      if (productId.length === 0) return [[], 0]
+    const productId = remainbegin.map(item => item.productId)
+    if (productId.length === 0) return [[], 0]
     // const remainEndId = await this.storeHistoryRepository
     //   .createQueryBuilder('StoreHistory')
     //   .select(`StoreHistory.productId,StoreHistory.departmentId`)
@@ -1085,22 +1291,22 @@ export class ReportService {
     //   .groupBy(`StoreHistory.product_name,StoreHistory.productId`)
     //   .getRawMany()
     const remainEnd = this.storeHistoryRepository
-    .createQueryBuilder('StoreHistory2')
-    .select("StoreHistory2.productId")
-    .addSelect("Sum(remain)", "remainEnd")
-    .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
-      .addSelect("MAX(StoreHistory.id)", "id")
-      .from(StoreHistory, 'StoreHistory')
-      .leftJoin('StoreHistory.product', 'product')
-      .leftJoin('product.productBrand', 'brand')
-      .leftJoin('product.productGroup', 'productGroup')
-      .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
-      .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
-      .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
-      .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
-    .groupBy(`StoreHistory2.productId`)
- 
-    .getRawMany()
+      .createQueryBuilder('StoreHistory2')
+      .select("StoreHistory2.productId")
+      .addSelect("Sum(remain)", "remainEnd")
+      .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
+        .addSelect("MAX(StoreHistory.id)", "id")
+        .from(StoreHistory, 'StoreHistory')
+        .leftJoin('StoreHistory.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+        .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
+        .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
+        .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
+      .groupBy(`StoreHistory2.productId`)
+
+      .getRawMany()
 
     queryString = queryBuilderFunc('StoreInput', filter);
     queryString = queryString.replace('StoreInput.productId', 'product.id');

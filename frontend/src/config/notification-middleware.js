@@ -45,7 +45,9 @@ const successMessageMapping = {
   'MydicoCRM.Receipt.created': 'Tạo mới phiếu thu thành công',
   'MydicoCRM.Receipt.updated': 'Chỉnh sửa phiếu thu thành công',
   'MydicoCRM.PermissionGroup.created': 'Tạo mới nhóm quyền thành công',
-  'MydicoCRM.PermissionGroup.updated': 'Chỉnh sửa nhóm quyền thành công'
+  'MydicoCRM.PermissionGroup.updated': 'Chỉnh sửa nhóm quyền thành công',
+  'MydicoCRM.InternalNotification.created': 'Tạo mới thông báo thành công',
+  'MydicoCRM.InternalNotification.updated': 'Chỉnh sửa thông báo thành công'
 };
 
 // const addErrorAlert = (key?) => {

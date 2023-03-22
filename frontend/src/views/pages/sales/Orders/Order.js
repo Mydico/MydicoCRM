@@ -643,7 +643,7 @@ const Order = props => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách đơn hàng
-        {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/orders').length > 0) && (
+        {(isAdmin ) && (
           <CButton color="success" variant="outline" className="ml-3" onClick={toCreateOrder}>
             <CIcon name="cil-plus" /> Thêm mới
           </CButton>

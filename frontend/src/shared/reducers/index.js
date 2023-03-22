@@ -22,6 +22,7 @@ import warehouseHistoryReducer from '../../views/pages/warehouse/History/warehou
 import ProviderReducer from '../../views/pages/warehouse/Provider/provider.reducer';
 import DebtReducer from '../../views/pages/finance/debt/debt.reducer';
 import ReceiptReducer from '../../views/pages/finance/receipt/receipt.reducer';
+import InternalNotificationReducer from '../../views/pages/notification/notification.reducer';
 
 const rootReducer = combineReducers({
   authentication: authenticateReducer,
@@ -47,6 +48,7 @@ const rootReducer = combineReducers({
   provider: ProviderReducer,
   debt: DebtReducer,
   receipt: ReceiptReducer,
+  internalNotification: InternalNotificationReducer
 });
 
 export default rootReducer;

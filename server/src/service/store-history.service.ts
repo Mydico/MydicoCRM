@@ -83,7 +83,7 @@ export class StoreHistoryService {
       //   })
       // );
     }
-    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cacheKey = queryBuilder.getQueryAndParameters().toString() + JSON.stringify(options);
     const cachedQuery = await this.cacheManager.get(cacheKey);
     if (cachedQuery) {
       return cachedQuery;

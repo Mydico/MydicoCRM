@@ -12,9 +12,11 @@ export default class Notification extends BaseEntity {
     @ManyToOne(type => User, { createForeignKeyConstraints: false })
     user?: User;
 
-    @Column({ name: 'content', nullable: true })
-    @Index()
+    @Column({ name: 'content', type: 'text', nullable: true })
     content: string;
+
+    @Column({ name: 'full_content', type: 'text', nullable: true })
+    fullContent?: string;
 
     @Column({ name: 'is_read', nullable: true })
     @Index()
@@ -26,6 +28,6 @@ export default class Notification extends BaseEntity {
 
     @Column({ type: 'bigint', name: 'entityId', nullable: true })
     @Index()
-    entityId: string;
+    entityId?: string;
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

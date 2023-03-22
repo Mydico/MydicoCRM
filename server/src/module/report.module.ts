@@ -14,10 +14,16 @@ import { StoreInputDetailsRepository } from '../repository/store-input-details.r
 import { TransactionRepository } from '../repository/transaction.repository';
 import { BillRepository } from '../repository/bill.repository';
 import { StoreHistoryRepository } from '../repository/store-history.repository';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
-    CacheModule.register(),
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      host: 'localhost',
+      port: 6379
+    }),
     TypeOrmModule.forFeature([
       OrderRepository,
       OrderDetailsRepository,

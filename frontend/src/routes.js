@@ -114,6 +114,11 @@ const Permission = loadable(() => import('./views/pages/user/UserPermission/perm
 const CreatePermission = loadable(() => import('./views/pages/user/UserPermission/create-permission'));
 const EditPermission = loadable(() => import('./views/pages/user/UserPermission/edit-permission'));
 
+const Notification = loadable(() => import('./views/pages/notification/notification'));
+const CreateNotification= loadable(() => import('./views/pages/notification/create-notification'));
+const EditNotification = loadable(() => import('./views/pages/notification/edit-notification'));
+const ViewNotification = loadable(() => import('./views/pages/notification/view-notification'));
+
 const Debts = loadable(() => import('./views/pages/finance/debt/debt'));
 
 const Transaction = loadable(() => import('./views/pages/finance/debt/transaction'));
@@ -231,6 +236,10 @@ const routes = [
   {path: '/permission-groups/', name: 'nhóm quyền', component: Permission, exact: true},
   {path: '/permission-groups/:id/edit', name: 'Chỉnh sửa', component: EditPermission},
   {path: '/permission-groups/new', name: 'Tạo mới', component: CreatePermission},
+  {path: '/notification/', name: 'nhóm quyền', component: Notification, exact: true},
+  {path: '/notification/view/:id', name: 'nhóm quyền', component: ViewNotification, exact: true},
+  {path: '/notification/:id/edit', name: 'Chỉnh sửa', component: CreateNotification},
+  {path: '/notification/new', name: 'Tạo mới', component: CreateNotification},
   {path: '/bills/', name: 'Vận đơn', component: Bill, exact: true},
 ];
 
