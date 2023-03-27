@@ -5,7 +5,7 @@ import Notification from '../domain/notification.entity';
 import { NotificationRepository } from '../repository/notification.repository';
 
 const relationshipNames = [];
-
+relationshipNames.push('assets')
 @Injectable()
 export class NotificationService {
     logger = new Logger('NotificationService');

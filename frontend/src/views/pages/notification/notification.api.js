@@ -46,3 +46,12 @@ export const send = createAsyncThunk('api/send/internal-notifications', async (b
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
+export const uploadFiles = createAsyncThunk('api/upload/file/internal-notifications', async (body, thunkAPI) => {
+  try {
+    const result = await axios.post('api/assets/many', body);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

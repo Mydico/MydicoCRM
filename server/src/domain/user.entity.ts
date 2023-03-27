@@ -12,6 +12,7 @@ import StoreInput from './store-input.entity';
 import { ProductStatus } from './enumeration/product-status';
 import Branch from './branch.entity';
 import InternalNotification from './internal-notification.entity';
+import UserAnswer from './user-answer.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -96,4 +97,7 @@ export class User extends BaseEntity {
     @Column({ nullable: true })
     @Index()
     resetDate?: Date;
+
+    @OneToMany(() => UserAnswer, (userAnswer) => userAnswer.user, { createForeignKeyConstraints: false })
+    userAnswers: UserAnswer[];
 }

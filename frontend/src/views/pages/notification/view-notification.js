@@ -42,6 +42,7 @@ import { getBranch } from '../user/UserBranch/branch.api';
 import { globalizedDepartmentSelectors } from '../user/UserDepartment/department.reducer';
 import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
+import { CListGroup, CListGroupItem } from '@coreui/react';
 
 
 const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
@@ -64,6 +65,7 @@ const ViewNotifications = (props) => {
     users: [],
     branches: [],
     title: '',
+    assets: [],
     shortContent: '',
     content: RichTextEditor.createEmptyValue()
 
@@ -86,7 +88,6 @@ const ViewNotifications = (props) => {
 
   useEffect(() => {
     if (notification) {
-      console.log(notification)
       const copyValue = JSON.parse(JSON.stringify(notification))
       
       copyValue.content = RichTextEditor.createValueFromString(notification.content,'html')
@@ -263,6 +264,19 @@ const ViewNotifications = (props) => {
                   }))}
                 />
                 <CInvalidFeedback className="d-block">{errors.users}</CInvalidFeedback>
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="users">File đính kèm</CLabel>
+                <CListGroup>
+                  {values.assets?.map((file, index) => <CListGroupItem className="d-flex justify-content-between align-items-center" key={index}>
+                    <a href={file.source}>{file.name}</a>
+    
+
+                  </CListGroupItem>)}
+
+
+                </CListGroup>
+
               </CFormGroup>
             </CForm>
           )}

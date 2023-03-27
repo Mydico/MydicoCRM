@@ -16,6 +16,7 @@ import Notification from '../domain/notification.entity';
 const relationshipNames = [];
 relationshipNames.push('branches');
 relationshipNames.push('users');
+relationshipNames.push('assets');
 relationshipNames.push('departments');
 
 @Injectable()
@@ -112,7 +113,8 @@ export class InternalNotificationService {
         content: founded.shortContent,
         fullContent: founded.content,
         type: 'INTERNAL',
-        user: element
+        user: element,
+        assets: founded.assets
       }
       );
       if (element.fcmToken) {

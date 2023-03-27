@@ -4,7 +4,6 @@ import {
   CCard,
   CCardHeader,
   CCardBody,
-  CCol,
   CForm,
   CInvalidFeedback,
   CFormGroup,
@@ -17,14 +16,14 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingInternalNotifications, getDetailInternalNotifications } from './notification.api';
+import { creatingInternalNotifications, getDetailInternalNotifications, uploadFiles } from './notification.api';
 import _ from 'lodash';
 
 import { useHistory } from 'react-router-dom';
 import { fetching, globalizedInternalNotificationsSelectors, reset } from './notification.reducer';
 import RichTextEditor from 'react-rte';
 import { getDepartment } from '../user/UserDepartment/department.api';
-import { Table } from 'reactstrap';
+import S3FileUpload from 'react-s3';
 import Select from 'react-select';
 
 const validationSchema = function () {
@@ -42,6 +41,8 @@ import { getBranch } from '../user/UserBranch/branch.api';
 import { globalizedDepartmentSelectors } from '../user/UserDepartment/department.reducer';
 import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
+import { CListGroup, CListGroupItem, CSpinner } from '@coreui/react';
+import { config } from '../product/ProductList/EditProduct';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -56,13 +57,14 @@ const CreateNotifications = (props) => {
   const { initialState } = useSelector(state => state.internalNotification);
   const { account } = useSelector(state => state.authentication);
   const notification = useSelector(state => selectById(state, props.match.params.id));
-
+  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch();
   const history = useHistory();
 
   const departments = useSelector(selectAllDepartment);
   const branches = useSelector(selectAllBranch);
   const users = useSelector(selectAllUser);
+  const [files, setFiles] = useState([])
   const [initValues, setInitValues] = useState({
     departments: [],
     users: [],
@@ -88,17 +90,33 @@ const CreateNotifications = (props) => {
     };
   }, []);
 
+  const onUploadFile = async (event) => {
+    setLoading(true)
+    event.preventDefault();
+    let newArr = event.target.files;
+    const filesArr = [...files]
+    for (let i = 0; i < newArr.length; i++) {
+      const uploadedFile = await S3FileUpload.uploadFile(newArr[i], config);
+      filesArr.push({
+        source: uploadedFile.location,
+        type: uploadedFile.location.split(".").pop(),
+        name: uploadedFile.key,
+      })
+    }
+    setFiles(filesArr)
+    setLoading(false)
+  }
+
   useEffect(() => {
     if (notification) {
-      console.log(notification)
       const copyValue = JSON.parse(JSON.stringify(notification))
-      
-      copyValue.content = RichTextEditor.createValueFromString(notification.content,'html')
+
+      copyValue.content = RichTextEditor.createValueFromString(notification.content, 'html')
       copyValue.departments = notification.departments.map(item => ({
         value: item,
         label: item.name
       }))
-      copyValue.branches =notification.branches.map(item => ({
+      copyValue.branches = notification.branches.map(item => ({
         value: item,
         label: item.name
       }))
@@ -107,17 +125,22 @@ const CreateNotifications = (props) => {
         label: item.code
       }))
       setInitValues(copyValue)
+      setFiles(notification.assets)
     }
   }, [notification])
 
 
-  const onSubmit = (values, { }) => {
+  const onSubmit = async (values, { }) => {
+    dispatch(fetching());
+
+    const uploadedFile = await dispatch(uploadFiles(files))
     const payload = JSON.parse(JSON.stringify(values))
     payload.content = values.content.toString('html')
     payload.departments = values.departments.map(item => item.value)
     payload.branches = values.branches.map(item => item.value)
     payload.users = values.users.map(item => item.value)
-    dispatch(fetching());
+    payload.assets = uploadedFile?.payload?.data || []
+
     dispatch(creatingInternalNotifications(payload));
   };
 
@@ -264,9 +287,26 @@ const CreateNotifications = (props) => {
                 />
                 <CInvalidFeedback className="d-block">{errors.users}</CInvalidFeedback>
               </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="users">File đính kèm</CLabel>
+                <CListGroup>
+                  {files?.map((file, index) => <CListGroupItem className="d-flex justify-content-between align-items-center" key={index}>
+                    <a href={file.source}>{file.name}</a>
+                    <CIcon name="cilX" alt="CoreUI Icons List" onClick={() => {
+                      setFiles(files.filter((_, i) => i !== index))
+
+                    }} />
+
+                  </CListGroupItem>)}
+
+
+                </CListGroup>
+                {!loading ? <CInput className="mt-2" type="file" size="md" id="formFileSm" onChange={onUploadFile} multiple label="Chọn file đính kèm" /> : <CSpinner size='sm' />}
+
+              </CFormGroup>
               <CFormGroup className="d-flex justify-content-center">
                 <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
-                  <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : notification?'Chỉnh sửa':'Tạo mới'}
+                  <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : notification ? 'Chỉnh sửa' : 'Tạo mới'}
                 </CButton>
                 {/* <CButton type="reset" size="lg" color="danger" onClick={handleReset} className="ml-5">
                   <CIcon name="cil-ban" /> Tạo mới và gửi

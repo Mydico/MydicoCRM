@@ -3,6 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne
 import { BaseEntity } from './base/base.entity';
 import { FileType } from './enumeration/file-type';
 import { User } from './user.entity';
+import Asset from './asset.entity';
 
 /**
  * A File.
@@ -29,5 +30,12 @@ export default class Notification extends BaseEntity {
     @Column({ type: 'bigint', name: 'entityId', nullable: true })
     @Index()
     entityId?: string;
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+   
+    @ManyToMany(type => Asset, other => other.notifications, {createForeignKeyConstraints: false})
+    @JoinTable({
+        name: 'asset_notification',
+        joinColumn: { name: 'notification_id', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'asset_id', referencedColumnName: 'id' },
+    })
+    assets?: Asset[];
 }

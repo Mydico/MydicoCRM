@@ -32,7 +32,7 @@ import { getCodeByName } from '../../../../shared/utils/normalize';
 import { blockInvalidChar } from '../../../../shared/utils/helper';
 import S3FileUpload from 'react-s3';
 
-const config = {
+export const config = {
   bucketName: 'mydico-crm',
   dirName: 'photos' /* optional */,
   region: 'ap-southeast-1',
@@ -138,7 +138,6 @@ const EditProduct = props => {
     });
 
     const data = await Promise.all(arr);
-    console.log(data)
     const updatedData = data.map(item => item.location)
     const init = [...updatedData]
     images.current = init

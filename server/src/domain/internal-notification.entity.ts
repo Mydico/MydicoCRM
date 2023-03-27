@@ -9,6 +9,7 @@ import { BillStatus } from './enumeration/bill-status';
 import { User } from './user.entity';
 import Department from './department.entity';
 import Branch from './branch.entity';
+import Asset from './asset.entity';
 
 /**
  * A Bill.
@@ -61,4 +62,11 @@ export default class InternalNotification extends BaseEntity {
     })
     users?: User[];
  
+    @ManyToMany(type => Asset, other => other.notifications, {createForeignKeyConstraints: false})
+    @JoinTable({
+        name: 'asset_internal_notification',
+        joinColumn: { name: 'internal_notification_id', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'asset_id', referencedColumnName: 'id' },
+    })
+    assets?: Asset[];
 }
