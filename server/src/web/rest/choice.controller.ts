@@ -79,6 +79,19 @@ export class ChoiceController {
     return res.send(created);
   }
 
+  @PostMethod('/many')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+    type: Choice
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  async postMany(@Res() res: Response, @Body() choices: Choice[]): Promise<Response> {
+    const created = await this.choiceService.saveMany(choices);
+    return res.send(created);
+  }
+
   @Put('/')
   @Roles(RoleType.USER)
   @ApiResponse({

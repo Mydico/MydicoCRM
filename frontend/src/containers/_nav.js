@@ -249,4 +249,18 @@ export default [
     icon: 'cil-bell',
     to: '/notification',
   },
+  {
+    _tag: 'CSidebarNavItem',
+    name: 'Quản lý câu hỏi',
+    route: '/questions',
+    icon: 'cil-book',
+    to: '/questions',
+  },
+  {
+    _tag: 'CSidebarNavItem',
+    name: 'Quản lý chương trình học',
+    route: '/syllabus',
+    icon: 'cil-book',
+    to: '/syllabus',
+  },
 ];

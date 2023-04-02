@@ -56,26 +56,27 @@ const Report = props => {
   }, []);
 
   useEffect(() => {
+    console.log(branches)
     if (account.department.externalChild && department && branches.length > 1) {
       if (JSON.parse(account.department.externalChild).includes(department.id)) {
         dispatch(setAll([account.branch]));
       }
     }
     if(branches.length === 1){
-      dispatch(
-        getExactUser({
-          page: 0,
-          size: 50,
-          sort: 'createdDate,DESC',
-          department: department?.id || account.department.id,
-          branch: branches[0].id,
-          dependency: true
-        })
-      );
+      // dispatch(
+      //   getExactUser({
+      //     page: 0,
+      //     size: 50,
+      //     sort: 'createdDate,DESC',
+      //     department: department?.id || account.department.id,
+      //     branch: branches[0].id,
+      //     dependency: true
+      //   })
+      // );
     }
   }, [branches]);
 
-  const getTop10 = filter => {
+const getTop10 = filter => {
     dispatch(
       getExactUser({
         page: 0,

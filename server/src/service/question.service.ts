@@ -6,8 +6,7 @@ import { QuestionRepository } from '../repository/question.repository';
 
 
 const relationshipNames = [];
-relationshipNames.push('permissionGroups');
-relationshipNames.push('departments');
+relationshipNames.push('choices');
 
 @Injectable()
 export class QuestionService {

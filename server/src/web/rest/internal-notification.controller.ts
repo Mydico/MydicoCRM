@@ -108,7 +108,6 @@ export class InternalNotificationController {
         description: 'The record has been successfully deleted.',
     })
     async remove(@Res() res: Response, @Param('id') id: string): Promise<Response> {
-        HeaderUtil.addEntityDeletedHeaders(res, 'InternalNotification', id);
         const toDelete = await this.internalNotificationService.findById(id);
         return res.send(await this.internalNotificationService.delete(toDelete));
     }

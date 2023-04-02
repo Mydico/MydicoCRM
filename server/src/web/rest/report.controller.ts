@@ -427,7 +427,12 @@ export class ReportController {
     delete req.query['size'];
     delete req.query['sort'];
     const filter = await this.buildFilterForReport(req);
-    return res.send(await this.reportService.getWarehouseReport(options, filter, req.query['department']));
+    // console.log(filter)
+    // // if(req.query['department']){
+    // //   filter.department = JSON.parse(req.query['department'])
+
+    // // }
+    return res.send(await this.reportService.getWarehouseReport(options, filter));
   }
 
 
@@ -474,11 +479,21 @@ export class ReportController {
         departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
         departmentVisible = departmentVisible.map(item => item.id);
       } else {
-        departmentVisible.push(req.query['department']);
+       
+        if(req.query['department'] && Array.isArray(JSON.parse(req.query['department']))){
+          departmentVisible = departmentVisible.concat(JSON.parse(req.query['department']));
+        }else {
+          req.query['department'] && departmentVisible.push(JSON.parse(req.query['department']));
+        }
+       
       }
     } else {
       if(JSON.parse(currentUser.department.externalChild).length > 0){
-        departmentVisible.push(req.query['department']);
+        if(req.query['department'] && Array.isArray(JSON.parse(req.query['department']))){
+          departmentVisible = departmentVisible.concat(JSON.parse(req.query['department']));
+        }else {
+          req.query['department'] && departmentVisible.push(JSON.parse(req.query['department']));
+        }
       }else {
         departmentVisible.push(currentUser.department.id);
       }

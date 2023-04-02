@@ -58,7 +58,21 @@ const fields = [
   { key: 'ontheway', label: 'Hàng đi đường', filter: false },
   { key: 'total', label: 'Tổng tồn hiện tại', filter: false }
 ];
+const fieldsExcel = [
 
+  { key: 'product_name', label: 'Tên sản phẩm', _style: { width: '20%' }, filter: true },
+  { key: 'remain', label: 'Tồn đầu kì', filter: false },
+  { key: 'importProduct', label: 'Nhập kho NCC', filter: false },
+  { key: 'returnProduct', label: 'Nhập kho khách trả hàng', filter: false },
+  { key: 'inputProductFromExport', label: 'Nhập điều chuyển', filter: false },
+  { key: 'exportedProduct', label: 'Xuất bán', filter: false },
+  { key: 'exportStoreToProvider', label: 'Xuất trả NCC', filter: false },
+  { key: 'exportStore', label: 'Xuất điều chuyển', filter: false },
+  { key: 'realExport', label: 'Thực xuất bán', filter: false },
+  { key: 'remainEnd', label: 'Tổng tồn cuối kì', filter: false },
+  { key: 'ontheway', label: 'Hàng đi đường', filter: false },
+  { key: 'total', label: 'Tổng tồn hiện tại', filter: false }
+];
 const WarehouseReport = () => {
   const dispatch = useDispatch();
   const { initialState } = useSelector(state => state.department);
@@ -85,7 +99,7 @@ const WarehouseReport = () => {
   const [date, setDate] = React.useState({ startDate: moment().startOf('month'), endDate: moment() });
   const [focused, setFocused] = React.useState();
   const [branch, setBranch] = useState(null);
-  const [department, setDepartment] = useState(null);
+  const [department, setDepartment] = useState([]);
   const [user, setUser] = useState(null);
   const [brand, setBrand] = useState(null);
   const [productGroup, setProductGroup] = useState(null);
@@ -217,7 +231,7 @@ const WarehouseReport = () => {
   useEffect(() => {
     setFilter({
       ...filter,
-      department: department?.id
+      department: JSON.stringify(department.map(item => item?.value?.id))
     });
     // if (department) {
     //   dispatch(getBranch({ department: department?.id, dependency: true }));
@@ -370,16 +384,27 @@ const WarehouseReport = () => {
     }
   };
 
-  const computedExcelItems = React.useCallback(items => {
+  const computedItems = React.useCallback(items => {
     return (items || []).map((item, index) => {
       return {
         ...item
       };
     });
   }, []);
-  const memoExcelListed = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
-  const memoComputedExcelItems = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
 
+  const computedExcelItems = React.useCallback(items => {
+    return (items || []).map((item, index) => {
+      return {
+        ...item,
+        realExport:Number(item.exportedProduct || 0) - Number(item.returnProduct || 0) || 0,
+        total: Number(item.remainEnd || 0) + Number(item.ontheway || 0) || 0
+      };
+    });
+  }, []);
+
+  const memoExcelListed = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
+  const memoComputedItems = React.useMemo(() => computedItems(top10Product[0]), [top10Product[0]]);
+ const memoComputedExcelItems = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
   const sortItem = React.useCallback(
     info => {
       const { column, asc } = info;
@@ -407,20 +432,23 @@ const WarehouseReport = () => {
                 <Select
                   isSearchable
                   name="department"
+                  isMulti
                   onChange={e => {
-                    setDepartment(e?.value || null);
+                    console.log(e)
+                    setDepartment(e || []);
                   }}
-                  value={
-                    initialState.allChild.length > 1
-                      ? {
-                          value: department,
-                          label: department?.name
-                        }
-                      : {
-                          value: initialState.allChild[0],
-                          label: initialState.allChild[0]?.name
-                        }
-                  }
+                  // value={
+                  //   initialState.allChild.length > 1
+                  //     ? {
+                  //         value: department,
+                  //         label: department?.name
+                  //       }
+                  //     : {
+                  //         value: initialState.allChild[0],
+                  //         label: initialState.allChild[0]?.name
+                  //       }
+                  // }
+                  value={department}
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Chi nhánh"
@@ -552,14 +580,14 @@ const WarehouseReport = () => {
           <CCardBody>
             <Download
               data={memoComputedExcelItems}
-              headers={fields}
-              name={`thong_ke_theo_san_pham tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format(
+              headers={fieldsExcel}
+              name={`bao_cao_kho tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format(
                 'DD-MM-YYYY'
               )} `}
             />
 
             <AdvancedTable
-              items={memoComputedExcelItems}
+              items={memoComputedItems}
               fields={fields}
               columnFilter
               itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}

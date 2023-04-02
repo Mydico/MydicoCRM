@@ -30,6 +30,7 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
     history.entityCode = updateEntity.entityCode;
     history.entityType = updateEntity.entityType;
     history.destinationId = updateEntity.destId;
+    history.destName = updateEntity.destName;
     history.storeName = updateEntity.store.name;
     history.productName = updateEntity.product.name;
     history.createdDate = new Date();
@@ -60,6 +61,7 @@ export class ProductQuantitySubscriber implements EntitySubscriberInterface<Prod
     history.entityCode = updateEntity.entityCode;
     history.entityType = updateEntity.entityType;
     history.destinationId = updateEntity.destId;
+    history.destName = updateEntity.destName;
     history.lastModifiedDate = new Date();
     history.remain = updateEntity.quantity;
     history.beforeUpdate = old.quantity;

@@ -1,5 +1,5 @@
 import {createEntityAdapter, createSlice} from '@reduxjs/toolkit';
-import {creatingInternalNotifications, getInternalNotifications, getDetailInternalNotifications, updateInternalNotifications} from './notification.api';
+import {creatingInternalNotifications, getInternalNotifications, getDetailInternalNotifications, updateInternalNotifications, deleteInternalNotifications} from './notification.api';
 
 const initialState = {
   loading: false,
@@ -45,6 +45,15 @@ const slice = createSlice({
     },
 
     [updateInternalNotifications.rejected]: (state ) => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
+    [deleteInternalNotifications.fulfilled]: (state ) => {
+      state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+
+    [deleteInternalNotifications.rejected]: (state ) => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },

@@ -14,38 +14,38 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import Question from '../../domain/question.entity';
-import { QuestionService } from '../../service/question.service';
+import Syllabus from '../../domain/syllabus.entity';
+import { SyllabusService } from '../../service/syllabus.service';
 import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import { User } from '../../domain/user.entity';
+import { Equal } from 'typeorm';
 
-
-@Controller('api/questions')
+@Controller('api/syllabus')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
 @ApiBearerAuth()
-export class QuestionController {
-  logger = new Logger('QuestionController');
+export class SyllabusController {
+  logger = new Logger('SyllabusController');
 
-  constructor(private readonly questionService: QuestionService) {}
+  constructor(private readonly syllabusService: SyllabusService) {}
 
   @Get('/')
   @Roles(RoleType.USER)
   @ApiResponse({
     status: 200,
     description: 'List all records',
-    type: Question
+    type: Syllabus
   })
-  async getAll(@Req() req: Request, @Res() res): Promise<Question[]> {
+  async getAll(@Req() req: Request, @Res() res): Promise<Syllabus[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
-    const [results, count] = await this.questionService.findAndCount({
+    const [results, count] = await this.syllabusService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
-      where: {
-      }
+
     });
 
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
@@ -57,10 +57,10 @@ export class QuestionController {
   @ApiResponse({
     status: 200,
     description: 'The found record',
-    type: Question
+    type: Syllabus
   })
-  async getOne(@Param('id') id: string, @Res() res): Promise<Question> {
-    return res.send(await this.questionService.findById(id));
+  async getOne(@Param('id') id: string, @Res() res): Promise<Syllabus> {
+    return res.send(await this.syllabusService.findById(id));
   }
 
   @PostMethod('/')
@@ -68,12 +68,12 @@ export class QuestionController {
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
-    type: Question
+    type: Syllabus
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async post(@Res() res: Response, @Body() question: Question): Promise<Response> {
-    const created = await this.questionService.save(question);
-    HeaderUtil.addEntityCreatedHeaders(res, 'Question', created.id);
+  async post(@Res() res: Response, @Body() syllabus: Syllabus): Promise<Response> {
+    const created = await this.syllabusService.save(syllabus);
+    HeaderUtil.addEntityCreatedHeaders(res, 'Syllabus', created.id);
     return res.send(created);
   }
 
@@ -82,11 +82,11 @@ export class QuestionController {
   @ApiResponse({
     status: 200,
     description: 'The record has been successfully updated.',
-    type: Question
+    type: Syllabus
   })
-  async put(@Res() res: Response, @Body() question: Question): Promise<Response> {
-    HeaderUtil.addEntityCreatedHeaders(res, 'Question', question.id);
-    return res.send(await this.questionService.update(question));
+  async put(@Res() res: Response, @Body() syllabus: Syllabus): Promise<Response> {
+    HeaderUtil.addEntityCreatedHeaders(res, 'Syllabus', syllabus.id);
+    return res.send(await this.syllabusService.update(syllabus));
   }
 
   @Delete('/:id')
@@ -95,9 +95,9 @@ export class QuestionController {
     status: 204,
     description: 'The record has been successfully deleted.'
   })
-  async remove(@Res() res: Response, @Param('id') id: string): Promise<Question> {
-    HeaderUtil.addEntityDeletedHeaders(res, 'Question', id);
-    const toDelete = await this.questionService.findById(id);
-    return await this.questionService.delete(toDelete);
+  async remove(@Res() res: Response, @Param('id') id: string): Promise<Syllabus> {
+    HeaderUtil.addEntityDeletedHeaders(res, 'Syllabus', id);
+    const toDelete = await this.syllabusService.findById(id);
+    return await this.syllabusService.delete(toDelete);
   }
 }

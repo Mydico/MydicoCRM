@@ -23,6 +23,8 @@ import ProviderReducer from '../../views/pages/warehouse/Provider/provider.reduc
 import DebtReducer from '../../views/pages/finance/debt/debt.reducer';
 import ReceiptReducer from '../../views/pages/finance/receipt/receipt.reducer';
 import InternalNotificationReducer from '../../views/pages/notification/notification.reducer';
+import questionReducer from '../../views/pages/user/Question/question.reducer';
+import syllabusReducer from '../../views/pages/user/Syllabus/syllabus.reducer';
 
 const rootReducer = combineReducers({
   authentication: authenticateReducer,
@@ -48,7 +50,9 @@ const rootReducer = combineReducers({
   provider: ProviderReducer,
   debt: DebtReducer,
   receipt: ReceiptReducer,
-  internalNotification: InternalNotificationReducer
+  internalNotification: InternalNotificationReducer,
+  question: questionReducer,
+  syllabus: syllabusReducer
 });
 
 export default rootReducer;

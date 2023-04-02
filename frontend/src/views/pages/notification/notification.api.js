@@ -38,6 +38,15 @@ export const updateInternalNotifications = createAsyncThunk('api/update/internal
   }
 });
 
+export const deleteInternalNotifications = createAsyncThunk('api/delete/internal-notifications', async (params, thunkAPI) => {
+  try {
+    const result = await axios.delete('api/internal-notifications/' + params.id, { params: params });
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const send = createAsyncThunk('api/send/internal-notifications', async (body, thunkAPI) => {
   try {
     const result = await axios.post('api/internal-notifications/send', body);

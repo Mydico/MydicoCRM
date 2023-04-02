@@ -19,12 +19,13 @@ export class ProductQuantityService {
   constructor(@InjectRepository(ProductQuantityRepository) private productQuantityRepository: ProductQuantityRepository) {}
 
   async findById(id: string): Promise<ProductQuantity | undefined> {
-    const options = { relations: relationshipNames };
+    const options = { relations: relationshipNames, cache : 10*60*1000 };
     return await this.productQuantityRepository.findOne(id, options);
   }
 
   async findByfields(options: FindOneOptions<ProductQuantity>): Promise<ProductQuantity[]> {
     options.relations = relationshipNames;
+    options.cache = 10*60*1000
     return await this.productQuantityRepository.find(options);
   }
 
@@ -107,6 +108,7 @@ export class ProductQuantityService {
       .leftJoinAndSelect('product.productBrand', 'productBrand')
       .leftJoinAndSelect('product.productGroup', 'productGroup')
       .where(`ProductQuantity.store = ${filter['store']} AND ProductQuantity.status = 'ACTIVE'`)
+      .cache(10*60*1000)
       // .andWhere(`MATCH(ProductQuantity.name) AGAINST ('${filter['name'] || ''}' IN NATURAL LANGUAGE MODE)`)
       .orderBy(`ProductQuantity.${Object.keys(options.order)[0] || 'ProductQuantity.createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
@@ -148,6 +150,7 @@ export class ProductQuantityService {
       .leftJoinAndSelect('product.productBrand', 'productBrand')
       .leftJoinAndSelect('ProductQuantity.department', 'department')
       .where(queryString)
+      .cache(10*60*1000)
       .orderBy(`ProductQuantity.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);

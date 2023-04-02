@@ -28,7 +28,6 @@ export class PromotionService {
     async findById(id: string): Promise<Promotion | undefined> {
         const options = { relations: relationshipNames };
         const founded = await this.promotionRepository.findOne(id, options);
-        console.log(founded)
         if (founded.type === PromotionType.SHORTTERM) {
             const productList = await this.promotionProductService.findManyByfields({ where: { promotion: id } });
             founded.promotionProduct = productList;

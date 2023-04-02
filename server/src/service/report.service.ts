@@ -882,7 +882,7 @@ export class ReportService {
 
   async getSaleSummary(filter): Promise<any> {
     let queryString = queryBuilderFunc('Transaction', filter);
-    const queryBuilder =  this.transactionRepository.manager.connection
+    const queryBuilder = this.transactionRepository.manager.connection
       .createQueryBuilder()
       .addSelect(`sum(case when type = 'DEBIT' then total_money else 0 end)`, 'total')
       .addSelect(`sum(case when type = 'DEBIT' then total_money when  type = 'RETURN' then -refund_money else 0 end)`, 'real')
@@ -1195,14 +1195,18 @@ export class ReportService {
     return result
   }
 
-  async getWarehouseReport(options, filter, department): Promise<any> {
+  async getWarehouseReport(options, filter): Promise<any> {
     // let queryString = queryBuilderFunc('StoreHistory', filter);
     // queryString = queryString.replace('Customer.customerId', 'Customer.id');
     // const filter = {
     //   startDate : "2022-04-01",
     //   enđate : "2022-08-10"
     // };
-    let queryString = queryBuilderFunc('StoreHistory', filter, false, true);
+    const filterForStoreHistory = { ...filter }
+    delete filterForStoreHistory.branch
+    let queryString = queryBuilderFunc('StoreHistory', filterForStoreHistory, false, true);
+
+
     queryString = queryString.replace('StoreHistory.productId', 'product.id');
     queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
     queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
@@ -1407,7 +1411,10 @@ export class ReportService {
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")
       .getRawMany()
-    queryString = queryBuilderFunc('Bill', filter);
+
+    const filterForBill = { ...filter }
+    delete filterForBill.branch
+    queryString = queryBuilderFunc('Bill', filterForBill);
     queryString = queryString.replace('Bill.productId', 'product.id');
     queryString = queryString.replace('Bill.brandId', 'brand.id');
     queryString = queryString.replace('Bill.productGroupId', 'productGroup.id');

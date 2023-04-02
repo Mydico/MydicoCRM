@@ -3,12 +3,12 @@ import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CCol, 
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDetailInternalNotifications, getInternalNotifications, send } from './notification.api.js';
+import { deleteInternalNotifications, getDetailInternalNotifications, getInternalNotifications, send } from './notification.api.js';
 import { globalizedInternalNotificationsSelectors, reset } from './notification.reducer.js';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
-import { CImg } from '@coreui/react';
+import { CImg, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import { globalizedBranchSelectors } from '../user/UserBranch/branch.reducer.js';
 import { globalizedDepartmentSelectors } from '../user/UserDepartment/department.reducer.js';
 import { getDepartment } from '../user/UserDepartment/department.api.js';
@@ -98,10 +98,9 @@ const Notification = props => {
   const [details, setDetails] = useState([]);
   const { account } = useSelector(userSafeSelector);
   const isAdmin = account.authorities.filter(item => item === 'ROLE_ADMIN').length > 0;
-  const { initialState } = useSelector(state => state.user);
+  const { initialState } = useSelector(state => state.internalNotification);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
-  const selectedPro = useRef({ id: null, activated: true, login: '' });
   const dispatch = useDispatch();
   const history = useHistory();
   const paramRef = useRef({});
@@ -110,6 +109,9 @@ const Notification = props => {
   const departments = useSelector(selectAllDepartment);
   const [date, setDate] = React.useState({ startDate: null, endDate: null });
   const [focused, setFocused] = React.useState();
+  const [show, setShow] = useState(false);
+  const selected = useRef({ id: null });
+
   useEffect(() => {
     if (date.endDate && date.startDate) {
       const params = {
@@ -184,6 +186,13 @@ const Notification = props => {
 
   };
 
+  useEffect(() => {
+    if (initialState.updatingSuccess) {
+      dispatch(reset());
+      dispatch(getInternalNotifications({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    }
+  }, [initialState.updatingSuccess]);
+
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
@@ -213,8 +222,6 @@ const Notification = props => {
     if (value) debouncedSearchColumn(value);
   };
 
-
-
   const memoComputedItems = React.useCallback(items => computedItems(items), [internals]);
   const memoListed = React.useMemo(() => memoComputedItems(internals), [internals]);
 
@@ -240,6 +247,11 @@ const Notification = props => {
 
   const toDetailUser = id => {
     history.push(`${props.match.url}/${id}/detail`);
+  };
+
+  const lockUser = () => {
+    dispatch(deleteInternalNotifications({ id: selected.current.id, dependency: true }));
+    setShow(false);
   };
 
   return (
@@ -380,6 +392,7 @@ const Notification = props => {
                       variant="outline"
                       shape="square"
                       size="sm"
+                      className="mr-3"
                       onClick={event => {
                         event.stopPropagation();
                         sendNotification(item.id);
@@ -388,6 +401,19 @@ const Notification = props => {
                       <CIcon name={'cilSend'} />
                     </CButton>
                   )}
+                  <CButton
+                      color="primary"
+                      variant="outline"
+                      shape="square"
+                      size="sm"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        selected.current = { id: item.id };
+                        setShow(!show);
+                      }}
+                    >
+                      <CIcon name={'cilTrash'} />
+                    </CButton>
                 </td>
               );
             },
@@ -400,7 +426,21 @@ const Notification = props => {
           onActivePageChange={i => setActivePage(i)}
         />
       </CCardBody>
-
+      <CModal show={show} onClose={() => setShow(!show)} color="primary">
+        <CModalHeader closeButton>
+          <CModalTitle>Xoá thông báo</CModalTitle>
+        </CModalHeader>
+        <CModalBody>{`Bạn có chắc chắn muốn xoá thông báo không?`}</CModalBody>
+        <CModalFooter>
+        <CButton color="secondary" onClick={() => setShow(!show)}>
+            Hủy
+          </CButton>
+          <CButton color="primary" onClick={lockUser}>
+            Đồng ý
+          </CButton>
+  
+        </CModalFooter>
+      </CModal>
     </CCard>
   );
 };

@@ -28,7 +28,7 @@ export const resourceDesc = {
     'birthday': ' sinh nhật',
     'update': 'cập nhật chi tiết',
     'reset-password': 'Xóa mật khẩu',
-
+    'question': 'câu hỏi',
     'finish': 'hoàn thành',
 
     'departments': 'chi nhánh',
@@ -194,6 +194,9 @@ export const blackList = [
     'debt-dashboards',
     '/total-debit',
     'token',
+    'choices',
+    'questions',
+    'syllabus',
     'customers/find',
     'products/find',
     'site',

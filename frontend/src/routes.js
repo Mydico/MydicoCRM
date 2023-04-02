@@ -116,8 +116,15 @@ const EditPermission = loadable(() => import('./views/pages/user/UserPermission/
 
 const Notification = loadable(() => import('./views/pages/notification/notification'));
 const CreateNotification= loadable(() => import('./views/pages/notification/create-notification'));
-const EditNotification = loadable(() => import('./views/pages/notification/edit-notification'));
 const ViewNotification = loadable(() => import('./views/pages/notification/view-notification'));
+
+const Questions = loadable(() => import('./views/pages/user/Question/questions'));
+const CreateQuestion= loadable(() => import('./views/pages/user/Question/create-question'));
+const ViewQuestion = loadable(() => import('./views/pages/user/Question/view-question'));
+
+const Syllabus = loadable(() => import('./views/pages/user/Syllabus/syllabus'));
+const CreateSyllabus= loadable(() => import('./views/pages/user/Syllabus/create-syllabus'));
+const ViewSyllabus = loadable(() => import('./views/pages/user/Syllabus/view-syllabus'));
 
 const Debts = loadable(() => import('./views/pages/finance/debt/debt'));
 
@@ -240,6 +247,14 @@ const routes = [
   {path: '/notification/:id/detail', name: 'nhóm quyền', component: ViewNotification, exact: true},
   {path: '/notification/:id/edit', name: 'Chỉnh sửa', component: CreateNotification},
   {path: '/notification/new', name: 'Tạo mới', component: CreateNotification},
+  {path: '/questions/', name: 'nhóm quyền', component: Questions, exact: true},
+  {path: '/questions/:id/detail', name: 'nhóm quyền', component: ViewQuestion, exact: true},
+  {path: '/questions/:id/edit', name: 'Chỉnh sửa', component: CreateQuestion},
+  {path: '/questions/new', name: 'Tạo mới', component: CreateQuestion},
+  {path: '/syllabus/', name: 'nhóm quyền', component: Syllabus, exact: true},
+  {path: '/syllabus/:id/detail', name: 'nhóm quyền', component: ViewSyllabus, exact: true},
+  {path: '/syllabus/:id/edit', name: 'Chỉnh sửa', component: CreateSyllabus},
+  {path: '/syllabus/new', name: 'Tạo mới', component: CreateSyllabus},
   {path: '/bills/', name: 'Vận đơn', component: Bill, exact: true},
 ];
 

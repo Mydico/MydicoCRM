@@ -260,7 +260,8 @@ export class OrderService {
         entity: 'ORDER',
         entityId: order.id,
         entityCode: order.code,
-        destId: order.customer?.id
+        destId: order.customer?.id,
+        destName: order.customer.name,
       };
     });
     const checkExistInStore = productQuantityExported.filter(item => item.quantity < 0);

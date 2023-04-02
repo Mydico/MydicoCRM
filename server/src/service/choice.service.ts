@@ -34,6 +34,10 @@ export class ChoiceService {
         return await this.choiceRepository.save(choice);
     }
 
+    async saveMany(choices: Choice[]): Promise<Choice[] | undefined> {
+        return await this.choiceRepository.save(choices);
+    }
+
     async update(choice: Choice): Promise<Choice | undefined> {
         return await this.save(choice);
     }

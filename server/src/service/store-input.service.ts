@@ -53,7 +53,7 @@ export class StoreInputService {
         const result = await this.storeInputRepository.findOne(id, options)
         result.storeInputDetails = result.storeInputDetails.sort((a, b) => {
             return Number(a.id) - Number(b.id);
-          })
+        })
         return result;
     }
 
@@ -128,7 +128,7 @@ export class StoreInputService {
         }
         if (currentUser.branch) {
             if (!currentUser.branch.seeAll) {
-              andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  StoreInput.branch = ${currentUser.branch.id}`;
+                andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  StoreInput.branch = ${currentUser.branch.id}`;
             }
         }
         const cacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, { ...filter, type }, options, 'StoreInputs');
@@ -195,15 +195,15 @@ export class StoreInputService {
                 })
             );
         }
-        const result:[StoreInput[], number] = [[],0]
+        const result: [StoreInput[], number] = [[], 0]
         const data = await queryBuilder.getMany();
         result[1] = await count.getCount();
         result[0] = data.map(item => ({
             ...item,
             orderDetails: item.storeInputDetails.sort((a, b) => {
-              return Number(a.id) - Number(b.id);
+                return Number(a.id) - Number(b.id);
             })
-          }));
+        }));
         return result;
     }
 
@@ -302,7 +302,8 @@ export class StoreInputService {
                 entityId: entity?.id,
                 entityCode: entity?.code,
                 entityType: entity?.type,
-                destId: entity.storeTransfer?.id,
+                destId: entity.type === StoreImportType.RETURN ? entity.customer.id : entity.storeTransfer?.id,
+                destName: StoreImportType.RETURN ? entity.customer?.name : entity.storeTransfer?.name,
                 quantity: item.quantity - totalProduct > 0 ? item.quantity - totalProduct : 0,
             };
         });
@@ -352,6 +353,7 @@ export class StoreInputService {
                 entityId: entity?.id,
                 entityCode: entity?.code,
                 destId: entity.provider?.id,
+                destName: entity.provider?.name,
                 entityType: StoreHistoryType.IMPORT,
                 type: StoreHistoryType.IMPORT,
             }));
@@ -365,6 +367,7 @@ export class StoreInputService {
                 entity: 'STORE',
                 entityId: entity?.id,
                 destId: entity.provider?.id,
+                destName: entity.provider?.name,
                 entityCode: entity?.code,
                 entityType: entity?.type,
             };

@@ -43,6 +43,8 @@ import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { CListGroup, CListGroupItem, CSpinner } from '@coreui/react';
 import { config } from '../product/ProductList/EditProduct';
+import { globalizedPromotionSelectors } from '../sales/Promotion/promotion.reducer';
+import { getDetailPromotion, getPromotion } from '../sales/Promotion/promotion.api';
 
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
@@ -52,6 +54,8 @@ export const mappingStatus = {
 const { selectAll: selectAllDepartment } = globalizedDepartmentSelectors;
 const { selectAll: selectAllBranch } = globalizedBranchSelectors;
 const { selectAll: selectAllUser } = globalizedUserSelectors;
+const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
+
 const { selectById } = globalizedInternalNotificationsSelectors;
 const CreateNotifications = (props) => {
   const { initialState } = useSelector(state => state.internalNotification);
@@ -64,6 +68,7 @@ const CreateNotifications = (props) => {
   const departments = useSelector(selectAllDepartment);
   const branches = useSelector(selectAllBranch);
   const users = useSelector(selectAllUser);
+  const promotions = useSelector(selectAllPromotion);
   const [files, setFiles] = useState([])
   const [initValues, setInitValues] = useState({
     departments: [],
@@ -81,6 +86,8 @@ const CreateNotifications = (props) => {
     dispatch(getBranch({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getUser({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+    dispatch(getPromotion({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
+
     if (props.match.params.id) {
       dispatch(getDetailInternalNotifications({ id: props.match.params.id, dependency: true }));
 
@@ -108,25 +115,38 @@ const CreateNotifications = (props) => {
   }
 
   useEffect(() => {
-    if (notification) {
-      const copyValue = JSON.parse(JSON.stringify(notification))
+    const initEditForm = async () => {
+      if (notification) {
+        const copyValue = JSON.parse(JSON.stringify(notification))
 
-      copyValue.content = RichTextEditor.createValueFromString(notification.content, 'html')
-      copyValue.departments = notification.departments.map(item => ({
-        value: item,
-        label: item.name
-      }))
-      copyValue.branches = notification.branches.map(item => ({
-        value: item,
-        label: item.name
-      }))
-      copyValue.users = notification.users.map(item => ({
-        value: item,
-        label: item.code
-      }))
-      setInitValues(copyValue)
-      setFiles(notification.assets)
+        copyValue.content = RichTextEditor.createValueFromString(notification.content, 'html')
+        copyValue.departments = notification.departments.map(item => ({
+          value: item,
+          label: item.name
+        }))
+        copyValue.branches = notification.branches.map(item => ({
+          value: item,
+          label: item.name
+        }))
+        copyValue.users = notification.users.map(item => ({
+          value: item,
+          label: item.code
+        }))
+        if (copyValue.entityId) {
+          const resp = await dispatch(getDetailPromotion({
+            id: copyValue.entityId
+          }))
+          copyValue.promotion = {
+            value: resp.payload,
+            label: resp.payload.name
+          }
+        }
+        setInitValues(copyValue)
+        setFiles(notification.assets)
+      }
     }
+    initEditForm()
+
   }, [notification])
 
 
@@ -140,7 +160,8 @@ const CreateNotifications = (props) => {
     payload.branches = values.branches.map(item => item.value)
     payload.users = values.users.map(item => item.value)
     payload.assets = uploadedFile?.payload?.data || []
-
+    payload.entityId = values.promotion?.value?.id
+    payload.entityName = values.promotion?.value?.id ? "PROMOTION" : null
     dispatch(creatingInternalNotifications(payload));
   };
 
@@ -172,6 +193,27 @@ const CreateNotifications = (props) => {
     }
     if (action.action === 'input-blur') {
       debouncedSearchUser('');
+    }
+  };
+
+  const debouncedSearchPromotion = _.debounce(value => {
+    dispatch(
+      getPromotion({
+        page: 0,
+        size: 50,
+        sort: 'createdDate,DESC',
+        name: value,
+        dependency: true
+      })
+    );
+  }, 300);
+
+  const onSearchPromotion = (value, action) => {
+    if (action.action === 'input-change' && value) {
+      debouncedSearchPromotion(value);
+    }
+    if (action.action === 'input-blur') {
+      debouncedSearchPromotion('');
     }
   };
 
@@ -288,10 +330,29 @@ const CreateNotifications = (props) => {
                 <CInvalidFeedback className="d-block">{errors.users}</CInvalidFeedback>
               </CFormGroup>
               <CFormGroup>
+                <CLabel htmlFor="users">Chương trình bán hàng</CLabel>
+                <Select
+                  name="users"
+                  onChange={e => {
+                    setFieldValue('promotion', e);
+                  }}
+                  value={values.promotion}
+                  onInputChange={onSearchPromotion}
+                  isClearable={true}
+                  openMenuOnClick={false}
+                  placeholder="Chọn Chương trình bán hàng"
+                  options={promotions.map(item => ({
+                    value: item,
+                    label: item.name
+                  }))}
+                />
+                <CInvalidFeedback className="d-block">{errors.users}</CInvalidFeedback>
+              </CFormGroup>
+              <CFormGroup>
                 <CLabel htmlFor="users">File đính kèm</CLabel>
                 <CListGroup>
                   {files?.map((file, index) => <CListGroupItem className="d-flex justify-content-between align-items-center" key={index}>
-                    <a href={file.source}>{file.name}</a>
+                    <a href={file.source} target="_blank">{file.name}</a>
                     <CIcon name="cilX" alt="CoreUI Icons List" onClick={() => {
                       setFiles(files.filter((_, i) => i !== index))
 
@@ -305,7 +366,7 @@ const CreateNotifications = (props) => {
 
               </CFormGroup>
               <CFormGroup className="d-flex justify-content-center">
-                <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
+                <CButton type="submit" size="lg" color="primary" disabled={loading || initialState.loading}>
                   <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : notification ? 'Chỉnh sửa' : 'Tạo mới'}
                 </CButton>
                 {/* <CButton type="reset" size="lg" color="danger" onClick={handleReset} className="ml-5">

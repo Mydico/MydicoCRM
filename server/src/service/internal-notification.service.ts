@@ -29,7 +29,7 @@ export class InternalNotificationService {
     private readonly notificationService: NotificationService,
     private readonly firebaseService: FirebaseService,
 
-  ) {}
+  ) { }
 
   async findById(id: string): Promise<InternalNotification | undefined> {
     const options = { relations: relationshipNames };
@@ -47,15 +47,14 @@ export class InternalNotificationService {
 
 
     if (req.query['endDate'] && req.query['startDate']) {
-      queryString += ` ${queryString.length === 0 ? '' : ' AND '}  InternalNotification.createdDate  >= '${
-        req.query['startDate']
-      }' AND  InternalNotification.createdDate <= '${req.query['endDate']} 23:59:59'`;
+      queryString += ` ${queryString.length === 0 ? '' : ' AND '}  InternalNotification.createdDate  >= '${req.query['startDate']
+        }' AND  InternalNotification.createdDate <= '${req.query['endDate']} 23:59:59'`;
     }
     const queryBuilder = this.internalNotificationRepository
       .createQueryBuilder('InternalNotification')
-      .leftJoinAndSelect('InternalNotification.departments','departments')
-      .leftJoinAndSelect('InternalNotification.branches','branches')
-      .leftJoinAndSelect('InternalNotification.users','users')
+      .leftJoinAndSelect('InternalNotification.departments', 'departments')
+      .leftJoinAndSelect('InternalNotification.branches', 'branches')
+      .leftJoinAndSelect('InternalNotification.users', 'users')
       .where(queryString)
       .orderBy(`InternalNotification.${'createdDate'}`, 'DESC')
       .skip(pageRequest.page * pageRequest.size)
@@ -91,15 +90,15 @@ export class InternalNotificationService {
 
     const founded = await this.internalNotificationRepository.findOne(internalNotification.id, options);
     const where = []
-    if(founded.departments.length > 0){
-      where.push({department: In(founded.departments.map(user => user.id)),})
-      where.push({ mainDepartment: In(founded.departments.map(user => user.id)),})
+    if (founded.departments.length > 0) {
+      where.push({ department: In(founded.departments.map(user => user.id)), })
+      where.push({ mainDepartment: In(founded.departments.map(user => user.id)), })
     }
-    if(founded.branches.length > 0){
-      where.push({branch: In(founded.branches.map(user => user.id)),})
+    if (founded.branches.length > 0) {
+      where.push({ branch: In(founded.branches.map(user => user.id)), })
     }
-    if(founded.users.length > 0){
-      where.push({ id: In(founded.users.map(user => user.id)),})
+    if (founded.users.length > 0) {
+      where.push({ id: In(founded.users.map(user => user.id)), })
     }
     const sendingUser = await this.userService.findAllByfields({
       where
@@ -112,8 +111,9 @@ export class InternalNotificationService {
       saveNotiArr.push({
         content: founded.shortContent,
         fullContent: founded.content,
-        type: 'INTERNAL',
+        type: founded.entityName ? founded.entityName : 'INTERNAL',
         user: element,
+        entityId: founded.entityId,
         assets: founded.assets
       }
       );
@@ -138,7 +138,7 @@ export class InternalNotificationService {
   }
 
   async update(internalNotification: InternalNotification): Promise<InternalNotification | undefined> {
-  
+
     return await this.save(internalNotification);
   }
 

@@ -194,11 +194,11 @@ const StoreHistory = props => {
     let link = '';
     let href = '';
     if (item.entity === 'ORDER') {
-      link = `Khách hàng`;
+      link = `${item.destName || ''}`;
       href = `/customers/${item.destinationId}/edit`;
     } else {
    
-      link = `Kho đích đến`;
+      link = `${item.destName || ''}`;
       href = `/store-inputs/${item.destinationId}/detail`;
     }
     return (
