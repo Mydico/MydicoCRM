@@ -38,10 +38,11 @@ const fields = [
 ];
 
 const getBadge = status => {
+  console.log(status)
   switch (status) {
-    case true:
+    case "ACTIVE":
       return 'success';
-    case false:
+    case "DISABLED":
       return 'danger';
     default:
       return 'primary';
@@ -106,15 +107,19 @@ const Question = props => {
   const toCreateQuestion = () => {
     history.push(`${props.match.url}/new`);
   };
-  const toQuestionStructure = () => {
-    history.push(`${props.match.url}/structure`);
-  };
+
+  useEffect(() => {
+    if (initialState.updatingSuccess) {
+      dispatch(reset());
+      dispatch(getQuestion({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+    }
+  }, [initialState.updatingSuccess]);
 
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
 
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getQuestion({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      dispatch(getQuestion({ page: 0, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
     }
   }, 300);
 
@@ -133,7 +138,7 @@ const Question = props => {
   };
 
   const lockUser = () => {
-    dispatch(updateQuestion({ id: selectedQuestion.current.id, status: !selectedQuestion.current.status }));
+    dispatch(updateQuestion({ id: selectedQuestion.current.id, status: selectedQuestion.current.status === 'ACTIVE' ? "DISABLED" : "ACTIVE" }));
     setShow(false);
   };
 
@@ -178,7 +183,7 @@ const Question = props => {
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             status: item => (
               <td>
-                <CBadge color={getBadge(item.activated)}>{mappingStatus[item.status]}</CBadge>
+                <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
             show_details: item => {
@@ -220,7 +225,7 @@ const Question = props => {
                       setShow(!show);
                     }}
                   >
-                    <CIcon name={item.status !== 'ACTIVE' ? 'cilLockLocked' : 'cilLockUnlocked'} />
+                    <CIcon name={item.status === 'ACTIVE' ? 'cilLockLocked' : 'cilLockUnlocked'} />
                   </CButton>
                 </td>
               );
@@ -262,7 +267,7 @@ const Question = props => {
       </CCardBody>
       <CModal show={show} onClose={() => setShow(!show)} color="primary">
         <CModalHeader closeButton>
-          <CModalTitle>Khóa phòng ban</CModalTitle>
+          <CModalTitle>Khóa câu hỏi</CModalTitle>
         </CModalHeader>
         <CModalBody>{`Bạn có chắc chắn muốn ${selectedQuestion.current.status !== 'ACTIVE' ? 'mở khóa' : 'khóa'} câu hỏi này không?`}</CModalBody>
         <CModalFooter>

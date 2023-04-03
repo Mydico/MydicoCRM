@@ -199,6 +199,7 @@ export const blackList = [
     'syllabus',
     'customers/find',
     'products/find',
+    'user-answers',
     'site',
     'attribute',
     'authorities',

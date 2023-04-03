@@ -6,7 +6,7 @@ import { SyllabusService } from '../service/syllabus.service';
 import { RoleModule } from './role.module';
 
 @Module({
-    imports: [CacheModule.register(),TypeOrmModule.forFeature([SyllabusRepository]), RoleModule],
+    imports: [CacheModule.register(),TypeOrmModule.forFeature([SyllabusRepository])],
     controllers: [SyllabusController],
     providers: [SyllabusService],
     exports: [SyllabusService],

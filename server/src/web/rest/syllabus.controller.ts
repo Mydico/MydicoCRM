@@ -21,7 +21,8 @@ import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../s
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { User } from '../../domain/user.entity';
-import { Equal } from 'typeorm';
+import { Equal, Like } from 'typeorm';
+import { ProductStatus } from '../../domain/enumeration/product-status';
 
 @Controller('api/syllabus')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -30,7 +31,7 @@ import { Equal } from 'typeorm';
 export class SyllabusController {
   logger = new Logger('SyllabusController');
 
-  constructor(private readonly syllabusService: SyllabusService) {}
+  constructor(private readonly syllabusService: SyllabusService) { }
 
   @Get('/')
   @Roles(RoleType.USER)
@@ -39,12 +40,27 @@ export class SyllabusController {
     description: 'List all records',
     type: Syllabus
   })
-  async getAll(@Req() req: Request, @Res() res): Promise<Syllabus[]> {
+  async getAll(@Req() req, @Res() res): Promise<Syllabus[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter = [];
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        if (item === 'status') {
+          filter[item] = req.query[item]
+          return
+        }
+        filter[item] = Like(`%${req.query[item]}%`)
+
+      }
+    });
+
     const [results, count] = await this.syllabusService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
+      where: {
+        ...filter
+      }
 
     });
 

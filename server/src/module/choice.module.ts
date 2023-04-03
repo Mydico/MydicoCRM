@@ -1,13 +1,15 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { QuestionController } from '../web/rest/question.controller';
-import { QuestionRepository } from '../repository/question.repository';
-import { QuestionService } from '../service/question.service';
+import { ChoiceController } from '../web/rest/choice.controller';
+import { ChoiceRepository } from '../repository/choice.repository';
+import { ChoiceService } from '../service/choice.service';
+import { SyllabusModule } from './syllabus.module';
+import { UserAnswerModule } from './user-answer.module';
 
 @Module({
-    imports: [CacheModule.register(),TypeOrmModule.forFeature([QuestionRepository])],
-    controllers: [QuestionController],
-    providers: [QuestionService],
-    exports: [QuestionService],
+    imports: [CacheModule.register(),TypeOrmModule.forFeature([ChoiceRepository])],
+    controllers: [ChoiceController],
+    providers: [ChoiceService],
+    exports: [ChoiceService],
 })
-export class QuestionModule {}
+export class ChoiceModule {}

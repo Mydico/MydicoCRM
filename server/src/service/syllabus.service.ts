@@ -6,6 +6,7 @@ import { SyllabusRepository } from '../repository/syllabus.repository';
 
 
 const relationshipNames = [];
+relationshipNames.push('questions')
 
 @Injectable()
 export class SyllabusService {

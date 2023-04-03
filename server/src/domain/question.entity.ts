@@ -1,8 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, Index } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, Index, ManyToMany } from 'typeorm';
 import Choice from './choice.entity';
 import { BaseEntity } from './base/base.entity';
 import { ProductStatus } from './enumeration/product-status';
 import UserAnswer from './user-answer.entity';
+import Syllabus from './syllabus.entity';
 
 @Entity()
 export default class Question  extends BaseEntity{
@@ -21,4 +22,7 @@ export default class Question  extends BaseEntity{
 
   @OneToMany(() => UserAnswer, (userAnswer) => userAnswer.question, { createForeignKeyConstraints: false })
   userAnswers: UserAnswer[];
+
+  @ManyToMany(() => Syllabus, (syllabus) => syllabus.questions, { createForeignKeyConstraints: false })
+  syllabus: Syllabus[];
 }

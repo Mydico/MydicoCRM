@@ -52,9 +52,9 @@ import { NotificationModule } from './module/notification.module';
 import { FirebaseService } from './service/firebase.services';
 import { InternalNotificationModule } from './module/internal-notification.module';
 import { AssetModule } from './module/assets.module';
-import { ChoiceModule } from './module/question.module';
+import { ChoiceModule } from './module/choice.module';
 import { UserAnswerModule } from './module/user-answer.module';
-import { QuestionModule } from './module/choice.module';
+import { QuestionModule } from './module/question.module';
 import { SyllabusModule } from './module/syllabus.module';
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove

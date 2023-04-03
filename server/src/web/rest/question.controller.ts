@@ -20,6 +20,9 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import { User } from '../../domain/user.entity';
+import UserAnswer from '../../domain/user-answer.entity';
+import { Like } from 'typeorm';
 
 
 @Controller('api/questions')
@@ -29,7 +32,22 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 export class QuestionController {
   logger = new Logger('QuestionController');
 
-  constructor(private readonly questionService: QuestionService) {}
+  constructor(private readonly questionService: QuestionService) { }
+
+  @Get('/syllabusInfo')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'List all records',
+    type: Question
+  })
+  async getSyllabusInfo(@Req() req: Request, @Res() res): Promise<UserAnswer[]> {
+    const currentUser = req.user as User;
+    const id = req.query['syllabus']
+    const results = await this.questionService.getQuestionFromSyllabus(id, currentUser)
+
+    return res.send(results);
+  }
 
   @Get('/')
   @Roles(RoleType.USER)
@@ -40,11 +58,23 @@ export class QuestionController {
   })
   async getAll(@Req() req: Request, @Res() res): Promise<Question[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const filter = [];
+    Object.keys(req.query).forEach(item => {
+      if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
+        if (item === 'status') {
+          filter[item] = req.query[item]
+          return
+        }
+        filter[item] = Like(`%${req.query[item]}%`)
+
+      }
+    });
     const [results, count] = await this.questionService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
       where: {
+        ...filter
       }
     });
 

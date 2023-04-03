@@ -46,7 +46,11 @@ export class StoreController {
     const filter = [];
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        filter[item] = Like(`%${filter[item]}%`)
+        if(item === 'status'){
+          filter[item] = req.query[item]
+          return
+        }
+        filter[item] = Like(`%${req.query[item]}%`)
       }
     });
     const options = {
