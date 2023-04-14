@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CPagination, CRow, CCol } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getQuestion, getTreeQuestion, updateQuestion } from './question.api.js';
+import { deleteQuestion, getQuestion, getTreeQuestion, updateQuestion } from './question.api.js';
 import { globalizedQuestionSelectors, reset } from './question.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { Tree, TreeNode } from 'react-organizational-chart';
@@ -20,7 +20,7 @@ const mappingStatus = {
 };
 const { selectAll } = globalizedQuestionSelectors;
 // Code	Tên nhà cung cấp	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại nhà cung cấp	Phân loại	Sửa	Tạo đơn
-const fields = [
+export const fields = [
   {
     key: 'order',
     label: 'STT',
@@ -28,6 +28,7 @@ const fields = [
     filter: false
   },
   { key: 'text', label: 'Nội dung câu hỏi', _style: { width: '15%' } },
+  { key: 'correct', label: 'Câu trả lời đúng', _style: { width: '15%' } },
   { key: 'status', label: 'Trạng thái', _style: { width: '15%' } },
   {
     key: 'show_details',
@@ -59,6 +60,7 @@ const Question = props => {
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
   const [show, setShow] = useState(false);
+  const [showDelete, setShowDelete] = useState(false)
   const paramRef = useRef({});
   const selectedQuestion = useRef({ id: null, activated: true });
 
@@ -79,15 +81,7 @@ const Question = props => {
   }, [initialState.updatingSuccess]);
 
   const providers = useSelector(selectAll);
-  const computedItems = items => {
-    return items.map(item => {
-      return {
-        ...item,
-        code: item.code || '',
-        createdDate: moment(item.createdDate).format('DD-MM-YYYY')
-      };
-    });
-  };
+  const computedItems = items => items
   const toggleDetails = index => {
     const position = details.indexOf(index);
     let newDetails = details.slice();
@@ -142,6 +136,11 @@ const Question = props => {
     setShow(false);
   };
 
+  const deleteEntity = () => {
+    dispatch(deleteQuestion({ id: selectedQuestion.current.id }));
+    setShowDelete(false);
+  };
+
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(questions), [questions]);
 
@@ -181,6 +180,11 @@ const Question = props => {
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+            correct: item => (
+              <td>
+                {item?.choices?.filter(item => item.isCorrect)[0]?.text}
+              </td>
+            ),
             status: item => (
               <td>
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
@@ -219,6 +223,7 @@ const Question = props => {
                     color="primary"
                     variant="outline"
                     shape="square"
+                    className="mr-3"
                     size="sm"
                     onClick={() => {
                       selectedQuestion.current = { id: item.id, status: item.status };
@@ -226,6 +231,18 @@ const Question = props => {
                     }}
                   >
                     <CIcon name={item.status === 'ACTIVE' ? 'cilLockLocked' : 'cilLockUnlocked'} />
+                  </CButton>
+                  <CButton
+                    color="primary"
+                    variant="outline"
+                    shape="square"
+                    size="sm"
+                    onClick={() => {
+                      selectedQuestion.current = { id: item.id };
+                      setShowDelete(!showDelete);
+                    }}
+                  >
+                    <CIcon name={'cilTrash'} />
                   </CButton>
                 </td>
               );
@@ -275,6 +292,20 @@ const Question = props => {
             Đồng ý
           </CButton>
           <CButton color="secondary" onClick={() => setShow(!show)}>
+            Hủy
+          </CButton>
+        </CModalFooter>
+      </CModal>
+      <CModal show={showDelete} onClose={() => setShowDelete(!showDelete)} color="primary">
+        <CModalHeader closeButton>
+          <CModalTitle>Xoá câu hỏi</CModalTitle>
+        </CModalHeader>
+        <CModalBody>{`Bạn có chắc chắn muốn xoá câu hỏi này không?`}</CModalBody>
+        <CModalFooter>
+          <CButton color="primary" onClick={deleteEntity}>
+            Đồng ý
+          </CButton>
+          <CButton color="secondary" onClick={() => showDelete(!show)}>
             Hủy
           </CButton>
         </CModalFooter>

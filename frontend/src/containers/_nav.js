@@ -51,7 +51,7 @@ export default [
       {
         _tag: 'CSidebarNavItem',
         name: 'Kho',
-        to: '/warehouse-report'
+        to: '/privates/warehouse-private'
       }
     ]
   },

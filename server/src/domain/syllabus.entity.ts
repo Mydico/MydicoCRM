@@ -21,6 +21,14 @@ export default class Syllabus  extends BaseEntity{
   @Index()
   type: SyllabusStatus;
 
+  @Column({ name: 'start_time', nullable: true })
+  @Index()
+  startTime: Date;
+
+  @Column({ name: 'end_time', nullable: true })
+  @Index()
+  endTime: Date;
+
   @Column({ type: 'enum', name: 'status', nullable: true, enum: ProductStatus, default: ProductStatus.ACTIVE })
   @Index()
   status?: ProductStatus;

@@ -125,6 +125,7 @@ const ViewQuestion = loadable(() => import('./views/pages/user/Question/view-que
 const Syllabus = loadable(() => import('./views/pages/user/Syllabus/syllabus'));
 const CreateSyllabus= loadable(() => import('./views/pages/user/Syllabus/create-syllabus'));
 const ViewSyllabus = loadable(() => import('./views/pages/user/Syllabus/view-syllabus'));
+const SyllabusReport = loadable(() => import('./views/pages/user/Syllabus/syllabus-report'));
 
 const Debts = loadable(() => import('./views/pages/finance/debt/debt'));
 
@@ -153,7 +154,7 @@ const routes = [
   {path: '/customer-report', exact: true, name: 'Báo cáo theo sản phẩm', component: CustomerReport},
   {path: '/customer-report/order-customer-histories/:id', exact: true, name: 'Báo cáo theo sản phẩm', component: OrderCustomerHistory},
   {path: '/promotion-report', exact: true, name: 'Báo cáo theo chương trình', component: PromotionReport},
-  {path: '/warehouse-report', exact: true, name: 'Báo cáo theo chương trình', component: WarehouseReport},
+  {path: '/privates/warehouse-private', exact: true, name: 'Báo cáo theo chương trình', component: WarehouseReport},
   {path: '/change-password', exact: true, name: 'Đổi mật khẩu', component: ChangePassword},
   {path: '/edit-profile', exact: true, name: 'Đổi thông tin cá nhân', component: EditUserProfile},
   {path: '/dashboard', name: 'Thống kê', component: Dashboard},
@@ -255,6 +256,7 @@ const routes = [
   {path: '/syllabus/:id/detail', name: 'nhóm quyền', component: ViewSyllabus, exact: true},
   {path: '/syllabus/:id/edit', name: 'Chỉnh sửa', component: CreateSyllabus},
   {path: '/syllabus/new', name: 'Tạo mới', component: CreateSyllabus},
+  {path: '/syllabus/report', name: 'Tạo mới', component: SyllabusReport},
   {path: '/bills/', name: 'Vận đơn', component: Bill, exact: true},
 ];
 

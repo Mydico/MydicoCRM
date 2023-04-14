@@ -20,8 +20,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { User } from '../../domain/user.entity';
-import { Equal } from 'typeorm';
+
 
 @Controller('api/user-answers')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -30,7 +29,8 @@ import { Equal } from 'typeorm';
 export class UserAnswerController {
   logger = new Logger('UserAnswerController');
 
-  constructor(private readonly userAnswerService: UserAnswerService) {}
+  constructor(private readonly userAnswerService: UserAnswerService,
+  ) { }
 
   @Get('/')
   @Roles(RoleType.USER)

@@ -48,3 +48,23 @@ export const updateSyllabus = createAsyncThunk('api/update/syllabus', async (bod
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
+export const getSyllabusDailyReport = createAsyncThunk(
+  'api/user-answers/daily-report',
+  async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
+    try {
+      const result = await axios.get('api/reports/syllabus/daily-report', { params: params });
+      return { data: result.data, total: result.headers['x-total-count'] };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+export const deleteSyllabus = createAsyncThunk('api/delete/syllabus', async (params, thunkAPI) => {
+  try {
+    const result = await axios.delete('api/syllabus/' + params.id);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});

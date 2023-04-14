@@ -15,6 +15,8 @@ import Select from 'react-select';
 import _ from 'lodash';
 import { globalizedQuestionSelectors } from '../Question/question.reducer';
 import { getQuestion } from '../Question/question.api';
+import { CBadge, CCol, CCollapse, CModal, CModalBody, CModalHeader, CModalTitle, CPagination, CRow } from '@coreui/react';
+import AdvancedTable from '../../../components/table/AdvancedTable';
 
 
 const validationSchema = function () {
@@ -31,7 +33,17 @@ export const mappingStatus = {
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
   DELETED: 'ĐÃ XÓA'
 };
+const fields = [
 
+  { key: 'text', label: 'Nội dung câu hỏi', _style: { width: '15%' } },
+  { key: 'correct', label: 'Câu trả lời đúng', _style: { width: '15%' } },
+  {
+    key: 'show_details',
+    label: '',
+    _style: { width: '1%' },
+    filter: false
+  }
+];
 const typeList = [{ value: "DAILY", label: "Hàng ngày" }, { value: "EVENT", label: "Sự kiện" }]
 
 const statusList = [{ value: "ACTIVE", label: "Hoạt động" }, { value: "DISABLED", label: "Không hoạt động" }]
@@ -41,8 +53,9 @@ const { selectAll } = globalizedQuestionSelectors;
 
 const CreateSyllabus = (props) => {
   const { initialState } = useSelector(state => state.syllabus);
+  const { initialState: questionState } = useSelector(state => state.question);
   const syllabus = useSelector(state => selectById(state, props.match.params.id));
-
+  const [visible, setVisible] = useState(false)
   const dispatch = useDispatch();
   const history = useHistory();
   const questions = useSelector(selectAll);
@@ -50,11 +63,14 @@ const CreateSyllabus = (props) => {
   const [initValues, setInitValues] = useState({
     id: null,
   })
-
+  const [details, setDetails] = useState([]);
+  const [activePage, setActivePage] = useState(1);
+  const [size, setSize] = useState(50);
   useEffect(() => {
-    dispatch(getQuestion({ page: 0, size: 50, sort: 'createdDate,DESC', status: 'ACTIVE' }));
+    dispatch(getQuestion({ page: activePage - 1, size: size, sort: 'createdDate,DESC', status: 'ACTIVE' }));
+    window.scrollTo(0, 100);
+  }, [activePage, size]);
 
-  }, [])
 
 
   useEffect(() => {
@@ -120,9 +136,15 @@ const CreateSyllabus = (props) => {
     setSelectedQuestions(arr);
   };
 
-  const onSelectedQuestion = ({ value, index }) => {
-    setSelectedQuestions([...selectedQuestions, value])
+  const onSelectedQuestion = (value) => {
+    if (selectedQuestions.filter(item => item.id === value.id).length === 0) {
+      setSelectedQuestions([...selectedQuestions, value])
+    }
+
   }
+  const computedItems = items => items
+  const memoComputedItems = React.useCallback(items => computedItems(items), []);
+  const memoListed = React.useMemo(() => memoComputedItems(questions), [questions]);
 
   return (
     <CCard>
@@ -172,6 +194,17 @@ const CreateSyllabus = (props) => {
                 <CInvalidFeedback>{errors.amount}</CInvalidFeedback>
               </CFormGroup>}
               <CFormGroup>
+                <CLabel htmlFor="password">Thời gian bắt đầu</CLabel>
+                <CInput type="date" id="startTime" name="startTime" onChange={handleChange} placeholder="Thời gian bắt đầu" />
+                <CInvalidFeedback className="d-block">{errors.startTime}</CInvalidFeedback>
+              </CFormGroup>
+
+              <CFormGroup>
+                <CLabel htmlFor="password">Thời gian kết thúc</CLabel>
+                <CInput type="date" id="endTime" name="endTime" onChange={handleChange} placeholder="Thời gian kết thúc" />
+                <CInvalidFeedback className="d-block">{errors.endTime}</CInvalidFeedback>
+              </CFormGroup>
+              <CFormGroup>
                 <CLabel htmlFor="lastName">Loại chương trình</CLabel>
                 <Select
                   name="type"
@@ -210,25 +243,7 @@ const CreateSyllabus = (props) => {
                 />
                 {!values.status && <FormFeedback className="d-block">{errors.status}</FormFeedback>}
               </CFormGroup>
-              {values.type?.value?.value === 'EVENT' && <CFormGroup>
-                <CLabel htmlFor="lastName">Câu hỏi</CLabel><Select
-                  onInputChange={onSearchQuestion}
-                  onChange={event => {
-                    event ? onSelectedQuestion(event) : onSelectedQuestion(null);
-                  }}
-                  isClearable={true}
-                  openMenuOnClick={false}
-                  placeholder="Chọn câu hỏi"
-                  // value={{
-                  //   value: selectedProduct,
-                  //   label: selectedProduct?.name
-                  // }}
-                  options={questions.map((item, index) => ({
-                    value: item,
-                    label: item.text
-                  }))}
-                />
-              </CFormGroup>}
+              {values.type?.value?.value === 'EVENT' && <CButton size="lg" color="primary" onClick={() => setVisible(true)}>Chọn câu hỏi</CButton>}
               {selectedQuestions.length > 0 ? (
                 <Table style={{ marginTop: 15 }}>
                   <thead>
@@ -280,7 +295,98 @@ const CreateSyllabus = (props) => {
             </CForm>
           )}
         </Formik>
+
       </CCardBody>
+      <CModal size="lg" show={visible} onClose={() => setVisible(false)}>
+
+        <CModalBody>
+          <CCardBody>
+
+            <AdvancedTable
+              items={memoListed}
+              fields={fields}
+              columnFilter
+              itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
+              itemsPerPage={size}
+              hover
+              sorter
+              noItemsView={{
+                noResults: 'Không tìm thấy kết quả',
+                noItems: 'Không có dữ liệu'
+              }}
+              loading={initialState.loading}
+              onPaginationChange={val => setSize(val)}
+              // onColumnFilterChange={onFilterColumn}
+              scopedSlots={{
+                order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+                correct: item => (
+                  <td>
+                    {item?.choices?.filter(item => item.isCorrect)[0]?.text}
+                  </td>
+                ),
+
+                show_details: item => {
+                  return (
+                    <td className="d-flex py-2">
+
+
+                      <CButton
+                        color="primary"
+                        variant="outline"
+                        shape="square"
+                        size="sm"
+                        onClick={() => {
+                          if (selectedQuestions.filter(question => item.id === question.id).length > 0) {
+                            const index = selectedQuestions.findIndex(question => item.id === question.id)
+                            removeGPermission(index)
+                          } else {
+                            onSelectedQuestion(item)
+                          }
+
+                        }}
+                      >
+                        <CIcon name={selectedQuestions.filter(question => item.id === question.id).length > 0 ? 'cilMinus' : 'cilPlus'} />
+                      </CButton>
+                    </td>
+                  );
+                },
+                details: item => {
+                  const alphabet = [...'abcdefghijklmnopqrstuvwxyz'.toUpperCase()];
+                  return (
+                    <CCollapse show={details.includes(item.id)}>
+                      <CCardBody>
+                        <h5>Thông tin câu hỏi</h5>
+                        <CRow>
+                          <CCol lg="6">
+                            <dl className="row">
+                              <dt className="col-sm-3">Câu hỏi:</dt>
+                              <dd className="col-sm-9">{item.text}</dd>
+                            </dl>
+                            {[...item.choices].sort((a, b) => a.id - b.id).map((choice, index) =>
+                              <dl className="row" >
+                                <dt className="col-sm-3">Câu trả lời:</dt>
+                                <dd className="col-sm-9" style={{ background: choice.isCorrect ? "#5e2572" : "", color: choice.isCorrect ? "#fff" : "", fontWeight: choice.isCorrect ? "bold" : "" }}>{alphabet[index]}. {choice.text}</dd>
+                              </dl>
+                            )
+                            }
+
+
+                          </CCol>
+                        </CRow>
+                      </CCardBody>
+                    </CCollapse>
+                  );
+                }
+              }}
+            />
+            <CPagination
+              activePage={activePage}
+              pages={Math.floor(questionState.totalItem / size) + 1}
+              onActivePageChange={i => setActivePage(i)}
+            />
+          </CCardBody>
+        </CModalBody>
+      </CModal>
     </CCard>
   );
 };

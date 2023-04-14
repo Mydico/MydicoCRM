@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { CButton, CCard, CCardBody, CCardHeader, CCollapse, CPagination, CRow, CCol } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getSyllabus, getTreeSyllabus, updateSyllabus } from './syllabus.api.js';
+import { deleteSyllabus, getSyllabus, getTreeSyllabus, updateSyllabus } from './syllabus.api.js';
 import { globalizedSyllabusSelectors, reset } from './syllabus.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { Tree, TreeNode } from 'react-organizational-chart';
@@ -65,6 +65,7 @@ const Syllabus = props => {
   const [show, setShow] = useState(false);
   const paramRef = useRef({});
   const selectedSyllabus = useRef({ id: null, activated: true });
+  const [showDelete, setShowDelete] = useState(false)
 
   useEffect(() => {
     dispatch(reset());
@@ -131,6 +132,12 @@ const Syllabus = props => {
     setShow(false);
   };
 
+  const deleteEntity = () => {
+    dispatch(deleteSyllabus({ id: selectedSyllabus.current.id }));
+    setShowDelete(false);
+  };
+
+
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(syllabus), [syllabus]);
 
@@ -143,7 +150,16 @@ const Syllabus = props => {
             <CIcon name="cil-plus" /> Thêm mới chương trình học
           </CButton>
         )}
-
+        <CButton color="info" variant="outline" className="ml-3" onClick={() => {
+          history.push(`${props.match.url}/report`);
+        }}>
+          <CIcon name="cil-plus" /> Xem kết quả rèn luyện
+        </CButton>
+        {/* <CButton color="primary" variant="outline" className="ml-3" onClick={() => {
+          history.push(`${props.match.url}/report`);
+        }}>
+          <CIcon name="cil-plus" /> Xem kết quả theo sự kiện
+        </CButton> */}
       </CCardHeader>
       <CCardBody>
 
@@ -202,6 +218,7 @@ const Syllabus = props => {
                     color="primary"
                     variant="outline"
                     shape="square"
+                    className="mr-3"
                     size="sm"
                     onClick={() => {
                       selectedSyllabus.current = { id: item.id, status: item.status };
@@ -209,6 +226,18 @@ const Syllabus = props => {
                     }}
                   >
                     <CIcon name={item.status === 'ACTIVE' ? 'cilLockLocked' : 'cilLockUnlocked'} />
+                  </CButton>
+                  <CButton
+                    color="primary"
+                    variant="outline"
+                    shape="square"
+                    size="sm"
+                    onClick={() => {
+                      selectedSyllabus.current = { id: item.id };
+                      setShowDelete(!showDelete);
+                    }}
+                  >
+                    <CIcon name={'cilTrash'} />
                   </CButton>
                 </td>
               );
@@ -258,6 +287,20 @@ const Syllabus = props => {
             Đồng ý
           </CButton>
           <CButton color="secondary" onClick={() => setShow(!show)}>
+            Hủy
+          </CButton>
+        </CModalFooter>
+      </CModal>
+      <CModal show={showDelete} onClose={() => setShowDelete(!showDelete)} color="primary">
+        <CModalHeader closeButton>
+          <CModalTitle>Xoá câu hỏi</CModalTitle>
+        </CModalHeader>
+        <CModalBody>{`Bạn có chắc chắn muốn xoá chương trình học này không?`}</CModalBody>
+        <CModalFooter>
+          <CButton color="primary" onClick={deleteEntity}>
+            Đồng ý
+          </CButton>
+          <CButton color="secondary" onClick={() => showDelete(!show)}>
             Hủy
           </CButton>
         </CModalFooter>

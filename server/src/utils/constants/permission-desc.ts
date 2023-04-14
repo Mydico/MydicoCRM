@@ -55,7 +55,7 @@ export const resourceDesc = {
     'system-logs': 'logs hệ thống',
 
     'id-papers': 'giấy tờ cá nhân',
-
+    'syllabus':"chương trình học",
     'facility-types': 'loại cơ sở',
 
     'id-paper-types': 'loại giấy tờ cá nhân',
@@ -92,6 +92,8 @@ export const resourceDesc = {
     'api-docs-json': 'api docs',
     'api-docs': 'api docs',
     'v2': 'v2',
+    'warehouse-private':"Báo cáo kho",
+    'privates':"Báo cáo nội bộ",
     'permission-group': 'nhóm quyền',
     'permission-types': 'loại quyền',
     'customer-types': 'loại khách hàng',
@@ -195,8 +197,6 @@ export const blackList = [
     '/total-debit',
     'token',
     'choices',
-    'questions',
-    'syllabus',
     'customers/find',
     'products/find',
     'user-answers',

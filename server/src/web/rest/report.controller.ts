@@ -26,7 +26,10 @@ import { OrderService } from '../../service/order.service';
 import { User } from '../../domain/user.entity';
 import { In } from 'typeorm';
 import { DepartmentService } from '../../service/department.service';
-import { PageRequest } from '../../domain/base/pagination.entity';
+import { Page, PageRequest } from '../../domain/base/pagination.entity';
+import UserAnswer from '../../domain/user-answer.entity';
+import { UserAnswerService } from '../../service/user-answer.service';
+import { HeaderUtil } from '../../client/header-util';
 
 @Controller('api/reports')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -35,7 +38,7 @@ import { PageRequest } from '../../domain/base/pagination.entity';
 export class ReportController {
   logger = new Logger('ReportController');
 
-  constructor(private readonly departmentService: DepartmentService, private readonly reportService: ReportService) {}
+  constructor(private readonly departmentService: DepartmentService, private readonly reportService: ReportService, private readonly userAnswerService: UserAnswerService) {}
 
   @Get('/sale-report')
   @ApiResponse({
@@ -411,12 +414,38 @@ export class ReportController {
     return res.send(await this.reportService.getCustomerCount(filter));
   }
 
-  @Get('/warehouse-report')
+  // @Get('/warehouse-report')
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'List all records'
+  // })
+  // async warehouseReport(@Req() req: Request, @Res() res): Promise<any> {
+  //   const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+  //   const options = {
+  //     skip: +pageRequest.page * pageRequest.size,
+  //     take: +pageRequest.size,
+  //     order: pageRequest.sort.asOrder()
+  //   };
+  //   delete req.query['page'];
+  //   delete req.query['size'];
+  //   delete req.query['sort'];
+  //   const filter = await this.buildFilterForReport(req);
+  //   // console.log(filter)
+  //   // // if(req.query['department']){
+  //   // //   filter.department = JSON.parse(req.query['department'])
+
+  //   // // }
+  //   return res.send(await this.reportService.getWarehouseReport(options, filter));
+  // }
+
+  @Get('/syllabus/daily-report')
+  @Roles(RoleType.USER)
   @ApiResponse({
     status: 200,
-    description: 'List all records'
+    description: 'List all records',
+    type: UserAnswer
   })
-  async warehouseReport(@Req() req: Request, @Res() res): Promise<any> {
+  async getDailyReport(@Req() req: Request, @Res() res): Promise<any> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
     const options = {
       skip: +pageRequest.page * pageRequest.size,
@@ -427,15 +456,11 @@ export class ReportController {
     delete req.query['size'];
     delete req.query['sort'];
     const filter = await this.buildFilterForReport(req);
-    // console.log(filter)
-    // // if(req.query['department']){
-    // //   filter.department = JSON.parse(req.query['department'])
+    const [results, count] = await this.userAnswerService.dailyReport(options, filter);
 
-    // // }
-    return res.send(await this.reportService.getWarehouseReport(options, filter));
+    HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+    return res.send(results);
   }
-
-
 
   async buildFilter(req): Promise<any> {
     const filter = {};

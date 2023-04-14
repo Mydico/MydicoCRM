@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import Syllabus from '../domain/syllabus.entity';
 import { SyllabusRepository } from '../repository/syllabus.repository';
+import { ProductStatus } from '../domain/enumeration/product-status';
 
 
 const relationshipNames = [];
@@ -31,6 +32,14 @@ export class SyllabusService {
     }
 
     async save(syllabus: Syllabus): Promise<Syllabus | undefined> {
+        const syllabusActive = await this.syllabusRepository.find({
+            where: {
+                status: ProductStatus.ACTIVE
+            }
+        });
+        if(syllabusActive.length > 0){
+            syllabus.status = ProductStatus.DISABLED
+        }
         return await this.syllabusRepository.save(syllabus);
     }
 

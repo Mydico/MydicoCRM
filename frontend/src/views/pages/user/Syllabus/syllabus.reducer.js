@@ -1,10 +1,11 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { creatingSyllabus, getSyllabus, getDetailSyllabus, updateSyllabus } from './syllabus.api';
+import { creatingSyllabus, getSyllabus, getDetailSyllabus, updateSyllabus, getSyllabusDailyReport, deleteSyllabus } from './syllabus.api';
 
 const initialState = {
   loading: false,
   updatingSuccess: false,
   totalItem: 0,
+  report: []
 };
 
 export const syllabusAdapter = createEntityAdapter({
@@ -59,7 +60,22 @@ const slice = createSlice({
     [getSyllabus.rejected]: state => {
       state.loading = false;
     },
-
+    [getSyllabusDailyReport.fulfilled]: (state, action) => {
+      state.initialState.report = action.payload.data;
+      state.initialState.totalItem = action.payload.total;
+      state.initialState.loading = false;
+    },
+    [getSyllabusDailyReport.rejected]: state => {
+      state.loading = false;
+    },
+    [deleteSyllabus.fulfilled]: state => {
+      state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [deleteSyllabus.rejected]: state => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
   }
 });
 

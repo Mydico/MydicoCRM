@@ -16,7 +16,8 @@ const arrToShowBackButton = [
   'new',
   'edit',
   'detail',
-  'print'
+  'print',
+  'report'
 ]
 const TheContent = () => {
   const history = useHistory();

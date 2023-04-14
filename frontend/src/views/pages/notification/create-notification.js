@@ -25,7 +25,8 @@ import RichTextEditor from 'react-rte';
 import { getDepartment } from '../user/UserDepartment/department.api';
 import S3FileUpload from 'react-s3';
 import Select from 'react-select';
-
+import EditorToolbar, { modules, formats } from "./Toolbar";
+import "./styles.css";
 const validationSchema = function () {
   return Yup.object().shape({
     title: Yup.string()
@@ -45,7 +46,8 @@ import { CListGroup, CListGroupItem, CSpinner } from '@coreui/react';
 import { config } from '../product/ProductList/EditProduct';
 import { globalizedPromotionSelectors } from '../sales/Promotion/promotion.reducer';
 import { getDetailPromotion, getPromotion } from '../sales/Promotion/promotion.api';
-
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 export const mappingStatus = {
   ACTIVE: 'ĐANG HOẠT ĐỘNG',
   DISABLED: 'KHÔNG HOẠT ĐỘNG',
@@ -258,14 +260,25 @@ const CreateNotifications = (props) => {
               </CFormGroup>
               <CFormGroup >
                 <CLabel htmlFor="content">Nội dung đầy đủ</CLabel>
-                <RichTextEditor
+                {/* <RichTextEditor
                   name="content"
                   value={values.content}
                   onChange={value => {
                     setFieldValue('content', value || null);
                   }}
+                  
+                /> */}
+                <EditorToolbar />
+                <ReactQuill
+                  theme="snow"
+                  theme="snow" value={values.content} onChange={value => {
+                    setFieldValue('content', value || null);
+                  }}
+                  placeholder={"Write something awesome..."}
+                  modules={modules}
+                  formats={formats}
                 />
-                <CInvalidFeedback>{errors.lastName}</CInvalidFeedback>
+
               </CFormGroup>
 
 

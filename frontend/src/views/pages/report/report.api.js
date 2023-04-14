@@ -189,7 +189,7 @@ export const getPromotionIncome = createAsyncThunk('api/reports/promotion-income
 
 export const getWarehouseReport = createAsyncThunk('api/reports/warehouse-report', async (params, thunkAPI) => {
   try {
-    const result = await axios.get('api/reports/warehouse-report', { params: params });
+    const result = await axios.get('api/privates/warehouse-private', { params: params });
     return result.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

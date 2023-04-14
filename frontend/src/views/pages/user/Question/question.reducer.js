@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { creatingQuestion, getQuestion, getDetailQuestion, updateQuestion } from './question.api';
+import { creatingQuestion, getQuestion, getDetailQuestion, updateQuestion, deleteQuestion } from './question.api';
 
 const initialState = {
   loading: false,
@@ -44,6 +44,14 @@ const slice = createSlice({
       state.initialState.loading = false;
     },
     [updateQuestion.rejected]: state => {
+      state.initialState.updatingSuccess = false;
+      state.initialState.loading = false;
+    },
+    [deleteQuestion.fulfilled]: state => {
+      state.initialState.updatingSuccess = true;
+      state.initialState.loading = false;
+    },
+    [deleteQuestion.rejected]: state => {
       state.initialState.updatingSuccess = false;
       state.initialState.loading = false;
     },

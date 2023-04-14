@@ -65,14 +65,19 @@ const CreateQuestion = (props) => {
   }, [question])
 
   const onSubmit = (values, { resetForm }) => {
+    if(choices.length > 0){
+      dispatch(fetching());
+      dispatch(creatingChoices(choices)).then(resp => {
+        values = JSON.parse(JSON.stringify(values))
+        values.choices = resp.payload.data;
+        dispatch(creatingQuestion(values));
+  
+      })
+    }else {
+      alert("Phải có câu trả lời.")
+    }
 
-    dispatch(fetching());
-    dispatch(creatingChoices(choices)).then(resp => {
-      values = JSON.parse(JSON.stringify(values))
-      values.choices = resp.payload.data;
-      dispatch(creatingQuestion(values));
 
-    })
   };
 
   useEffect(() => {
@@ -96,7 +101,6 @@ const CreateQuestion = (props) => {
 
   const onChangePrice = (event, index, type) => {
     const copyArr = JSON.parse(JSON.stringify(choices));
-    console.log(event.target.checked)
     if (type === 'isCorrect') {
       copyArr[index][type] = event.target.checked
     } else {
@@ -109,7 +113,7 @@ const CreateQuestion = (props) => {
   return (
     <CCard>
       <CCardHeader>
-        <CCardTitle>Thêm mới câu hỏi</CCardTitle>
+        <CCardTitle>Thêm mới/Chỉnh sửa câu hỏi</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>

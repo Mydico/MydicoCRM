@@ -1,0 +1,25 @@
+.text-editor {
+    width: 1086px;
+    margin: 0 auto;
+  }
+  .ql-editor {
+    min-height: 100px;
+  }
+  .ql-picker.ql-font .ql-picker-label[data-value="times"]::before, 
+.ql-picker.ql-font .ql-picker-item[data-value="times"]::before
+{
+    font-family: "Times New Roman", Times, serif;
+    content: "Times New Roman";
+}
+
+/* Set content font-families */
+.ql-font-times {
+  font-family: "Times New Roman", Times, serif;
+}
+.ql-container.ql-font-Raleway {
+  font-family: "Raleway"
+}
+/* Set content font-families */
+.ql-font-Arial {
+  font-family: "Arial";
+}

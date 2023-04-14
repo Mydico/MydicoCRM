@@ -15,6 +15,8 @@ import { TransactionRepository } from '../repository/transaction.repository';
 import { BillRepository } from '../repository/bill.repository';
 import { StoreHistoryRepository } from '../repository/store-history.repository';
 import * as redisStore from 'cache-manager-redis-store';
+import { UserAnswerModule } from './user-answer.module';
+import { PrivateController } from '../web/rest/report-permission.controller';
 
 @Module({
   imports: [
@@ -37,9 +39,10 @@ import * as redisStore from 'cache-manager-redis-store';
       StoreHistoryRepository
     ]),
     DepartmentModule,
-    OrderModule
+    OrderModule,
+    UserAnswerModule
   ],
-  controllers: [ReportController],
+  controllers: [ReportController, PrivateController],
   providers: [ReportService],
   exports: [ReportService]
 })

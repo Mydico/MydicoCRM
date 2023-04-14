@@ -17,6 +17,9 @@ export default class UserAnswer extends BaseEntity{
   @ManyToOne(() => Choice, (choice) => choice.userAnswers, { createForeignKeyConstraints: false })
   choice: Choice;
 
+  @ManyToOne(() => Choice, (choice) => choice.userAnswers, { createForeignKeyConstraints: false })
+  correct: Choice;
+
   @ManyToOne(() => Syllabus, (choice) => choice.userAnswers, { createForeignKeyConstraints: false })
   syllabus: Syllabus;
 }

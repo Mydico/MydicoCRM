@@ -26,7 +26,7 @@ export class QuestionService {
 
     async getQuestionFromSyllabus(id: string, user: User): Promise<UserAnswer[] | undefined> {
         const syllabus = await this.syllabusRepository.findOne(id, {
-            relations: ['questions']
+            relations: ['questions','questions.choices']
         })
         if (syllabus) {
             if (syllabus.status === ProductStatus.ACTIVE) {
@@ -50,6 +50,7 @@ export class QuestionService {
                     if (exist.length === 0) {
                         const randomQuestions = await this.questionRepository
                             .createQueryBuilder('question')
+                            .leftJoinAndSelect('question.choices','choices')
                             .select()
                             .orderBy('RAND()')
                             .take(syllabus.amount)
@@ -61,7 +62,8 @@ export class QuestionService {
                                 question: element,
                                 user: user,
                                 syllabus: syllabus,
-                                choice: null
+                                choice: null,
+                                correct: element.choices?.filter(item => item.isCorrect)[0] || null
                             })
                         }
                         const answers = await this.userAnswerRepository.save(userAnswers)
@@ -86,7 +88,8 @@ export class QuestionService {
                                 question: element,
                                 user: user,
                                 syllabus: syllabus,
-                                choice: null
+                                choice: null,
+                                correct: element.choices.filter(item => item.isCorrect)[0] || null
                             })
                         }
                         const answers = await this.userAnswerRepository.save(userAnswers)

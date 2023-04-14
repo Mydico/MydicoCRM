@@ -48,3 +48,12 @@ export const updateQuestion = createAsyncThunk('api/update/questions', async (bo
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+
+export const deleteQuestion = createAsyncThunk('api/delete/questions', async (params, thunkAPI) => {
+  try {
+    const result = await axios.delete('api/questions/' + params.id);
+    return { data: result.data, headers: result.headers, statusCode: result.status };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
