@@ -36,8 +36,8 @@ const fields = [
   { key: 'name', label: 'Tên nhân viên', _style: { width: '15%' } },
   { key: 'type', label: 'Loại chương trình học', _style: { width: '15%' } },
   { key: 'count', label: 'Điểm', _style: { width: '15%' } },
-  { key: 'syllabus_name', label: 'Tên chương trình học', _style: { width: '15%' } },
-
+  { key: 'syllabus_name', label: 'Chương trình học', _style: { width: '15%' } },
+  { key: 'ranking', label: 'Xếp hạng', _style: { width: '15%' } },
 ];
 
 const getBadge = status => {
@@ -176,6 +176,7 @@ const SyllabusReport = props => {
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
+            ranking: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
             type: (item, index) => <td>{item.syllabus_type === 'DAILY' ? "Hàng ngày" : "Sự kiện"}</td>,
             name: item => (
               <td>

@@ -290,7 +290,7 @@ const WarehouseReport = () => {
         setLoading(true);
         dispatch(getWarehouseReport({ ...filter })).then(data => {
           if (data && data.payload) {
-            const sortedArr = data.payload[0].sort((a, b) =>
+            const sortedArr = data.payload[0]?.sort((a, b) =>
               a.product_name < b.product_name ? -1 : a.product_name > b.product_name ? 1 : 0
             );
             data.payload[0] = sortedArr;
@@ -434,7 +434,6 @@ const WarehouseReport = () => {
                   name="department"
                   isMulti
                   onChange={e => {
-                    console.log(e)
                     setDepartment(e || []);
                   }}
                   // value={

@@ -160,7 +160,7 @@ export class RedisQueryResultCache implements QueryResultCache {
    * Removes all cached results by given identifiers from cache.
    */
     async remove(identifiers: string[], queryRunner?: QueryRunner): Promise<void> {
-        if (identifiers) {
+        if (identifiers && this.client) {
             identifiers.map(identifier => {
                 const stream = this.client.scanStream({ match: `*${identifier}*`, count: 100 });
                 let pipeline = this.client.pipeline();

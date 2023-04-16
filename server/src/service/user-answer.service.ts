@@ -42,6 +42,7 @@ export class UserAnswerService {
             .leftJoinAndSelect('UserAnswer.syllabus', 'syllabus')
             .where("UserAnswer.choiceId = UserAnswer.correct")
             .groupBy('UserAnswer.userId, UserAnswer.syllabusId')
+            .orderBy('COUNT(UserAnswer.id)', 'DESC')
             .skip(options.skip)
             .take(options.take);
         const countBuilder = this.userAnswerRepository
