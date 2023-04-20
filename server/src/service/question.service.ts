@@ -9,7 +9,7 @@ import { ProductStatus } from '../domain/enumeration/product-status';
 import UserAnswer from '../domain/user-answer.entity';
 import { UserAnswerRepository } from '../repository/user-answer.repository';
 import { SyllabusStatus } from '../domain/enumeration/syllabus-status';
-
+import moment from 'moment'
 
 const relationshipNames = [];
 relationshipNames.push('choices');
@@ -25,28 +25,28 @@ export class QuestionService {
     ) { }
 
     async getQuestionFromSyllabus(id: string, user: User): Promise<UserAnswer[] | undefined> {
-        const syllabus = await this.syllabusRepository.findOne(id, {
+        const syllabus = await this.syllabusRepository.findOne(undefined, {
             relations: ['questions','questions.choices']
         })
+        
         if (syllabus) {
             if (syllabus.status === ProductStatus.ACTIVE) {
                 if (syllabus.type === SyllabusStatus.DAILY) {
-                    const startOfDay = new Date();
-                    startOfDay.setUTCHours(0, 0, 0, 0);
-
-                    const endOfDay = new Date();
-                    endOfDay.setUTCHours(23, 59, 59, 999);
+                    const momentDate = moment.utc(new Date())
+                    const startOfDay = momentDate.clone().startOf("day").toDate()
+                    const endOfDay = momentDate.clone().endOf("day").toDate()
                     const exist = await this.userAnswerRepository.find({
                         where: {
                             createdDate: Between(
-                                startOfDay,
-                                endOfDay
+                                startOfDay.toISOString(),
+                                endOfDay.toISOString()
                             ),
                             syllabus: id,
                             user: user
                         },
                         relations: ['user', 'choice', 'question', 'question.choices']
                     })
+   
                     if (exist.length === 0) {
                         const randomQuestions = await this.questionRepository
                             .createQueryBuilder('question')

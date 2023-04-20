@@ -44,9 +44,13 @@ export class QuestionController {
   async getSyllabusInfo(@Req() req: Request, @Res() res): Promise<UserAnswer[]> {
     const currentUser = req.user as User;
     const id = req.query['syllabus']
-    const results = await this.questionService.getQuestionFromSyllabus(id, currentUser)
+    if (id) {
+      const results = await this.questionService.getQuestionFromSyllabus(id, currentUser)
 
-    return res.send(results);
+      return res.send(results);
+    }
+    return []
+
   }
 
   @Get('/')
