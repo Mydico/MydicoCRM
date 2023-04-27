@@ -21,6 +21,7 @@ import { AuthGuard, Roles, RolesGuard, RoleType, PermissionGuard } from '../../s
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { User } from '../../domain/user.entity';
+import { NotificationService } from '../../service/notification.service';
 
 @Controller('api/internal-notifications')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
@@ -29,7 +30,30 @@ import { User } from '../../domain/user.entity';
 export class InternalNotificationController {
     logger = new Logger('InternalNotificationController');
 
-    constructor(private readonly internalNotificationService: InternalNotificationService) {}
+    constructor(private readonly internalNotificationService: InternalNotificationService, private readonly notificationService: NotificationService) {}
+
+    @Get('/notifications')
+    @Roles(RoleType.USER)
+    @ApiResponse({
+        status: 200,
+        description: 'List all records',
+        type: InternalNotification,
+    })
+    async getNotifcation(@Req() req: Request, @Res() res): Promise<InternalNotification[]> {
+        const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+        const currentUser = req.user as User;
+        const [results, count] = await this.notificationService.findAndCount({
+            where: {
+                type: 'INTERNAL',
+                user: currentUser
+            },
+            skip: pageRequest.size * pageRequest.page,
+            take: pageRequest.size,
+            order: pageRequest.sort.asOrder()
+        });
+        HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
+        return res.send(results);
+    }
 
     @Get('/')
     @Roles(RoleType.USER)
@@ -45,6 +69,7 @@ export class InternalNotificationController {
         HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
         return res.send(results);
     }
+    
 
     @Get('/:id')
     @Roles(RoleType.USER)

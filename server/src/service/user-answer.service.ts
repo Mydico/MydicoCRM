@@ -4,6 +4,8 @@ import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import UserAnswer from '../domain/user-answer.entity';
 import { UserAnswerRepository } from '../repository/user-answer.repository';
 import { queryBuilderFunc } from '../utils/helper/permission-normalization';
+import { User } from '../domain/user.entity';
+import { SyllabusRepository } from '../repository/syllabus.repository';
 
 
 const relationshipNames = [];
@@ -16,6 +18,7 @@ export class UserAnswerService {
 
     constructor(
         @InjectRepository(UserAnswerRepository) private userAnswerRepository: UserAnswerRepository,
+        @InjectRepository(SyllabusRepository) private syllabusRepository: SyllabusRepository,
     ) { }
 
     async findById(id: string): Promise<UserAnswer | undefined> {
@@ -27,16 +30,33 @@ export class UserAnswerService {
         return await this.userAnswerRepository.findOne(options);
     }
 
+    async calculatePoint(user: User, syllabusId: number): Promise<any> {
+        if(syllabusId){
+            const syllabus = this.syllabusRepository.findOne(syllabusId)
+            if(syllabus){
+                const queryBuilder = this.userAnswerRepository
+                .createQueryBuilder('UserAnswer')
+                .where("UserAnswer.choiceId = UserAnswer.correct")
+                .andWhere("UserAnswer.userId = :userId",{userId:user.id })
+                .andWhere("UserAnswer.syllabusId = :syllabusId",{syllabusId:syllabusId })
+                const count = await queryBuilder.getCount()
+                return count
+            }
+
+        }
+
+    }
+
     async dailyReport(
         options, filter
     ): Promise<any> {
-        console.log(filter)
         delete filter.department
         let queryString = queryBuilderFunc('UserAnswer', filter);
         let andQueryString = ' ';
         const queryBuilder = this.userAnswerRepository
             .createQueryBuilder('UserAnswer')
             .select(['UserAnswer.userId, UserAnswer.syllabusId'])
+            .addSelect('COUNT(UserAnswer.id)', 'count')
             .addSelect('COUNT(UserAnswer.id)', 'count')
             .leftJoinAndSelect('UserAnswer.user', 'user')
             .leftJoinAndSelect('UserAnswer.syllabus', 'syllabus')

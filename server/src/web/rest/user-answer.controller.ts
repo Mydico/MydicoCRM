@@ -20,6 +20,7 @@ import { PageRequest, Page } from '../../domain/base/pagination.entity';
 import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
+import { User } from 'src/domain/user.entity';
 
 
 @Controller('api/user-answers')
@@ -31,6 +32,19 @@ export class UserAnswerController {
 
   constructor(private readonly userAnswerService: UserAnswerService,
   ) { }
+
+  @Get('/point')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The found record',
+    type: UserAnswer
+  })
+  async getPoint(@Req() req: Request, @Res() res): Promise<UserAnswer> {
+    const currentUser = req.user as User;
+    const id = req.query['syllabus']
+    return res.send(await this.userAnswerService.calculatePoint(currentUser, id));
+  }
 
   @Get('/')
   @Roles(RoleType.USER)

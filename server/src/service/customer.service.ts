@@ -225,14 +225,15 @@ export class CustomerService {
     filter = {},
     departmentVisible = [],
     isEmployee: boolean,
-    currentUser: User
+    currentUser: User,
+    birthdayOffset: number = 7
   ): Promise<[Customer[], number]> {
     options.cache = 3600000;
 
     let andQueryString = '1=1 ';
     if (filter['findBirthday']) {
       const startDate = new Date();
-      const endDate = new Date(new Date().setDate(new Date().getDate() + 7));
+      const endDate = new Date(new Date().setDate(new Date().getDate() + birthdayOffset));
       const listDate = getDates(startDate, endDate);
       const listMonth = listDate.map(item => item.getMonth() + 1);
       const listDay = listDate.map(item => item.getDate());

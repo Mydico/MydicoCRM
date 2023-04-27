@@ -1,7 +1,6 @@
 export const resourceDesc = {
     'department': 'đơn vị',
     'file': 'tập tin',
-    'notification': 'thông báo',
     'internal-notification': 'thông báo nội bộ',
     'permissionGroups': 'nhóm quyền',
     'permissiontypes': 'Loại quyền',
@@ -60,8 +59,6 @@ export const resourceDesc = {
 
     'id-paper-types': 'loại giấy tờ cá nhân',
 
-    'notifications': 'thông báo',
-
     'investigations': 'Đợt thanh tra',
 
     'investigation-user-associations': 'người dùng liên quan đến đợt thanh tra',
@@ -116,7 +113,6 @@ export const resourceDesc = {
     'return': 'trả hàng',
     'transactions': 'công nợ',
     'product-quantities': 'sản phẩm trong kho',
-    'internal-notifications': 'thông báo nội bộ',
     'send':'gửi'
 };
 

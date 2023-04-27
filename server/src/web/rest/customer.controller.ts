@@ -52,6 +52,7 @@ export class CustomerController {
       }
     });
     filter['findBirthday'] = true;
+    const offset = filter['birthdayOffset'] || 7
     let departmentVisible = [];
     const currentUser = req.user as User;
     if (currentUser.department) {
@@ -68,7 +69,8 @@ export class CustomerController {
       filter,
       departmentVisible,
       isEmployee,
-      currentUser
+      currentUser,
+      offset
     );
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);

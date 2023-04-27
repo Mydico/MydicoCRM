@@ -25,10 +25,10 @@ export class QuestionService {
     ) { }
 
     async getQuestionFromSyllabus(id: string, user: User): Promise<UserAnswer[] | undefined> {
-        const syllabus = await this.syllabusRepository.findOne(undefined, {
+        const syllabus = await this.syllabusRepository.findOne(id, {
             relations: ['questions','questions.choices']
         })
-        
+        console.log(syllabus)
         if (syllabus) {
             if (syllabus.status === ProductStatus.ACTIVE) {
                 if (syllabus.type === SyllabusStatus.DAILY) {
@@ -79,8 +79,9 @@ export class QuestionService {
                         },
                         relations: ['user', 'choice', 'question', 'question.choices']
                     })
+                    console.log(exist)
                     if (exist.length === 0) {
-  
+
                         const userAnswers: UserAnswer[] = []
                         for (let index = 0; index < syllabus.questions.length; index++) {
                             const element =  syllabus.questions[index];
