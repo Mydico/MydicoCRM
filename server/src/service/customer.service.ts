@@ -18,6 +18,7 @@ import Receipt from '../domain/receipt.entity';
 import StoreInput from '../domain/store-input.entity';
 import Bill from '../domain/bill.entity';
 import Order from '../domain/order.entity';
+import moment from 'moment';
 
 const relationshipNames = [];
 relationshipNames.push('status');
@@ -232,17 +233,15 @@ export class CustomerService {
 
     let andQueryString = '1=1 ';
     if (filter['findBirthday']) {
-      const startDate = new Date();
-      const endDate = new Date(new Date().setDate(new Date().getDate() + birthdayOffset));
+      const startDate = moment().toDate();
+      const endDate = moment().add(birthdayOffset, "day").toDate()
       const listDate = getDates(startDate, endDate);
-      const listMonth = listDate.map(item => item.getMonth() + 1);
       const listDay = listDate.map(item => item.getDate());
-
-      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  MONTH(Customer.dateOfBirth) in ${JSON.stringify(listMonth)
-        .replace('[', '(')
-        .replace(']', ')')} AND DAY(Customer.dateOfBirth) IN ${JSON.stringify(listDay)
+      console.log(startDate,endDate)
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  MONTH(Customer.date_of_birth) in (${JSON.stringify(moment().month()+1)}) AND DAY(Customer.date_of_birth) IN ${JSON.stringify(listDay)
         .replace('[', '(')
         .replace(']', ')')} `;
+    
     }
     if (departmentVisible.length > 0) {
       andQueryString += `AND Customer.department IN ${JSON.stringify(departmentVisible)
@@ -285,7 +284,7 @@ export class CustomerService {
       .orderBy(`Customer.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take)
-      .cache(cacheKeyBuilder, 3600000);
+      // .cache(cacheKeyBuilder, 3600000);
 
     const count = this.customerRepository
       .createQueryBuilder('Customer')
@@ -312,7 +311,7 @@ export class CustomerService {
     }
 
     const result = await queryBuilder.getManyAndCount();
-    result[1] = await count.getCount();
+    console.log(result)
     return result;
   }
 

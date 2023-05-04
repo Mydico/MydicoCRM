@@ -53,6 +53,7 @@ export class CustomerController {
     });
     filter['findBirthday'] = true;
     const offset = filter['birthdayOffset'] || 7
+    delete filter['birthdayOffset']
     let departmentVisible = [];
     const currentUser = req.user as User;
     if (currentUser.department) {
