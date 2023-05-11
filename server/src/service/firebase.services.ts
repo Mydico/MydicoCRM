@@ -46,10 +46,8 @@ export class FirebaseService {
             }
           }));
           const result = await this.sendAll(tokenMessages, dryRun);
-          console.log(JSON.stringify(result))
           return result
         } catch (error) {
-          console.log(error)
           return {
             responses: groupedFirebaseMessages.map(() => ({
               success: false,

@@ -210,7 +210,7 @@ const Bill = props => {
       };
     }
     dispatch(getBill(params));
-    window.scrollTo(0, 100);
+    // window.scrollTo(0, 100);
   }, [activePage, size]);
 
   const computedItems = items => {

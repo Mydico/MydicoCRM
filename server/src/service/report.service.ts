@@ -84,7 +84,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -137,7 +137,7 @@ export class ReportService {
       ...item,
       orderDetails: item.orderDetails.reverse()
     }))
-    await this.cacheManager.set(cacheKey, lastResult,  60 * 1000);
+    await this.cacheManager.set(cacheKey, lastResult, 60 * 1000);
     return lastResult;
   }
 
@@ -166,7 +166,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -192,7 +192,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -218,7 +218,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -242,7 +242,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -263,7 +263,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -304,7 +304,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawMany();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
     // const report = reportDeprtment.map(item => {
     //   const index = returnMoney.findIndex(product => product.departmentId === item.department_id);
@@ -358,7 +358,7 @@ export class ReportService {
     }
 
     const result = [...await queryBuilder.getRawMany(), ...await queryBuilderExternal.getRawMany()]
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -384,7 +384,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawMany();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
 
     // queryString = queryBuilderFunc('StoreInput', filter);
@@ -431,7 +431,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawMany();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -453,7 +453,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawMany();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -480,7 +480,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawMany();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -514,7 +514,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawMany();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -544,7 +544,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
   async getTop10BestSaleProduct(filter): Promise<any> {
@@ -571,7 +571,7 @@ export class ReportService {
     }
 
     result = await queryBuilder.getRawMany();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     const productIds = result.map(item => item.id);
 
     const returnProduct = await this.transactionRepository
@@ -593,7 +593,7 @@ export class ReportService {
     }
 
     returnProductResult = await queryBuilder.getRawMany();
-    await this.cacheManager.set(returnCacheKey, result,  60 * 1000);
+    await this.cacheManager.set(returnCacheKey, result, 60 * 1000);
 
     const final = result.map(item => {
       const index = returnProductResult.findIndex(product => product.productId === item.id);
@@ -642,7 +642,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawMany();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -822,7 +822,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getManyAndCount();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
     // const productIds = queryBuilder.map(item => item.product_id);
 
@@ -905,7 +905,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -952,6 +952,10 @@ export class ReportService {
           .where(queryString)
           .groupBy('Customer.id');
       }, 'totals');
+    if (filter['customer'] && filter['customer'] !== '[]') {
+        queryBuilder.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
+
+    }
     const cacheKey = queryBuilder.getQueryAndParameters().toString();
     const cachedQuery = await this.cacheManager.get(cacheKey);
     if (cachedQuery) {
@@ -959,7 +963,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -975,6 +979,10 @@ export class ReportService {
       .where(queryString)
       // .groupBy('Transaction.customerId')
       .cache(3 * 3600);
+      if (filter['customer'] && filter['customer'] !== '[]') {
+        queryBuilder.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
+  
+      }
     const cacheKey = queryBuilder.getQueryAndParameters().toString();
     const cachedQuery = await this.cacheManager.get(cacheKey);
     if (cachedQuery) {
@@ -982,13 +990,14 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
   async getCustomerReport(options, filter): Promise<any> {
     let queryString = queryBuilderFunc('Transaction', filter);
     queryString = queryString.replace('Transaction.typeId', 'customer.typeId');
+
     const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select(['customer.id', 'customer.code', 'customer.name', 'customer.address', 'customer.tel'])
@@ -1003,6 +1012,10 @@ export class ReportService {
       .offset(options.skip)
       .limit(options.take)
       .cache(3 * 3600);
+      if (filter['customer'] && filter['customer'] !== '[]') {
+        queryBuilder.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
+  
+      }
     const result = await queryBuilder.getRawMany();
 
     const count = await this.transactionRepository
@@ -1012,9 +1025,12 @@ export class ReportService {
       .leftJoin('customer.type', 'type')
       .where(queryString)
       .groupBy('Transaction.customerId, customer.code, customer.name, customer.id ')
-      .getCount();
-
-    return [result, count];
+      if (filter['customer'] && filter['customer'] !== '[]') {
+        count.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
+  
+      }
+    const countResult = count.getCount()
+    return [result, countResult];
   }
 
   async getPromotionPrice(filter): Promise<any> {
@@ -1040,7 +1056,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -1068,7 +1084,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -1171,7 +1187,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getRawOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 
@@ -1191,7 +1207,7 @@ export class ReportService {
     }
 
     const result = await queryBuilder.getOne();
-    await this.cacheManager.set(cacheKey, result,  60 * 1000);
+    await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
   }
 

@@ -499,7 +499,7 @@ const CreateReceipt = () => {
                           </td>
                           <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
                         </tr>
-                        <tr>
+                        {/* <tr>
                           <td className="left">
                             <strong>Tổng tiền</strong>
                           </td>
@@ -511,7 +511,7 @@ const CreateReceipt = () => {
                                 currency: 'VND'
                               })}
                           </td>
-                        </tr>
+                        </tr> */}
                       </tbody>
                     </Table>
                   </CCol>

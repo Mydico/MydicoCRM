@@ -62,7 +62,8 @@ const fieldExcel = [
   { key: 'social', label: 'Mạng xã hội' },
   { key: 'contact_name', label: 'Tên liên hệ' },
   { key: 'city', label: 'thành phố' },
-  { key: 'district', label: 'quận huyện' }
+  { key: 'district', label: 'quận huyện' },
+  { key: 'createdDate', label: 'Ngày tạo' }
 ];
 
 const getBadge = status => {

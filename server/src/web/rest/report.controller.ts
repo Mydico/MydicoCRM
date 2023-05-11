@@ -456,6 +456,7 @@ export class ReportController {
     delete req.query['size'];
     delete req.query['sort'];
     const filter = await this.buildFilterForReport(req);
+    console.log(filter)
     const [results, count] = await this.userAnswerService.dailyReport(options, filter);
 
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));

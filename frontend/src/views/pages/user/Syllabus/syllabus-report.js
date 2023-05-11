@@ -33,11 +33,11 @@ const fields = [
     filter: false
   },
   { key: 'user_code', label: 'Mã nhân viên', _style: { width: '15%' } },
-  { key: 'name', label: 'Tên nhân viên', _style: { width: '15%' } },
-  { key: 'type', label: 'Loại chương trình học', _style: { width: '15%' } },
-  { key: 'count', label: 'Điểm', _style: { width: '15%' } },
-  { key: 'syllabus_name', label: 'Chương trình học', _style: { width: '15%' } },
-  { key: 'ranking', label: 'Xếp hạng', _style: { width: '15%' } },
+  { key: 'name', label: 'Tên nhân viên', _style: { width: '15%' }, filter: false },
+  { key: 'type', label: 'Loại chương trình học', _style: { width: '15%' }, filter: false },
+  { key: 'count', label: 'Điểm', _style: { width: '15%' }, filter: false },
+  { key: 'syllabus_name', label: 'Chương trình học', _style: { width: '15%' }, filter: false },
+  { key: 'ranking', label: 'Xếp hạng', _style: { width: '15%' }, filter: false },
 ];
 
 const getBadge = status => {
@@ -80,7 +80,7 @@ const SyllabusReport = props => {
   useEffect(() => {
     if (initialState.updatingSuccess) {
       dispatch(reset());
-      dispatch(getSyllabusDailyReport({ page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current }));
+      dispatch(getSyllabusDailyReport({ page: activePage - 1, size, sort: 'createdDate,DESC', startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'), }));
     }
   }, [initialState.updatingSuccess]);
 
@@ -117,8 +117,8 @@ const SyllabusReport = props => {
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
 
-      paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getSyllabus({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
+      paramRef.current = { startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'),...paramRef.current, ...value };
+      dispatch(getSyllabusDailyReport({ page: 0, size: size, sort: 'createdDate,DESC', ...paramRef.current }));
     }
   }, 300);
 

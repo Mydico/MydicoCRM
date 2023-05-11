@@ -786,7 +786,7 @@ const Order = props => {
             details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
-                  <OrderDetail isFetch={details.includes(item.id)} orderId={item.id} />
+                  <OrderDetail  orderId={item.id} />
                 </CCollapse>
               );
             }

@@ -125,6 +125,10 @@ export class InternalNotificationService {
           data: {
             type: founded.entityName ? founded.entityName : 'INTERNAL',
             entityId: founded.entityName?  founded.entityId : founded.id,
+            content: founded.shortContent,
+            fullContent: founded.content,
+            user: element,
+            assets: founded.assets
           }
         });
       }

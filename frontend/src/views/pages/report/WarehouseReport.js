@@ -288,6 +288,9 @@ const WarehouseReport = () => {
     if (Object.keys(filter).length > 4) {
       if (!loading) {
         setLoading(true);
+        // if(filter.department?.length === 0){
+        //   delete filter.department
+        // }
         dispatch(getWarehouseReport({ ...filter })).then(data => {
           if (data && data.payload) {
             const sortedArr = data.payload[0]?.sort((a, b) =>

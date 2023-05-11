@@ -28,7 +28,6 @@ export class QuestionService {
         const syllabus = await this.syllabusRepository.findOne(id, {
             relations: ['questions','questions.choices']
         })
-        console.log(syllabus)
         if (syllabus) {
             if (syllabus.status === ProductStatus.ACTIVE) {
                 if (syllabus.type === SyllabusStatus.DAILY) {
@@ -79,7 +78,6 @@ export class QuestionService {
                         },
                         relations: ['user', 'choice', 'question', 'question.choices']
                     })
-                    console.log(exist)
                     if (exist.length === 0) {
 
                         const userAnswers: UserAnswer[] = []

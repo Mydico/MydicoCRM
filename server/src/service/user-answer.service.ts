@@ -30,15 +30,20 @@ export class UserAnswerService {
         return await this.userAnswerRepository.findOne(options);
     }
 
-    async calculatePoint(user: User, syllabusId: number): Promise<any> {
+    async calculatePoint(user: User, syllabusId: number, filter): Promise<any> {
         if(syllabusId){
             const syllabus = this.syllabusRepository.findOne(syllabusId)
             if(syllabus){
+                let queryString = queryBuilderFunc('UserAnswer', filter);
+
                 const queryBuilder = this.userAnswerRepository
                 .createQueryBuilder('UserAnswer')
                 .where("UserAnswer.choiceId = UserAnswer.correct")
                 .andWhere("UserAnswer.userId = :userId",{userId:user.id })
                 .andWhere("UserAnswer.syllabusId = :syllabusId",{syllabusId:syllabusId })
+                if(Object.keys(filter).length > 0){
+                    queryBuilder.andWhere(queryString)
+                }
                 const count = await queryBuilder.getCount()
                 return count
             }
@@ -52,7 +57,10 @@ export class UserAnswerService {
     ): Promise<any> {
         delete filter.department
         let queryString = queryBuilderFunc('UserAnswer', filter);
-        let andQueryString = ' ';
+        queryString = queryString.replace("UserAnswer.user_code",'user.code')
+        // queryString = queryString.replace("UserAnswer.name",'user.name')
+
+        console.log(filter)
         const queryBuilder = this.userAnswerRepository
             .createQueryBuilder('UserAnswer')
             .select(['UserAnswer.userId, UserAnswer.syllabusId'])
@@ -63,12 +71,14 @@ export class UserAnswerService {
             .where("UserAnswer.choiceId = UserAnswer.correct")
             .groupBy('UserAnswer.userId, UserAnswer.syllabusId')
             .orderBy('COUNT(UserAnswer.id)', 'DESC')
-            .skip(options.skip)
-            .take(options.take);
+            .offset(options.skip)
+            .limit(options.take)
         const countBuilder = this.userAnswerRepository
             .createQueryBuilder('UserAnswer')
             .select(['UserAnswer.userId, UserAnswer.syllabusId'])
             .where("UserAnswer.choiceId = UserAnswer.correct")
+            .leftJoinAndSelect('UserAnswer.user', 'user')
+            .leftJoinAndSelect('UserAnswer.syllabus', 'syllabus')
             .groupBy('UserAnswer.userId, UserAnswer.syllabusId')
         if(Object.keys(filter).length > 0){
             countBuilder.andWhere(queryString)

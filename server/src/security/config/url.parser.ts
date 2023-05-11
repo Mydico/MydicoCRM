@@ -15,7 +15,7 @@ export class UrlPermissionParser {
     public getPattern(url: string): string {
         const arr = url.split('?')[0].split('/');
         arr.forEach((item, index) => {
-            if (uuidV4Regex.test(item) || item == 'root') {
+            if (Number(item) > 0|| item == 'root') {
                 arr[index] = ':id';
             }
         });

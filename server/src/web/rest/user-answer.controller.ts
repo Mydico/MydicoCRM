@@ -43,7 +43,12 @@ export class UserAnswerController {
   async getPoint(@Req() req: Request, @Res() res): Promise<UserAnswer> {
     const currentUser = req.user as User;
     const id = req.query['syllabus']
-    return res.send(await this.userAnswerService.calculatePoint(currentUser, id));
+
+    const filter = {
+      startDate: req.query['startDate'],
+      endDate: req.query['endDate'],
+    }
+    return res.send(await this.userAnswerService.calculatePoint(currentUser, id, filter));
   }
 
   @Get('/')

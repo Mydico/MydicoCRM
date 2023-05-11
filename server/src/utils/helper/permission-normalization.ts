@@ -47,7 +47,7 @@ export const permissionDescriptionNormalize = (splitedEndpoint, isType) => {
 
 export const queryBuilderFunc = (entity, filter = {}, isDebt = false, ignoreDate = false) => {
   delete filter['dependency'];
-  let query = '';
+  let query = '1 = 1';
   Object.keys(filter).forEach((key, index) => {
 
     if (key === 'startDate' || key === 'endDate') return;
@@ -61,7 +61,7 @@ export const queryBuilderFunc = (entity, filter = {}, isDebt = false, ignoreDate
       if (JSON.parse(filter[key]).length > 0) {
         query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${filter[key].replace('[', '(').replace(']', ')')}`;
       }
-    } else if (key.includes('name')) {
+    } else if (key.includes('name') || key.includes('code')) {
       query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key} like '%${filter[key]}%' `;
     } else {
       query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id = ${filter[key]} `;

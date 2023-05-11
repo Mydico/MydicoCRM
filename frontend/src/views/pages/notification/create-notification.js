@@ -120,8 +120,8 @@ const CreateNotifications = (props) => {
     const initEditForm = async () => {
       if (notification) {
         const copyValue = JSON.parse(JSON.stringify(notification))
-
-        copyValue.content = RichTextEditor.createValueFromString(notification.content, 'html')
+        console.log(notification)
+        copyValue.content = notification.content
         copyValue.departments = notification.departments.map(item => ({
           value: item,
           label: item.name
@@ -223,7 +223,7 @@ const CreateNotifications = (props) => {
   return (
     <CCard>
       <CCardHeader>
-        <CCardTitle>Thêm mới thông báo</CCardTitle>
+        <CCardTitle>Thêm mới/Chỉnh sửa thông báo</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
@@ -271,7 +271,8 @@ const CreateNotifications = (props) => {
                 <EditorToolbar />
                 <ReactQuill
                   theme="snow"
-                  theme="snow" value={values.content} onChange={value => {
+                  theme="snow" 
+                  value={values.content} onChange={value => {
                     setFieldValue('content', value || null);
                   }}
                   placeholder={"Write something awesome..."}

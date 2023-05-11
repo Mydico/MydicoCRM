@@ -237,7 +237,6 @@ export class CustomerService {
       const endDate = moment().add(birthdayOffset, "day").toDate()
       const listDate = getDates(startDate, endDate);
       const listDay = listDate.map(item => item.getDate());
-      console.log(startDate,endDate)
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  MONTH(Customer.date_of_birth) in (${JSON.stringify(moment().month()+1)}) AND DAY(Customer.date_of_birth) IN ${JSON.stringify(listDay)
         .replace('[', '(')
         .replace(']', ')')} `;
@@ -311,7 +310,6 @@ export class CustomerService {
     }
 
     const result = await queryBuilder.getManyAndCount();
-    console.log(result)
     return result;
   }
 

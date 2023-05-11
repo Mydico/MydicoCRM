@@ -93,6 +93,7 @@ const CustomerReport = props => {
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   const [numberOfCustomer, setNumberOfCustomer] = useState(0);
   const [filteredCustomer, setFilteredCustomer] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState([]);
 
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
@@ -205,6 +206,7 @@ const CustomerReport = props => {
     setBranch(null);
     setUser(null);
     setCustomer(null);
+    setSelectedCustomer([])
   };
   useEffect(() => {
     if (department !== null) {
@@ -214,7 +216,8 @@ const CustomerReport = props => {
         department: department?.id,
         branch: null,
         user: null,
-        customer: null
+        customer: null,
+        customers: []
       });
       if (department) {
         dispatch(getBranch({ department: department?.id, dependency: true }));
@@ -238,7 +241,8 @@ const CustomerReport = props => {
       ...filter,
       branch: branch?.id,
       user: null,
-      customer: null
+      customer: null,
+      customers: []
     });
 
     if (branch) {
@@ -260,7 +264,8 @@ const CustomerReport = props => {
     setFilter({
       ...filter,
       sale: user?.id,
-      customer: null
+      customer: null,
+      customers: []
     });
     if (user) {
       getCustomer(department?.id, branch?.id, user?.id);
@@ -270,7 +275,8 @@ const CustomerReport = props => {
   useEffect(() => {
     setFilter({
       ...filter,
-      type: userType?.id
+      type: userType?.id,
+      customers: []
     });
     if (userType) {
       getCustomer(department?.id, branch?.id, user?.id, userType?.id);
@@ -280,9 +286,10 @@ const CustomerReport = props => {
   useEffect(() => {
     setFilter({
       ...filter,
-      customer: customer?.id
+      customer: JSON.stringify(selectedCustomer?.map(item => item.value) || []),
+
     });
-  }, [customer]);
+  }, [selectedCustomer]);
 
   useEffect(() => {
     if (Object.keys(filter).length > 2) {
@@ -512,19 +519,15 @@ const CustomerReport = props => {
                 <Select
                   isSearchable
                   name="user"
-                  onChange={e => {
-                    setCustomer(e?.value || null);
-                  }}
-                  value={{
-                    value: customer,
-                    label: customer?.code
-                  }}
+                  onChange={setSelectedCustomer}
+                  value={selectedCustomer}
+                  isMulti
                   isClearable={true}
                   openMenuOnClick={false}
                   onInputChange={onSearchCustomer}
                   placeholder="Chọn khách hàng"
                   options={filteredCustomer.map(item => ({
-                    value: item,
+                    value: item.id,
                     label: `${item.code}-${item.name}-${item.address}`
                   }))}
                 />

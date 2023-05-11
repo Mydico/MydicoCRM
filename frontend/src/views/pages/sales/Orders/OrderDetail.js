@@ -12,13 +12,12 @@ function OrderDetail(props) {
 
     const dispatch = useDispatch()
     useEffect(() => {
-        console.log(props.isFetch)
-      if(props.isFetch && !item){
+      if(!item){
         dispatch(getDetailOrderDirect({ id: props.orderId, dependency: true })).then(resp => {
             setItem(resp.payload)
         })
       }
-    }, [props.isFetch])
+    }, [props.orderId])
     
     
   return (
