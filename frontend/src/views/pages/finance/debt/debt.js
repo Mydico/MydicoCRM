@@ -81,7 +81,7 @@ const Debt = props => {
 
   useEffect(() => {
     if (date.endDate) {
-      let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...paramRef.current };
+      let paramsLocal = { page: activePage - 1, size, sort: 'debt,DESC', ...paramRef.current };
       paramsLocal = { ...paramsLocal, ...params?.debt, ...date };
       dispatch(getCustomerDebts(paramsLocal));
       dispatch(getCustomerDebtsTotalDebit(paramsLocal)).then(resp => {
@@ -104,7 +104,7 @@ const Debt = props => {
     const orderParams = {
       page: activePage - 1,
       size,
-      sort: 'createdDate,DESC',
+      sort: 'debt,DESC',
       ...paramRef.current,
       startDate: date.startDate?.format('YYYY-MM-DD'),
       endDate: date.endDate?.format('YYYY-MM-DD')
@@ -119,7 +119,7 @@ const Debt = props => {
   };
 
   useEffect(() => {
-    let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.debt };
+    let paramsLocal = { page: activePage - 1, size, sort: 'debt,DESC', ...params?.debt };
     paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1, size };
     if (date.endDate && date.startDate) {
       paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD') };
@@ -134,10 +134,10 @@ const Debt = props => {
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getCustomerDebtsTotalDebit({ page: 0, sort: 'createdDate,DESC', ...value, ...date, size: size })).then(resp => {
+      dispatch(getCustomerDebtsTotalDebit({ page: 0, sort: 'debt,DESC', ...value, ...date, size: size })).then(resp => {
         setTotal(Number(resp.payload.data.sum));
       });
-      dispatch(getCustomerDebts({ page: 0, size: size, sort: 'createdDate,DESC', ...value, ...date, size: size }));
+      dispatch(getCustomerDebts({ page: 0, size: size, sort: 'debt,DESC', ...value, ...date, size: size }));
     }
   }, 300);
 

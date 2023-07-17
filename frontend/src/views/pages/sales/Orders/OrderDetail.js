@@ -12,13 +12,12 @@ function OrderDetail(props) {
 
     const dispatch = useDispatch()
     useEffect(() => {
-      if(!item){
+      if(props.isFetch && !item){
         dispatch(getDetailOrderDirect({ id: props.orderId, dependency: true })).then(resp => {
             setItem(resp.payload)
         })
       }
-    }, [props.orderId])
-    
+    }, [props.isFetch])
     
   return (
     <CCardBody>
@@ -183,7 +182,7 @@ function OrderDetail(props) {
 
           <CCol lg="4" sm="5">
             Ghi chú: <strong>{item?.note}</strong>
-            {item.status === 'CANCEL' && (
+            {item?.status === 'CANCEL' && (
               <div>
                 Lý do hủy: <strong>{item?.reject}</strong>
               </div>
@@ -194,5 +193,7 @@ function OrderDetail(props) {
     </CCardBody>
   )
 }
-
-export default React.memo(OrderDetail)
+function areEqual(prevProps, nextProps) {
+  return prevProps.isFetch === nextProps.isFetch
+}
+export default React.memo(OrderDetail,areEqual)

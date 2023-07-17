@@ -1,35 +1,21 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
   Logger,
-  Param,
-  Post,
-  Put,
-  UseGuards,
   Req,
-  UseInterceptors,
   Res,
-  HttpException,
-  HttpStatus,
-  CacheInterceptor,
-  CACHE_MANAGER,
-  Inject
+  UseGuards,
+  UseInterceptors
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { AuthGuard, PermissionGuard, Roles, RolesGuard, RoleType } from '../../security';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { Request } from 'express';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import { ReportService } from '../../service/report.service';
-import { OrderService } from '../../service/order.service';
+import { PageRequest } from '../../domain/base/pagination.entity';
 import { User } from '../../domain/user.entity';
-import { In } from 'typeorm';
+import { AuthGuard, PermissionGuard, RoleType, RolesGuard } from '../../security';
 import { DepartmentService } from '../../service/department.service';
-import { Page, PageRequest } from '../../domain/base/pagination.entity';
-import UserAnswer from '../../domain/user-answer.entity';
+import { ReportService } from '../../service/report.service';
 import { UserAnswerService } from '../../service/user-answer.service';
-import { HeaderUtil } from '../../client/header-util';
 
 @Controller('api/privates')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)

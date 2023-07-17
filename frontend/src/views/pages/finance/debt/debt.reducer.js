@@ -12,7 +12,6 @@ export const debtAdapter = createEntityAdapter({
   // Assume IDs are stored in a field other than `book.id`
   selectId: debt => debt.id,
   // Keep the "all IDs" array sorted based on book titles
-  sortComparer: (a, b) => b.createdDate.localeCompare(a.createdDate)
 });
 
 const slice = createSlice({

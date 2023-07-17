@@ -1,24 +1,23 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OrderRepository } from '../repository/order.repository';
+import Cache from 'cache-manager';
 import { Brackets } from 'typeorm';
-import { OrderDetailsRepository } from '../repository/order-details.repository';
-import { CustomerRepository } from '../repository/customer.repository';
-import { queryBuilderFunc, queryBuilderCustomerForPromotionReportFunc } from '../utils/helper/permission-normalization';
 import Customer from '../domain/customer.entity';
-import Order from '../domain/order.entity';
-import { IncomeDashboardRepository } from '../repository/income-dashboard.repository';
-import { TransactionRepository } from '../repository/transaction.repository';
-import Transaction from '../domain/transaction.entity';
-import _ from 'lodash';
-import { User } from '../domain/user.entity';
 import Department from '../domain/department.entity';
 import OrderDetails from '../domain/order-details.entity';
+import Order from '../domain/order.entity';
+import StoreHistory from '../domain/store-history.entity';
+import Transaction from '../domain/transaction.entity';
+import { User } from '../domain/user.entity';
+import { BillRepository } from '../repository/bill.repository';
+import { CustomerRepository } from '../repository/customer.repository';
+import { IncomeDashboardRepository } from '../repository/income-dashboard.repository';
+import { OrderDetailsRepository } from '../repository/order-details.repository';
+import { OrderRepository } from '../repository/order.repository';
 import { StoreHistoryRepository } from '../repository/store-history.repository';
 import { StoreInputRepository } from '../repository/store-input.repository';
-import Cache from 'cache-manager';
-import { BillRepository } from '../repository/bill.repository';
-import StoreHistory from '../domain/store-history.entity';
+import { TransactionRepository } from '../repository/transaction.repository';
+import { queryBuilderCustomerForPromotionReportFunc, queryBuilderFunc } from '../utils/helper/permission-normalization';
 
 @Injectable()
 export class ReportService {
@@ -1212,12 +1211,7 @@ export class ReportService {
   }
 
   async getWarehouseReport(options, filter): Promise<any> {
-    // let queryString = queryBuilderFunc('StoreHistory', filter);
-    // queryString = queryString.replace('Customer.customerId', 'Customer.id');
-    // const filter = {
-    //   startDate : "2022-04-01",
-    //   enđate : "2022-08-10"
-    // };
+
     const filterForStoreHistory = { ...filter }
     delete filterForStoreHistory.branch
     let queryString = queryBuilderFunc('StoreHistory', filterForStoreHistory, false, true);
@@ -1244,24 +1238,7 @@ export class ReportService {
         .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
       .groupBy(`StoreHistory2.productId`)
       .getRawMany()
-    // const remainId = await this.storeHistoryRepository
-    //   .createQueryBuilder('StoreHistory')
-    //   .select(`StoreHistory.productId,StoreHistory.departmentId`)
-    //   .addSelect("MAX(StoreHistory.id)", "id")
-    //   .leftJoin('StoreHistory.product', 'product')
-    //   .leftJoin('product.productBrand', 'brand')
-    //   .leftJoin('product.productGroup', 'productGroup')
-    //   .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
-    //   .where(`DATE(StoreHistory.createdDate) < '${filter.startDate}'`)
-    //   .andWhere(queryString)
-    // .offset(options.skip)
-    // .limit(options.take)
-    // .getRawMany()
 
-    // const productId = remainId.map(item => item.productId)
-    // let ids = remainId.map(item => item.id)
-    // if (productId.length === 0) return [[], 0]
-    // if (ids.length === 0) return [[], 0]
     const remainbegin = await this.storeHistoryRepository
       .createQueryBuilder('StoreHistory2')
       .select("StoreHistory2.productId")
@@ -1284,32 +1261,7 @@ export class ReportService {
       .getRawMany()
     const productId = remainbegin.map(item => item.productId)
     if (productId.length === 0) return [[], 0]
-    // const remainEndId = await this.storeHistoryRepository
-    //   .createQueryBuilder('StoreHistory')
-    //   .select(`StoreHistory.productId,StoreHistory.departmentId`)
-    //   .addSelect("MAX(StoreHistory.id)", "id")
-    //   .leftJoin('StoreHistory.product', 'product')
-    //   .leftJoin('product.productBrand', 'brand')
-    //   .leftJoin('product.productGroup', 'productGroup')
-    //   // .groupBy(`StoreHistory.productId${department? ",StoreHistory.departmentId":""}`)
-    //   .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
-    //   .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
-    //   .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
-    //   .orderBy("StoreHistory.productId", "ASC")
-    //   .andWhere(queryString)
-    //   .getRawMany()
 
-    // ids = remainEndId.map(item => item.id)
-    // if (ids.length === 0) return [[], 0]
-
-    // const remainEnd = this.storeHistoryRepository
-    //   .createQueryBuilder('StoreHistory')
-    //   // .select("product_name,productId,departmentId,store_name,remain as remainEnd")
-    //   .select("StoreHistory.product_name,StoreHistory.productId")
-    //   .addSelect("Sum(remain)", "remainEnd")
-    //   .where("StoreHistory.id IN(:...ids)", { ids: ids })
-    //   .groupBy(`StoreHistory.product_name,StoreHistory.productId`)
-    //   .getRawMany()
     const remainEnd = this.storeHistoryRepository
       .createQueryBuilder('StoreHistory2')
       .select("StoreHistory2.productId")
@@ -1335,9 +1287,7 @@ export class ReportService {
     queryString = queryString.replace('StoreInput.product_name', 'product.name');
     queryString = queryString.replace('StoreInput.createdDate', 'StoreInput.lastModifiedDate');
 
-    // if (filter['endDate'] && filter['startDate']) {
-    //   queryString += `StoreInput.createdDate  >= '${filter['startDate']}' AND  StoreInput.createdDate <= '${filter['endDate']} 23:59:59'`;
-    // }
+
     const importProduct = this.storeInputRepository
       .createQueryBuilder('StoreInput')
       .select("storeInputDetails.productId")
@@ -1464,4 +1414,63 @@ export class ReportService {
 
     return [Array.from(result2), count.length];
   }
+
+  // private async getRemains(filter, options, filterName: string) {
+  //   const filterForStoreHistory = { ...filter };
+  //   delete filterForStoreHistory.branch;
+  //   let queryString = this.queryConverter(filterName, filterForStoreHistory);
+
+  //   const count = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.startDate, true);
+  //   const remainbegin = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.startDate, false, options);
+
+  //   const productId = remainbegin.map(item => item.productId);
+  //   if (productId.length === 0) return [[], 0];
+
+  //   const remainEnd = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.endDate, true, null, productId);
+  //   return { remainbegin, count, remainEnd };
+  // }
+
+  // private queryConverter(filterName: string, filter: any): string {
+  //   let queryString = queryBuilderFunc(filterName, filter);
+  //   queryString = queryString.replace(`${filterName}.productId`, 'product.id');
+  //   queryString = queryString.replace(`${filterName}.brandId`, 'brand.id');
+  //   queryString = queryString.replace(`${filterName}.productGroupId`, 'productGroup.id');
+  //   queryString = queryString.replace(`${filterName}.product_name`, 'product.name');
+  //   return queryString;
+  // }
+
+  // private async fetchStoreInputDetails(filterName: string, filter: any, type: string, status: string, queryStringAddition: string, productId: any[]) {
+  //   let queryString = this.queryConverter(filterName, filter);
+  //   queryString += queryStringAddition;
+  //   return this.storeInputRepository.fetchDetails(type, status, queryString, productId);
+  // }
+
+  // async getProductInWarehouse(filter: any, options: any) {
+  //   const { remainbegin, count, remainEnd } = await this.getRemains(filter, options, 'StoreHistory');
+    
+  //   const productId = remainbegin.map(item => item.productId);
+  //   const importProduct = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT', 'APPROVED', " AND StoreInput.createdBy <> 'system'", productId);
+  //   const returnProduct = await this.fetchStoreInputDetails('StoreInput', filter, 'RETURN', 'APPROVED', '', productId);
+  //   const inputProductFromExport = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT_FROM_STORE', 'APPROVED', " AND StoreInput.relatedId is not null", productId);
+  //   const exportStore = await this.fetchStoreInputDetails('StoreInput', filter, 'EXPORT', 'APPROVED', " AND StoreInput.storeTransferId is not null", productId);
+  //   const exportStoreToProvider = await this.fetchStoreInputDetails('StoreInput', filter, 'EXPORT', 'APPROVED', " AND StoreInput.providerId is not null", productId);
+  //   const ontheway = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT_FROM_STORE', 'WAITING', " AND StoreInput.relatedId is not null", productId);
+
+  //   const filterForBill = { ...filter };
+  //   delete filterForBill.branch;
+  //   let queryString = this.queryConverter('Bill', filterForBill);
+  //   const exportedProduct = await this.billRepository.fetchExportedProduct(queryString, productId, 'Bill');
+  
+  //   const queryResult = await Promise.all([remainEnd, importProduct, returnProduct, inputProductFromExport, exportedProduct, exportStore, ontheway, exportStoreToProvider])
+  //   const arrayResult = Array.prototype.concat(...queryResult).concat(remainbegin);
+
+  //   const result2 = arrayResult
+  //     .reduce(
+  //       (acc, curr) => acc.set(curr.productId, { ...acc.get(curr.productId), ...curr }),
+  //       new Map()
+  //     )
+  //     .values()
+
+  //   return [Array.from(result2), count.length];
+  // }
 }

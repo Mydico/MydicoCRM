@@ -200,7 +200,7 @@ export class TransactionService {
       .addSelect('MAX(`Transaction`.`branchId`)', 'branchId')
       .where(andQueryString)
       .groupBy('Transaction.customerId, Transaction.customerCode, Transaction.saleName')
-      .orderBy(`MAX(Transaction.${Object.keys(options.order)[0] || 'createdDate'})`, options.order[Object.keys(options.order)[0]] || 'DESC')
+      .orderBy(`debt`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take);
     const count = this.transactionRepository

@@ -11,6 +11,7 @@ import { Table, Thead, Tbody, Tr, Th, Td } from '../super-responsive-table';
 import './ResponsiveTable.css';
 import { CElementCover, CPagination, CCol, CLabel, CInput } from '@coreui/react/lib';
 import { useMediaQuery } from 'react-responsive';
+import useStickyHeader from './useStickyHeader';
 
 //component - CoreUI / CTable
 const accentsMap = {
@@ -60,7 +61,7 @@ export const AdvancedTable = props => {
     hover,
     border,
     outlined,
-    responsive,
+    responsive = true,
     footer,
     itemsPerPageSelect,
     sorterValue,
@@ -76,7 +77,7 @@ export const AdvancedTable = props => {
   } = props;
 
   const compData = useRef({ firstRun: true, columnFiltered: 0, changeItems: 0 }).current;
-
+  const { tableRef, isSticky } = useStickyHeader();
   //
   const [perPageItems, setPerPageItems] = useState(itemsPerPage);
   const [sorterState, setSorterState] = useState(sorterValue || {});
@@ -493,7 +494,21 @@ export const AdvancedTable = props => {
             })}
           </div>
         )}
-        <Table className={classNames(tableClasses)}>
+        {isSticky && <Table className={classNames(tableClasses)}>
+          <Thead style={{
+            backgroundColor: "white",
+            position: "fixed",
+            top: 66,
+
+          }}>
+            <React.Fragment>
+              {theadTopSlot}
+              {header && headerContent}
+
+            </React.Fragment>
+          </Thead>
+        </Table>}
+        <Table className={classNames(tableClasses)} ref={tableRef}>
           {!isMobile ? (
             <Thead>
               <React.Fragment>

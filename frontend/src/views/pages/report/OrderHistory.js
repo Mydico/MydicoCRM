@@ -447,7 +447,7 @@ const OrderHistory = props => {
                                 <td className="left">
                                   <strong>Tổng số lượng</strong>
                                 </td>
-                                <Td className="right">{item?.orderDetails.reduce((sum, current) => sum + current.quantity, 0) || ''}</Td>
+                                <Td className="right">{item?.orderDetails?.reduce((sum, current) => sum + current.quantity, 0) || ''}</Td>
                               </tr>
                               <tr>
                                 <td className="left">
@@ -492,7 +492,7 @@ const OrderHistory = props => {
                           </Thead>
                           <Tbody>
                             <Tr>
-                              <Td className="right">{item?.orderDetails.reduce((sum, current) => sum + current.quantity, 0) || ''}</Td>
+                              <Td className="right">{item?.orderDetails?.reduce((sum, current) => sum + current.quantity, 0) || ''}</Td>
                               <Td className="right">
                                 {Number(item?.totalMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
                               </Td>
