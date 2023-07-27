@@ -51,6 +51,30 @@ export class PrivateController {
     return res.send(await this.reportService.getWarehouseReport(options, filter));
   }
 
+  @Get('/warehouse-private-enhance')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async warehouseReportEnhance(@Req() req: Request, @Res() res): Promise<any> {
+    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const options = {
+      skip: +pageRequest.page * pageRequest.size,
+      take: +pageRequest.size,
+      order: pageRequest.sort.asOrder()
+    };
+    delete req.query['page'];
+    delete req.query['size'];
+    delete req.query['sort'];
+    const filter = await this.buildFilterForReport(req);
+    // console.log(filter)
+    // // if(req.query['department']){
+    // //   filter.department = JSON.parse(req.query['department'])
+
+    // // }
+    return res.send(await this.reportService.getProductInWarehouse(options, filter));
+  }
+
 
   async buildFilter(req): Promise<any> {
     const filter = {};

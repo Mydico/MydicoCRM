@@ -1,27 +1,26 @@
 import { CACHE_MANAGER, forwardRef, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import Cache from 'cache-manager';
 import { Brackets, FindManyOptions, FindOneOptions, In } from 'typeorm';
-import Order from '../domain/order.entity';
-import { OrderRepository } from '../repository/order.repository';
-import { BillService } from './bill.service';
 import Bill from '../domain/bill.entity';
 import { OrderStatus } from '../domain/enumeration/order-status';
-import { ProductQuantityService } from './product-quantity.service';
-import Store from '../domain/store.entity';
-import ProductQuantity from '../domain/product-quantity.entity';
-import _ from 'lodash';
-import { TransactionService } from './transaction.service';
-import Transaction from '../domain/transaction.entity';
 import { TransactionType } from '../domain/enumeration/transaction-type';
+import Notification from '../domain/notification.entity';
+import Order from '../domain/order.entity';
+import ProductQuantity from '../domain/product-quantity.entity';
+import Store from '../domain/store.entity';
+import Transaction from '../domain/transaction.entity';
 import { User } from '../domain/user.entity';
 import { EventsGateway } from '../module/provider/events.gateway';
-import { DepartmentService } from './department.service';
-import { NotificationService } from './notification.service';
-import { FirebaseService } from './firebase.services';
-import { UserService } from './user.service';
-import Notification from '../domain/notification.entity';
+import { OrderRepository } from '../repository/order.repository';
+import { BillService } from './bill.service';
 import { CustomerService } from './customer.service';
-import Cache from 'cache-manager';
+import { DepartmentService } from './department.service';
+import { FirebaseService } from './firebase.services';
+import { NotificationService } from './notification.service';
+import { ProductQuantityService } from './product-quantity.service';
+import { TransactionService } from './transaction.service';
+import { UserService } from './user.service';
 
 const relationshipNames = [];
 relationshipNames.push('customer');
@@ -71,7 +70,7 @@ export class OrderService {
     result.orderDetails = result.orderDetails.sort((a, b) => {
       return Number(a.id) - Number(b.id);
     });
-    await this.cacheManager.set(cacheKey, result, {ttl: 60 * 60 * 1000});
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
 
     return result;
   }
@@ -101,8 +100,8 @@ export class OrderService {
       andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  Order.createdDate  >= :startDate AND  Order.createdDate <= :endDate`;
     }
     paramsObject.startDate = filter['startDate'],
-    paramsObject.endDate = filter['endDate']+ ' 23:59:59',
-    delete filter['startDate'];
+      paramsObject.endDate = filter['endDate'] + ' 23:59:59',
+      delete filter['startDate'];
     delete filter['endDate'];
 
     if (isEmployee) {
@@ -132,7 +131,7 @@ export class OrderService {
       // .leftJoinAndSelect('Order.department', 'department')
       .skip(options.skip)
       .take(options.take)
-      .where(andQueryString,paramsObject)
+      .where(andQueryString, paramsObject)
       .orderBy({
         'Order.createdDate': options.order[Object.keys(options.order)[0]] || 'DESC'
       });
@@ -196,7 +195,7 @@ export class OrderService {
     }
 
     const result = await queryBuilder.getManyAndCount();
-    await this.cacheManager.set(cacheKey, result, {ttl: 60 * 60 * 1000});
+    await this.cacheManager.set(cacheKey, result, { ttl: 60 * 60 * 1000 });
 
     return result;
   }
@@ -280,7 +279,7 @@ export class OrderService {
 
   async save(order: Order, currentUser: User): Promise<Order | undefined> {
     const customer = await this.customerService.findById(order.customer.id)
-    if(customer.sale.id !== currentUser.id){
+    if (customer.sale.id !== currentUser.id) {
       throw new HttpException('Khách hàng này không thuộc bạn quản lý.', HttpStatus.UNPROCESSABLE_ENTITY);
     }
     if (!order.id) {
@@ -290,6 +289,15 @@ export class OrderService {
         .where(`order.code like '%${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}%'`)
         .getCount();
       order.code = `${currentUser.mainDepartment ? currentUser.mainDepartment.code : currentUser.department.code}-${count + 1}`;
+      order.realMoney = order.orderDetails.reduce(
+        (sum, current) => sum + (current.priceReal * current.quantity - (current.priceReal * current.quantity * current.reducePercent) / 100),
+        0
+      );
+      order.reduceMoney = order.orderDetails.reduce(
+        (sum, current) => sum + (current.priceReal * current.quantity * current.reducePercent) / 100,
+        0
+      );
+      order.totalMoney = order.orderDetails.reduce((sum, current) => sum + current.priceReal * current.quantity, 0);
     }
     const result = await this.orderRepository.save(order);
     const userCanApproveOrder = await this.userService.findManager(result.department.id, currentUser.branch.id);

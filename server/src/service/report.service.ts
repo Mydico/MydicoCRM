@@ -952,7 +952,7 @@ export class ReportService {
           .groupBy('Customer.id');
       }, 'totals');
     if (filter['customer'] && filter['customer'] !== '[]') {
-        queryBuilder.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
+      queryBuilder.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
 
     }
     const cacheKey = queryBuilder.getQueryAndParameters().toString();
@@ -978,10 +978,10 @@ export class ReportService {
       .where(queryString)
       // .groupBy('Transaction.customerId')
       .cache(3 * 3600);
-      if (filter['customer'] && filter['customer'] !== '[]') {
-        queryBuilder.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
-  
-      }
+    if (filter['customer'] && filter['customer'] !== '[]') {
+      queryBuilder.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
+
+    }
     const cacheKey = queryBuilder.getQueryAndParameters().toString();
     const cachedQuery = await this.cacheManager.get(cacheKey);
     if (cachedQuery) {
@@ -1011,10 +1011,10 @@ export class ReportService {
       .offset(options.skip)
       .limit(options.take)
       .cache(3 * 3600);
-      if (filter['customer'] && filter['customer'] !== '[]') {
-        queryBuilder.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
-  
-      }
+    if (filter['customer'] && filter['customer'] !== '[]') {
+      queryBuilder.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
+
+    }
     const result = await queryBuilder.getRawMany();
 
     const count = await this.transactionRepository
@@ -1024,10 +1024,10 @@ export class ReportService {
       .leftJoin('customer.type', 'type')
       .where(queryString)
       .groupBy('Transaction.customerId, customer.code, customer.name, customer.id ')
-      if (filter['customer'] && filter['customer'] !== '[]') {
-        count.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
-  
-      }
+    if (filter['customer'] && filter['customer'] !== '[]') {
+      count.andWhere('customer.id IN (:saleIds)', { saleIds: JSON.parse(filter['customer']).length > 0 ? JSON.parse(filter['customer']) : '' })
+
+    }
     const countResult = count.getCount()
     return [result, countResult];
   }
@@ -1216,7 +1216,6 @@ export class ReportService {
     delete filterForStoreHistory.branch
     let queryString = queryBuilderFunc('StoreHistory', filterForStoreHistory, false, true);
 
-
     queryString = queryString.replace('StoreHistory.productId', 'product.id');
     queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
     queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
@@ -1362,6 +1361,7 @@ export class ReportService {
       .getRawMany()
     queryString = queryString.replace('StoreInput.departmentId', 'StoreInput.storeTransferId');
     queryString = queryString.replace('StoreInput.lastModifiedDate', 'StoreInput.createdDate');
+    console.log(filter)
     const ontheway = this.storeInputRepository
       .createQueryBuilder('StoreInput')
       .select("storeInputDetails.productId")
@@ -1372,7 +1372,15 @@ export class ReportService {
       .leftJoin('product.productBrand', 'brand')
       .leftJoin('product.productGroup', 'productGroup')
       .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
-      .andWhere("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'APPROVED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'WAITING'")
+      .andWhere(new Brackets(qb => {
+        qb.where("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'APPROVED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'WAITING'");
+      }),)
+      .orWhere(new Brackets(qb => {
+        qb.where("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'APPROVED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.lastModifiedDate <> null AND StoreInput.lastModifiedDate <= :lastModifiedDate ",{
+          lastModifiedDate: filter.endDate
+        });
+      }),)
+      // .andWhere("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'APPROVED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'WAITING'")
       .andWhere(queryString)
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")
@@ -1415,62 +1423,62 @@ export class ReportService {
     return [Array.from(result2), count.length];
   }
 
-  // private async getRemains(filter, options, filterName: string) {
-  //   const filterForStoreHistory = { ...filter };
-  //   delete filterForStoreHistory.branch;
-  //   let queryString = this.queryConverter(filterName, filterForStoreHistory);
+  private async getRemains(filter, options, filterName: string) {
+    const filterForStoreHistory = { ...filter };
+    delete filterForStoreHistory.branch;
+    let queryString = this.queryConverter(filterName, filterForStoreHistory, false, true);
 
-  //   const count = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.startDate, true);
-  //   const remainbegin = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.startDate, false, options);
+    const count = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.startDate, null);
+    const remainbegin = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.startDate, options);
 
-  //   const productId = remainbegin.map(item => item.productId);
-  //   if (productId.length === 0) return [[], 0];
+    const productId = remainbegin.map(item => item.productId);
+    if (productId.length === 0) return [[], 0];
 
-  //   const remainEnd = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.endDate, true, null, productId);
-  //   return { remainbegin, count, remainEnd };
-  // }
+    const remainEnd = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.endDate, null, productId);
+    return { remainbegin, count, remainEnd };
+  }
 
-  // private queryConverter(filterName: string, filter: any): string {
-  //   let queryString = queryBuilderFunc(filterName, filter);
-  //   queryString = queryString.replace(`${filterName}.productId`, 'product.id');
-  //   queryString = queryString.replace(`${filterName}.brandId`, 'brand.id');
-  //   queryString = queryString.replace(`${filterName}.productGroupId`, 'productGroup.id');
-  //   queryString = queryString.replace(`${filterName}.product_name`, 'product.name');
-  //   return queryString;
-  // }
+  private queryConverter(filterName: string, filter: any, isDebt = false, ignoreDate = false): string {
+    let queryString = queryBuilderFunc(filterName, filter, isDebt, ignoreDate);
+    queryString = queryString.replace(`${filterName}.productId`, 'product.id');
+    queryString = queryString.replace(`${filterName}.brandId`, 'brand.id');
+    queryString = queryString.replace(`${filterName}.productGroupId`, 'productGroup.id');
+    queryString = queryString.replace(`${filterName}.product_name`, 'product.name');
+    return queryString;
+  }
 
-  // private async fetchStoreInputDetails(filterName: string, filter: any, type: string, status: string, queryStringAddition: string, productId: any[]) {
-  //   let queryString = this.queryConverter(filterName, filter);
-  //   queryString += queryStringAddition;
-  //   return this.storeInputRepository.fetchDetails(type, status, queryString, productId);
-  // }
+  private async fetchStoreInputDetails(filterName: string, filter: any, type: string, status: string, queryStringAddition: string, productId: any[]) {
+    let queryString = this.queryConverter(filterName, filter);
+    queryString += queryStringAddition;
+    return this.storeInputRepository.fetchDetails(type, status, queryString, productId);
+  }
 
-  // async getProductInWarehouse(filter: any, options: any) {
-  //   const { remainbegin, count, remainEnd } = await this.getRemains(filter, options, 'StoreHistory');
-    
-  //   const productId = remainbegin.map(item => item.productId);
-  //   const importProduct = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT', 'APPROVED', " AND StoreInput.createdBy <> 'system'", productId);
-  //   const returnProduct = await this.fetchStoreInputDetails('StoreInput', filter, 'RETURN', 'APPROVED', '', productId);
-  //   const inputProductFromExport = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT_FROM_STORE', 'APPROVED', " AND StoreInput.relatedId is not null", productId);
-  //   const exportStore = await this.fetchStoreInputDetails('StoreInput', filter, 'EXPORT', 'APPROVED', " AND StoreInput.storeTransferId is not null", productId);
-  //   const exportStoreToProvider = await this.fetchStoreInputDetails('StoreInput', filter, 'EXPORT', 'APPROVED', " AND StoreInput.providerId is not null", productId);
-  //   const ontheway = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT_FROM_STORE', 'WAITING', " AND StoreInput.relatedId is not null", productId);
+  async getProductInWarehouse(options: any, filter: any) {
+    const { remainbegin, count, remainEnd }: any = await this.getRemains(filter, options, 'StoreHistory');
 
-  //   const filterForBill = { ...filter };
-  //   delete filterForBill.branch;
-  //   let queryString = this.queryConverter('Bill', filterForBill);
-  //   const exportedProduct = await this.billRepository.fetchExportedProduct(queryString, productId, 'Bill');
-  
-  //   const queryResult = await Promise.all([remainEnd, importProduct, returnProduct, inputProductFromExport, exportedProduct, exportStore, ontheway, exportStoreToProvider])
-  //   const arrayResult = Array.prototype.concat(...queryResult).concat(remainbegin);
+    const productId = remainbegin.map(item => item.productId);
+    const importProduct = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT', 'APPROVED', " AND StoreInput.createdBy <> 'system'", productId);
+    const returnProduct = await this.fetchStoreInputDetails('StoreInput', filter, 'RETURN', 'APPROVED', '', productId);
+    const inputProductFromExport = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT_FROM_STORE', 'APPROVED', " AND StoreInput.relatedId is not null", productId);
+    const exportStore = await this.fetchStoreInputDetails('StoreInput', filter, 'EXPORT', 'APPROVED', " AND StoreInput.storeTransferId is not null", productId);
+    const exportStoreToProvider = await this.fetchStoreInputDetails('StoreInput', filter, 'EXPORT', 'APPROVED', " AND StoreInput.providerId is not null", productId);
+    const ontheway = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT_FROM_STORE', 'WAITING', " AND StoreInput.relatedId is not null", productId);
 
-  //   const result2 = arrayResult
-  //     .reduce(
-  //       (acc, curr) => acc.set(curr.productId, { ...acc.get(curr.productId), ...curr }),
-  //       new Map()
-  //     )
-  //     .values()
+    const filterForBill = { ...filter };
+    delete filterForBill.branch;
+    let queryString = this.queryConverter('Bill', filterForBill);
+    const exportedProduct = await this.billRepository.fetchExportedProduct(queryString, productId, 'Bill');
 
-  //   return [Array.from(result2), count.length];
-  // }
+    const queryResult = await Promise.all([remainEnd, importProduct, returnProduct, inputProductFromExport, exportedProduct, exportStore, ontheway, exportStoreToProvider])
+    const arrayResult = Array.prototype.concat(...queryResult).concat(remainbegin);
+
+    const result2 = arrayResult
+      .reduce(
+        (acc, curr) => acc.set(curr.productId, { ...acc.get(curr.productId), ...curr }),
+        new Map()
+      )
+      .values()
+
+    return [Array.from(result2), count.length];
+  }
 }
