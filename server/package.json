@@ -43,7 +43,7 @@
     "@nestjs/websockets": "^8.0.6",
     "async": "^3.2.4",
     "axios": "^0.21.4",
-    "bull": "^4.10.4",
+    "bull": "^4.11.3",
     "cache-manager": "^3.4.3",
     "cache-manager-redis-store": "^2.0.0",
     "casbin": "^5.11.3",

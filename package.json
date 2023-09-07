@@ -29,6 +29,8 @@
     "node": ">=8.9.0"
   },
   "dependencies": {
+    "@nestjs/bull": "^10.0.1",
+    "bull": "^4.11.3",
     "express-list-endpoints": "^5.0.0",
     "webpack": "^5.48.0"
   }

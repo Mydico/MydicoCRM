@@ -12,6 +12,8 @@ import { FirebaseService } from './firebase.services';
 import { UserService } from './user.service';
 import { NotificationService } from './notification.service';
 import Notification from '../domain/notification.entity';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
 
 const relationshipNames = [];
 relationshipNames.push('branches');
@@ -28,6 +30,7 @@ export class InternalNotificationService {
     private readonly userService: UserService,
     private readonly notificationService: NotificationService,
     private readonly firebaseService: FirebaseService,
+    @InjectQueue('notification') private notificationQueue: Queue
 
   ) { }
 
@@ -86,56 +89,10 @@ export class InternalNotificationService {
   }
 
   async send(internalNotification: InternalNotification): Promise<void> {
-    const options = { relations: relationshipNames };
+    await this.notificationQueue.add('internalNotification', {
+      internalNotification
+    });
 
-    const founded = await this.internalNotificationRepository.findOne(internalNotification.id, options);
-    const where = []
-    if (founded.departments.length > 0) {
-      where.push({ department: In(founded.departments.map(user => user.id)), })
-      where.push({ mainDepartment: In(founded.departments.map(user => user.id)), })
-    }
-    if (founded.branches.length > 0) {
-      where.push({ branch: In(founded.branches.map(user => user.id)), })
-    }
-    if (founded.users.length > 0) {
-      where.push({ id: In(founded.users.map(user => user.id)), })
-    }
-    const sendingUser = await this.userService.findAllByfields({
-      where
-    })
-    const saveNotiArr: Notification[] = [];
-    const pushNotiArr = [];
-
-    for (let index = 0; index < sendingUser[0].length; index++) {
-      const element = sendingUser[0][index];
-      saveNotiArr.push({
-        content: founded.shortContent,
-        fullContent: founded.content,
-        type: founded.entityName ? founded.entityName : 'INTERNAL',
-        user: element,
-        entityId: founded.entityId,
-        assets: founded.assets
-      }
-      );
-      if (element.fcmToken) {
-        pushNotiArr.push({
-          token: element.fcmToken,
-          title: founded.title,
-          message: founded.shortContent,
-          data: {
-            type: founded.entityName ? founded.entityName : 'INTERNAL',
-            entityId: founded.entityName?  founded.entityId : founded.id,
-            content: founded.shortContent,
-            fullContent: founded.content,
-            user: element,
-            assets: founded.assets
-          }
-        });
-      }
-
-    }
-    await this.notificationService.saveMany(saveNotiArr);
-    await this.firebaseService.sendFirebaseMessages(pushNotiArr, false);
   }
 
   async save(internalNotification: InternalNotification): Promise<InternalNotification | undefined> {
