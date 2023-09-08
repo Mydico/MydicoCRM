@@ -1,4 +1,3 @@
-
 import { Processor, Process } from '@nestjs/bull';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from 'bull';
@@ -17,33 +16,32 @@ relationshipNames.push('departments');
 
 @Processor('notification')
 export class InternalNotificationConsumer {
-    constructor(
-        @InjectRepository(InternalNotificationRepository) private internalNotificationRepository: InternalNotificationRepository,
-        private readonly userService: UserService,
-        private readonly notificationService: NotificationService,
-        private readonly firebaseService: FirebaseService,
-    
-      ) { }
-  @Process()
-  async transcode(job: Job<any>) {
+  constructor(
+    @InjectRepository(InternalNotificationRepository) private internalNotificationRepository: InternalNotificationRepository,
+    private readonly userService: UserService,
+    private readonly notificationService: NotificationService,
+    private readonly firebaseService: FirebaseService
+  ) {}
+  @Process('send-notification')
+  async notification(job: Job<any>) {
     const internalNotification = job.data.internalNotification;
     const options = { relations: relationshipNames };
 
     const founded = await this.internalNotificationRepository.findOne(internalNotification.id, options);
-    const where = []
+    const where = [];
     if (founded.departments.length > 0) {
-      where.push({ department: In(founded.departments.map(user => user.id)), })
-      where.push({ mainDepartment: In(founded.departments.map(user => user.id)), })
+      where.push({ department: In(founded.departments.map(user => user.id)) });
+      where.push({ mainDepartment: In(founded.departments.map(user => user.id)) });
     }
     if (founded.branches.length > 0) {
-      where.push({ branch: In(founded.branches.map(user => user.id)), })
+      where.push({ branch: In(founded.branches.map(user => user.id)) });
     }
     if (founded.users.length > 0) {
-      where.push({ id: In(founded.users.map(user => user.id)), })
+      where.push({ id: In(founded.users.map(user => user.id)) });
     }
     const sendingUser = await this.userService.findAllByfields({
       where
-    })
+    });
     const saveNotiArr: Notification[] = [];
     const pushNotiArr = [];
 
@@ -56,8 +54,7 @@ export class InternalNotificationConsumer {
         user: element,
         entityId: founded.entityId,
         assets: founded.assets
-      }
-      );
+      });
       if (element.fcmToken) {
         pushNotiArr.push({
           token: element.fcmToken,
@@ -65,14 +62,13 @@ export class InternalNotificationConsumer {
           message: founded.shortContent,
           data: {
             type: founded.entityName ? founded.entityName : 'INTERNAL',
-            entityId: founded.entityName?  founded.entityId : founded.id,
+            entityId: founded.entityName ? founded.entityId : founded.id,
             content: founded.shortContent,
             user: element,
             assets: founded.assets
           }
         });
       }
-
     }
     await this.notificationService.saveMany(saveNotiArr);
     await this.firebaseService.sendFirebaseMessages(pushNotiArr, false);

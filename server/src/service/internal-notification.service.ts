@@ -89,7 +89,7 @@ export class InternalNotificationService {
   }
 
   async send(internalNotification: InternalNotification): Promise<void> {
-    await this.notificationQueue.add('internalNotification', {
+    await this.notificationQueue.add('send-notification', {
       internalNotification
     });
 
