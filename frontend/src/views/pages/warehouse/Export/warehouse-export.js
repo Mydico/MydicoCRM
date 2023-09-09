@@ -18,11 +18,15 @@ import Download from '../../../components/excel/DownloadExcel';
 import { computedExcelItemsWarehouse, fieldsExcelWarehouse } from '../Import/warehouse-import.js';
 import ReportDate from '../../../components/report-date/ReportDate.js';
 import AdvancedTable from '../../../components/table/AdvancedTable.js';
+import StoreDetail from './StoreDetail.js';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
   APPROVED: 'ĐÃ DUYỆT',
-  REJECTED: 'KHÔNG DUYỆT'
+  REJECTED: 'KHÔNG DUYỆT',
+  QUANTITY_CHECK: 'ĐANG KIỂM KÊ',
+  QUANTITY_VERIFIED: 'KIỂM KÊ XONG',
+  EXPORTED: 'ĐÃ XUẤT KHO'
 };
 
 // Code	Tên kho	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại kho	Phân loại	Sửa	Tạo đơn
@@ -67,18 +71,6 @@ const statusList = [
     label: 'ĐÃ DUYỆT'
   }
 ];
-const fieldsDetail = [
-  {
-    key: 'order',
-    label: 'STT',
-    _style: { width: '1%' },
-    filter: false
-  },
-  { key: 'code', label: 'Mã', _style: { width: '10%' } },
-  { key: 'productName', label: 'Tên sản phẩm', _style: { width: '10%' } },
-  { key: 'unit', label: 'Đơn vị', _style: { width: '10%' } },
-  { key: 'quantity', label: 'Số lượng', _style: { width: '10%' } }
-];
 
 const getBadge = status => {
   switch (status) {
@@ -90,6 +82,161 @@ const getBadge = status => {
       return 'warning';
     default:
       return 'primary';
+  }
+};
+
+const renderButtonStatus = (
+  alertFunc,
+  item,
+  isAdmin,
+  account,
+  toEditWarehouseImport,
+  toEditWarehouseExportProvider,
+  isChecking,
+  approveTicket,
+  rejectTicket,
+  approveCheckingTicket,
+  exportTicket
+) => {
+  switch (item.status) {
+    case WarehouseImportStatus.APPROVED:
+      return (
+        <CRow style={{ minWidth: 300 }}>
+          {(isAdmin ||
+            account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/calculate').length > 0) && (
+            <CButton
+              onClick={() => {
+                item.type !== WarehouseImportType.EXPORT_TO_PROVIDER
+                  ? toEditWarehouseImport(item.id, isChecking)
+                  : toEditWarehouseExportProvider(item.id);
+              }}
+              color="warning"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              <CIcon name="cil-pencil" />
+              KIỂM KÊ
+            </CButton>
+          )}
+        </CRow>
+      );
+    case WarehouseImportStatus.QUANTITY_CHECK:
+      return (
+        <CRow style={{ minWidth: 300 }}>
+          {(isAdmin ||
+            account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/calculate').length > 0) && (
+            <CButton
+              onClick={() => {
+                item.type !== WarehouseImportType.EXPORT_TO_PROVIDER
+                  ? toEditWarehouseImport(item.id, isChecking)
+                  : toEditWarehouseExportProvider(item.id);
+              }}
+              color="warning"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              <CIcon name="cil-pencil" />
+              KIỂM KÊ
+            </CButton>
+          )}
+          {(isAdmin ||
+            account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/verify-calculate').length > 0) && (
+            <CButton
+              onClick={() => {
+                alertFunc(item, 'Bạn có chắc chắn muốn duyệt kiểm kê kho không', approveCheckingTicket);
+              }}
+              color="warning"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              <CIcon name="cil-pencil" />
+              DUYỆT KIỂM KÊ
+            </CButton>
+          )}
+        </CRow>
+      );
+    case WarehouseImportStatus.QUANTITY_VERIFIED:
+      return (
+        <CRow style={{ minWidth: 300 }}>
+          {(isAdmin ||
+            account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/complete').length > 0) && (
+            <CButton
+              onClick={() => {
+                alertFunc(item, 'Bạn có chắc chắn muốn xuất kho không', exportTicket);
+              }}
+              color="success"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              <CIcon name="cil-pencil" />
+              XUẤT KHO
+            </CButton>
+          )}
+        </CRow>
+      );
+    case WarehouseImportStatus.REJECTED:
+      return null;
+    case WarehouseImportStatus.WAITING:
+      return (
+        <CRow style={{ minWidth: 300 }}>
+          {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export').length > 0) && (
+            <CButton
+              onClick={() => {
+                item.type !== WarehouseImportType.EXPORT_TO_PROVIDER
+                  ? toEditWarehouseImport(item.id)
+                  : toEditWarehouseExportProvider(item.id);
+              }}
+              color="warning"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              <CIcon name="cil-pencil" />
+              CHỈNH SỬA
+            </CButton>
+          )}
+          {(isAdmin ||
+            account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/approve').length > 0) && (
+            <CButton
+              onClick={() => {
+                alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu xuất kho này không', approveTicket);
+              }}
+              color="success"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              DUYỆT
+            </CButton>
+          )}
+          {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/cancel').length > 0) && (
+            <CButton
+              onClick={() => {
+                alertFunc(item, 'Bạn có chắc chắn muốn từ chối phiếu xuất kho này không', rejectTicket);
+              }}
+              color="danger"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              KHÔNG DUYỆT
+            </CButton>
+          )}
+        </CRow>
+      );
+    default:
+      break;
   }
 };
 const WarehouseImport = props => {
@@ -164,8 +311,8 @@ const WarehouseImport = props => {
   const toEditWarehouseExportProvider = userId => {
     history.push(`${props.match.url}/provider/${userId}/edit`);
   };
-  const toEditWarehouseImport = userId => {
-    history.push(`${props.match.url}/${userId}/edit`);
+  const toEditWarehouseImport = (userId, isChecking) => {
+    history.push(`${props.match.url}/${userId}/edit`, { isChecking });
   };
 
   const debouncedSearchColumn = _.debounce(value => {
@@ -216,66 +363,16 @@ const WarehouseImport = props => {
     dispatch(updateWarehouseStatusImport(data));
   };
 
-  const renderButtonStatus = item => {
-    switch (item.status) {
-      case WarehouseImportStatus.APPROVED:
-      case WarehouseImportStatus.REJECTED:
-        return null;
-      case WarehouseImportStatus.WAITING:
-        return (
-          <CRow style={{ minWidth: 300 }}>
-            {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export').length > 0) && (
-              <CButton
-                onClick={() => {
-                  item.type !== WarehouseImportType.EXPORT_TO_PROVIDER
-                    ? toEditWarehouseImport(item.id)
-                    : toEditWarehouseExportProvider(item.id);
-                }}
-                color="warning"
-                variant="outline"
-                shape="square"
-                size="sm"
-                className="mr-1"
-              >
-                <CIcon name="cil-pencil" />
-                CHỈNH SỬA
-              </CButton>
-            )}
-            {(isAdmin ||
-              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/approve').length > 0) && (
-              <CButton
-                onClick={() => {
-                  alertFunc(item, 'Bạn có chắc chắn muốn duyệt phiếu xuất kho này không', approveTicket);
-                }}
-                color="success"
-                variant="outline"
-                shape="square"
-                size="sm"
-                className="mr-1"
-              >
-                DUYỆT
-              </CButton>
-            )}
-            {(isAdmin ||
-              account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/cancel').length > 0) && (
-              <CButton
-                onClick={() => {
-                  alertFunc(item, 'Bạn có chắc chắn muốn từ chối phiếu xuất kho này không', rejectTicket);
-                }}
-                color="danger"
-                variant="outline"
-                shape="square"
-                size="sm"
-                className="mr-1"
-              >
-                KHÔNG DUYỆT
-              </CButton>
-            )}
-          </CRow>
-        );
-      default:
-        break;
-    }
+  const approveCheckingTicket = bill => () => {
+    dispatch(fetching());
+    const data = { id: bill.id, status: WarehouseImportStatus.QUANTITY_VERIFIED, type: 'EXPORT', action: 'export/verify-calculate' };
+    dispatch(updateWarehouseStatusImport(data));
+  };
+
+  const exportTicket = bill => () => {
+    dispatch(fetching());
+    const data = { id: bill.id, status: WarehouseImportStatus.EXPORTED, type: 'EXPORT', action: 'export/complete' };
+    dispatch(updateWarehouseStatusImport(data));
   };
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
@@ -398,7 +495,23 @@ const WarehouseImport = props => {
               </td>
             ),
             action: item => {
-              return <td className="py-2 d-flex">{renderButtonStatus(item)}</td>;
+              return (
+                <td className="py-2 d-flex">
+                  {renderButtonStatus(
+                    alertFunc,
+                    item,
+                    isAdmin,
+                    account,
+                    toEditWarehouseImport,
+                    toEditWarehouseExportProvider,
+                    item.status === WarehouseImportStatus.APPROVED || item.status === WarehouseImportStatus.QUANTITY_CHECK,
+                    approveTicket,
+                    rejectTicket,
+                    approveCheckingTicket,
+                    exportTicket
+                  )}
+                </td>
+              );
             },
 
             code: (item, index) => (
@@ -433,29 +546,7 @@ const WarehouseImport = props => {
             details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
-                  <CCardBody>
-                    <h5>Thông tin đơn nhập</h5>
-                    <AdvancedTable
-                      items={item.storeInputDetails.map(item => {
-                        return {
-                          code: item.product?.code || '',
-                          productName: item.product?.name || '',
-                          unit: item.product?.unit || '',
-                          quantity: item.quantity || ''
-                        };
-                      })}
-                      fields={fieldsDetail}
-                      bordered
-                      itemsPerPage={5}
-                      pagination
-                      scopedSlots={{
-                        order: (item, index) => <td> {(activePage - 1) * size + index + 1}</td>
-                      }}
-                    />
-                    <CCol lg="4" sm="5">
-                      Ghi chú: <strong>{item?.note}</strong>
-                    </CCol>
-                  </CCardBody>
+                  <StoreDetail isFetch={details.includes(item.id)} orderId={item.id} />
                 </CCollapse>
               );
             }

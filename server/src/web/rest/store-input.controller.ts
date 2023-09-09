@@ -37,7 +37,7 @@ import { StoreInputUpdateStatusDTO } from '../../service/dto/store-input.dto';
 export class StoreInputController {
   logger = new Logger('StoreInputController');
 
-  constructor(private readonly storeInputService: StoreInputService, private readonly departmentService: DepartmentService) {}
+  constructor(private readonly storeInputService: StoreInputService, private readonly departmentService: DepartmentService) { }
 
   @Get('/export')
   @Roles(RoleType.USER)
@@ -252,13 +252,52 @@ export class StoreInputController {
   })
   async approveExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
-    if (storeInput.status === StoreImportStatus.APPROVED) {
-      const currentUser = req.user as User;
-      storeInput.approver = currentUser;
-      storeInput.approverName = currentUser.login;
-      storeInput.lastModifiedDate = new Date()
-    }
+    storeInput.status = StoreImportStatus.APPROVED;
+    const currentUser = req.user as User;
+    storeInput.approver = currentUser;
+    storeInput.approverName = currentUser.login;
+    storeInput.lastModifiedDate = new Date()
+
     return res.send(await this.storeInputService.update(storeInput));
+  }
+
+  @Put('/export/calculate')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: StoreInput
+  })
+  async calculateExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+    storeInput.status = StoreImportStatus.QUANTITY_CHECK;
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
+    return res.send(await this.storeInputService.update(storeInput));
+  }
+
+  @Put('/export/verify-calculate')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: StoreInput
+  })
+  async verifyCalculateExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
+    storeInput.status = StoreImportStatus.QUANTITY_VERIFIED;
+    return res.send(await this.storeInputService.update(storeInput));
+  }
+
+  @Put('/export/complete')
+  @Roles(RoleType.USER)
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated.',
+    type: StoreInput
+  })
+  async completeExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
+    HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
+    const currentUser = req.user as User;
+    return res.send(await this.storeInputService.verifyCalculate(storeInput,currentUser));
   }
 
   @Put('/return/approve')
@@ -290,7 +329,7 @@ export class StoreInputController {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
     if (storeInput.status === StoreImportStatus.APPROVED) {
-      if(storeInput.type === StoreImportType.EXPORT){
+      if (storeInput.type === StoreImportType.EXPORT) {
         const canExport = await this.storeInputService.canExportStore(storeInput);
         if (!canExport) {
           throw new HttpException('Sản phẩm trong kho không đủ để tạo phiếu xuất', HttpStatus.UNPROCESSABLE_ENTITY);

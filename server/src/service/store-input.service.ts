@@ -68,7 +68,7 @@ export class StoreInputService {
             if (!sum) {
                 previousValue.push(Object.assign({}, currentValue));
             } else {
-                sum.quantity += currentValue.quantity;
+                sum.quantity += currentValue.quantityRemain;
             }
             return previousValue;
         }, []);
@@ -139,41 +139,41 @@ export class StoreInputService {
             .leftJoinAndSelect('StoreInput.department', 'department')
             .leftJoinAndSelect('StoreInput.customer', 'customer')
             .leftJoinAndSelect('StoreInput.sale', 'sale')
-            .leftJoinAndSelect('StoreInput.promotion', 'promotion')
-            .leftJoinAndSelect('StoreInput.storeInputDetails', 'storeInputDetails')
-            .leftJoinAndSelect('storeInputDetails.product', 'product')
+            // .leftJoinAndSelect('StoreInput.promotion', 'promotion')
+            // .leftJoinAndSelect('StoreInput.storeInputDetails', 'storeInputDetails')
+            // .leftJoinAndSelect('storeInputDetails.product', 'product')
             .leftJoinAndSelect('StoreInput.storeTransfer', 'storeTransfer')
-            .cache(cacheKeyBuilder, 604800)
+            // .cache(cacheKeyBuilder, 604800)
             .where(andQueryString)
             .orderBy(`StoreInput.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
             .skip(options.skip)
             .take(options.take);
-        const countCacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, { ...filter, type }, options, 'StoreInputs_count');
+        // const countCacheKeyBuilder = generateCacheKey(departmentVisible, currentUser, isEmployee, { ...filter, type }, options, 'StoreInputs_count');
 
-        const count = this.storeInputRepository
-            .createQueryBuilder('StoreInput')
-            .where(andQueryString)
-            .leftJoinAndSelect('StoreInput.customer', 'customer')
-            .leftJoinAndSelect('StoreInput.sale', 'sale')
-            .orderBy(`StoreInput.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
-            .skip(options.skip)
-            .take(options.take)
-            .cache(
-                countCacheKeyBuilder
-            );
+        // const count = this.storeInputRepository
+        //     .createQueryBuilder('StoreInput')
+        //     .where(andQueryString)
+        //     .leftJoinAndSelect('StoreInput.customer', 'customer')
+        //     .leftJoinAndSelect('StoreInput.sale', 'sale')
+        //     .orderBy(`StoreInput.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
+        //     .skip(options.skip)
+        //     .take(options.take)
+        //     .cache(
+        //         countCacheKeyBuilder
+        //     );
 
         if (filter['sale']) {
             queryBuilder.andWhere(`sale.code like '%${filter['sale']}%'`)
-            count.andWhere(`sale.code like '%${filter['sale']}%'`)
+            // count.andWhere(`sale.code like '%${filter['sale']}%'`)
         }
 
         if (filter['customerName']) {
             queryBuilder.andWhere(`customer.name like '%${filter['customerName']}%'`)
-            count.andWhere(`customer.name like '%${filter['customerName']}%'`)
+            // count.andWhere(`customer.name like '%${filter['customerName']}%'`)
         }
         if (filter['customerId']) {
             queryBuilder.andWhere(`customer.id = ${filter['customerId']}`)
-            count.andWhere(`customer.id = ${filter['customerId']}`)
+            // count.andWhere(`customer.id = ${filter['customerId']}`)
         }
         delete filter['sale']
         delete filter['customerName']
@@ -189,22 +189,22 @@ export class StoreInputService {
                     sqb.where(queryString);
                 })
             );
-            count.andWhere(
-                new Brackets(sqb => {
-                    sqb.where(queryString);
-                })
-            );
+            // count.andWhere(
+            //     new Brackets(sqb => {
+            //         sqb.where(queryString);
+            //     })
+            // );
         }
         const result: [StoreInput[], number] = [[], 0]
-        const data = await queryBuilder.getMany();
-        result[1] = await count.getCount();
-        result[0] = data.map(item => ({
-            ...item,
-            orderDetails: item.storeInputDetails.sort((a, b) => {
-                return Number(a.id) - Number(b.id);
-            })
-        }));
-        return result;
+        const data = await queryBuilder.getManyAndCount();
+        // result[1] = await count.getCount();
+        // result[0] = data.map(item => ({
+        //     ...item,
+        //     orderDetails: item.storeInputDetails.sort((a, b) => {
+        //         return Number(a.id) - Number(b.id);
+        //     })
+        // }));
+        return data;
     }
 
     async findAndCountReturn(options: FindManyOptions<StoreInput>): Promise<[StoreInput[], number]> {
@@ -243,6 +243,7 @@ export class StoreInputService {
         return await this.save(storeInput);
 
     }
+
     async update(storeInput: StoreInput, currentUser: User = null): Promise<any> {
         const entity = await this.findById(storeInput.id);
         if (entity.status === StoreImportStatus.APPROVED && storeInput.status === StoreImportStatus.APPROVED) {
@@ -261,10 +262,28 @@ export class StoreInputService {
                 if (entity.type === StoreImportType.RETURN) {
                     await this.createDebit(entity);
                 }
-            } else {
-                await this.exportStore(founded, entity, currentUser);
             }
+            // else {
+            //     await this.exportStore(founded, entity, currentUser);
+            // }
         }
+        return await this.save(storeInput);
+    }
+
+    async verifyCalculate(storeInput: StoreInput, currentUser: User = null): Promise<any> {
+        const entity = await this.findById(storeInput.id);
+        console.log(entity)
+        if (entity.status === StoreImportStatus.QUANTITY_VERIFIED) {
+            const arrProduct = entity.storeInputDetails.map(item => item.product.id);
+            const founded = await this.productQuantityService.findByfields({
+                where: {
+                    product: In(arrProduct),
+                    store: entity.store,
+                },
+            });
+            await this.exportStore(founded, entity, currentUser);
+        }
+        storeInput.status = StoreImportStatus.EXPORTED
         return await this.save(storeInput);
     }
 
@@ -294,8 +313,7 @@ export class StoreInputService {
     async exportStore(founded: ProductQuantity[], entity: StoreInput, currentUser: User = null): Promise<void> {
         const productInStore = founded.map(item => {
             const itemFounded = entity.storeInputDetails.filter(origin => origin.product.id === item.product.id);
-            const totalProduct = itemFounded.reduce((prev, current) => prev + current.quantity, 0);
-
+            const totalProduct = itemFounded.reduce((prev, current) => prev + current.quantityRemain, 0);
             return {
                 ...item,
                 entity: 'STORE',

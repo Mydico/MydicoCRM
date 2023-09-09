@@ -53,12 +53,15 @@ export default class StoreInput extends BaseEntity {
     reduceMoney?: number;
 
     @ManyToOne(type => Department, { createForeignKeyConstraints: false })
+    @Index()
     department? : Department;
 
     @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
+    @Index()
     branch? : Branch;
 
     @ManyToOne(type => User, { createForeignKeyConstraints: false })
+    @Index()
     approver?: User;
 
     @Column({ name: 'approver_name', length: 255, nullable: true })
@@ -84,6 +87,7 @@ export default class StoreInput extends BaseEntity {
 
 
     @ManyToOne(type => Store, { createForeignKeyConstraints: false })
+    @Index()
     store?: Store;
 
     @Column({ name: 'store_name', length: 255, nullable: true })
@@ -98,6 +102,8 @@ export default class StoreInput extends BaseEntity {
     providerName?: string;
 
     @ManyToOne(type => Store, { createForeignKeyConstraints: false })
+    @Index()
+
     storeTransfer?: Store;
 
     @Column({ name: 'store_transfer_name', length: 255, nullable: true })

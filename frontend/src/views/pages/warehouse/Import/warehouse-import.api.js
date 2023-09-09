@@ -45,6 +45,14 @@ export const getDetailWarehouseImport = createAsyncThunk('api/detail/store-input
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
+export const getDetailWarehouseDirect = createAsyncThunk('api/detail/Warehouse/direct', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/store-inputs/' + params.id, { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
 
 export const creatingWarehouseImport = createAsyncThunk('api/create/store-inputs', async (body, thunkAPI) => {
   try {

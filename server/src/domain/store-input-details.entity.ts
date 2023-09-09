@@ -15,6 +15,14 @@ export default class StoreInputDetails extends BaseEntity {
   @Index()
   quantity?: number;
 
+  @Column({ type: 'integer', name: 'quantityChange', nullable: true })
+  @Index()
+  quantityChange?: number;
+
+  @Column({ type: 'integer', name: 'quantityRemain', nullable: true })
+  @Index()
+  quantityRemain?: number;
+
   @Column({ type: 'bigint', name: 'price', nullable: true })
   @Index()
   price?: number;

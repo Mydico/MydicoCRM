@@ -2,6 +2,9 @@ export const WarehouseImportStatus = {
   WAITING: 'WAITING',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED',
+  QUANTITY_CHECK : 'QUANTITY_CHECK',
+  QUANTITY_VERIFIED : 'QUANTITY_VERIFIED',
+  EXPORTED : 'EXPORTED'
 };
 
 export const WarehouseImportType = {

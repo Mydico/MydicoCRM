@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger, CACHE_MANAGER, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UserLoginDTO } from '../service/dto/user-login.dto';
@@ -8,6 +8,7 @@ import { User } from '../domain/user.entity';
 import { AuthorityRepository } from '../repository/authority.repository';
 import { UserService } from '../service/user.service';
 import { RoleService } from './role.service';
+import Cache from 'cache-manager';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(AuthorityRepository) private authorityRepository: AuthorityRepository,
     private userService: UserService,
-    private readonly roleService: RoleService
+    private readonly roleService: RoleService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
   async login(userLogin: UserLoginDTO): Promise<any> {
@@ -36,8 +38,10 @@ export class AuthService {
     if (!userFind.activated) {
       throw new HttpException('Tài khoản này chưa kích hoạt', HttpStatus.UNPROCESSABLE_ENTITY);
     }
-    const user: any = await this.findUserWithAuthById(userFind.login);
-    user.role = await this.getUserRole(userFind.login);
+    const user: User = await this.findUserWithAuthById(userFind.login);
+    let role = await this.getUserRole(userFind.login);
+    (user as any).role = role;
+
     const payload: Payload = { id: user.id, login: user.login, authorities: user.authorities };
 
     /* eslint-disable */
@@ -68,6 +72,16 @@ export class AuthService {
   }
 
   async getUserRole(login: string): Promise<any[]> {
-    return await this.roleService.getPermissions(login);
+    const key = `${login}-role`;
+    let cachedRole = await this.cacheManager.get(key);
+    if (cachedRole) {
+      return cachedRole;
+    } else {
+      const role = await this.roleService.getPermissions(login);
+      await this.cacheManager.set(key, role, { ttl: 30 * 24 * 60 * 60 * 1000 });
+      return role
+
+    }
+   
   }
 }

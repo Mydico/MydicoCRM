@@ -4,7 +4,6 @@ process.env.UV_THREADPOOL_SIZE = OS.cpus().length;
 import { NestFactory } from '@nestjs/core';
 import cloudConfigClient from 'cloud-config-client';
 import { AppModule } from './app.module';
-import { setupSwagger } from './swagger';
 import { config } from './config';
 import { Logger, ValidationPipe, BadRequestException } from '@nestjs/common';
 import * as express from 'express';
@@ -81,7 +80,6 @@ async function bootstrap(): Promise<void> {
       !url.includes('gif') &&
       !url.includes('ico') &&
       !url.includes('jpg') &&
-      !url.includes('swagger') &&
       !url.includes('docs') &&
       !url.includes('webapp') &&
       !url.includes('*')
@@ -136,7 +134,6 @@ async function bootstrap(): Promise<void> {
   } else {
     mkdirSync(staticFilePath);
   }
-  setupSwagger(app);
   // const sslapp = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({
   //   https: httpsOptions
   // }));

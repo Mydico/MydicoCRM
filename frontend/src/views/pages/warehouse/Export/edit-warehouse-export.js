@@ -19,7 +19,7 @@ import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDetailWarehouseImport, updateWarehouseExport, updateWarehouseImport } from '../Import/warehouse-import.api';
 import _ from 'lodash';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
 import Select from 'react-select';
 import { currencyMask } from '../../../components/currency-input/currency-input';
@@ -29,7 +29,7 @@ import { globalizedWarehouseSelectors } from '../Warehouse/warehouse.reducer';
 import { getWarehouse } from '../Warehouse/warehouse.api';
 import { globalizedProductSelectors, swap } from '../../product/ProductList/product.reducer';
 import { filterProduct, getProduct } from '../../product/ProductList/product.api';
-import { WarehouseImportType } from './contants';
+import { WarehouseImportStatus, WarehouseImportType } from './contants';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { blockInvalidChar } from '../../../../shared/utils/helper';
@@ -61,6 +61,7 @@ const EditWarehouseExport = props => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [isSelectedWarehouse, setIsSelectedWarehouse] = useState(true);
   const [initValuesState, setInitValuesState] = useState(null);
+  const location = useLocation();
 
   const warehouses = useSelector(selectAllWarehouse);
   const products = useSelector(selectAllProduct);
@@ -81,7 +82,6 @@ const EditWarehouseExport = props => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
     dispatch(getWarehouse({ department: JSON.stringify([account.department?.id || '']), dependency: true }));
     dispatch(filterProduct({ page: 0, size: 20, sort: 'createdDate,DESC', dependency: true }));
-
   }, []);
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const EditWarehouseExport = props => {
       setInitValuesState(warehouseImport);
       setSelectedWarehouse(warehouseImport.store);
       setProductList(Array.isArray(warehouseImport.storeInputDetails) ? JSON.parse(JSON.stringify(warehouseImport.storeInputDetails)) : []);
-      if (warehouseImport.storeInputDetails.length > 0) {
+      if (warehouseImport.storeInputDetails?.length > 0) {
         const productArr = JSON.parse(JSON.stringify(warehouseImport.storeInputDetails));
         updateProductQuantity(productArr, warehouseImport.store.id);
       }
@@ -100,6 +100,9 @@ const EditWarehouseExport = props => {
     values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
+    if(location.state.isChecking){
+      values.status = WarehouseImportStatus.QUANTITY_CHECK
+    }
     values.totalMoney = Number(values.totalMoney.replace(/\D/g, ''));
     dispatch(updateWarehouseExport(values));
   };
@@ -110,6 +113,15 @@ const EditWarehouseExport = props => {
     if (selectedWarehouse && copyArr[index].product) {
       setProductList(copyArr);
       onSearchProductInstore(copyArr, index);
+    }
+  };
+
+  const onChangeQuantityDifference = ({ target }, index) => {
+    const copyArr = [...productList];
+    if(Number(target.value) <= copyArr[index].quantity){
+      copyArr[index].quantityChange = Number(target.value);
+      copyArr[index].quantityRemain = copyArr[index].quantity - Number(target.value);
+      setProductList(copyArr);
     }
   };
 
@@ -344,6 +356,12 @@ const EditWarehouseExport = props => {
                         <th>Dung tích</th>
                         <th>Tồn kho</th>
                         <th>Số lượng</th>
+                        {location.state.isChecking && <th>Số lượng thiếu</th>}
+                        {location.state.isChecking && (
+                          <th>
+                            <th>Thực xuất</th>
+                          </th>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
@@ -378,26 +396,51 @@ const EditWarehouseExport = props => {
                             <td>{item?.product?.unit}</td>
                             <td>{item?.product?.volume}</td>
                             <td>{item?.quantityInStore}</td>
-                            <td style={{ width: 100 }}>
-                              {item.followIndex >= 0 ? (
-                                item.quantity
-                              ) : (
-                                <CInput
-                                  type="number"
-                                  min={1}
-                                  name="code"
-                                  id="code"
-                                  onKeyDown={blockInvalidChar}
-                                  onChange={event => onChangeQuantity(event, index)}
-                                  onBlur={handleBlur}
-                                  value={item.quantity}
-                                />
-                              )}
-                              {item.quantity > item.quantityInStore && (
-                                <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
-                              )}
-                            </td>
+                            {location.state.isChecking && <td>{item?.quantity}</td>}
+                            {location.state.isChecking && (
+                              <td>
+                                {item.followIndex >= 0 ? (
+                                  item.quantityChange
+                                ) : (
+                                  <CInput
+                                    type="number"
+                                    min={1}
+                                    name="code"
+                                    id="code"
+                                    onKeyDown={blockInvalidChar}
+                                    onChange={event => onChangeQuantityDifference(event, index)}
+                                    onBlur={handleBlur}
+                                    value={item.quantityChange || 0}
+                                  />
+                                )}
+                                {item.quantityChange > item.quantityInStore && (
+                                  <FormFeedback className="d-block">Số lượng thiếu lớn hơn số lượng trong kho</FormFeedback>
+                                )}
+                              </td>
+                            )}
+                            {!location.state.isChecking && (
+                              <td style={{ width: 100 }}>
+                                {item.followIndex >= 0 ? (
+                                  item.quantity
+                                ) : (
+                                  <CInput
+                                    type="number"
+                                    min={1}
+                                    name="code"
+                                    id="code"
+                                    onKeyDown={blockInvalidChar}
+                                    onChange={event => onChangeQuantity(event, index)}
+                                    onBlur={handleBlur}
+                                    value={item.quantity}
+                                  />
+                                )}
 
+                                {item.quantity > item.quantityInStore && (
+                                  <FormFeedback className="d-block">Số lượng cần lấy lớn hơn số lượng trong kho</FormFeedback>
+                                )}
+                              </td>
+                            )}
+                            {location.state.isChecking && <td>{item?.quantity - item?.quantityChange}</td>}
                             <td style={{ width: 100 }}>
                               <CButton
                                 color="danger"
