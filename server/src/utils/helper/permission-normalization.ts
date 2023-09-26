@@ -45,7 +45,7 @@ export const permissionDescriptionNormalize = (splitedEndpoint, isType) => {
   return desc;
 };
 
-export const queryBuilderFunc = (entity, filter = {}, isDebt = false, ignoreDate = false) => {
+export const queryBuilderFunc = (entity, filter = {}, isDebt = false, ignoreDate = false, mainDepartment = null) => {
   delete filter['dependency'];
   let query = '1 = 1';
   Object.keys(filter).forEach((key, index) => {
@@ -57,7 +57,9 @@ export const queryBuilderFunc = (entity, filter = {}, isDebt = false, ignoreDate
           .replace('[', '(')
           .replace(']', ')')}`;
       }
-    } else if (filter[key][0] === '[' &&  Array.isArray(JSON.parse(filter[key]))) {
+    } else if (key === 'department' && mainDepartment) {
+      query += `${query.length === 0 ? '' : ' AND '} departmentId = ${mainDepartment}`;
+    } else if (filter[key][0] === '[' && Array.isArray(JSON.parse(filter[key]))) {
       if (JSON.parse(filter[key]).length > 0) {
         query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${filter[key].replace('[', '(').replace(']', ')')}`;
       }
@@ -68,17 +70,74 @@ export const queryBuilderFunc = (entity, filter = {}, isDebt = false, ignoreDate
     }
   });
   if (filter['endDate'] && filter['startDate']) {
-    if(ignoreDate) return query
+    if (ignoreDate) return query
     if (entity === 'Transaction') {
       if (isDebt) {
         query += `  ${query.length > 0 ? 'AND' : ''}  ${entity}.createdDate <= '${filter['endDate']} 23:59:59'`;
         return query;
       }
     }
-    query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']} 00:00:00' AND  ${entity}.createdDate <= '${
-      filter['endDate']
-    } 23:59:59'`;
+    query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']} 00:00:00' AND  ${entity}.createdDate <= '${filter['endDate']
+      } 23:59:59'`;
   }
+  return query;
+};
+
+export const queryBuilderFuncForWarehouse = (entity, filter = {}, ignoreDate = false, mainDepartment = -1, allDepartmentExceptMain = false) => {
+  delete filter['dependency'];
+  let query = '1 = 1';
+  console.log(filter)
+  Object.keys(filter).forEach((key, index) => {
+    console.log(allDepartmentExceptMain, key)
+    if (key === 'startDate' || key === 'endDate') return;
+    if (key === 'department') return;
+    if (Array.isArray(filter[key])) {
+      if (filter[key].length > 0) {
+        query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${JSON.stringify(filter[key])
+          .replace('[', '(')
+          .replace(']', ')')}`;
+      }
+    }
+    // else if (key === 'department' && mainDepartment === 1) {
+    //   query += `${query.length === 0 ? '' : ' AND '} departmentId = ${mainDepartment}`;
+    // } else if (key === 'department' && allDepartmentExceptMain === true) {
+    //   const remainDepartment = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    //   if (JSON.parse(filter[key]).length > 0) {
+    //     query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${JSON.stringify(remainDepartment).replace('[', '(').replace(']', ')')}`;
+    //   }
+    // } 
+    else if (filter[key][0] === '[' && Array.isArray(JSON.parse(filter[key])) && key !== 'department') {
+      if (JSON.parse(filter[key]).length > 0) {
+        query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id IN ${filter[key].replace('[', '(').replace(']', ')')}`;
+      }
+    } else if (key.includes('name') || key.includes('code')) {
+      query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key} like '%${filter[key]}%' `;
+    } else {
+      query += `${query.length === 0 ? '' : ' AND '} ${entity}.${key}Id = ${filter[key]} `;
+    }
+  });
+  if (mainDepartment === 1) {
+    // if(entity === 'StoreInput'){
+    //   query += `${query.length === 0 ? '' : ' AND '} (${entity}.storeId = ${mainDepartment} OR ${entity}.storeTransferId = ${mainDepartment})`;
+
+    // }else {
+      query += `${query.length === 0 ? '' : ' AND '} ${entity}.storeId = ${mainDepartment} `;
+    //}
+  }
+  if (allDepartmentExceptMain === true) {
+    const remainDepartment = filter['department'] || [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    console.log(remainDepartment)
+    query += `${query.length === 0 ? '' : ' AND '} ${entity}.storeId IN ${JSON.stringify(remainDepartment).replace('[', '(').replace(']', ')')}`;
+
+  }
+
+
+  if (filter['endDate'] && filter['startDate']) {
+    if (ignoreDate) return query
+    query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']} 00:00:00' AND  ${entity}.createdDate <= '${filter['endDate']
+      } 23:59:59'`;
+  }
+  console.log(query)
   return query;
 };
 
@@ -104,19 +163,16 @@ export const queryBuilderCustomerForPromotionReportFunc = (filter = {}) => {
     }
   });
   if (filter['promotion']) {
-    query += `  ${query.length > 0 ? 'AND' : ''} (order.promotionId  = '${filter['promotion']}' OR  storeInput.promotionId = '${
-      filter['promotion']
-    }')`;
+    query += `  ${query.length > 0 ? 'AND' : ''} (order.promotionId  = '${filter['promotion']}' OR  storeInput.promotionId = '${filter['promotion']
+      }')`;
   }
   if (filter['promotionItem']) {
-    query += `  ${query.length > 0 ? 'AND' : ''} (order.promotionItemId  = '${filter['promotionItem']}' OR  storeInput.promotionItemId = '${
-      filter['promotionItem']
-    }')`;
+    query += `  ${query.length > 0 ? 'AND' : ''} (order.promotionItemId  = '${filter['promotionItem']}' OR  storeInput.promotionItemId = '${filter['promotionItem']
+      }')`;
   }
   if (filter['endDate'] && filter['startDate']) {
-    query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']}' AND  ${entity}.createdDate <= '${
-      filter['endDate']
-    } 23:59:59'`;
+    query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']}' AND  ${entity}.createdDate <= '${filter['endDate']
+      } 23:59:59'`;
   }
   return query;
 };

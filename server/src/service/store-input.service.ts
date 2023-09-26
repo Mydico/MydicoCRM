@@ -139,8 +139,10 @@ export class StoreInputService {
             .leftJoinAndSelect('StoreInput.department', 'department')
             .leftJoinAndSelect('StoreInput.customer', 'customer')
             .leftJoinAndSelect('StoreInput.sale', 'sale')
+            // .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+            // .addSelect("storeInputDetails.quantity", "quantity")
             // .leftJoinAndSelect('StoreInput.promotion', 'promotion')
-            // .leftJoinAndSelect('StoreInput.storeInputDetails', 'storeInputDetails')
+            // .leftJoinAndSelect('StoreInput.storeInputDetails', 'storeInputDetails',)
             // .leftJoinAndSelect('storeInputDetails.product', 'product')
             .leftJoinAndSelect('StoreInput.storeTransfer', 'storeTransfer')
             // .cache(cacheKeyBuilder, 604800)
@@ -263,16 +265,24 @@ export class StoreInputService {
                     await this.createDebit(entity);
                 }
             }
+
             // else {
             //     await this.exportStore(founded, entity, currentUser);
             // }
+        }
+        if (storeInput.status === StoreImportStatus.QUANTITY_VERIFIED) {
+            storeInput.storeInputDetails = entity.storeInputDetails.map(item => ({
+                ...item,
+                quantity: item.quantity,
+                quantityChange: item.quantityChange || 0,
+                quantityRemain: item.quantityRemain || item.quantity
+            }))
         }
         return await this.save(storeInput);
     }
 
     async verifyCalculate(storeInput: StoreInput, currentUser: User = null): Promise<any> {
         const entity = await this.findById(storeInput.id);
-        console.log(entity)
         if (entity.status === StoreImportStatus.QUANTITY_VERIFIED) {
             const arrProduct = entity.storeInputDetails.map(item => item.product.id);
             const founded = await this.productQuantityService.findByfields({
@@ -340,7 +350,13 @@ export class StoreInputService {
             if (Array.isArray(entity.storeInputDetails)) {
                 arrDetails = entity.storeInputDetails.map(item => {
                     delete item.id
-                    return item
+                    return ({
+                        ...item,
+                        quantity: item.quantityRemain,
+                        quantityChange: 0,
+                        quantityRemain: item.quantityRemain || item.quantity,
+
+                    })
                 });
             }
             const importStore = new StoreInput();
@@ -364,7 +380,7 @@ export class StoreInputService {
                 product: item.product,
                 store: entity.store,
                 department: entity.store.department,
-                quantity: item.quantity,
+                quantity: entity.type === StoreImportType.EXPORT ? item.quantityRemain : item.quantity,
                 name: item.product.name,
                 storeName: entity.store.name,
                 entity: 'STORE',
@@ -377,7 +393,7 @@ export class StoreInputService {
             }));
         const productInStore = founded.map(item => {
             const itemFounded = entity.storeInputDetails.filter(origin => origin.product.id === item.product.id);
-            const totalProduct = itemFounded.reduce((prev, current) => prev + current.quantity, 0);
+            const totalProduct = itemFounded.reduce((prev, current) => prev +  entity.type === StoreImportType.EXPORT ? current.quantityRemain : current.quantity, 0);
             return {
                 ...item,
                 department: entity.store.department,

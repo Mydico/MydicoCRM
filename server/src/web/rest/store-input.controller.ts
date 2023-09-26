@@ -240,6 +240,7 @@ export class StoreInputController {
   })
   async updateReturn(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
+    storeInput.lastModifiedDate = new Date()
     return res.send(await this.storeInputService.updateReturn(storeInput));
   }
 
@@ -271,6 +272,7 @@ export class StoreInputController {
   async calculateExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     storeInput.status = StoreImportStatus.QUANTITY_CHECK;
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
+    storeInput.lastModifiedDate = new Date()
     return res.send(await this.storeInputService.update(storeInput));
   }
 
@@ -284,6 +286,7 @@ export class StoreInputController {
   async verifyCalculateExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
     storeInput.status = StoreImportStatus.QUANTITY_VERIFIED;
+    storeInput.lastModifiedDate = new Date()
     return res.send(await this.storeInputService.update(storeInput));
   }
 
@@ -297,6 +300,7 @@ export class StoreInputController {
   async completeExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
+    storeInput.lastModifiedDate = new Date()
     return res.send(await this.storeInputService.verifyCalculate(storeInput,currentUser));
   }
 
@@ -328,6 +332,7 @@ export class StoreInputController {
   async approve(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInputUpdateStatusDTO): Promise<Response> {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
+    storeInput.lastModifiedDate = new Date()
     if (storeInput.status === StoreImportStatus.APPROVED) {
       if (storeInput.type === StoreImportType.EXPORT) {
         const canExport = await this.storeInputService.canExportStore(storeInput);
@@ -337,7 +342,6 @@ export class StoreInputController {
       }
       storeInput.approver = currentUser;
       storeInput.approverName = currentUser.login;
-      storeInput.lastModifiedDate = new Date()
     }
     return res.send(await this.storeInputService.update(storeInput, currentUser));
   }
@@ -354,6 +358,7 @@ export class StoreInputController {
     if (storeInput.status === StoreImportStatus.APPROVED) {
       const currentUser = req.user as User;
       storeInput.approver = currentUser;
+      storeInput.lastModifiedDate = new Date()
     }
     return res.send(await this.storeInputService.update(storeInput));
   }
@@ -370,6 +375,7 @@ export class StoreInputController {
     if (storeInput.status === StoreImportStatus.APPROVED) {
       const currentUser = req.user as User;
       storeInput.approver = currentUser;
+      storeInput.lastModifiedDate = new Date()
     }
     return res.send(await this.storeInputService.update(storeInput));
   }
@@ -386,6 +392,7 @@ export class StoreInputController {
     if (storeInput.status === StoreImportStatus.APPROVED) {
       const currentUser = req.user as User;
       storeInput.approver = currentUser;
+      storeInput.lastModifiedDate = new Date()
     }
     return res.send(await this.storeInputService.update(storeInput));
   }
@@ -401,6 +408,7 @@ export class StoreInputController {
     HeaderUtil.addEntityUpdatedHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
     storeInput.approver = currentUser;
+    storeInput.lastModifiedDate = new Date()
     if (storeInput.status === StoreImportStatus.APPROVED) {
       const canExport = await this.storeInputService.canExportStore(storeInput);
       if (!canExport) {
@@ -440,6 +448,7 @@ export class StoreInputController {
   async put(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     HeaderUtil.addEntityUpdatedHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
+    storeInput.lastModifiedDate = new Date()
     storeInput.approver = currentUser;
     return res.send(await this.storeInputService.update(storeInput));
   }

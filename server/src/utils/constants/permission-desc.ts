@@ -113,7 +113,9 @@ export const resourceDesc = {
     'return': 'trả hàng',
     'transactions': 'công nợ',
     'product-quantities': 'sản phẩm trong kho',
-    'send':'gửi'
+    'send':'gửi',
+    'verify-calculate':"xác nhận kiểm kê",
+    'calculate':"kiểm kê"
 };
 
 export const actionDesc = {

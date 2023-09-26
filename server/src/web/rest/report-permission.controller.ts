@@ -43,6 +43,9 @@ export class PrivateController {
     delete req.query['size'];
     delete req.query['sort'];
     const filter = await this.buildFilterForReport(req);
+    // if(!req.query['department']){
+    //   delete filter.department
+    // }
     // console.log(filter)
     // // if(req.query['department']){
     // //   filter.department = JSON.parse(req.query['department'])

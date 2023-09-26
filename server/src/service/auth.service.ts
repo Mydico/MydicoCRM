@@ -68,7 +68,11 @@ export class AuthService {
         milliseconds: 604800
       }
     });
-    return user;
+    if(user.activated){
+      return user;
+    }
+    return undefined
+    
   }
 
   async getUserRole(login: string): Promise<any[]> {

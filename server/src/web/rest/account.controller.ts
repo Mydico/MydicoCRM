@@ -51,7 +51,9 @@ export class AccountController {
     async getAccount(@Req() req: Request, @Res() res): Promise<any> {
         const user: any = req.user;
         const result: any = await this.authService.findUserWithAuthById(user.login)
-        result.role = await this.authService.getUserRole(user.login)
+        if(result.activated){
+            result.role = await this.authService.getUserRole(user.login)
+        }
         res.send(result);
     }
 

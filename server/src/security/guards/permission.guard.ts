@@ -14,7 +14,9 @@ export class PermissionGuard implements CanActivate {
         const getByDependency = request.query.dependency && request.method === 'GET';
         const perUrl = new UrlPermissionParser().getPattern(request.url);
         await this.role.reloadPolicy();
+        console.log(user.login,perUrl)
         const hasPermission = await this.role.checkPermission(user.login, perUrl, request.method);
+        console.log(hasPermission)
         const whiteList = new WhiteListConfiguration().verify(perUrl);
         return hasPermission || (user && user.authorities && user.authorities.includes(RoleType.ADMIN)) || whiteList || getByDependency;
     }
