@@ -86,7 +86,19 @@ export const AdvancedTable = props => {
   const [page, setPage] = useState(activePage || 1);
   const [passedItems, setPassedItems] = useState(items || []);
   const isMobile = useMediaQuery({ maxWidth: '40em' });
-  // functions
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const tableContainerRef = useRef(null);
+
+  const handleScroll = (e) => {
+    setScrollLeft(e.target.scrollLeft);
+  };
+
+  useEffect(() => {
+    const tableContainer = tableContainerRef.current;
+    tableContainer.addEventListener('scroll', handleScroll);
+
+    return () => tableContainer.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const cellClass = (item, colName, index) => {
     let classes = [];
@@ -238,7 +250,9 @@ export const AdvancedTable = props => {
       const columnFilter = String(value || '').toLowerCase();
       if (columnFilter && itemsDataColumns.includes(key)) {
         items = items.filter(item => {
-          return String(item[key]).toLowerCase().includes(columnFilter.toLowerCase());
+          return String(item[key])
+            .toLowerCase()
+            .includes(columnFilter.toLowerCase());
         });
       }
     });
@@ -374,6 +388,13 @@ export const AdvancedTable = props => {
   compData.firstRun = false;
 
   const paginationProps = typeof pagination === 'object' ? pagination : null;
+  const stickyHeaderStyle = {
+    backgroundColor: 'white',
+    position: 'fixed',
+    top: 66,
+    // left: -scrollLeft,
+    // width: tableContainerRef.current ? tableContainerRef.current.offsetWidth : "auto"
+  };
 
   const headerContent = (
     <Tr className="card-body">
@@ -384,7 +405,11 @@ export const AdvancedTable = props => {
               changeSort(rawColumnNames[index], index);
             }}
             className={classNames([headerClass(index), sortingIconStyles])}
-            style={headerStyles(index)}
+            style={{
+              ...headerStyles(index),
+              position:'sticky',
+              top: 0
+            }}
             key={index}
           >
             {columnHeaderSlot[`${rawColumnNames[index]}`] || <div className="d-inline">{name}</div>}
@@ -464,7 +489,9 @@ export const AdvancedTable = props => {
 
       {overTableSlot}
 
-      <div className={`position-relative ${responsive && 'table-responsive'}`}>
+      <div ref={tableContainerRef} className={`position-relative ${responsive && 'table-responsive'}`} style={{
+         overflowX: 'auto',
+      }}>
         {isMobile && columnFilter && (
           <div className="mb-5 mt-3">
             {rawColumnNames.map((colName, index) => {
@@ -494,20 +521,15 @@ export const AdvancedTable = props => {
             })}
           </div>
         )}
-        {isSticky && <Table className={classNames(tableClasses)}>
-          <Thead style={{
-            backgroundColor: "white",
-            position: "fixed",
-            top: 66,
-
-          }}>
-            <React.Fragment>
-              {theadTopSlot}
+        {isSticky && (
+          <Table className={classNames(tableClasses)}>
+            <Thead
+              style={stickyHeaderStyle}
+            >
               {header && headerContent}
-
-            </React.Fragment>
-          </Thead>
-        </Table>}
+            </Thead>
+          </Table>
+        )}
         <Table className={classNames(tableClasses)} ref={tableRef}>
           {!isMobile ? (
             <Thead>
@@ -559,7 +581,7 @@ export const AdvancedTable = props => {
                         (scopedSlots[colName] &&
                           React.cloneElement(scopedSlots[colName](item, itemIndex + firstItemIndex), { key: index })) || (
                           <Td className={classNames(cellClass(item, colName, index))} key={index}>
-                            {String(item[colName] || '')}
+                            {String((item[colName] === undefined || item[colName] === null) ? '' : item[colName])}
                           </Td>
                         )
                       );

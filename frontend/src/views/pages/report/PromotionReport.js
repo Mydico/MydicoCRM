@@ -81,26 +81,26 @@ const PromotionReport = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (account.department.externalChild && department && branches.length > 1) {
-      if (JSON.parse(account.department.externalChild).includes(department.id)) {
-        dispatch(setAll([account.branch]));
-      }
-    }
-    if (branches.length === 1) {
-      dispatch(
-        getExactUser({
-          page: 0,
-          size: 50,
-          sort: 'createdDate,DESC',
-          department: department?.id || account.department.id,
-          branch: branches[0].id,
-          dependency: true
-        })
-      );
-      getCustomer(department?.id, branches[0].id, null);
-    }
-  }, [branches]);
+  // useEffect(() => {
+  //   if (account.department.externalChild && department && branches.length > 1) {
+  //     if (JSON.parse(account.department.externalChild).includes(department.id)) {
+  //       dispatch(setAll([account.branch]));
+  //     }
+  //   }
+  //   if (branches.length === 1) {
+  //     dispatch(
+  //       getExactUser({
+  //         page: 0,
+  //         size: 50,
+  //         sort: 'createdDate,DESC',
+  //         department: department?.id || account.department.id,
+  //         branch: branches[0].id,
+  //         dependency: true
+  //       })
+  //     );
+  //     getCustomer(department?.id, branches[0].id, null);
+  //   }
+  // }, [branches]);
 
   useEffect(() => {
     if (Object.keys(filter).length > 1) {

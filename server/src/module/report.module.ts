@@ -17,6 +17,7 @@ import { StoreHistoryRepository } from '../repository/store-history.repository';
 import * as redisStore from 'cache-manager-redis-store';
 import { UserAnswerModule } from './user-answer.module';
 import { PrivateController } from '../web/rest/report-permission.controller';
+import { ProductRepository } from '../repository/product.repository';
 
 @Module({
   imports: [
@@ -36,7 +37,8 @@ import { PrivateController } from '../web/rest/report-permission.controller';
       StoreInputDetailsRepository,
       TransactionRepository,
       BillRepository,
-      StoreHistoryRepository
+      StoreHistoryRepository,
+      ProductRepository
     ]),
     DepartmentModule,
     OrderModule,

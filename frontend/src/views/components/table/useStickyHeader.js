@@ -8,9 +8,7 @@ const useStickyHeader = (defaultSticky = false) => {
     ({ top, bottom }) => {
       if (
         top <= 0 &&
-        // When scrolling from bottom to top when and
-        // the last row is visible enough, sticky header will be triggered.
-        // This number (68) could be adjusted or skipped.
+
         bottom > 2 * 68
       ) {
         !isSticky && setIsSticky(true);

@@ -110,7 +110,7 @@ export const getProductReport = createAsyncThunk('api/reports/product-report', a
   }
 });
 
-export const getProductDetailReport = createAsyncThunk('api/reports/product-report', async (params, thunkAPI) => {
+export const getProductDetailReport = createAsyncThunk('api/reports/product-detail-report', async (params, thunkAPI) => {
   try {
     const result = await axios.get('api/reports/product-detail-report', { params: params });
     return result.data;

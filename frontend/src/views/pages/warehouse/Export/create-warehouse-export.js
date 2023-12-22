@@ -104,7 +104,12 @@ const CreateReceipt = () => {
       alert('Không để sản phẩm có số lượng bằng 0 khi tạo phiếu');
       return;
     }
-    values.storeInputDetails = productList;
+    values.storeInputDetails = productList.filter(item => ({
+      ...item,
+      quantity: Number(item.quantity),
+      quantityChange: 0,
+      quantityRemain: Number(item.quantity)
+    }));
     values.type = WarehouseImportType.EXPORT;
     values.department = account.mainDepartment || account.department;
     dispatch(fetching());
@@ -145,7 +150,6 @@ const CreateReceipt = () => {
   // });
 
   const debouncedSearchProductInStore = _.debounce((copyArr, index) => {
-    console.log(copyArr,index)
     dispatch(
       getProductInstore({
         storeId: selectedWarehouse.id,

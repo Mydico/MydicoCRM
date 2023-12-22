@@ -16,3 +16,8 @@
 .c-datatable-items-per-page label {
   margin-bottom: 0;
 }
+th {
+  background: white;
+  position: sticky;
+  top: 0;
+}

@@ -3,7 +3,7 @@ import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CPagin
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { getWarehouseExport, updateWarehouseImport, updateWarehouseStatusImport } from '../Import/warehouse-import.api.js';
+import { approveWarehouseExport, getWarehouseExport, updateWarehouseImport, updateWarehouseStatusImport } from '../Import/warehouse-import.api.js';
 import { fetching, globalizedWarehouseImportSelectors, reset } from '../Import/warehouse-import.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { WarehouseImportStatus, WarehouseImportType } from './contants.js';
@@ -360,7 +360,7 @@ const WarehouseImport = props => {
   const approveTicket = bill => () => {
     dispatch(fetching());
     const data = { id: bill.id, status: WarehouseImportStatus.APPROVED, type: 'EXPORT', action: 'approve' };
-    dispatch(updateWarehouseStatusImport(data));
+    dispatch(approveWarehouseExport(data));
   };
 
   const approveCheckingTicket = bill => () => {
@@ -538,7 +538,7 @@ const WarehouseImport = props => {
             },
             quantity: item => {
               return (
-                <td className="py-2 d-flex">
+                <td className="">
                   {JSON.parse(JSON.stringify(item.storeInputDetails || [])).reduce((prev, curr) => prev + curr.quantity, 0)}
                 </td>
               );

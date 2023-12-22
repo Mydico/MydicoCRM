@@ -643,11 +643,16 @@ const Order = props => {
     <CCard>
       <CCardHeader>
         <CIcon name="cil-grid" /> Danh sách đơn hàng
-        {(isAdmin ) && (
+        {/* {(isAdmin ) && (
           <CButton color="success" variant="outline" className="ml-3" onClick={toCreateOrder}>
             <CIcon name="cil-plus" /> Thêm mới
           </CButton>
-        )}
+        )} */}
+         
+          {/* <CButton color="success" variant="outline" className="ml-3" onClick={toCreateOrder}>
+            <CIcon name="cil-plus" /> Thêm mới
+          </CButton> */}
+      
       </CCardHeader>
       <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
 

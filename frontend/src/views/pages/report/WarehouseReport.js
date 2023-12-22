@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CPagination, CLink } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,28 +48,39 @@ const fields = [
   { key: 'product_name', label: 'Tên sản phẩm', _style: { width: '20%' }, filter: true },
   { key: 'remain', label: 'Tồn đầu kì', filter: false },
   { key: 'importProduct', label: 'Nhập kho NCC', filter: false },
-  { key: 'returnProduct', label: 'Nhập kho khách trả hàng', filter: false },
-  { key: 'inputProductFromExport', label: 'Nhập điều chuyển', filter: false },
-  { key: 'exportedProduct', label: 'Xuất bán', filter: false },
+  { key: 'returnProduct', label: 'Nhập khách hàng', filter: false },
+  { key: 'importProductFromMain', label: 'Nhập điều chuyển', filter: false },
+  { key: 'exportProductToMain', label: 'Xuất điều chuyển', filter: false },
+  { key: 'inputProductFromExport', label: 'Nhập chi nhánh', filter: false },
   { key: 'exportStoreToProvider', label: 'Xuất trả NCC', filter: false },
-  { key: 'exportStore', label: 'Xuất điều chuyển', filter: false },
-  { key: 'realExport', label: 'Thực xuất bán', filter: false },
-  { key: 'remainEnd', label: 'Tổng tồn cuối kì', filter: false },
+  { key: 'exportedProduct', label: 'Xuất KH cty', filter: false },
+  { key: 'exportStore', label: 'Xuất chi nhánh', filter: false },
+  { key: 'realExportStore', label: 'Thực xuất CN', filter: false },
+  { key: 'realExport', label: 'Thực xuất CT', filter: false },
+  { key: 'realExportCT', label: 'Thực xuất tổng CT', filter: false },
+  { key: 'remainEnd', label: 'Tồn cuối CN', filter: false },
+  { key: 'remainEndMainDepartment', label: 'Tồn cuối HN', filter: false },
+  { key: 'remainAll', label: 'Tồn cuối Tổng Cty', filter: false },
   { key: 'ontheway', label: 'Hàng đi đường', filter: false },
   { key: 'total', label: 'Tổng tồn hiện tại', filter: false }
 ];
 const fieldsExcel = [
-
   { key: 'product_name', label: 'Tên sản phẩm', _style: { width: '20%' }, filter: true },
   { key: 'remain', label: 'Tồn đầu kì', filter: false },
   { key: 'importProduct', label: 'Nhập kho NCC', filter: false },
-  { key: 'returnProduct', label: 'Nhập kho khách trả hàng', filter: false },
-  { key: 'inputProductFromExport', label: 'Nhập điều chuyển', filter: false },
-  { key: 'exportedProduct', label: 'Xuất bán', filter: false },
+  { key: 'returnProduct', label: 'Nhập khách hàng', filter: false },
+  { key: 'importProductFromMain', label: 'Nhập điều chuyển', filter: false },
+  { key: 'exportProductToMain', label: 'Xuất điều chuyển', filter: false },
+  { key: 'inputProductFromExport', label: 'Nhập chi nhánh', filter: false },
   { key: 'exportStoreToProvider', label: 'Xuất trả NCC', filter: false },
-  { key: 'exportStore', label: 'Xuất điều chuyển', filter: false },
-  { key: 'realExport', label: 'Thực xuất bán', filter: false },
-  { key: 'remainEnd', label: 'Tổng tồn cuối kì', filter: false },
+  { key: 'exportedProduct', label: 'Xuất KH cty', filter: false },
+  { key: 'exportStore', label: 'Xuất chi nhánh', filter: false },
+  { key: 'realExportStore', label: 'Thực xuất CN', filter: false },
+  { key: 'realExport', label: 'Thực xuất CT', filter: false },
+  { key: 'realExportCT', label: 'Thực xuất tổng CT', filter: false },
+  { key: 'remainEnd', label: 'Tồn cuối CN', filter: false },
+  { key: 'remainEndMainDepartment', label: 'Tồn cuối HN', filter: false },
+  { key: 'remainAll', label: 'Tồn cuối Tổng Cty', filter: false },
   { key: 'ontheway', label: 'Hàng đi đường', filter: false },
   { key: 'total', label: 'Tổng tồn hiện tại', filter: false }
 ];
@@ -79,7 +90,6 @@ const WarehouseReport = () => {
   const { account } = useSelector(state => state.authentication);
   const isEmployee = account.roles.filter(item => item.authority.includes('EMPLOYEE')).length > 0;
   const isManager = account.roles.filter(item => item.authority == 'MANAGER').length > 0;
-
   const users = isEmployee ? [account] : useSelector(selectUserAll);
   const isBranchManager = account.roles.filter(item => item.authority.includes('BRANCH_MANAGER')).length > 0;
   const specialRole = JSON.parse(account.department.reportDepartment || '[]').length > 0;
@@ -104,17 +114,12 @@ const WarehouseReport = () => {
   const [brand, setBrand] = useState(null);
   const [productGroup, setProductGroup] = useState(null);
   const [top10Product, setTop10Product] = useState([[], 0]);
-  const [numOfProduct, setNumOfProduct] = useState(0);
-  const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(filterProduct());
     dispatch(getProductBrand({ page: 0, size: 50, sort: 'createdDate,DESC' }));
-    // if (isManager) {
-    //   dispatch(getBranch({ department: account.department.id, dependency: true }));
-    // }
     dispatch(getProductGroup({ page: 0, size: 50, sort: 'createdDate,DESC' }));
   }, []);
 
@@ -135,6 +140,18 @@ const WarehouseReport = () => {
   //     })
   //   );
   // }, [branches]);
+  useEffect(() => {
+    if (initialState.allChild.length > 0) {
+      setDepartment(
+        [
+          {
+            value: initialState.allChild[0],
+            label: initialState.allChild[0].name
+          }
+        ] || []
+      );
+    }
+  }, [initialState.allChild]);
 
   useEffect(() => {
     setFilter({
@@ -286,22 +303,18 @@ const WarehouseReport = () => {
 
   useEffect(() => {
     if (Object.keys(filter).length > 4) {
-      if (!loading) {
-        setLoading(true);
-        // if(filter.department?.length === 0){
-        //   delete filter.department
-        // }
-        dispatch(getWarehouseReport({ ...filter })).then(data => {
-          if (data && data.payload) {
-            const sortedArr = data.payload[0]?.sort((a, b) =>
-              a.product_name < b.product_name ? -1 : a.product_name > b.product_name ? 1 : 0
-            );
-            data.payload[0] = sortedArr;
-            setTop10Product(data.payload);
-            setLoading(false);
-          }
-        });
-      }
+      setLoading(true);
+      if (filter.department?.length === 0) return;
+      dispatch(getWarehouseReport({ ...filter })).then(data => {
+        if (data && data.payload) {
+          const sortedArr = data.payload[0]?.sort((a, b) =>
+            a.product_name < b.product_name ? -1 : a.product_name > b.product_name ? 1 : 0
+          );
+          data.payload[0] = sortedArr;
+          setTop10Product(data.payload);
+          setLoading(false);
+        }
+      });
     }
   }, [filter]);
 
@@ -396,18 +409,38 @@ const WarehouseReport = () => {
   }, []);
 
   const computedExcelItems = React.useCallback(items => {
-    return (items || []).map((item, index) => {
+    const exported = (items || []).map((item, index) => {
       return {
         ...item,
-        realExport:Number(item.exportedProduct || 0) - Number(item.returnProduct || 0) || 0,
-        total: Number(item.remainEnd || 0) + Number(item.ontheway || 0) || 0
+        total: Number(Number(item.remainEnd || 0) + Number(item.remainEndMainDepartment || 0) || 0) + Number(item.ontheway || 0) || 0,
+        remainAll: Number(item.remainEnd || 0) + Number(item.remainEndMainDepartment || 0) || 0,
+        realExportStore: Number(item.exportedProduct12Department || 0) - Number(item.returnProduct12Department || 0),
+        realExportCT:
+          (Number(item.exportedProduct || 0) - Number(item.returnProduct || 0) || 0) +
+          (Number(item.exportedProduct12Department || 0) - Number(item.returnProduct12Department || 0)),
+        realExport: Number(item.exportedProduct || 0) - Number(item.returnProduct || 0) || 0
       };
     });
+
+    console.log('fieldsExcel',fieldsExcel.length)
+    exported.forEach(obj => {
+      fieldsExcel.forEach(field => {
+        if(!obj[field.key]) {
+          obj[field.key] = 0;
+        }
+      })
+      // Object.keys(obj).forEach(key => {
+      //   if (!obj[key]) {
+      //     obj[key] = 0;
+      //   }
+      // });
+    });
+    console.log(exported)
+    return exported
   }, []);
 
-  const memoExcelListed = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
   const memoComputedItems = React.useMemo(() => computedItems(top10Product[0]), [top10Product[0]]);
- const memoComputedExcelItems = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
+  const memoComputedExcelItems = React.useMemo(() => computedExcelItems(top10Product[0]), [top10Product[0]]);
   const sortItem = React.useCallback(
     info => {
       const { column, asc } = info;
@@ -420,6 +453,26 @@ const WarehouseReport = () => {
     },
     [top10Product[0]]
   );
+
+  const departments = useMemo(() => {
+    let departmentsArr = initialState.allChild.map(item => ({
+      value: item,
+      label: item.name
+    }));
+    console.log(account);
+    if (account.department.code === 'BGĐ') {
+      departmentsArr = [
+        {
+          value: {
+            id: 0
+          },
+          label: 'Tổng công ty'
+        },
+        ...departmentsArr
+      ];
+    }
+    return departmentsArr;
+  }, [initialState.allChild, account]);
 
   return (
     <CRow>
@@ -437,7 +490,18 @@ const WarehouseReport = () => {
                   name="department"
                   isMulti
                   onChange={e => {
-                    setDepartment(e || []);
+                    if (e[e.length - 1].value.id === 0) {
+                      setDepartment(e.filter(item => item.value.id === 0));
+                      return;
+                    }
+                    if (e[e.length - 1].value.id === 1) {
+                      setDepartment(e.filter(item => item.value.id === 1));
+                      return;
+                    }
+                    if (e.filter(item => item.value.id !== 0 && item.value.id !== 1).length > 0) {
+                      setDepartment(e.filter(item => item.value.id !== 0 && item.value.id !== 1));
+                      return;
+                    }
                   }}
                   // value={
                   //   initialState.allChild.length > 1
@@ -454,10 +518,7 @@ const WarehouseReport = () => {
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Chi nhánh"
-                  options={initialState.allChild.map(item => ({
-                    value: item,
-                    label: item.name
-                  }))}
+                  options={departments}
                 />
               </CCol>
               <CCol sm={6} md={6}>
@@ -583,9 +644,7 @@ const WarehouseReport = () => {
             <Download
               data={memoComputedExcelItems}
               headers={fieldsExcel}
-              name={`bao_cao_kho tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format(
-                'DD-MM-YYYY'
-              )} `}
+              name={`bao_cao_kho tu ${moment(date.startDate).format('DD-MM-YYYY')} den ${moment(date.endDate).format('DD-MM-YYYY')} `}
             />
 
             <AdvancedTable
@@ -605,6 +664,11 @@ const WarehouseReport = () => {
               onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
+                remain: (item, index) => (
+                  <Td>
+                    <div>{item.remain || 0}</div>
+                  </Td>
+                ),
                 remainEnd: (item, index) => (
                   <Td>
                     <div>{item.remainEnd || 0}</div>
@@ -615,6 +679,16 @@ const WarehouseReport = () => {
                     <div>{item.importProduct || 0}</div>
                   </Td>
                 ),
+                exportProductToMain: (item, index) => (
+                  <Td>
+                    <div>{item.exportProductToMain || 0}</div>
+                  </Td>
+                ),
+                importProductFromMain: (item, index) => (
+                  <Td>
+                    <div>{item.importProductFromMain || 0}</div>
+                  </Td>
+                ),
                 returnProduct: (item, index) => (
                   <Td>
                     <div>{item.returnProduct || 0}</div>
@@ -623,6 +697,16 @@ const WarehouseReport = () => {
                 inputProductFromExport: (item, index) => (
                   <Td>
                     <div>{item.inputProductFromExport || 0}</div>
+                  </Td>
+                ),
+                remainEndMainDepartment: (item, index) => (
+                  <Td>
+                    <div>{item.remainEndMainDepartment || 0}</div>
+                  </Td>
+                ),
+                realExportStore: (item, index) => (
+                  <Td>
+                    <div>{Number(item.exportedProduct12Department || 0) - Number(item.returnProduct12Department || 0)}</div>
                   </Td>
                 ),
                 exportedProduct: (item, index) => (
@@ -647,7 +731,28 @@ const WarehouseReport = () => {
                 ),
                 total: (item, index) => (
                   <Td>
-                    <div>{Number(item.remainEnd || 0) + Number(item.ontheway || 0) || 0}</div>
+                    <div>
+                      {Number(Number(item.remainEnd || 0) + Number(item.remainEndMainDepartment || 0) || 0) + Number(item.ontheway || 0) ||
+                        0}
+                    </div>
+                  </Td>
+                ),
+                remainAll: (item, index) => (
+                  <Td>
+                    <div>{Number(item.remainEnd || 0) + Number(item.remainEndMainDepartment || 0) || 0}</div>
+                  </Td>
+                ),
+                exportStoreToProvider: (item, index) => (
+                  <Td>
+                    <div>{Number(item.exportStoreToProvider || 0) || 0}</div>
+                  </Td>
+                ),
+                realExportCT: (item, index) => (
+                  <Td>
+                    <div>
+                      {(Number(item.exportedProduct || 0) - Number(item.returnProduct || 0) || 0) +
+                        (Number(item.exportedProduct12Department || 0) - Number(item.returnProduct12Department || 0))}
+                    </div>
                   </Td>
                 )
               }}

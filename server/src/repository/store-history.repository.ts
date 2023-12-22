@@ -4,7 +4,6 @@ import StoreHistory from '../domain/store-history.entity';
 @EntityRepository(StoreHistory)
 export class StoreHistoryRepository extends Repository<StoreHistory> {
   async createStoreHistoryQuery(queryString, date, options = null, productIds = null) {
-    console.log('queryString',queryString)
     const tableAlias = 'StoreHistory'
 
     const query = this

@@ -82,11 +82,13 @@ const EditWarehouseImport = props => {
     dispatch(getDetailWarehouseImport({ id: props.match.params.id, dependency: true }));
   }, []);
 
+
   useEffect(() => {
     if (warehouseImport) {
       setInitValuesState(warehouseImport);
       setSelectedWarehouse(warehouseImport.store);
-      setProductList(JSON.parse(JSON.stringify(warehouseImport.storeInputDetails)));
+      console.log(warehouseImport)
+      setProductList(warehouseImport.storeInputDetails);
     }
   }, [warehouseImport]);
 
@@ -244,7 +246,7 @@ const EditWarehouseImport = props => {
                     </tr>
                   </thead>
                   <tbody>
-                    {productList.map((item, index) => {
+                    {productList?.map((item, index) => {
                       return (
                         <tr key={index}>
                           <td style={{ minWidth: 500 }}>

@@ -17,7 +17,7 @@ import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { creatingWarehouseImport } from '../Import/warehouse-import.api';
+import { creatingWarehouseExport } from '../Import/warehouse-import.api';
 import { currencyMask } from '../../../components/currency-input/currency-input';
 import MaskedInput from 'react-text-mask';
 import _ from 'lodash';
@@ -106,7 +106,7 @@ const CreateWarehouseExportProvider = () => {
     values.department = account.mainDepartment || account.department;
 
     dispatch(fetching());
-    dispatch(creatingWarehouseImport(values));
+    dispatch(creatingWarehouseExport(values));
   };
 
   const onChangeQuantity = ({ target }, index) => {
@@ -428,19 +428,7 @@ const CreateWarehouseExportProvider = () => {
                           </td>
                           <td className="right">{productList.reduce((sum, current) => sum + Number(current.quantity), 0) || ''}</td>
                         </tr>
-                        <tr>
-                          <td className="left">
-                            <strong>Tổng tiền</strong>
-                          </td>
-                          <td className="right">
-                            {productList
-                              .reduce((sum, current) => sum + current.price * current.quantity, 0)
-                              .toLocaleString('it-IT', {
-                                style: 'currency',
-                                currency: 'VND'
-                              })}
-                          </td>
-                        </tr>
+
                       </tbody>
                     </Table>
                   </CCol>

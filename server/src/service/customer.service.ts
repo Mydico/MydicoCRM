@@ -19,6 +19,7 @@ import StoreInput from '../domain/store-input.entity';
 import Bill from '../domain/bill.entity';
 import Order from '../domain/order.entity';
 import moment from 'moment';
+import { map } from 'rxjs/operators';
 
 const relationshipNames = [];
 relationshipNames.push('status');
@@ -39,7 +40,7 @@ export class CustomerService {
     @InjectRepository(TransactionRepository) private storeInputRepository: StoreInputRepository,
     @InjectRepository(TransactionRepository) private billRepository: BillRepository,
     private httpService: HttpService
-  ) {}
+  ) { }
 
   async findById(id: string): Promise<Customer | undefined> {
     const options = { relations: relationshipNames };
@@ -195,8 +196,7 @@ export class CustomerService {
       .skip(options.skip)
       .take(options.take)
       .cache(
-        `cache_filter_get_customers_department_${JSON.stringify(departmentVisible)}_branch_${
-          currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
+        `cache_filter_get_customers_department_${JSON.stringify(departmentVisible)}_branch_${currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
         }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}`
       );
     if (Object.keys(filter).length > 0) {
@@ -237,10 +237,10 @@ export class CustomerService {
       const endDate = moment().add(birthdayOffset, "day").toDate()
       const listDate = getDates(startDate, endDate);
       const listDay = listDate.map(item => item.getDate());
-      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  MONTH(Customer.date_of_birth) in (${JSON.stringify(moment().month()+1)}) AND DAY(Customer.date_of_birth) IN ${JSON.stringify(listDay)
+      andQueryString += ` ${andQueryString.length === 0 ? '' : ' AND '}  MONTH(Customer.date_of_birth) in (${JSON.stringify(moment().month() + 1)}) AND DAY(Customer.date_of_birth) IN ${JSON.stringify(listDay)
         .replace('[', '(')
         .replace(']', ')')} `;
-    
+
     }
     if (departmentVisible.length > 0) {
       andQueryString += `AND Customer.department IN ${JSON.stringify(departmentVisible)
@@ -283,7 +283,7 @@ export class CustomerService {
       .orderBy(`Customer.${Object.keys(options.order)[0] || 'createdDate'}`, options.order[Object.keys(options.order)[0]] || 'DESC')
       .skip(options.skip)
       .take(options.take)
-      // .cache(cacheKeyBuilder, 3600000);
+    // .cache(cacheKeyBuilder, 3600000);
 
     const count = this.customerRepository
       .createQueryBuilder('Customer')
@@ -292,8 +292,7 @@ export class CustomerService {
       .skip(options.skip)
       .take(options.take)
       .cache(
-        `cache_count_get_customers_department_${JSON.stringify(departmentVisible)}_branch_${
-          currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
+        `cache_count_get_customers_department_${JSON.stringify(departmentVisible)}_branch_${currentUser.branch ? (!currentUser.branch.seeAll ? currentUser.branch.id : -1) : null
         }_sale_${isEmployee ? currentUser.id : -1}_filter_${JSON.stringify(filter)}`
       );
     if (queryString) {
@@ -354,7 +353,9 @@ export class CustomerService {
         contact_vocative: '',
         customer_created: customer.createdBy
       });
-      await result.toPromise().catch(e => (error = e.message));
+      result.pipe(
+        map(resp => resp.data)
+      ).toPromise().catch(err => { error = JSON.stringify(err); });
     }
     const foundedCustomer = await this.customerRepository.find({
       code: Like(`%${customer.code}%`),

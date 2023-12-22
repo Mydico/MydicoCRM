@@ -191,6 +191,12 @@ export class StoreInputController {
     storeInput.createdBy = currentUser.login;
     storeInput.storeName = storeInput.store?.name;
     storeInput.storeTransferName = storeInput.storeTransfer?.name;
+    storeInput.storeInputDetails = storeInput.storeInputDetails.map(item => ({
+      ...item,
+      quantity: item.quantity,
+      quantityChange: item.quantityChange || 0,
+      quantityRemain: item.quantity - (item.quantityChange || 0)
+    }))
     const created = await this.storeInputService.save(storeInput, currentUser);
     HeaderUtil.addEntityCreatedHeaders(res, 'StoreInput', created.id);
     return res.send(created);
@@ -301,7 +307,7 @@ export class StoreInputController {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
     storeInput.lastModifiedDate = new Date()
-    return res.send(await this.storeInputService.verifyCalculate(storeInput,currentUser));
+    return res.send(await this.storeInputService.exportAfterVerify(storeInput,currentUser));
   }
 
   @Put('/return/approve')
@@ -415,6 +421,12 @@ export class StoreInputController {
         throw new HttpException('Sản phẩm trong kho không đủ để duyệt phiếu xuất', HttpStatus.UNPROCESSABLE_ENTITY);
       }
     }
+    storeInput.storeInputDetails = storeInput.storeInputDetails.map(item => ({
+      ...item,
+      quantity: item.quantity,
+      quantityChange: item.quantityChange || 0,
+      quantityRemain: item.quantity - (item.quantityChange || 0)
+    }))
     return res.send(await this.storeInputService.update(storeInput));
   }
 

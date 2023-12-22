@@ -25,12 +25,9 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
+  { key: 'customerCode', label: 'Mã khách hàng', _style: { width: '10%' }, filter: false },
   { key: 'customerName', label: 'Tên khách hàng', _style: { width: '10%' }, filter: false },
-  { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false },
-  { key: 'priceReal', label: 'Đơn giá', _style: { width: '15%' }, filter: false },
-  { key: 'priceTotal', label: 'Tổng tiền', _style: { width: '15%' }, filter: false },
-  { key: 'saleName', label: 'Người phụ trách', _style: { width: '15%' }, filter: false },
-  { key: 'createdDate', label: 'Ngày tạo', _style: { width: '15%' }, filter: false }
+  { key: 'quantity', label: 'Số lượng', _style: { width: '15%' }, filter: false, sort: true },
 ];
 
 const ProductDetailReport = props => {
@@ -142,31 +139,36 @@ const ProductDetailReport = props => {
               itemsPerPageSelect={{ label: 'Số lượng trên một trang', values: [50, 100, 150, 200, 500, 700, 1000] }}
               itemsPerPage={size}
               hover
+              sorter={{ external: true }}
+              onSorterValueChange={sortItem}
               noItemsView={{
                 noResults: 'Không tìm thấy kết quả',
                 noItems: 'Không có dữ liệu'
               }}
               loading={initialState.loading}
               onPaginationChange={val => setSize(val)}
-              sorter
-              // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <Td>{(activePage - 1) * size + index + 1}</Td>,
                 customerName: item => (
                   <Td>
-                    <CLink to={`/customer-report/order-customer-histories/${item.order.customer.id}`}>{item.customerName}</CLink>
+                    <CLink to={`/customer-report/order-customer-histories/${item.customer_id}`}>{item.customer_contact_name}</CLink>
                   </Td>
                 ),
-                priceReal: (item, index) => (
+                customerCode: item => (
                   <Td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceReal || 0)}</div>
+                    <CLink to={`/customer-report/order-customer-histories/${item.customer_id}`}>{item.customer_code}</CLink>
                   </Td>
                 ),
-                priceTotal: (item, index) => (
+                quantity: (item, index) => (
                   <Td>
-                    <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceTotal || 0)}</div>
+                    {Number(item.count || item.orderDetailsQuantity ||  0)}
                   </Td>
-                )
+                ),
+                // priceTotal: (item, index) => (
+                //   <Td>
+                //     <div>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.priceTotal || 0)}</div>
+                //   </Td>
+                // )
               }}
             />
             <CPagination

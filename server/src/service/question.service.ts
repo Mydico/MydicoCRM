@@ -41,7 +41,10 @@ export class QuestionService {
                                 endOfDay.toISOString()
                             ),
                             syllabus: id,
-                            user: user
+                            user: user,
+                            question: {
+                                status: ProductStatus.ACTIVE
+                            }
                         },
                         relations: ['user', 'choice', 'question', 'question.choices']
                     })
@@ -51,6 +54,7 @@ export class QuestionService {
                             .createQueryBuilder('question')
                             .leftJoinAndSelect('question.choices','choices')
                             .select()
+                            .where('question.status = :status', { status: ProductStatus.ACTIVE })
                             .orderBy('RAND()')
                             .take(syllabus.amount)
                             .getMany();
@@ -74,7 +78,10 @@ export class QuestionService {
                     const exist = await this.userAnswerRepository.find({
                         where: {
                             syllabus: id,
-                            user: user
+                            user: user,
+                            question: {
+                                status: ProductStatus.ACTIVE
+                            }
                         },
                         relations: ['user', 'choice', 'question', 'question.choices']
                     })

@@ -16,7 +16,6 @@ export class SeedLearning1570200495312 implements MigrationInterface {
     const rows = await sheet.getRows({ offset: 0, /*limit:5*/ })
     const answer = []
     for (const row of rows) {
-      console.log(row)
       if(row._rowNumber === 1) continue
       const question = await conn
         .createQueryBuilder()
@@ -27,9 +26,7 @@ export class SeedLearning1570200495312 implements MigrationInterface {
         })
         .execute();
       for (let index = 2; index < 7; index++) {
-        console.log(row)
-        console.log(row._rawData[index])
-        console.log(row._rawData[7])
+
         const element = row._rawData[index];
         if (element) {
           answer.push({
@@ -43,7 +40,6 @@ export class SeedLearning1570200495312 implements MigrationInterface {
 
       }
 
-      console.log(question.identifiers[0].id)
 
     }
     await conn

@@ -14,7 +14,9 @@ const fieldsDetail = [
   { key: 'code', label: 'Mã', _style: { width: '10%' } },
   { key: 'productName', label: 'Tên sản phẩm', _style: { width: '10%' } },
   { key: 'unit', label: 'Đơn vị', _style: { width: '10%' } },
-  { key: 'quantity', label: 'Số lượng', _style: { width: '10%' } }
+  { key: 'quantity', label: 'Số lượng ban đầu', _style: { width: '10%' } },
+  { key: 'quantityChange', label: 'Số lượng thiếu', _style: { width: '10%' } },
+  { key: 'quantityRemain', label: 'Số lượng thực xuất', _style: { width: '10%' } }
 ];
 function StoreDetail(props) {
   const [item, setItem] = useState(null);
@@ -34,15 +36,17 @@ function StoreDetail(props) {
     <CCardBody>
       <h5>Thông tin đơn nhập</h5>
       <AdvancedTable
-        items={item?.storeInputDetails.map(item => {
+        items={item?.storeInputDetails?.map(item => {
           return {
             code: item.product?.code || '',
             productName: item.product?.name || '',
             unit: item.product?.unit || '',
-            quantity: item.quantity || ''
+            quantity: item.quantity,
+            quantityChange: item.quantityChange || '0',
+            quantityRemain: item.quantityRemain || '0'
           };
         })}
-        fields={fieldsDetail}
+        fields={props.isImport?  fieldsDetail.filter(key => key.key !== 'quantityChange' && key.key !== 'quantityRemain') : fieldsDetail}
         bordered
         itemsPerPage={5}
         pagination

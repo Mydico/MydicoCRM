@@ -60,7 +60,6 @@ export class UserAnswerService {
         queryString = queryString.replace("UserAnswer.user_code",'user.code')
         // queryString = queryString.replace("UserAnswer.name",'user.name')
 
-        console.log(filter)
         const queryBuilder = this.userAnswerRepository
             .createQueryBuilder('UserAnswer')
             .select(['UserAnswer.userId, UserAnswer.syllabusId'])

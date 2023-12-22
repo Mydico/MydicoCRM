@@ -122,16 +122,12 @@ export class OrderService {
     const queryBuilder = this.orderRepository
       .createQueryBuilder('Order')
       .leftJoinAndSelect('Order.customer', 'customer')
-      // .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
-      // .leftJoinAndSelect('orderDetails.product', 'product')
-      // .leftJoinAndSelect('Order.promotion', 'promotion')
-      // .leftJoinAndSelect('Order.promotionItem', 'promotionItem')
-      // .leftJoinAndSelect('promotion.customerType', 'customerType')
-      // .leftJoinAndSelect('Order.sale', 'sale')
-      // .leftJoinAndSelect('Order.department', 'department')
+      .leftJoinAndSelect('Order.orderDetails', 'orderDetails')
+      // .addSelect('SUM(orderDetails.quantity)', 'totalQuantity') // Summing the quantity
       .skip(options.skip)
       .take(options.take)
       .where(andQueryString, paramsObject)
+      // .groupBy('Order.id') // Group by Order ID if you want the sum per order
       .orderBy({
         'Order.createdDate': options.order[Object.keys(options.order)[0]] || 'DESC'
       });

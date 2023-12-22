@@ -18,6 +18,7 @@ import { CCol, CFormGroup, CInput, CLabel } from '@coreui/react';
 import Download from '../../../components/excel/DownloadExcel';
 import ReportDate from '../../../components/report-date/ReportDate';
 import AdvancedTable from '../../../components/table/AdvancedTable.js';
+import StoreDetail from '../Export/StoreDetail.js';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -430,33 +431,8 @@ const WarehouseImport = props => {
             details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
-                  <CCardBody>
-                    <h5>Thông tin đơn nhập</h5>
+                  <StoreDetail isImport={true} isFetch={details.includes(item.id)} orderId={item.id} />
 
-                    <Table striped responsive>
-                      <thead>
-                        <tr>
-                          <th className="center">STT</th>
-                          <th>Tên sản phẩm</th>
-                          <th className="center">Số lượng</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {JSON.parse(JSON.stringify(item.storeInputDetails || [])).map((detail, index) => {
-                          return (
-                            <tr key={index}>
-                              <td> {(activePage - 1) * size + index + 1}</td>
-                              <td>{detail.product?.name}</td>
-                              <td>{detail.quantity}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </Table>
-                    <CCol lg="4" sm="5">
-                      Ghi chú: <strong>{item?.note}</strong>
-                    </CCol>
-                  </CCardBody>
                 </CCollapse>
               );
             }

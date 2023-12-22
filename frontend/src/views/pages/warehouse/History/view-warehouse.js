@@ -10,8 +10,8 @@ import { useHistory } from 'react-router-dom';
 import { fetching, globalizedWarehouseImportSelectors } from '../Import/warehouse-import.reducer';
 
 import { Table } from 'reactstrap';
-import { WarehouseImportType } from './contants';
-import moment from 'moment'
+import { WarehouseImportStatus, WarehouseImportType } from './contants';
+import moment from 'moment';
 const validationSchema = function() {
   return Yup.object().shape({
     store: Yup.object().required('Kho không để trống')
@@ -53,8 +53,7 @@ const excelFields = [
   { key: 'none', label: 'Đơn giá bán' },
   { key: 'none', label: 'Thành tiền' },
   { key: 'none', label: 'Đơn giá vốn' },
-  { key: 'none', label: 'Tiền vốn' },
-
+  { key: 'none', label: 'Tiền vốn' }
 ];
 const DetailWarehouse = props => {
   const { initialState } = useSelector(state => state.warehouseImport);
@@ -75,15 +74,13 @@ const DetailWarehouse = props => {
   };
 
   useEffect(() => {
-    dispatch(getDetailWarehouseImport({ id: props.match.params.storeId, dependency: true }))
-   
-
+    dispatch(getDetailWarehouseImport({ id: props.match.params.storeId, dependency: true }));
   }, []);
 
-  const generateOrder = () => {
-    const data = productList.map((item, index) => {
-      return {
+  const generateOrder = (warehouseImport) => {
 
+    const data = warehouseImport.storeInputDetails?.map((item, index) => {
+      return {
         key5: '156',
         key6: '1561',
         key4: '3',
@@ -94,23 +91,24 @@ const DetailWarehouse = props => {
         address: `${warehouseImport.storeTransfer?.address}`,
         storeCode: `${warehouseImport.storeTransfer?.code}`,
         storeName: `${warehouseImport.storeTransfer?.name}`,
-        productCode: item.product.code,
-        productName: item.product.name,
-        unit: item.product.unit,
-        quantity: Number(item.quantity),
+        productCode: item.product?.code,
+        productName: item.product?.name,
+        unit: item.product?.unit,
+        quantity: Number(item.quantity)
       };
     });
-    console.log(data)
+    console.log(data);
     setOrderExcel(data);
   };
 
   useEffect(() => {
     if (warehouseImport) {
+      console.log(warehouseImport)
       setInitValuesState(warehouseImport);
       setSelectedWarehouse(warehouseImport.store);
       setSelectedCustomer(warehouseImport.customer);
       setProductList(warehouseImport.storeInputDetails);
-      generateOrder();
+      generateOrder(warehouseImport);
     }
   }, [warehouseImport]);
 
@@ -209,11 +207,13 @@ const DetailWarehouse = props => {
   return (
     <CCard>
       <div style={{ marginLeft: 12, marginTop: 12, marginBottom: 12 }}>
-        <Download
-          data={orderExcel}
-          headers={excelFields}
-          name={`${warehouseImport?.code}-${removeSpecialChars(stringToSlug(warehouseImport?.storeTransfer?.name || ''))}`}
-        />
+        {/* {warehouseImport?.status !== WarehouseImportStatus.WAITING && ( */}
+          <Download
+            data={orderExcel}
+            headers={excelFields}
+            name={`${warehouseImport?.code}-${removeSpecialChars(stringToSlug(warehouseImport?.storeTransfer?.name || ''))}`}
+          />
+        {/* )} */}
       </div>
       <Formik initialValues={initValuesState || initialValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
         {({ values, handleSubmit }) => (
@@ -263,7 +263,7 @@ const DetailWarehouse = props => {
                     </tr>
                   </thead>
                   <tbody>
-                    {productList.map((item, index) => {
+                    {productList?.map((item, index) => {
                       return (
                         <tr key={index}>
                           <td style={{ minWidth: 500 }}>{`${item?.product?.productBrand?.name || ''}-${item?.product?.name || ''}-${item

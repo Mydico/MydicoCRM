@@ -142,7 +142,7 @@ export class StoreInputService {
             // .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
             // .addSelect("storeInputDetails.quantity", "quantity")
             // .leftJoinAndSelect('StoreInput.promotion', 'promotion')
-            // .leftJoinAndSelect('StoreInput.storeInputDetails', 'storeInputDetails',)
+            .leftJoinAndSelect('StoreInput.storeInputDetails', 'storeInputDetails',)
             // .leftJoinAndSelect('storeInputDetails.product', 'product')
             .leftJoinAndSelect('StoreInput.storeTransfer', 'storeTransfer')
             // .cache(cacheKeyBuilder, 604800)
@@ -275,13 +275,13 @@ export class StoreInputService {
                 ...item,
                 quantity: item.quantity,
                 quantityChange: item.quantityChange || 0,
-                quantityRemain: item.quantityRemain || item.quantity
+                quantityRemain: item.quantityRemain || 0
             }))
         }
         return await this.save(storeInput);
     }
 
-    async verifyCalculate(storeInput: StoreInput, currentUser: User = null): Promise<any> {
+    async exportAfterVerify(storeInput: StoreInput, currentUser: User = null): Promise<any> {
         const entity = await this.findById(storeInput.id);
         if (entity.status === StoreImportStatus.QUANTITY_VERIFIED) {
             const arrProduct = entity.storeInputDetails.map(item => item.product.id);
@@ -348,13 +348,13 @@ export class StoreInputService {
         if (entity.storeTransfer) {
             let arrDetails = [];
             if (Array.isArray(entity.storeInputDetails)) {
-                arrDetails = entity.storeInputDetails.map(item => {
+                arrDetails = entity.storeInputDetails.filter(item => item.quantityRemain > 0).map(item => {
                     delete item.id
                     return ({
                         ...item,
                         quantity: item.quantityRemain,
                         quantityChange: 0,
-                        quantityRemain: item.quantityRemain || item.quantity,
+                        quantityRemain: item.quantityRemain || 0,
 
                     })
                 });
@@ -393,7 +393,7 @@ export class StoreInputService {
             }));
         const productInStore = founded.map(item => {
             const itemFounded = entity.storeInputDetails.filter(origin => origin.product.id === item.product.id);
-            const totalProduct = itemFounded.reduce((prev, current) => prev +  entity.type === StoreImportType.EXPORT ? current.quantityRemain : current.quantity, 0);
+            const totalProduct = itemFounded.reduce((prev, current) => prev +  (entity.type === StoreImportType.EXPORT ? current.quantityRemain : current.quantity), 0);
             return {
                 ...item,
                 department: entity.store.department,

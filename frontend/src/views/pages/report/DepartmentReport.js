@@ -57,6 +57,7 @@ const DepartmentReport = props => {
   };
 
   useEffect(() => {
+    console.log(date);
     if (date.startDate && date.endDate) {
       setFilter({
         ...filter,
@@ -69,15 +70,16 @@ const DepartmentReport = props => {
 
   useEffect(() => {
     if (reportDate.startDate && reportDate.endDate) {
-      // setFilter({
-      //   ...filter,
-      //   startDate: moment(reportDate.startDate).format('YYYY-MM-DD'),
-      //   endDate: moment(reportDate.endDate).format('YYYY-MM-DD')
-      // });
+      setFilter({
+        ...filter,
+        startDate: moment(reportDate.startDate).format('YYYY-MM-DD'),
+        endDate: moment(reportDate.endDate).format('YYYY-MM-DD')
+      });
     }
   }, [reportDate]);
 
   useEffect(() => {
+    console.log(filter);
     if (Object.keys(filter).length > 1) {
       getData(filter);
     }
@@ -95,7 +97,7 @@ const DepartmentReport = props => {
       <CCol sm={12} md={12}>
         <CCard>
           {/* <CCardHeader>React-Dates</CCardHeader> */}
-          <ReportDate setDate={setDate} isFirstReport date={date} setFocused={setFocused} isReport focused={focused} />
+          <ReportDate setDate={setDate} date={date} setFocused={setFocused} isReport focused={focused} />
         </CCard>
         <CCardGroup columns className="cols-2">
           <CCard>
@@ -153,9 +155,9 @@ const DepartmentReport = props => {
                       },
                       label: function(tooltipItem, data) {
                         if (data['datasets'][0]['data'][tooltipItem['index']]) {
-                          return currencyFormat(Number(data['datasets'][0]['data'][tooltipItem['index']]))
-                        }else {
-                          return ''
+                          return currencyFormat(Number(data['datasets'][0]['data'][tooltipItem['index']]));
+                        } else {
+                          return '';
                         }
                       },
                       afterLabel: function(tooltipItem, data) {
@@ -174,9 +176,13 @@ const DepartmentReport = props => {
         <CRow sm={12} md={12}>
           <CCol sm="12" lg="12">
             <CWidgetBrand
-              rightHeader={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(memoDepartmentReport.reduce((prev, curr) => prev + Number(curr.real),0))}
+              rightHeader={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                memoDepartmentReport.reduce((prev, curr) => prev + Number(curr.real), 0)
+              )}
               rightFooter="Doanh thu thuần"
-              leftHeader={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(memoDepartmentReport.reduce((prev, curr) => prev + Number(curr.total),0))}
+              leftHeader={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                memoDepartmentReport.reduce((prev, curr) => prev + Number(curr.total), 0)
+              )}
               leftFooter="Doanh thu"
               color="gradient-primary"
             >
@@ -221,9 +227,7 @@ const DepartmentReport = props => {
                     </Td>
                     <Td>
                       <div>
-                        <CLink onClick={onDetail(item)} >
-                          {item.name}
-                        </CLink>
+                        <CLink onClick={onDetail(item)}>{item.name}</CLink>
                       </div>
                     </Td>
                     <Td>

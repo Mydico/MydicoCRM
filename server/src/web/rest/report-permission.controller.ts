@@ -75,7 +75,7 @@ export class PrivateController {
     // //   filter.department = JSON.parse(req.query['department'])
 
     // // }
-    return res.send(await this.reportService.getProductInWarehouse(options, filter));
+    // return res.send(await this.reportService.getProductInWarehouse(options, filter));
   }
 
 

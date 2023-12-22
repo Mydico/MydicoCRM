@@ -19,6 +19,7 @@ import { computedExcelItemsWarehouse, fieldsExcelWarehouse } from '../Import/war
 import Download from '../../../components/excel/DownloadExcel';
 import ReportDate from '../../../components/report-date/ReportDate';
 import AdvancedTable from '../../../components/table/AdvancedTable.js';
+import StoreDetail from './ReturnStoreDetail.js';
 
 const mappingStatus = {
   WAITING: 'CHỜ DUYỆT',
@@ -330,7 +331,7 @@ const WarehouseReturn = props => {
   return (
     <CCard>
       <CCardHeader>
-        <CIcon name="cil-grid" /> Danh sách phiếu nhập kho
+        <CIcon name="cil-grid" /> Danh sách phiếu trả hàng
         {(isAdmin || account.role.filter(rol => rol.method === 'POST' && rol.entity === '/api/store-inputs/return').length > 0) && (
           <CButton color="primary" variant="outline" className="ml-3" onClick={toCreateWarehouseReturn}>
             <CIcon name="cil-plus" /> Thêm mới phiếu trả hàng
@@ -458,155 +459,8 @@ const WarehouseReturn = props => {
             details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
-                  <CCardBody>
-                    <h5>Thông tin đơn nhập</h5>
-                    {item.type === 'RETURN' ? (
-                      <div>
-                        <CRow className="mb-4">
-                          <CCol sm="4">
-                            <h6 className="mb-3">Chương trình bán hàng:</h6>
-                            <div>
-                              <strong> {item?.promotion?.name}</strong>
-                            </div>
-                            <div>
-                              {item?.promotion?.description?.length > 10
-                                ? `${item?.promotion?.description.substring(0, 30)}...`
-                                : item?.promotion?.description}
-                            </div>
-                          </CCol>
-                        </CRow>
-                        <Table striped responsive>
-                          <thead>
-                            <tr>
-                              <th className="center">STT</th>
-                              <th>Tên sản phẩm</th>
-                              <th className="center">Số lượng</th>
-                              <th className="right">Đơn giá</th>
-                              <th className="right">Chiết khấu(%)</th>
-                              <th className="right">Tổng</th>
-                              <th className="right">Giá chiết khấu</th>
-                              <th className="right">Thành tiền</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {JSON.parse(JSON.stringify(item.storeInputDetails || [])).map((detail, index) => {
-                              return (
-                                <tr key={index}>
-                                  <td> {(activePage - 1) * size + index + 1}</td>
-                                  <td>{detail.product?.name}</td>
-                                  <td>{detail.quantity}</td>
-                                  <td>
-                                    {Number(detail.price || detail.product?.price).toLocaleString('it-IT', {
-                                      style: 'currency',
-                                      currency: 'VND'
-                                    }) || ''}
-                                  </td>
-                                  <td>{detail.reducePercent}%</td>
-                                  <td>
-                                    {(Number(detail.priceReal || detail.product?.price) * detail.quantity).toLocaleString('it-IT', {
-                                      style: 'currency',
-                                      currency: 'VND'
-                                    }) || ''}
-                                  </td>
-                                  <td>
-                                    {(
-                                      (Number(detail.priceReal || detail.product?.price) * detail.quantity * detail.reducePercent) /
-                                      100
-                                    ).toLocaleString('it-IT', {
-                                      style: 'currency',
-                                      currency: 'VND'
-                                    }) || ''}
-                                  </td>
-                                  <td>
-                                    {(
-                                      Number(detail.priceReal || detail.product?.price) * detail.quantity -
-                                      (Number(detail.priceReal || detail.product?.price) * detail.quantity * detail.reducePercent) / 100
-                                    ).toLocaleString('it-IT', {
-                                      style: 'currency',
-                                      currency: 'VND'
-                                    }) || ''}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </Table>
-                      </div>
-                    ) : (
-                      <Table striped responsive>
-                        <thead>
-                          <tr>
-                            <th className="center">STT</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Dung tích</th>
-                            <th className="center">Số lượng</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {JSON.parse(JSON.stringify(item.storeInputDetails || [])).map((detail, index) => {
-                            return (
-                              <tr key={index}>
-                                <td> {(activePage - 1) * size + index + 1}</td>
-                                <td>{detail.product?.name}</td>
-                                <td>{detail.product?.volume}</td>
-                                <td>{detail.quantity}</td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </Table>
-                    )}
-                    {item.type === 'RETURN' && (
-                      <CRow>
-                        <CCol lg="4" sm="5">
-                          Ghi chú: <strong>{item?.note}</strong>
-                        </CCol>
-                        <CCol lg="4" sm="5" className="ml-auto">
-                          <Table className="table-clear">
-                            <tbody>
-                              <tr>
-                                <td className="left">
-                                  <strong>Tổng số lượng</strong>
-                                </td>
-                                <td className="right">
-                                  {item?.storeInputDetails?.reduce((sum, current) => sum + current.quantity, 0) || ''}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="left">
-                                  <strong>Tổng tiền</strong>
-                                </td>
-                                <td className="right">
-                                  {Number(item?.totalMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="left">
-                                  <strong>Chiết khấu</strong>
-                                </td>
-                                <td className="right">
-                                  {Number(item?.reduceMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="left">
-                                  <strong>Tiền thanh toán</strong>
-                                </td>
-                                <td className="right">
-                                  <strong>
-                                    {Number(item?.realMoney || '0').toLocaleString('it-IT', { style: 'currency', currency: 'VND' }) || ''}
-                                  </strong>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </Table>
-                        </CCol>
-                      </CRow>
-                    )}
-                    <CCol lg="4" sm="5">
-                      Ghi chú: <strong>{item?.note}</strong>
-                    </CCol>
-                  </CCardBody>
+                   <StoreDetail isFetch={details.includes(item.id)} orderId={item.id} />
+
                 </CCollapse>
               );
             }

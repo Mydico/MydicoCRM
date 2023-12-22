@@ -18,6 +18,7 @@ import { StoreHistoryRepository } from '../repository/store-history.repository';
 import { StoreInputRepository } from '../repository/store-input.repository';
 import { TransactionRepository } from '../repository/transaction.repository';
 import { queryBuilderCustomerForPromotionReportFunc, queryBuilderFunc, queryBuilderFuncForWarehouse } from '../utils/helper/permission-normalization';
+import { ProductRepository } from '../repository/product.repository';
 
 @Injectable()
 export class ReportService {
@@ -30,6 +31,7 @@ export class ReportService {
     @InjectRepository(StoreHistoryRepository) private storeHistoryRepository: StoreHistoryRepository,
     @InjectRepository(StoreInputRepository) private storeInputRepository: StoreInputRepository,
     @InjectRepository(BillRepository) private billRepository: BillRepository,
+    @InjectRepository(ProductRepository) private productRepository: ProductRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
 
   ) { }
@@ -794,89 +796,96 @@ export class ReportService {
   }
 
   async getProductDetailReport(options, filter): Promise<[OrderDetails[], number]> {
+
+
+
+    // // queryString = queryString.replace('Transaction.brandId', 'brand.id');
+    // // queryString = queryString.replace('Transaction.productGroupId', 'productGroup.id');
+    // //order_details.price_real * quantity * (100 - reduce_percent) / 100
+    // const queryBuilder = this.orderDetailsRepository
+    //   .createQueryBuilder('orderDetails')
+    //   // .select(['order.customer.id', 'order.customer.name'])
+    //   // .select(['orderDetails.createdDate','orderDetails.priceReal', 'orderDetails.quantity'])
+
+    //   .leftJoinAndSelect('orderDetails.order', 'order')
+    //   .leftJoinAndSelect('orderDetails.product', 'product')
+    //   .leftJoinAndSelect('order.customer', 'customer')
+    //   .where(queryString)
+    //   .skip(options.skip)
+    //   .take(options.take)
+
+    // const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    // const cachedQuery = await this.cacheManager.get(cacheKey);
+    // if (cachedQuery) {
+    //   return cachedQuery;
+    // }
+
+    // const result = await queryBuilder.getManyAndCount();
+    // // await this.cacheManager.set(cacheKey, result, 60 * 1000);
+    // // return result
+    // console.log(result)
+    // const productIds = result[0].map(item => item.product.id);
+    // console.log(productIds)
     let queryString = queryBuilderFunc('orderDetails', filter);
     queryString = queryString.replace('orderDetails.departmentId', 'order.departmentId');
     queryString = queryString.replace('orderDetails.saleId', 'order.saleId');
     queryString = queryString.replace('orderDetails.branchId', 'order.branchId');
-
-
-    // queryString = queryString.replace('Transaction.brandId', 'brand.id');
-    // queryString = queryString.replace('Transaction.productGroupId', 'productGroup.id');
-    //order_details.price_real * quantity * (100 - reduce_percent) / 100
-    const queryBuilder = this.orderDetailsRepository
-      .createQueryBuilder('orderDetails')
-      // .select(['order.customer.id', 'order.customer.name'])
-      // .select(['orderDetails.createdDate','orderDetails.priceReal', 'orderDetails.quantity'])
-
-      .leftJoinAndSelect('orderDetails.order', 'order')
-      .leftJoinAndSelect('order.customer', 'customer')
+    const countBuilder = await this.transactionRepository.manager.connection
+      .createQueryBuilder()
+      .from(Transaction, 'Transaction')
+      .select(['customer.id','customer.code','product.id'])
+      .addSelect(['customer.contactName'])
+      .addSelect('sum(orderDetails.quantity)', 'orderDetailsQuantity')
+      .leftJoin('Transaction.order', 'order')
+      .leftJoin('order.customer', 'customer')
+      .leftJoin('order.orderDetails', 'orderDetails')
+      .leftJoin('orderDetails.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
       .where(queryString)
-      .skip(options.skip)
-      .take(options.take)
-
-    const cacheKey = queryBuilder.getQueryAndParameters().toString();
-    const cachedQuery = await this.cacheManager.get(cacheKey);
-    if (cachedQuery) {
-      return cachedQuery;
+      .andWhere(`Transaction.orderId is not null`)
+      .groupBy('customer.id')
+      .getRawMany();
+     queryString = queryBuilderFunc('storeInputDetails', filter);
+     queryString = queryString.replace('storeInputDetails.departmentId', 'storeInput.departmentId');
+     queryString = queryString.replace('storeInputDetails.saleId', 'storeInput.saleId');
+     queryString = queryString.replace('storeInputDetails.branchId', 'storeInput.branchId');
+    const returnProduct = await this.transactionRepository
+      .createQueryBuilder('Transaction')
+      .select(['customer.id','customer.code','product.id'])
+      .addSelect('sum(storeInputDetails.quantity)', 'return')
+      .leftJoin('Transaction.storeInput', 'storeInput')
+      .leftJoin('storeInput.storeInputDetails', 'storeInputDetails')
+      .leftJoin('storeInputDetails.product', 'product')
+      .leftJoin('storeInput.customer', 'customer')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .andWhere(queryString)
+      // .andWhere('storeInputDetails.product IN (:saleIds)', { saleIds: productIds.length > 0 ? productIds : JSON.parse(filter['product']).length > 0 ? JSON.parse(filter['product']) : '' })
+      .andWhere(`Transaction.storeInputId is not null`)
+      .groupBy('customer.id')
+      .getRawMany();
+    if (countBuilder.length > 0) {
+      const final = countBuilder.map(item => {
+        const index = returnProduct.findIndex(product => product.customer_id === item.customer_id);
+        if (index >= 0) {
+          return {
+            ...item,
+            count: Number(item.orderDetailsQuantity || 0) - Number(returnProduct[index].return || 0),
+            return: Number(returnProduct[index].return)
+          };
+        }
+        return item;
+      });
+      return [final, Number(countBuilder?.length || 0)];
+    } else {
+      const returnProductTemp = returnProduct.map(item => ({
+        ...item,
+        count: 0 - Number(item.return || 0),
+        total: 0,
+      }))
+      return [returnProductTemp, Number(returnProduct?.length || 0)];
     }
-
-    const result = await queryBuilder.getManyAndCount();
-    await this.cacheManager.set(cacheKey, result, 60 * 1000);
-    return result
-    // const productIds = queryBuilder.map(item => item.product_id);
-
-    // const countBuilder = await this.transactionRepository.manager.connection
-    //   .createQueryBuilder()
-    //   .from(Transaction, 'Transaction')
-    //   .select('count(*)', 'count')
-    //   .leftJoin('Transaction.order', 'order')
-    //   .leftJoin('order.orderDetails', 'orderDetails')
-    //   .leftJoin('orderDetails.product', 'product')
-    //   .leftJoin('product.productBrand', 'brand')
-    //   .leftJoin('product.productGroup', 'productGroup')
-    //   .where(queryString)
-    //   .andWhere(`Transaction.orderId is not null`)
-    //   .groupBy('orderDetails.productId')
-    //   .cache(3 * 3600)
-    //   .getRawOne();
-
-    // const returnProduct = await this.transactionRepository
-    //   .createQueryBuilder('Transaction')
-    //   .select(['product.name', 'product.id'])
-    //   .addSelect('sum(storeInputDetails.priceTotal)', 'return')
-    //   .addSelect('sum(storeInputDetails.quantity)', 'count')
-    //   .leftJoin('Transaction.storeInput', 'storeInput')
-    //   .leftJoin('storeInput.storeInputDetails', 'storeInputDetails')
-    //   .leftJoin('storeInputDetails.product', 'product')
-    //   .leftJoin('product.productBrand', 'brand')
-    //   .leftJoin('product.productGroup', 'productGroup')
-    //   .andWhere(queryString)
-    //   .andWhere('storeInputDetails.product IN (:saleIds)', { saleIds: productIds.length > 0 ? productIds : JSON.parse(filter['product']).length > 0 ? JSON.parse(filter['product']) : '' })
-    //   .andWhere(`Transaction.storeInputId is not null`)
-    //   .cache(3 * 3600)
-    //   .groupBy('storeInputDetails.productId')
-    //   .getRawMany();
-    // if (queryBuilder.length > 0) {
-    //   const final = queryBuilder.map(item => {
-    //     const index = returnProduct.findIndex(product => product.product_id === item.product_id);
-    //     if (index >= 0) {
-    //       return {
-    //         ...item,
-    //         count: Number(item.count || 0) - Number(returnProduct[index].count || 0),
-    //         return: Number(returnProduct[index].return)
-    //       };
-    //     }
-    //     return item;
-    //   });
-    //   return [final, Number(countBuilder?.count || 0)];
-    // } else {
-    //   const returnProductTemp = returnProduct.map(item => ({
-    //     ...item,
-    //     count: 0 - Number(item.count || 0),
-    //     total: 0,
-    //   }))
-    //   return [returnProductTemp, Number(returnProduct?.length || 0)];
-    // }
   }
 
   async getSaleSummary(filter): Promise<any> {
@@ -1211,7 +1220,6 @@ export class ReportService {
   }
 
   async getWarehouseReport(options, filter): Promise<any> {
-
     const filterForStoreHistory = { ...filter }
     delete filterForStoreHistory.branch
     let queryString = queryBuilderFuncForWarehouse('StoreHistory', filterForStoreHistory, true);
@@ -1241,7 +1249,32 @@ export class ReportService {
     queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
     queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
     queryString = queryString.replace('StoreHistory.product_name', 'product.name');
-    const remainbegin = await this.storeHistoryRepository
+    if (filterForStoreHistory.department.includes(1) || filterForStoreHistory.department.includes(0)) {
+      queryString = queryBuilderFuncForWarehouse('StoreHistory', filterForStoreHistory, true, 1, false);
+      queryString = queryString.replace('StoreHistory.productId', 'product.id');
+      queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
+      queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
+      queryString = queryString.replace('StoreHistory.product_name', 'product.name');
+    }
+    let count = await this.storeHistoryRepository
+    .createQueryBuilder('StoreHistory2')
+    .select("StoreHistory2.productId")
+    .addSelect("Sum(remain)", "remain")
+    .addSelect("MAX(product.name)", "product_name")
+    .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
+      .addSelect("MAX(StoreHistory.id)", "id")
+      .from(StoreHistory, 'StoreHistory')
+      .leftJoin('StoreHistory.product', 'product')
+      .leftJoin('product.productBrand', 'brand')
+      .leftJoin('product.productGroup', 'productGroup')
+      .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+      .andWhere(`DATE(StoreHistory.createdDate) < :startDate`, { startDate: `${filter.startDate} 23:59:59` })
+      .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
+    .innerJoin("StoreHistory2.product", "product")
+    .groupBy(`StoreHistory2.productId`)
+    .orderBy("product.name", "ASC")
+    .getCount()
+    let remainbegin = await this.storeHistoryRepository
       .createQueryBuilder('StoreHistory2')
       .select("StoreHistory2.productId")
       .addSelect("Sum(remain)", "remain")
@@ -1254,7 +1287,6 @@ export class ReportService {
         .leftJoin('product.productGroup', 'productGroup')
         .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
         .andWhere(`DATE(StoreHistory.createdDate) < :startDate`, { startDate: filter.startDate })
-        // .andWhere(`departmentId = :departmentId`, { departmentId: 1 })
         .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
       .innerJoin("StoreHistory2.product", "product")
       .groupBy(`StoreHistory2.productId`)
@@ -1262,12 +1294,19 @@ export class ReportService {
       .offset(options.skip)
       .limit(options.take)
       .getRawMany()
-      console.log(remainbegin)
-    const productId = remainbegin.map(item => item.productId)
+
+    const productId = [...new Set([...remainbegin.map(item => item.productId), ...JSON.parse(filter.product || '[]')])];
+    const newProduct = JSON.parse(filter.product || '[]').filter(item => !remainbegin.map(item => item.productId).includes(item))
+    const productInfo = await (await this.productRepository.findByIds(newProduct)).map(item => ({ productId: item.id, product_name: item.name, remain: 0 }))
+    remainbegin = remainbegin.concat(productInfo)
     if (productId.length === 0) return [[], 0]
+    if (filter.department.includes(1) || filter.department.includes(0)) {
+      queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, 1, false);
 
-    queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, 1);
+    }else {
+      queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, null, true);
 
+    }
     queryString = queryString.replace('StoreInput.productId', 'product.id');
     queryString = queryString.replace('StoreInput.brandId', 'brand.id');
     queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
@@ -1288,53 +1327,6 @@ export class ReportService {
       .orderBy("storeInputDetails.productId", "ASC")
       .getRawMany()
 
-    queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, 1);
-    queryString = queryString.replace('StoreInput.productId', 'product.id');
-    queryString = queryString.replace('StoreInput.brandId', 'brand.id');
-    queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
-    queryString = queryString.replace('StoreInput.product_name', 'product.name');
-    queryString = queryString.replace(new RegExp('StoreInput.createdDate', 'g'), 'StoreInput.lastModifiedDate');
-    const returnProduct = this.storeInputRepository
-      .createQueryBuilder('StoreInput')
-      .select("storeInputDetails.productId")
-      .addSelect("sum(storeInputDetails.quantity)", "returnProduct")
-      .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
-      .leftJoin('storeInputDetails.product', 'product')
-      .leftJoin('product.productBrand', 'brand')
-      .leftJoin('product.productGroup', 'productGroup')
-      .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
-      .andWhere("StoreInput.type = 'RETURN' AND StoreInput.status = 'APPROVED'")
-      .andWhere(queryString)
-      .groupBy('storeInputDetails.productId')
-      .orderBy("storeInputDetails.productId", "ASC")
-      .getRawMany()
-
-    const inputProductFromExport = this.storeInputRepository
-      .createQueryBuilder('StoreInput')
-      .select("storeInputDetails.productId")
-      .addSelect("sum(case when StoreInput.type = 'IMPORT_FROM_STORE' then storeInputDetails.quantityRemain when StoreInput.type = 'EXPORT' then storeInputDetails.quantityChange else 0 end)", "inputProductFromExport")
-      .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
-      .leftJoin('storeInputDetails.product', 'product')
-      .leftJoin('product.productBrand', 'brand')
-      .leftJoin('product.productGroup', 'productGroup')
-      .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
-      .andWhere("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED'")
-      // .andWhere(new Brackets(qb => {
-      //   qb.where(new Brackets(qb1 => { qb1.where("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED' AND StoreInput.relatedId is not null") })).orWhere(new Brackets(qb1 => { qb1.where("StoreInput.type = 'EXPORT' AND StoreInput.status = 'EXPORTED'") }));
-      // }),)
-      // .andWhere("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED' AND StoreInput.relatedId is not null")
-      // .orWhere("StoreInput.type = 'EXPORT' AND StoreInput.status = 'APPROVED'")
-      .andWhere(queryString)
-      .groupBy('storeInputDetails.productId')
-      .orderBy("storeInputDetails.productId", "ASC")
-      .getRawMany()
-
-    // queryString = queryBuilderFuncForWarehouse('StoreInput', filter);
-    // queryString = queryString.replace('StoreInput.productId', 'product.id');
-    // queryString = queryString.replace('StoreInput.brandId', 'brand.id');
-    // queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
-    // queryString = queryString.replace('StoreInput.product_name', 'product.name');
-    // queryString = queryString.replace(new RegExp('StoreInput.createdDate', 'g'), 'StoreInput.lastModifiedDate');
     const exportStoreToProvider = this.storeInputRepository
       .createQueryBuilder('StoreInput')
       .select("storeInputDetails.productId")
@@ -1349,150 +1341,327 @@ export class ReportService {
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")
       .getRawMany()
+    let importProductFromMain = null
+    let exportProductToMain = null
+    if (!filter.department.includes(1) || (filter.department.includes(1) && filter.department.length > 1) || filter.department.includes(0)) {
+      const removedFilter = { ...filter }
+      removedFilter.department = filter.department.filter(id => id !== 1)
+      queryString = queryBuilderFuncForWarehouse('StoreInput', removedFilter, false, null, true);
 
-
-    const exportStore = this.storeInputRepository
-      .createQueryBuilder('StoreInput')
-      .select("storeInputDetails.productId")
-      .addSelect("sum(storeInputDetails.quantityRemain)", "exportStore")
-      .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
-      .leftJoin('storeInputDetails.product', 'product')
-      .leftJoin('product.productBrand', 'brand')
-      .leftJoin('product.productGroup', 'productGroup')
-      .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
-      .andWhere("StoreInput.type = 'EXPORT' AND StoreInput.storeTransferId is not null AND StoreInput.status = 'EXPORTED'")
-      .andWhere(queryString)
-      .groupBy('storeInputDetails.productId')
-      .orderBy("storeInputDetails.productId", "ASC")
-      .getRawMany()
-    queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, null, true);
-    queryString = queryString.replace('StoreInput.productId', 'product.id');
-    queryString = queryString.replace('StoreInput.brandId', 'brand.id');
-    queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
-    queryString = queryString.replace('StoreInput.product_name', 'product.name');
-    queryString = queryString.replace(new RegExp('StoreInput.createdDate', 'g'), 'StoreInput.lastModifiedDate');
-    const returnProduct12Department = this.storeInputRepository
-      .createQueryBuilder('StoreInput')
-      .select("storeInputDetails.productId")
-      .addSelect("sum(storeInputDetails.quantity)", "returnProduct12Department")
-      .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
-      .leftJoin('storeInputDetails.product', 'product')
-      .leftJoin('product.productBrand', 'brand')
-      .leftJoin('product.productGroup', 'productGroup')
-      .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
-      .andWhere("StoreInput.type = 'RETURN' AND StoreInput.status = 'APPROVED'")
-      .andWhere(queryString)
-      .groupBy('storeInputDetails.productId')
-      .orderBy("storeInputDetails.productId", "ASC")
-      .getRawMany()
-    const filterForBill = { ...filter }
-    delete filterForBill.branch
-    queryString = queryBuilderFuncForWarehouse('Bill', filterForBill, false, 1);
-    queryString = queryString.replace('Bill.productId', 'product.id');
-    queryString = queryString.replace('Bill.brandId', 'brand.id');
-    queryString = queryString.replace('Bill.productGroupId', 'productGroup.id');
-    queryString = queryString.replace('Bill.product_name', 'product.name');
-
-    const exportedProduct = this.billRepository
-      .createQueryBuilder('Bill')
-      .select("OrderDetails.productId")
-      .addSelect('Sum(OrderDetails.quantity)', 'exportedProduct')
-      .leftJoin('Bill.order', 'order')
-      .leftJoin('order.orderDetails', 'OrderDetails')
-      .leftJoin('OrderDetails.product', 'product')
-      .leftJoin('product.productBrand', 'brand')
-      .leftJoin('product.productGroup', 'productGroup')
-      .groupBy('OrderDetails.productId')
-      .where("OrderDetails.product.id IN(:...ids)", { ids: productId })
-      .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
-      .andWhere(queryString)
-      .orderBy("OrderDetails.productId", "ASC")
-      .getRawMany()
-    queryString = queryBuilderFuncForWarehouse('Bill', filterForBill, false, null, true);
-    queryString = queryString.replace('Bill.productId', 'product.id');
-    queryString = queryString.replace('Bill.brandId', 'brand.id');
-    queryString = queryString.replace('Bill.productGroupId', 'productGroup.id');
-    queryString = queryString.replace('Bill.product_name', 'product.name');
-    const exportedProduct12Department = this.billRepository
-      .createQueryBuilder('Bill')
-      .select("OrderDetails.productId")
-      .addSelect('Sum(OrderDetails.quantity)', 'exportedProduct12Department')
-      .leftJoin('Bill.order', 'order')
-      .leftJoin('order.orderDetails', 'OrderDetails')
-      .leftJoin('OrderDetails.product', 'product')
-      .leftJoin('product.productBrand', 'brand')
-      .leftJoin('product.productGroup', 'productGroup')
-      .groupBy('OrderDetails.productId')
-      .where("OrderDetails.product.id IN(:...ids)", { ids: productId })
-      .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
-      .andWhere(queryString)
-      .orderBy("OrderDetails.productId", "ASC")
-      .getRawMany()
-
-
-    queryString = queryBuilderFuncForWarehouse('StoreHistory', filterForStoreHistory, true, null, true);
-    queryString = queryString.replace('StoreHistory.productId', 'product.id');
-    queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
-    queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
-    queryString = queryString.replace('StoreHistory.product_name', 'product.name');
-    const remainEnd = this.storeHistoryRepository
-      .createQueryBuilder('StoreHistory2')
-      .select("StoreHistory2.productId")
-      .addSelect("Sum(remain)", "remainEnd")
-      .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
-        .addSelect("MAX(StoreHistory.id)", "id")
-        .from(StoreHistory, 'StoreHistory')
-        .leftJoin('StoreHistory.product', 'product')
+      queryString = queryString.replace('StoreInput.productId', 'product.id');
+      queryString = queryString.replace('StoreInput.brandId', 'brand.id');
+      queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
+      queryString = queryString.replace('StoreInput.product_name', 'product.name');
+      queryString = queryString.replace(new RegExp('StoreInput.createdDate', 'g'), 'StoreInput.lastModifiedDate');
+      importProductFromMain = this.storeInputRepository
+        .createQueryBuilder('StoreInput')
+        .select("storeInputDetails.productId")
+        .addSelect("sum(storeInputDetails.quantity)", "importProductFromMain")
+        .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+        .leftJoin('storeInputDetails.product', 'product')
         .leftJoin('product.productBrand', 'brand')
         .leftJoin('product.productGroup', 'productGroup')
-        .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
-        .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
-        .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
-        .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
-      .groupBy(`StoreHistory2.productId`)
-      .getRawMany()
+        .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+        .andWhere("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED'")
+        .andWhere(queryString)
+        .groupBy('storeInputDetails.productId')
+        .orderBy("storeInputDetails.productId", "ASC")
+        .getRawMany()
 
-    queryString = queryBuilderFuncForWarehouse('StoreHistory', filterForStoreHistory, true, 1);
-    queryString = queryString.replace('StoreHistory.productId', 'product.id');
-    queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
-    queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
-    queryString = queryString.replace('StoreHistory.product_name', 'product.name');
-    const remainEndMainDepartment = this.storeHistoryRepository
-      .createQueryBuilder('StoreHistory2')
-      .select("StoreHistory2.productId")
-      .addSelect("Sum(remain)", "remainEndMainDepartment")
-      .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
-        .addSelect("MAX(StoreHistory.id)", "id")
-        .from(StoreHistory, 'StoreHistory')
-        .leftJoin('StoreHistory.product', 'product')
+      exportProductToMain = this.storeInputRepository
+        .createQueryBuilder('StoreInput')
+        .select("storeInputDetails.productId")
+        .addSelect("sum(storeInputDetails.quantity_remain)", "exportProductToMain")
+        .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+        .leftJoin('storeInputDetails.product', 'product')
         .leftJoin('product.productBrand', 'brand')
         .leftJoin('product.productGroup', 'productGroup')
-        .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
-        .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
-        .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
-        .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
-      .groupBy(`StoreHistory2.productId`)
-      .getRawMany()
+        .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+        .andWhere("StoreInput.storeTransferId = 1")
+        .andWhere("StoreInput.type = 'EXPORT' AND StoreInput.status = 'EXPORTED'")
+        .andWhere(queryString)
+        .groupBy('storeInputDetails.productId')
+        .orderBy("storeInputDetails.productId", "ASC")
+        .getRawMany()
+    }
 
-    queryString = queryBuilderFuncForWarehouse('StoreInput', filter);
+
+
+    let returnProduct = null
+    let inputProductFromExport = null
+    let exportStore = null
+    let remainEndMainDepartment = null
+    let exportedProduct = null
+    if (!filter.department.includes(1) && !filter.department.includes(0)) {
+      queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, null, true);
+      queryString = queryString.replace('StoreInput.productId', 'product.id');
+      queryString = queryString.replace('StoreInput.brandId', 'brand.id');
+      queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
+      queryString = queryString.replace('StoreInput.product_name', 'product.name');
+      queryString = queryString.replace(new RegExp('StoreInput.createdDate', 'g'), 'StoreInput.lastModifiedDate');
+      inputProductFromExport = this.storeInputRepository
+        .createQueryBuilder('StoreInput')
+        .select("storeInputDetails.productId")
+        .addSelect("sum(case when StoreInput.type = 'IMPORT_FROM_STORE' then storeInputDetails.quantityRemain when StoreInput.type = 'EXPORT' then storeInputDetails.quantityChange else 0 end)", "inputProductFromExport")
+        .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+        .leftJoin('storeInputDetails.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+        .andWhere("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED'")
+        .orWhere("StoreInput.type = 'EXPORT' AND StoreInput.status = 'APPROVED'")
+        // .andWhere(new Brackets(qb => {
+        //   qb.where(new Brackets(qb1 => { qb1.where("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED' AND StoreInput.relatedId is not null") })).orWhere(new Brackets(qb1 => { qb1.where("StoreInput.type = 'EXPORT' AND StoreInput.status = 'EXPORTED'") }));
+        // }),)
+        // .andWhere("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED' AND StoreInput.relatedId is not null")
+        // .orWhere("StoreInput.type = 'EXPORT' AND StoreInput.status = 'APPROVED'")
+        .andWhere(queryString)
+        .groupBy('storeInputDetails.productId')
+        .orderBy("storeInputDetails.productId", "ASC")
+        .getRawMany()
+    }
+    if (filter.department.includes(1) || filter.department.includes(0)) {
+      queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, 1);
+      queryString = queryString.replace('StoreInput.productId', 'product.id');
+      queryString = queryString.replace('StoreInput.brandId', 'brand.id');
+      queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
+      queryString = queryString.replace('StoreInput.product_name', 'product.name');
+      queryString = queryString.replace(new RegExp('StoreInput.createdDate', 'g'), 'StoreInput.lastModifiedDate');
+      returnProduct = this.storeInputRepository
+        .createQueryBuilder('StoreInput')
+        .select("storeInputDetails.productId")
+        .addSelect("sum(storeInputDetails.quantity)", "returnProduct")
+        .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+        .leftJoin('storeInputDetails.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+        .andWhere("StoreInput.type = 'RETURN' AND StoreInput.status = 'APPROVED'")
+        .andWhere(queryString)
+        .groupBy('storeInputDetails.productId')
+        .orderBy("storeInputDetails.productId", "ASC")
+        .getRawMany()
+
+      inputProductFromExport = this.storeInputRepository
+        .createQueryBuilder('StoreInput')
+        .select("storeInputDetails.productId")
+        .addSelect("sum(case when StoreInput.type = 'IMPORT_FROM_STORE' then storeInputDetails.quantityRemain when StoreInput.type = 'EXPORT' then storeInputDetails.quantityChange else 0 end)", "inputProductFromExport")
+        .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+        .leftJoin('storeInputDetails.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+
+        // .andWhere(new Brackets(qb => {
+        //   qb.where(new Brackets(qb1 => { qb1.where("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED' AND StoreInput.relatedId is not null") })).orWhere(new Brackets(qb1 => { qb1.where("StoreInput.type = 'EXPORT' AND StoreInput.status = 'EXPORTED'") }));
+        // }),)
+        // .andWhere("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED' AND StoreInput.relatedId is not null")
+        // .orWhere("StoreInput.type = 'EXPORT' AND StoreInput.status = 'APPROVED'")
+        .andWhere(queryString)
+        .andWhere(new Brackets(qb => {
+          qb.where("StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'APPROVED' OR StoreInput.type = 'EXPORT' AND StoreInput.status = 'EXPORTED' ");
+        }))
+        .groupBy('storeInputDetails.productId')
+        .orderBy("storeInputDetails.productId", "ASC")
+        .getRawMany()
+
+      // queryString = queryBuilderFuncForWarehouse('StoreInput', filter);
+      // queryString = queryString.replace('StoreInput.productId', 'product.id');
+      // queryString = queryString.replace('StoreInput.brandId', 'brand.id');
+      // queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
+      // queryString = queryString.replace('StoreInput.product_name', 'product.name');
+      // queryString = queryString.replace(new RegExp('StoreInput.createdDate', 'g'), 'StoreInput.lastModifiedDate');
+
+
+
+      exportStore = this.storeInputRepository
+        .createQueryBuilder('StoreInput')
+        .select("storeInputDetails.productId")
+        .addSelect("sum(storeInputDetails.quantity)", "exportStore")
+        .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+        .leftJoin('storeInputDetails.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+        .andWhere("StoreInput.type = 'EXPORT' AND StoreInput.storeTransferId is not null AND StoreInput.status = 'EXPORTED'")
+        .andWhere(queryString)
+        .groupBy('storeInputDetails.productId')
+        .orderBy("storeInputDetails.productId", "ASC")
+        .getRawMany()
+      queryString = queryBuilderFuncForWarehouse('StoreHistory', filterForStoreHistory, true, 1);
+      queryString = queryString.replace('StoreHistory.productId', 'product.id');
+      queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
+      queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
+      queryString = queryString.replace('StoreHistory.product_name', 'product.name');
+      remainEndMainDepartment = this.storeHistoryRepository
+        .createQueryBuilder('StoreHistory2')
+        .select("StoreHistory2.productId")
+        .addSelect("Sum(remain)", "remainEndMainDepartment")
+        .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
+          .addSelect("MAX(StoreHistory.id)", "id")
+          .from(StoreHistory, 'StoreHistory')
+          .leftJoin('StoreHistory.product', 'product')
+          .leftJoin('product.productBrand', 'brand')
+          .leftJoin('product.productGroup', 'productGroup')
+          .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+          .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
+          .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
+          .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
+        .groupBy(`StoreHistory2.productId`)
+        .getRawMany()
+
+      const filterForBill = { ...filter }
+      delete filterForBill.branch
+      queryString = queryBuilderFuncForWarehouse('Bill', filterForBill, false, 1);
+      queryString = queryString.replace('Bill.productId', 'product.id');
+      queryString = queryString.replace('Bill.brandId', 'brand.id');
+      queryString = queryString.replace('Bill.productGroupId', 'productGroup.id');
+      queryString = queryString.replace('Bill.product_name', 'product.name');
+
+      exportedProduct = this.billRepository
+        .createQueryBuilder('Bill')
+        .select("OrderDetails.productId")
+        .addSelect('Sum(OrderDetails.quantity)', 'exportedProduct')
+        .leftJoin('Bill.order', 'order')
+        .leftJoin('order.orderDetails', 'OrderDetails')
+        .leftJoin('OrderDetails.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .groupBy('OrderDetails.productId')
+        .where("OrderDetails.product.id IN(:...ids)", { ids: productId })
+        .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
+        .andWhere(queryString)
+        .orderBy("OrderDetails.productId", "ASC")
+        .getRawMany()
+    }
+    let returnProduct12Department = null
+    let exportedProduct12Department = null
+    let remainEnd = null
+    if (!filter.department.includes(1) || (filter.department.includes(1) && filter.department.length > 1) || filter.department.includes(0)) {
+      const removedFilter = { ...filter }
+      removedFilter.department = filter.department.filter(id => id !== 1)
+      removedFilter.department = filter.department.filter(id => id !== 0)
+      queryString = queryBuilderFuncForWarehouse('StoreInput', removedFilter, false, null, true);
+      queryString = queryString.replace('StoreInput.productId', 'product.id');
+      queryString = queryString.replace('StoreInput.brandId', 'brand.id');
+      queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
+      queryString = queryString.replace('StoreInput.product_name', 'product.name');
+      queryString = queryString.replace(new RegExp('StoreInput.createdDate', 'g'), 'StoreInput.lastModifiedDate');
+      returnProduct12Department = this.storeInputRepository
+        .createQueryBuilder('StoreInput')
+        .select("storeInputDetails.productId")
+        .addSelect("sum(storeInputDetails.quantity)", "returnProduct12Department")
+        .leftJoin('StoreInput.storeInputDetails', 'storeInputDetails')
+        .leftJoin('storeInputDetails.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
+        .andWhere("StoreInput.type = 'RETURN' AND StoreInput.status = 'APPROVED'")
+        .andWhere(queryString)
+        .groupBy('storeInputDetails.productId')
+        .orderBy("storeInputDetails.productId", "ASC")
+        .getRawMany()
+
+      const filterForBill = { ...removedFilter }
+      delete filterForBill.branch
+      queryString = queryBuilderFuncForWarehouse('Bill', filterForBill, false, null, true);
+      queryString = queryString.replace('Bill.productId', 'product.id');
+      queryString = queryString.replace('Bill.brandId', 'brand.id');
+      queryString = queryString.replace('Bill.productGroupId', 'productGroup.id');
+      queryString = queryString.replace('Bill.product_name', 'product.name');
+      exportedProduct12Department = this.billRepository
+        .createQueryBuilder('Bill')
+        .select("OrderDetails.productId")
+        .addSelect('Sum(OrderDetails.quantity)', 'exportedProduct12Department')
+        .leftJoin('Bill.order', 'order')
+        .leftJoin('order.orderDetails', 'OrderDetails')
+        .leftJoin('OrderDetails.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .groupBy('OrderDetails.productId')
+        .where("OrderDetails.product.id IN(:...ids)", { ids: productId })
+        .andWhere(`order.status NOT IN ('WAITING','APPROVED','CANCEL','DELETED','CREATED')`)
+        .andWhere(queryString)
+        .orderBy("OrderDetails.productId", "ASC")
+        .getRawMany()
+
+    }
+
+    const filterForRemainEnd = { ...filterForStoreHistory }
+    if (filter.department.includes(0)) {
+      filterForRemainEnd.department = filterForRemainEnd.department.filter(id => id !== 0)
+      queryString = queryBuilderFuncForWarehouse('StoreHistory', filterForRemainEnd, true, null, true);
+      queryString = queryString.replace('StoreHistory.productId', 'product.id');
+      queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
+      queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
+      queryString = queryString.replace('StoreHistory.product_name', 'product.name');
+      remainEnd = this.storeHistoryRepository
+        .createQueryBuilder('StoreHistory2')
+        .select("StoreHistory2.productId")
+        .addSelect("Sum(remain)", "remainEnd")
+        .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
+          .addSelect("MAX(StoreHistory.id)", "id")
+          .from(StoreHistory, 'StoreHistory')
+          .leftJoin('StoreHistory.product', 'product')
+          .leftJoin('product.productBrand', 'brand')
+          .leftJoin('product.productGroup', 'productGroup')
+          .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+          .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
+          .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
+          .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
+        .groupBy(`StoreHistory2.productId`)
+        .getRawMany()
+
+    } else if(!filter.department.includes(1) && !filter.department.includes(0)){
+      queryString = queryBuilderFuncForWarehouse('StoreHistory', filterForRemainEnd, true, null, true);
+      queryString = queryString.replace('StoreHistory.productId', 'product.id');
+      queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
+      queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
+      queryString = queryString.replace('StoreHistory.product_name', 'product.name');
+      remainEnd = this.storeHistoryRepository
+        .createQueryBuilder('StoreHistory2')
+        .select("StoreHistory2.productId")
+        .addSelect("Sum(remain)", "remainEnd")
+        .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
+          .addSelect("MAX(StoreHistory.id)", "id")
+          .from(StoreHistory, 'StoreHistory')
+          .leftJoin('StoreHistory.product', 'product')
+          .leftJoin('product.productBrand', 'brand')
+          .leftJoin('product.productGroup', 'productGroup')
+          .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+          .where(`DATE(StoreHistory.createdDate) <= '${filter.endDate}'`)
+          .andWhere("StoreHistory.productId IN(:...ids)", { ids: productId })
+          .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
+        .groupBy(`StoreHistory2.productId`)
+        .getRawMany()
+    }
+
+
+
+
+
+
+
+    queryString = queryBuilderFuncForWarehouse('StoreInput', filter, true, null, true);
     queryString = queryString.replace('StoreInput.productId', 'product.id');
     queryString = queryString.replace('StoreInput.brandId', 'brand.id');
     queryString = queryString.replace('StoreInput.productGroupId', 'productGroup.id');
     queryString = queryString.replace('StoreInput.product_name', 'product.name');
     queryString = queryString.replace('StoreInput.departmentId', 'StoreInput.storeTransferId');
-    queryString = queryString.replace(new RegExp('StoreInput.createdDate', 'g'), 'StoreInput.lastModifiedDate');
+    queryString = queryString.replace('StoreInput.storeId', 'related.storeId');
+    queryString = queryString.replace(new RegExp('StoreInput.createdDate', 'g'), 'related.lastModifiedDate');
     const ontheway = this.storeInputRepository
       .createQueryBuilder('StoreInput')
       .select("storeInputDetails.productId")
       .from("StoreInput", "related")
-      .addSelect("sum(storeInputDetails.quantityRemain)", "ontheway")
+      .addSelect("sum(storeInputDetails.quantity)", "ontheway")
       .leftJoin('related.storeInputDetails', 'storeInputDetails')
       .leftJoin('storeInputDetails.product', 'product')
       .leftJoin('product.productBrand', 'brand')
       .leftJoin('product.productGroup', 'productGroup')
       .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
-      .andWhere("related.storeId = 1")
       .andWhere(queryString)
+      .andWhere("`StoreInput`.`createdDate` <= :lastModifiedDate ", {lastModifiedDate: filter.endDate + " 23:59:59"})
       .andWhere(new Brackets(qb => {
         qb.where("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'EXPORTED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'WAITING'");
       }),)
@@ -1720,7 +1889,21 @@ export class ReportService {
     //   .getRawMany()
 
     // const queryResult = await Promise.all([remainEndMainDepartment, remainEnd, importProduct, returnProduct, inputProductFromExport, exportedProduct, exportedProduct12Department, returnProduct12Department, exportStore, ontheway, exportStoreToProvider])
-    const queryResult = await Promise.all([importProduct, returnProduct, inputProductFromExport, exportedProduct, exportStoreToProvider, exportStore, exportedProduct12Department, returnProduct12Department, remainEnd, remainEndMainDepartment, ontheway])
+    let arrPromise = [importProduct, ontheway, exportStoreToProvider]
+    if (returnProduct && inputProductFromExport && exportStore && remainEndMainDepartment && exportedProduct) {
+      arrPromise = arrPromise.concat([returnProduct, inputProductFromExport, exportStore, remainEndMainDepartment, exportedProduct])
+    }
+    if (exportProductToMain && importProductFromMain) {
+      arrPromise = arrPromise.concat([exportProductToMain, importProductFromMain])
+    }
+    if (exportedProduct12Department && returnProduct12Department) {
+      arrPromise = arrPromise.concat([exportedProduct12Department, returnProduct12Department])
+    }
+    if (remainEnd) {
+      arrPromise = arrPromise.concat([remainEnd])
+    }
+
+    const queryResult = await Promise.all(arrPromise)
     const arrayResult = Array.prototype.concat(...queryResult).concat(remainbegin);
 
     const result2 = arrayResult
@@ -1730,65 +1913,9 @@ export class ReportService {
       )
       .values()
 
-    return [Array.from(result2), 0];
+    return [Array.from(result2), count];
   }
 
-  private async getRemains(filter, options, filterName: string) {
-    const filterForStoreHistory = { ...filter };
-    delete filterForStoreHistory.branch;
-    let queryString = this.queryConverter(filterName, filterForStoreHistory, false, true);
 
-    const count = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.startDate, null);
-    const remainbegin = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.startDate, options);
 
-    const productId = remainbegin.map(item => item.productId);
-    if (productId.length === 0) return [[], 0];
-
-    const remainEnd = await this.storeHistoryRepository.createStoreHistoryQuery(queryString, filter.endDate, null, productId);
-    return { remainbegin, count, remainEnd };
-  }
-
-  private queryConverter(filterName: string, filter: any, isDebt = false, ignoreDate = false): string {
-    let queryString = queryBuilderFunc(filterName, filter, isDebt, ignoreDate);
-    queryString = queryString.replace(`${filterName}.productId`, 'product.id');
-    queryString = queryString.replace(`${filterName}.brandId`, 'brand.id');
-    queryString = queryString.replace(`${filterName}.productGroupId`, 'productGroup.id');
-    queryString = queryString.replace(`${filterName}.product_name`, 'product.name');
-    return queryString;
-  }
-
-  private async fetchStoreInputDetails(filterName: string, filter: any, type: string, status: string, queryStringAddition: string, productId: any[]) {
-    let queryString = this.queryConverter(filterName, filter);
-    queryString += queryStringAddition;
-    return this.storeInputRepository.fetchDetails(type, status, queryString, productId);
-  }
-
-  async getProductInWarehouse(options: any, filter: any) {
-    const { remainbegin, count, remainEnd }: any = await this.getRemains(filter, options, 'StoreHistory');
-
-    const productId = remainbegin.map(item => item.productId);
-    const importProduct = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT', 'APPROVED', " AND StoreInput.createdBy <> 'system'", productId);
-    const returnProduct = await this.fetchStoreInputDetails('StoreInput', filter, 'RETURN', 'APPROVED', '', productId);
-    const inputProductFromExport = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT_FROM_STORE', 'APPROVED', " AND StoreInput.relatedId is not null", productId);
-    const exportStore = await this.fetchStoreInputDetails('StoreInput', filter, 'EXPORT', 'APPROVED', " AND StoreInput.storeTransferId is not null", productId);
-    const exportStoreToProvider = await this.fetchStoreInputDetails('StoreInput', filter, 'EXPORT', 'APPROVED', " AND StoreInput.providerId is not null", productId);
-    const ontheway = await this.fetchStoreInputDetails('StoreInput', filter, 'IMPORT_FROM_STORE', 'WAITING', " AND StoreInput.relatedId is not null", productId);
-
-    const filterForBill = { ...filter };
-    delete filterForBill.branch;
-    let queryString = this.queryConverter('Bill', filterForBill);
-    const exportedProduct = await this.billRepository.fetchExportedProduct(queryString, productId, 'Bill');
-
-    const queryResult = await Promise.all([remainEnd, importProduct, returnProduct, inputProductFromExport, exportedProduct, exportStore, ontheway, exportStoreToProvider])
-    const arrayResult = Array.prototype.concat(...queryResult).concat(remainbegin);
-
-    const result2 = arrayResult
-      .reduce(
-        (acc, curr) => acc.set(curr.productId, { ...acc.get(curr.productId), ...curr }),
-        new Map()
-      )
-      .values()
-
-    return [Array.from(result2), count.length];
-  }
 }

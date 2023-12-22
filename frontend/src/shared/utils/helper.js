@@ -48,7 +48,9 @@ export const history = createPreserveQueryHistory(createBrowserHistory, ['locale
 export const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
 const getCityName = id => cities.filter(city => city.value === id)[0]?.label || '';
 export const memoizedGetCityName = memoize(getCityName);
-
+export const isNumeric = (str) => {
+  return !isNaN(+str);
+}
 const getDistrictName = id => district.filter(dist => dist.value === id)[0]?.label || '';
 export const memoizedGetDistrictName = memoize(getDistrictName);
 const getExcelData = (headers = [], data = []) => {
@@ -56,7 +58,7 @@ const getExcelData = (headers = [], data = []) => {
     columns: headers.map(item => item.label),
     data: data.map(item =>
       headers.map(header => ({
-        value: item[header.key]?.toString() || '',
+        value: item[header.key]?.toString() || "",
         style: { font: { name: 'Times New Roman' } }
       }))
     )

@@ -86,9 +86,7 @@ export const queryBuilderFunc = (entity, filter = {}, isDebt = false, ignoreDate
 export const queryBuilderFuncForWarehouse = (entity, filter = {}, ignoreDate = false, mainDepartment = -1, allDepartmentExceptMain = false) => {
   delete filter['dependency'];
   let query = '1 = 1';
-  console.log(filter)
   Object.keys(filter).forEach((key, index) => {
-    console.log(allDepartmentExceptMain, key)
     if (key === 'startDate' || key === 'endDate') return;
     if (key === 'department') return;
     if (Array.isArray(filter[key])) {
@@ -121,12 +119,15 @@ export const queryBuilderFuncForWarehouse = (entity, filter = {}, ignoreDate = f
     //   query += `${query.length === 0 ? '' : ' AND '} (${entity}.storeId = ${mainDepartment} OR ${entity}.storeTransferId = ${mainDepartment})`;
 
     // }else {
-      query += `${query.length === 0 ? '' : ' AND '} ${entity}.storeId = ${mainDepartment} `;
+    query += `${query.length === 0 ? '' : ' AND '} ${entity}.storeId = ${mainDepartment} `;
     //}
   }
   if (allDepartmentExceptMain === true) {
-    const remainDepartment = filter['department'] || [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-    console.log(remainDepartment)
+    const copyFilter = {...filter}
+    if(copyFilter['department'].includes(0)){
+      copyFilter['department'] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    }
+    const remainDepartment = copyFilter['department'].length > 0 ? copyFilter['department'] : [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     query += `${query.length === 0 ? '' : ' AND '} ${entity}.storeId IN ${JSON.stringify(remainDepartment).replace('[', '(').replace(']', ')')}`;
 
   }
@@ -137,7 +138,6 @@ export const queryBuilderFuncForWarehouse = (entity, filter = {}, ignoreDate = f
     query += `  ${query.length > 0 ? 'AND' : ''} ${entity}.createdDate  >= '${filter['startDate']} 00:00:00' AND  ${entity}.createdDate <= '${filter['endDate']
       } 23:59:59'`;
   }
-  console.log(query)
   return query;
 };
 

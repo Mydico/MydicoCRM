@@ -100,9 +100,10 @@ const EditWarehouseExport = props => {
     values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
     values.type = WarehouseImportType.EXPORT;
-    if(location.state.isChecking){
-      values.status = WarehouseImportStatus.QUANTITY_CHECK
+    if (location.state.isChecking) {
+      values.status = WarehouseImportStatus.QUANTITY_CHECK;
     }
+
     values.totalMoney = Number(values.totalMoney.replace(/\D/g, ''));
     dispatch(updateWarehouseExport(values));
   };
@@ -118,7 +119,7 @@ const EditWarehouseExport = props => {
 
   const onChangeQuantityDifference = ({ target }, index) => {
     const copyArr = [...productList];
-    if(Number(target.value) <= copyArr[index].quantity){
+    if (Number(target.value) <= copyArr[index].quantity) {
       copyArr[index].quantityChange = Number(target.value);
       copyArr[index].quantityRemain = copyArr[index].quantity - Number(target.value);
       setProductList(copyArr);
@@ -200,7 +201,7 @@ const EditWarehouseExport = props => {
     dispatch(
       getProductWarehouseByField({
         store: selectedWarehouse?.id || storeId,
-        product: JSON.stringify(warehouseImport.storeInputDetails.map(item => item.product.id)),
+        product: JSON.stringify(warehouseImport.storeInputDetails.map(item => item.product?.id)),
         dependency: true
       })
     ).then(numberOfQuantityInStore => {
