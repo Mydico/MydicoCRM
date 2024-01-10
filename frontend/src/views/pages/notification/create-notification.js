@@ -10,7 +10,7 @@ import {
   CLabel,
   CInput,
   CRow,
-  CCardTitle,
+  CCardTitle
 } from '@coreui/react/lib';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { Formik } from 'formik';
@@ -25,14 +25,12 @@ import RichTextEditor from 'react-rte';
 import { getDepartment } from '../user/UserDepartment/department.api';
 import S3FileUpload from 'react-s3';
 import Select from 'react-select';
-import EditorToolbar, { modules, formats } from "./Toolbar";
-import "./styles.css";
-const validationSchema = function () {
+import EditorToolbar, { modules, formats } from './Toolbar';
+import './styles.css';
+const validationSchema = function() {
   return Yup.object().shape({
-    title: Yup.string()
-      .required('Không để trống tiêu đề'),
-    shortContent: Yup.string().required('Không để trống nội dung ngắn gọn'),
-
+    title: Yup.string().required('Không để trống tiêu đề'),
+    shortContent: Yup.string().required('Không để trống nội dung ngắn gọn')
   });
 };
 
@@ -59,11 +57,11 @@ const { selectAll: selectAllUser } = globalizedUserSelectors;
 const { selectAll: selectAllPromotion } = globalizedPromotionSelectors;
 
 const { selectById } = globalizedInternalNotificationsSelectors;
-const CreateNotifications = (props) => {
+const CreateNotifications = props => {
   const { initialState } = useSelector(state => state.internalNotification);
   const { account } = useSelector(state => state.authentication);
   const notification = useSelector(state => selectById(state, props.match.params.id));
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -71,7 +69,7 @@ const CreateNotifications = (props) => {
   const branches = useSelector(selectAllBranch);
   const users = useSelector(selectAllUser);
   const promotions = useSelector(selectAllPromotion);
-  const [files, setFiles] = useState([])
+  const [files, setFiles] = useState([]);
   const [initValues, setInitValues] = useState({
     departments: [],
     users: [],
@@ -79,11 +77,7 @@ const CreateNotifications = (props) => {
     title: '',
     shortContent: '',
     content: RichTextEditor.createEmptyValue()
-
-  })
-
-
-
+  });
   useEffect(() => {
     dispatch(getBranch({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
     dispatch(getDepartment({ page: 0, size: 100, sort: 'createdDate,DESC', dependency: true }));
@@ -92,82 +86,80 @@ const CreateNotifications = (props) => {
 
     if (props.match.params.id) {
       dispatch(getDetailInternalNotifications({ id: props.match.params.id, dependency: true }));
-
     }
     return () => {
       dispatch(reset());
     };
   }, []);
 
-  const onUploadFile = async (event) => {
-    setLoading(true)
+  const onUploadFile = async event => {
+    setLoading(true);
     event.preventDefault();
     let newArr = event.target.files;
-    const filesArr = [...files]
+    const filesArr = [...files];
     for (let i = 0; i < newArr.length; i++) {
       const uploadedFile = await S3FileUpload.uploadFile(newArr[i], config);
       filesArr.push({
         source: uploadedFile.location,
-        type: uploadedFile.location.split(".").pop(),
-        name: uploadedFile.key,
-      })
+        type: uploadedFile.location.split('.').pop(),
+        name: uploadedFile.key
+      });
     }
-    setFiles(filesArr)
-    setLoading(false)
-  }
+    setFiles(filesArr);
+    setLoading(false);
+  };
 
   useEffect(() => {
     const initEditForm = async () => {
       if (notification) {
-        const copyValue = JSON.parse(JSON.stringify(notification))
-        console.log(notification)
-        copyValue.content = notification.content
+        const copyValue = JSON.parse(JSON.stringify(notification));
+        console.log(notification);
+        console.log(Buffer.isBuffer(notification.content));
+        copyValue.content = notification.content?.type == 'Buffer' ? Buffer.from(notification.content).toString() : notification.content;
         copyValue.departments = notification.departments.map(item => ({
           value: item,
           label: item.name
-        }))
+        }));
         copyValue.branches = notification.branches.map(item => ({
           value: item,
           label: item.name
-        }))
+        }));
         copyValue.users = notification.users.map(item => ({
           value: item,
           label: item.code
-        }))
+        }));
         if (copyValue.entityId) {
-          const resp = await dispatch(getDetailPromotion({
-            id: copyValue.entityId
-          }))
+          const resp = await dispatch(
+            getDetailPromotion({
+              id: copyValue.entityId
+            })
+          );
           copyValue.promotion = {
             value: resp.payload,
             label: resp.payload.name
-          }
+          };
         }
-        setInitValues(copyValue)
-        setFiles(notification.assets)
+        setInitValues(copyValue);
+        setFiles(notification.assets);
       }
-    }
-    initEditForm()
+    };
+    initEditForm();
+  }, [notification]);
 
-  }, [notification])
-
-
-  const onSubmit = async (values, { }) => {
+  const onSubmit = async (values, {}) => {
     dispatch(fetching());
 
-    const uploadedFile = await dispatch(uploadFiles(files))
-    const payload = JSON.parse(JSON.stringify(values))
-    payload.content = values.content.toString('html')
-    payload.departments = values.departments.map(item => item.value)
-    payload.branches = values.branches.map(item => item.value)
-    payload.users = values.users.map(item => item.value)
-    payload.assets = uploadedFile?.payload?.data || []
-    payload.entityId = values.promotion?.value?.id
-    payload.entityName = values.promotion?.value?.id ? "PROMOTION" : null
+    const uploadedFile = await dispatch(uploadFiles(files));
+    const payload = JSON.parse(JSON.stringify(values));
+    payload.content = values.content.toString('html');
+    payload.departments = values.departments.map(item => item.value);
+    payload.branches = values.branches.map(item => item.value);
+    payload.users = values.users.map(item => item.value);
+    payload.assets = uploadedFile?.payload?.data || [];
+    payload.entityId = values.promotion?.value?.id;
+    payload.entityName = values.promotion?.value?.id ? 'PROMOTION' : null;
     dispatch(creatingInternalNotifications(payload));
   };
-
-
 
   useEffect(() => {
     if (initialState.updatingSuccess) {
@@ -219,7 +211,6 @@ const CreateNotifications = (props) => {
     }
   };
 
-
   return (
     <CCard>
       <CCardHeader>
@@ -258,7 +249,7 @@ const CreateNotifications = (props) => {
                 />
                 <CInvalidFeedback>{errors.shortContent}</CInvalidFeedback>
               </CFormGroup>
-              <CFormGroup >
+              <CFormGroup>
                 <CLabel htmlFor="content">Nội dung đầy đủ</CLabel>
                 {/* <RichTextEditor
                   name="content"
@@ -271,24 +262,23 @@ const CreateNotifications = (props) => {
                 <EditorToolbar />
                 <ReactQuill
                   theme="snow"
-                  theme="snow" 
-                  value={values.content} onChange={value => {
+                  theme="snow"
+                  value={values.content}
+                  onChange={value => {
                     setFieldValue('content', value || null);
                   }}
-                  placeholder={"Write something awesome..."}
+                  placeholder={'Write something awesome...'}
                   modules={modules}
                   formats={formats}
                 />
-
               </CFormGroup>
-
 
               <CFormGroup>
                 <CLabel htmlFor="departments">Chi nhánh</CLabel>
                 <Select
                   name="departments"
                   onChange={e => {
-                    console.log(e)
+                    console.log(e);
                     setFieldValue('departments', e || []);
                   }}
                   value={values.departments}
@@ -365,19 +355,34 @@ const CreateNotifications = (props) => {
               <CFormGroup>
                 <CLabel htmlFor="users">File đính kèm</CLabel>
                 <CListGroup>
-                  {files?.map((file, index) => <CListGroupItem className="d-flex justify-content-between align-items-center" key={index}>
-                    <a href={file.source} target="_blank">{file.name}</a>
-                    <CIcon name="cilX" alt="CoreUI Icons List" onClick={() => {
-                      setFiles(files.filter((_, i) => i !== index))
-
-                    }} />
-
-                  </CListGroupItem>)}
-
-
+                  {files?.map((file, index) => (
+                    <CListGroupItem className="d-flex justify-content-between align-items-center" key={index}>
+                      <a href={file.source} target="_blank">
+                        {file.name}
+                      </a>
+                      <CIcon
+                        name="cilX"
+                        alt="CoreUI Icons List"
+                        onClick={() => {
+                          setFiles(files.filter((_, i) => i !== index));
+                        }}
+                      />
+                    </CListGroupItem>
+                  ))}
                 </CListGroup>
-                {!loading ? <CInput className="mt-2" type="file" size="md" id="formFileSm" onChange={onUploadFile} multiple label="Chọn file đính kèm" /> : <CSpinner size='sm' />}
-
+                {!loading ? (
+                  <CInput
+                    className="mt-2"
+                    type="file"
+                    size="md"
+                    id="formFileSm"
+                    onChange={onUploadFile}
+                    multiple
+                    label="Chọn file đính kèm"
+                  />
+                ) : (
+                  <CSpinner size="sm" />
+                )}
               </CFormGroup>
               <CFormGroup className="d-flex justify-content-center">
                 <CButton type="submit" size="lg" color="primary" disabled={loading || initialState.loading}>

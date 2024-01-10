@@ -55,6 +55,7 @@ export class InternalNotificationService {
     }
     const queryBuilder = this.internalNotificationRepository
       .createQueryBuilder('InternalNotification')
+      .addSelect(['title', 'short_content'])
       .leftJoinAndSelect('InternalNotification.departments', 'departments')
       .leftJoinAndSelect('InternalNotification.branches', 'branches')
       .leftJoinAndSelect('InternalNotification.users', 'users')

@@ -16,7 +16,7 @@ import Asset from './asset.entity';
  */
 @Entity('internal_notification')
 export default class InternalNotification extends BaseEntity {
-    @Column({ name: 'content', type: 'text', nullable: true })
+    @Column({ name: 'content', type: 'longblob', nullable: true })
     content: string;
 
     @Column({ name: 'receiver', type: 'text', nullable: true })

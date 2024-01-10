@@ -322,9 +322,9 @@ export class OrderService {
       }
 
     }
-    await this.notificationService.saveMany(saveNotiArr);
-    await this.firebaseService.sendFirebaseMessages(pushNotiArr, false);
-    await this.emitMessage(result, order);
+    this.notificationService.saveMany(saveNotiArr);
+    this.firebaseService.sendFirebaseMessages(pushNotiArr, false);
+    this.emitMessage(result, order);
     return result;
   }
 

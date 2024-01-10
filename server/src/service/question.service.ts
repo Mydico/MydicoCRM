@@ -42,9 +42,6 @@ export class QuestionService {
                             ),
                             syllabus: id,
                             user: user,
-                            question: {
-                                status: ProductStatus.ACTIVE
-                            }
                         },
                         relations: ['user', 'choice', 'question', 'question.choices']
                     })
@@ -79,9 +76,7 @@ export class QuestionService {
                         where: {
                             syllabus: id,
                             user: user,
-                            question: {
-                                status: ProductStatus.ACTIVE
-                            }
+
                         },
                         relations: ['user', 'choice', 'question', 'question.choices']
                     })

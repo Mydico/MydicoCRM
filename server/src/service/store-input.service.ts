@@ -283,6 +283,9 @@ export class StoreInputService {
 
     async exportAfterVerify(storeInput: StoreInput, currentUser: User = null): Promise<any> {
         const entity = await this.findById(storeInput.id);
+        if(entity.status === StoreImportStatus.EXPORTED){
+            throw new HttpException('Phiếu này đã được xuất kho', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         if (entity.status === StoreImportStatus.QUANTITY_VERIFIED) {
             const arrProduct = entity.storeInputDetails.map(item => item.product.id);
             const founded = await this.productQuantityService.findByfields({

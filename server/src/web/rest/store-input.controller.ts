@@ -307,7 +307,7 @@ export class StoreInputController {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
     storeInput.lastModifiedDate = new Date()
-    return res.send(await this.storeInputService.exportAfterVerify(storeInput,currentUser));
+    return res.send(await this.storeInputService.exportAfterVerify(storeInput, currentUser));
   }
 
   @Put('/return/approve')

@@ -63,6 +63,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(
     {
       // https: httpsOptions
+      bodyLimit: 1000000000,
     }
   ));
   const fastifyInstance = app.getHttpAdapter().getInstance();
