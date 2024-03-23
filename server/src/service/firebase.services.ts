@@ -24,13 +24,13 @@ export class FirebaseService {
         try {
           const tokenMessages: firebase.messaging.TokenMessage[] = groupedFirebaseMessages.map(({ message, title, token, data }) => ({
             notification: { body: message, title },
+            token,
             "android": {
               "notification": {
                 body: message, title,
                 "sound": "default"
               }
             },
-            token,
             apns: {
               payload: {
                 aps: {
@@ -39,7 +39,7 @@ export class FirebaseService {
                 },
                 ...data
               },
-             
+
             },
             fcmOptions: {
 

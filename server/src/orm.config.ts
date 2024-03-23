@@ -64,7 +64,7 @@ if (process.env.NODE_ENV === 'prod') {
         entities: commonConf.ENTITIES,
         migrations: commonConf.MIGRATIONS,
         cli: commonConf.CLI,
-        extra : {
+        extra: {
             connectionLimit: 20
         },
         migrationsRun: commonConf.MIGRATIONS_RUN,
@@ -94,7 +94,7 @@ if (process.env.NODE_ENV === 'dev') {
         cli: commonConf.CLI,
         verboseRetryLog: false,
         migrationsRun: commonConf.MIGRATIONS_RUN,
-        extra : {
+        extra: {
             connectionLimit: 20
         },
         cache: {

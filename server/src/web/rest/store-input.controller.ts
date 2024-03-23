@@ -306,7 +306,7 @@ export class StoreInputController {
   async completeExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     HeaderUtil.addEntityUpdatedStatusHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
-    storeInput.lastModifiedDate = new Date()
+    storeInput.lastModifiedDate = new Date();
     return res.send(await this.storeInputService.exportAfterVerify(storeInput, currentUser));
   }
 

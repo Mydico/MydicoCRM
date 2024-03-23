@@ -3,7 +3,12 @@ import { CCardBody, CBadge, CButton, CCollapse, CCard, CCardHeader, CRow, CPagin
 // import usersData from '../../../users/UsersData.js';
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { useDispatch, useSelector } from 'react-redux';
-import { approveWarehouseExport, getWarehouseExport, updateWarehouseImport, updateWarehouseStatusImport } from '../Import/warehouse-import.api.js';
+import {
+  approveWarehouseExport,
+  getWarehouseExport,
+  updateWarehouseImport,
+  updateWarehouseStatusImport
+} from '../Import/warehouse-import.api.js';
 import { fetching, globalizedWarehouseImportSelectors, reset } from '../Import/warehouse-import.reducer.js';
 import { useHistory } from 'react-router-dom';
 import { WarehouseImportStatus, WarehouseImportType } from './contants.js';
@@ -164,6 +169,23 @@ const renderButtonStatus = (
     case WarehouseImportStatus.QUANTITY_VERIFIED:
       return (
         <CRow style={{ minWidth: 300 }}>
+          {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export').length > 0) && (
+            <CButton
+              onClick={() => {
+                item.type !== WarehouseImportType.EXPORT_TO_PROVIDER
+                  ? toEditWarehouseImport(item.id)
+                  : toEditWarehouseExportProvider(item.id);
+              }}
+              color="warning"
+              variant="outline"
+              shape="square"
+              size="sm"
+              className="mr-1"
+            >
+              <CIcon name="cil-pencil" />
+              CHỈNH SỬA
+            </CButton>
+          )}
           {(isAdmin ||
             account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export/complete').length > 0) && (
             <CButton

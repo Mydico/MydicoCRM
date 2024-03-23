@@ -648,11 +648,9 @@ const Order = props => {
             <CIcon name="cil-plus" /> Thêm mới
           </CButton>
         )} */}
-         
-          {/* <CButton color="success" variant="outline" className="ml-3" onClick={toCreateOrder}>
-            <CIcon name="cil-plus" /> Thêm mới
-          </CButton> */}
-      
+        <CButton color="success" variant="outline" className="ml-3" onClick={toCreateOrder}>
+          <CIcon name="cil-plus" /> Thêm mới
+        </CButton>
       </CCardHeader>
       <ReportDate setDate={setDate} date={date} setFocused={setFocused} focused={focused} />
 
@@ -791,7 +789,7 @@ const Order = props => {
             details: item => {
               return (
                 <CCollapse show={details.includes(item.id)}>
-                  <OrderDetail isFetch={details.includes(item.id)}  orderId={item.id} />
+                  <OrderDetail isFetch={details.includes(item.id)} orderId={item.id} />
                 </CCollapse>
               );
             }

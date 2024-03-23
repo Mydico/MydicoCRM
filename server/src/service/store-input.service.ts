@@ -283,7 +283,11 @@ export class StoreInputService {
 
     async exportAfterVerify(storeInput: StoreInput, currentUser: User = null): Promise<any> {
         const entity = await this.findById(storeInput.id);
-        if(entity.status === StoreImportStatus.EXPORTED){
+        const canExport = await this.canExportStore(storeInput);
+        if (!canExport) {
+            throw new HttpException('Sản phẩm trong kho không đủ để tạo phiếu xuất', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        if (entity.status === StoreImportStatus.EXPORTED) {
             throw new HttpException('Phiếu này đã được xuất kho', HttpStatus.UNPROCESSABLE_ENTITY);
         }
         if (entity.status === StoreImportStatus.QUANTITY_VERIFIED) {
@@ -396,7 +400,7 @@ export class StoreInputService {
             }));
         const productInStore = founded.map(item => {
             const itemFounded = entity.storeInputDetails.filter(origin => origin.product.id === item.product.id);
-            const totalProduct = itemFounded.reduce((prev, current) => prev +  (entity.type === StoreImportType.EXPORT ? current.quantityRemain : current.quantity), 0);
+            const totalProduct = itemFounded.reduce((prev, current) => prev + (entity.type === StoreImportType.EXPORT ? current.quantityRemain : current.quantity), 0);
             return {
                 ...item,
                 department: entity.store.department,

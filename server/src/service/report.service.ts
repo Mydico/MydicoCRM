@@ -1,7 +1,7 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Cache from 'cache-manager';
-import { Brackets } from 'typeorm';
+import { Brackets, Like } from 'typeorm';
 import Customer from '../domain/customer.entity';
 import Department from '../domain/department.entity';
 import OrderDetails from '../domain/order-details.entity';
@@ -833,7 +833,7 @@ export class ReportService {
     const countBuilder = await this.transactionRepository.manager.connection
       .createQueryBuilder()
       .from(Transaction, 'Transaction')
-      .select(['customer.id','customer.code','product.id'])
+      .select(['customer.id', 'customer.code', 'product.id'])
       .addSelect(['customer.contactName'])
       .addSelect('sum(orderDetails.quantity)', 'orderDetailsQuantity')
       .leftJoin('Transaction.order', 'order')
@@ -846,13 +846,13 @@ export class ReportService {
       .andWhere(`Transaction.orderId is not null`)
       .groupBy('customer.id')
       .getRawMany();
-     queryString = queryBuilderFunc('storeInputDetails', filter);
-     queryString = queryString.replace('storeInputDetails.departmentId', 'storeInput.departmentId');
-     queryString = queryString.replace('storeInputDetails.saleId', 'storeInput.saleId');
-     queryString = queryString.replace('storeInputDetails.branchId', 'storeInput.branchId');
+    queryString = queryBuilderFunc('storeInputDetails', filter);
+    queryString = queryString.replace('storeInputDetails.departmentId', 'storeInput.departmentId');
+    queryString = queryString.replace('storeInputDetails.saleId', 'storeInput.saleId');
+    queryString = queryString.replace('storeInputDetails.branchId', 'storeInput.branchId');
     const returnProduct = await this.transactionRepository
       .createQueryBuilder('Transaction')
-      .select(['customer.id','customer.code','product.id'])
+      .select(['customer.id', 'customer.code', 'product.id'])
       .addSelect('sum(storeInputDetails.quantity)', 'return')
       .leftJoin('Transaction.storeInput', 'storeInput')
       .leftJoin('storeInput.storeInputDetails', 'storeInputDetails')
@@ -1223,27 +1223,7 @@ export class ReportService {
     const filterForStoreHistory = { ...filter }
     delete filterForStoreHistory.branch
     let queryString = queryBuilderFuncForWarehouse('StoreHistory', filterForStoreHistory, true);
-    // queryString = queryString.replace('StoreHistory.productId', 'product.id');
-    // queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
-    // queryString = queryString.replace('StoreHistory.productGroupId', 'productGroup.id');
-    // queryString = queryString.replace('StoreHistory.product_name', 'product.name');
 
-    // const count = await this.storeHistoryRepository
-    //   .createQueryBuilder('StoreHistory2')
-    //   .select("StoreHistory2.productId")
-    //   .addSelect("MIN(StoreHistory2.product_name)", "product_name")
-    //   .addSelect("Sum(remain)", "remain")
-    //   .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
-    //     .addSelect("MAX(StoreHistory.id)", "id")
-    //     .from(StoreHistory, 'StoreHistory')
-    //     .leftJoin('StoreHistory.product', 'product')
-    //     .leftJoin('product.productBrand', 'brand')
-    //     .leftJoin('product.productGroup', 'productGroup')
-    //     .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
-    //     .where(`DATE(StoreHistory.createdDate) < :startDate`, { startDate: filter.startDate })
-    //     .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
-    //   .groupBy(`StoreHistory2.productId`)
-    //   .getRawMany()
     queryString = queryBuilderFuncForWarehouse('StoreHistory', filterForStoreHistory, true, null, true);
     queryString = queryString.replace('StoreHistory.productId', 'product.id');
     queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
@@ -1257,23 +1237,23 @@ export class ReportService {
       queryString = queryString.replace('StoreHistory.product_name', 'product.name');
     }
     let count = await this.storeHistoryRepository
-    .createQueryBuilder('StoreHistory2')
-    .select("StoreHistory2.productId")
-    .addSelect("Sum(remain)", "remain")
-    .addSelect("MAX(product.name)", "product_name")
-    .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
-      .addSelect("MAX(StoreHistory.id)", "id")
-      .from(StoreHistory, 'StoreHistory')
-      .leftJoin('StoreHistory.product', 'product')
-      .leftJoin('product.productBrand', 'brand')
-      .leftJoin('product.productGroup', 'productGroup')
-      .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
-      .andWhere(`DATE(StoreHistory.createdDate) < :startDate`, { startDate: `${filter.startDate} 23:59:59` })
-      .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
-    .innerJoin("StoreHistory2.product", "product")
-    .groupBy(`StoreHistory2.productId`)
-    .orderBy("product.name", "ASC")
-    .getCount()
+      .createQueryBuilder('StoreHistory2')
+      .select("StoreHistory2.productId")
+      .addSelect("Sum(remain)", "remain")
+      .addSelect("MAX(product.name)", "product_name")
+      .innerJoin(qb => qb.select(`StoreHistory.productId,StoreHistory.departmentId`)
+        .addSelect("MAX(StoreHistory.id)", "id")
+        .from(StoreHistory, 'StoreHistory')
+        .leftJoin('StoreHistory.product', 'product')
+        .leftJoin('product.productBrand', 'brand')
+        .leftJoin('product.productGroup', 'productGroup')
+        .groupBy(`StoreHistory.productId,StoreHistory.departmentId`)
+        .andWhere(`DATE(StoreHistory.createdDate) < :startDate`, { startDate: `${filter.startDate} 23:59:59` })
+        .andWhere(queryString), "StoreHistory", "StoreHistory.id = StoreHistory2.id")
+      .innerJoin("StoreHistory2.product", "product")
+      .groupBy(`StoreHistory2.productId`)
+      .orderBy("product.name", "ASC")
+      .getCount()
     let remainbegin = await this.storeHistoryRepository
       .createQueryBuilder('StoreHistory2')
       .select("StoreHistory2.productId")
@@ -1294,8 +1274,17 @@ export class ReportService {
       .offset(options.skip)
       .limit(options.take)
       .getRawMany()
+    let productList = []
+    if (filter.product_name) {
+      productList = await this.productRepository.find({
+        where: {
+          name: Like(`%${filter.product_name}%`)
+        }
+      })
+    }
 
-    const productId = [...new Set([...remainbegin.map(item => item.productId), ...JSON.parse(filter.product || '[]')])];
+    console.log(productList)
+    const productId = [...new Set([...remainbegin.map(item => item.productId), ...JSON.parse(filter.product || '[]'), ...productList.map(product => product.id)])];
     const newProduct = JSON.parse(filter.product || '[]').filter(item => !remainbegin.map(item => item.productId).includes(item))
     const productInfo = await (await this.productRepository.findByIds(newProduct)).map(item => ({ productId: item.id, product_name: item.name, remain: 0 }))
     remainbegin = remainbegin.concat(productInfo)
@@ -1303,7 +1292,7 @@ export class ReportService {
     if (filter.department.includes(1) || filter.department.includes(0)) {
       queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, 1, false);
 
-    }else {
+    } else {
       queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, null, true);
 
     }
@@ -1612,7 +1601,7 @@ export class ReportService {
         .groupBy(`StoreHistory2.productId`)
         .getRawMany()
 
-    } else if(!filter.department.includes(1) && !filter.department.includes(0)){
+    } else if (!filter.department.includes(1) && !filter.department.includes(0)) {
       queryString = queryBuilderFuncForWarehouse('StoreHistory', filterForRemainEnd, true, null, true);
       queryString = queryString.replace('StoreHistory.productId', 'product.id');
       queryString = queryString.replace('StoreHistory.brandId', 'brand.id');
@@ -1654,22 +1643,22 @@ export class ReportService {
       .createQueryBuilder('StoreInput')
       .select("storeInputDetails.productId")
       .from("StoreInput", "related")
-      .addSelect("sum(storeInputDetails.quantity)", "ontheway")
+      .addSelect("sum(storeInputDetails.quantity_remain)", "ontheway")
       .leftJoin('related.storeInputDetails', 'storeInputDetails')
       .leftJoin('storeInputDetails.product', 'product')
       .leftJoin('product.productBrand', 'brand')
       .leftJoin('product.productGroup', 'productGroup')
       .where("storeInputDetails.product.id IN(:...ids)", { ids: productId })
       .andWhere(queryString)
-      .andWhere("`StoreInput`.`createdDate` <= :lastModifiedDate ", {lastModifiedDate: filter.endDate + " 23:59:59"})
+      .andWhere("`StoreInput`.`createdDate` <= :lastModifiedDate ", { lastModifiedDate: filter.endDate + " 23:59:59" })
       .andWhere(new Brackets(qb => {
-        qb.where("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'EXPORTED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'WAITING'");
+        qb.where("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'EXPORTED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'WAITING'").orWhere(new Brackets(qb => {
+          qb.where("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'EXPORTED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.lastModifiedDate > :lastModifiedDate ", {
+            lastModifiedDate: filter.endDate
+          });
+        }),);
       }),)
-      .orWhere(new Brackets(qb => {
-        qb.where("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'EXPORTED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.lastModifiedDate <> null AND StoreInput.lastModifiedDate <= :lastModifiedDate ", {
-          lastModifiedDate: filter.endDate
-        });
-      }),)
+
       // .andWhere("related.id = StoreInput.relatedId AND related.type = 'EXPORT' AND related.status = 'APPROVED' AND StoreInput.type = 'IMPORT_FROM_STORE' AND StoreInput.status = 'WAITING'")
       .groupBy('storeInputDetails.productId')
       .orderBy("storeInputDetails.productId", "ASC")

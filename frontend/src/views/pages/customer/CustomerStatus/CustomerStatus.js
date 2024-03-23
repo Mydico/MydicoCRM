@@ -82,7 +82,7 @@ const CustomerStatus = props => {
 
   const onFilterColumn = value => {
     if (Object.keys(value).length > 0) {
-      paramRef.current = value
+      paramRef.current = value;
       dispatch(getCustomerStatus({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
   };
@@ -102,7 +102,6 @@ const CustomerStatus = props => {
         )}
       </CCardHeader>
       <CCardBody>
-
         <AdvancedTable
           items={customerStatuses}
           fields={fields}
@@ -117,12 +116,7 @@ const CustomerStatus = props => {
           }}
           // loading
 
-
-
           onPaginationChange={val => setSize(val)}
-
-
-
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
