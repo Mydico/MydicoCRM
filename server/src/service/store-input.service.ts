@@ -15,6 +15,7 @@ import { OrderService } from './order.service';
 import { User } from '../domain/user.entity';
 import { generateCacheKey } from './utils/helperFunc';
 import { CustomerService } from './customer.service';
+import { StoreInputDetailsRepository } from '../repository/store-input-details.repository';
 
 const relationshipNames = [];
 relationshipNames.push('approver');
@@ -51,10 +52,14 @@ export class StoreInputService {
         }
         const options = { relations: relationshipNames };
         const result = await this.storeInputRepository.findOne(id, options)
-        result.storeInputDetails = result.storeInputDetails.sort((a, b) => {
-            return Number(a.id) - Number(b.id);
-        })
-        return result;
+        if (result) {
+            result.storeInputDetails = result.storeInputDetails.sort((a, b) => {
+                return Number(a.id) - Number(b.id);
+            })
+            return result;
+        }
+        return undefined;
+
     }
 
     async findByfields(options: FindOneOptions<StoreInput>): Promise<StoreInput | undefined> {

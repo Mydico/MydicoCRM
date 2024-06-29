@@ -99,6 +99,8 @@ const EditWarehouseExport = props => {
   const onSubmit = (values, { resetForm }) => () => {
     values = JSON.parse(JSON.stringify(values));
     values.storeInputDetails = productList;
+    // console.log(productList);
+    // console.log(values.storeInputDetails);
     values.type = WarehouseImportType.EXPORT;
     if (location.state.isChecking) {
       values.status = WarehouseImportStatus.QUANTITY_CHECK;
@@ -110,7 +112,7 @@ const EditWarehouseExport = props => {
 
   const onChangeQuantity = ({ target }, index) => {
     const copyArr = [...productList];
-    copyArr[index].quantity = target.value;
+    copyArr[index].quantity = Number(target.value);
     if (selectedWarehouse && copyArr[index].product) {
       setProductList(copyArr);
       onSearchProductInstore(copyArr, index);

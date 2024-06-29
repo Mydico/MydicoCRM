@@ -37,6 +37,14 @@ const Font = Quill.import('formats/font');
 Font.whitelist = ['arial', 'comic-sans', 'courier-new', 'georgia', 'helvetica', 'lucida', 'times'];
 Quill.register(Font, true);
 
+const imageHandler = () => {
+  var range = Quill.getSelection();
+  var value = prompt('please copy paste the image url here.');
+  if (value) {
+    Quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
+  }
+};
+
 // Modules object for setting up the Quill editor
 export const modules = {
   toolbar: {
@@ -74,14 +82,6 @@ export const formats = [
   'color',
   'code-block'
 ];
-
-const imageHandler = () => {
-  var range = Quill.getSelection();
-  var value = prompt('please copy paste the image url here.');
-  if (value) {
-    Quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
-  }
-};
 
 // Quill Toolbar component
 export const QuillToolbar = () => (

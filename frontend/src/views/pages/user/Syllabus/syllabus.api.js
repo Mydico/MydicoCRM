@@ -1,17 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const getSyllabus = createAsyncThunk(
-  'api/syllabus',
-  async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
-    try {
-      const result = await axios.get('api/syllabus', { params: params });
-      return { data: result.data, total: result.headers['x-total-count'] };
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
+export const getSyllabus = createAsyncThunk('api/syllabus', async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
+  try {
+    const result = await axios.get('api/syllabus', { params: params });
+    return { data: result.data, total: result.headers['x-total-count'] };
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
   }
-);
+});
 
 export const getDetailSyllabus = createAsyncThunk('api/detail/syllabus', async (params, thunkAPI) => {
   try {
@@ -53,6 +50,7 @@ export const getSyllabusDailyReport = createAsyncThunk(
   'api/user-answers/daily-report',
   async (params = { page: 0, size: 20, sort: 'createdDate,DESC' }, thunkAPI) => {
     try {
+      if (!params.startDate || !params.endDate) return;
       const result = await axios.get('api/reports/syllabus/daily-report', { params: params });
       return { data: result.data, total: result.headers['x-total-count'] };
     } catch (error) {

@@ -2,7 +2,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany, ManyToMany, JoinTable, Index } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
-
 import Store from './store.entity';
 import { StoreImportStatus } from './enumeration/store-import-status';
 import Customer from './customer.entity';
@@ -21,98 +20,95 @@ import Branch from './branch.entity';
  */
 @Entity('store_input')
 export default class StoreInput extends BaseEntity {
+  @Column({ type: 'simple-enum', name: 'type', enum: StoreImportType, default: StoreImportType.NEW })
+  @Index()
+  type?: StoreImportType;
 
-    @Column({ type: 'simple-enum', name: 'type', enum: StoreImportType, default: StoreImportType.NEW })
-    @Index()
-    type?: StoreImportType;
+  @Column({ type: 'simple-enum', name: 'status', enum: StoreImportStatus, default: StoreImportStatus.WAITING })
+  @Index()
+  status?: StoreImportStatus;
 
-    @Column({ type: 'simple-enum', name: 'status', enum: StoreImportStatus, default: StoreImportStatus.WAITING })
-    @Index()
-    status?: StoreImportStatus;
+  @ManyToOne(type => Customer, { createForeignKeyConstraints: false })
+  customer?: Customer;
 
-    @ManyToOne(type => Customer, { createForeignKeyConstraints: false })
-    customer?: Customer;
+  @Column({ name: 'customer_name', length: 255, nullable: true })
+  @Index()
+  customerName?: string;
 
-    @Column({ name: 'customer_name', length: 255, nullable: true })
-    @Index()
-    customerName?: string;
+  @ManyToOne(type => User, { createForeignKeyConstraints: false })
+  sale?: User;
 
-    @ManyToOne(type => User, { createForeignKeyConstraints: false })
-    sale?: User;
+  @Column({ type: 'bigint', name: 'total_money', nullable: true })
+  @Index()
+  totalMoney?: number;
 
-    @Column({ type: 'bigint', name: 'total_money', nullable: true })
-    @Index()
-    totalMoney?: number;
+  @Column({ type: 'bigint', name: 'real_money', nullable: true })
+  @Index()
+  realMoney?: number;
 
-    @Column({ type: 'bigint', name: 'real_money', nullable: true })
-    @Index()
-    realMoney?: number;
+  @Column({ type: 'bigint', name: 'reduce_money', nullable: true })
+  @Index()
+  reduceMoney?: number;
 
-    @Column({ type: 'bigint', name: 'reduce_money', nullable: true })
-    @Index()
-    reduceMoney?: number;
+  @ManyToOne(type => Department, { createForeignKeyConstraints: false })
+  @Index()
+  department?: Department;
 
-    @ManyToOne(type => Department, { createForeignKeyConstraints: false })
-    @Index()
-    department? : Department;
+  @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
+  @Index()
+  branch?: Branch;
 
-    @ManyToOne(type => Branch, { createForeignKeyConstraints: false })
-    @Index()
-    branch? : Branch;
+  @ManyToOne(type => User, { createForeignKeyConstraints: false })
+  @Index()
+  approver?: User;
 
-    @ManyToOne(type => User, { createForeignKeyConstraints: false })
-    @Index()
-    approver?: User;
+  @Column({ name: 'approver_name', length: 255, nullable: true })
+  @Index()
+  approverName?: string;
 
-    @Column({ name: 'approver_name', length: 255, nullable: true })
-    @Index()
-    approverName?: string;
+  @Column({ name: 'note', length: 255, nullable: true })
+  @Index()
+  note?: string;
 
-    @Column({ name: 'note', length: 255, nullable: true })
-    @Index()
-    note?: string;
+  @Column({ name: 'code', length: 255, nullable: true })
+  @Index()
+  code?: string;
 
-    @Column({ name: 'code', length: 255, nullable: true })
-    @Index()
-    code?: string;
+  @OneToMany(type => StoreInputDetails, other => other.storeInput, { cascade: true })
+  storeInputDetails?: StoreInputDetails[];
 
-    @OneToMany(type => StoreInputDetails, other => other.storeInput, { cascade: ['insert', 'update'] })
-    storeInputDetails? : StoreInputDetails[];
+  @ManyToOne(type => Promotion, { createForeignKeyConstraints: false })
+  promotion?: Promotion;
 
-    @ManyToOne(type => Promotion, { createForeignKeyConstraints: false })
-    promotion? : Promotion;
+  @ManyToOne(type => PromotionItem, { createForeignKeyConstraints: false })
+  promotionItem?: PromotionItem;
 
-    @ManyToOne(type => PromotionItem, { createForeignKeyConstraints: false })
-    promotionItem? : PromotionItem;
+  @ManyToOne(type => Store, { createForeignKeyConstraints: false })
+  @Index()
+  store?: Store;
 
+  @Column({ name: 'store_name', length: 255, nullable: true })
+  @Index()
+  storeName?: string;
 
-    @ManyToOne(type => Store, { createForeignKeyConstraints: false })
-    @Index()
-    store?: Store;
+  @ManyToOne(type => Provider, { createForeignKeyConstraints: false })
+  provider?: Provider;
 
-    @Column({ name: 'store_name', length: 255, nullable: true })
-    @Index()
-    storeName?: string;
+  @Column({ name: 'provider_name', length: 255, nullable: true })
+  @Index()
+  providerName?: string;
 
-    @ManyToOne(type => Provider, { createForeignKeyConstraints: false })
-    provider?: Provider;
+  @ManyToOne(type => Store, { createForeignKeyConstraints: false })
+  @Index()
+  storeTransfer?: Store;
 
-    @Column({ name: 'provider_name', length: 255, nullable: true })
-    @Index()
-    providerName?: string;
+  @Column({ name: 'store_transfer_name', length: 255, nullable: true })
+  @Index()
+  storeTransferName?: string;
 
-    @ManyToOne(type => Store, { createForeignKeyConstraints: false })
-    @Index()
+  @Column({ name: 'related_id', length: 255, nullable: true })
+  @Index()
+  relatedId?: string;
 
-    storeTransfer?: Store;
-
-    @Column({ name: 'store_transfer_name', length: 255, nullable: true })
-    @Index()
-    storeTransferName?: string;
-
-    @Column({ name: 'related_id', length: 255, nullable: true })
-    @Index()
-    relatedId?: string;
-
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+  // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

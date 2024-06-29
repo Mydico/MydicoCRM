@@ -11,21 +11,22 @@ import { OrderModule } from './order.module';
 import { DepartmentModule } from './department.module';
 import { IncomeDashboardModule } from './income-dashboard.module';
 import { StoreInputSubscriber } from '../service/subscribers/store.subscriber';
+import { StoreInputDetailsRepository } from '../repository/store-input-details.repository';
 
 @Module({
-    imports: [
-        CacheModule.register(),
-        TypeOrmModule.forFeature([StoreInputRepository]),
-        ProductQuantityModule,
-        StoreHistoryModule,
-        StoreInputDetailsModule,
-        TransactionModule,
-        OrderModule,
-        DepartmentModule,
-        IncomeDashboardModule,
-    ],
-    controllers: [StoreInputController],
-    providers: [StoreInputService,StoreInputSubscriber],
-    exports: [StoreInputService],
+  imports: [
+    CacheModule.register(),
+    TypeOrmModule.forFeature([StoreInputRepository]),
+    ProductQuantityModule,
+    StoreHistoryModule,
+    StoreInputDetailsModule,
+    TransactionModule,
+    OrderModule,
+    DepartmentModule,
+    IncomeDashboardModule
+  ],
+  controllers: [StoreInputController],
+  providers: [StoreInputService, StoreInputSubscriber],
+  exports: [StoreInputService]
 })
 export class StoreInputModule {}

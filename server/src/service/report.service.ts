@@ -1187,6 +1187,7 @@ export class ReportService {
       .createQueryBuilder('Customer')
       .select('count(*)', 'count')
       .where(queryString)
+      .andWhere(`DATE(Customer.createdDate) > :startDate AND DATE(Customer.createdDate) < :endDate`, { startDate: `${filter.startDate}`, endDate: `${filter.endDate} 23:59:59` })
       .cache(3 * 3600)
     const cacheKey = queryBuilder.getQueryAndParameters().toString();
     const cachedQuery = await this.cacheManager.get(cacheKey);
@@ -1283,18 +1284,16 @@ export class ReportService {
       })
     }
 
-    console.log(productList)
     const productId = [...new Set([...remainbegin.map(item => item.productId), ...JSON.parse(filter.product || '[]'), ...productList.map(product => product.id)])];
     const newProduct = JSON.parse(filter.product || '[]').filter(item => !remainbegin.map(item => item.productId).includes(item))
-    const productInfo = await (await this.productRepository.findByIds(newProduct)).map(item => ({ productId: item.id, product_name: item.name, remain: 0 }))
-    remainbegin = remainbegin.concat(productInfo)
+    const productInfo = (await this.productRepository.findByIds([...newProduct])).map(item => ({ productId: item.id, product_name: item.name, remain: 0 }))
+    remainbegin = [...new Set([...remainbegin, ...productInfo])]
     if (productId.length === 0) return [[], 0]
     if (filter.department.includes(1) || filter.department.includes(0)) {
       queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, 1, false);
 
     } else {
       queryString = queryBuilderFuncForWarehouse('StoreInput', filter, false, null, true);
-
     }
     queryString = queryString.replace('StoreInput.productId', 'product.id');
     queryString = queryString.replace('StoreInput.brandId', 'brand.id');

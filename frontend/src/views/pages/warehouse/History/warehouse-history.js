@@ -43,7 +43,7 @@ const fields = [
     _style: { width: '1%' },
     filter: false
   },
-  { key: 'storeName', label: 'Tên kho', _style: { width: '10%' } },
+  { key: 'storeName', label: 'Tên kho', _style: { width: '10%' }, filter: false },
   { key: 'productName', label: 'Tên sản phẩm', _style: { width: '15%' } },
   { key: 'volume', label: 'Dung tích', _style: { width: '15%' } },
   { key: 'type', label: 'Hình thức', _style: { width: '15%' }, filter: false },
@@ -79,7 +79,7 @@ const StoreHistory = props => {
 
   useEffect(() => {
     if (date.endDate && date.startDate) {
-      console.log(size)
+      console.log(size);
       const params = {
         ...paramRef.current,
         page: activePage - 1,
@@ -88,7 +88,7 @@ const StoreHistory = props => {
         startDate: date.startDate?.format('YYYY-MM-DD'),
         endDate: date.endDate?.format('YYYY-MM-DD')
       };
-      paramRef.current = {...params}
+      paramRef.current = { ...params };
       dispatch(getStoreHistory(params));
     }
   }, [date]);
@@ -104,7 +104,7 @@ const StoreHistory = props => {
     let paramsLocal = { page: activePage - 1, size, sort: 'createdDate,DESC', ...params?.history };
     paramsLocal = { ...paramsLocal, ...paramRef.current, page: activePage - 1, size };
     if (date.endDate && date.startDate) {
-      paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'), size  };
+      paramsLocal = { ...paramsLocal, startDate: date.startDate?.format('YYYY-MM-DD'), endDate: date.endDate?.format('YYYY-MM-DD'), size };
     }
     dispatch(getStoreHistory(paramsLocal));
     saveParams();
@@ -120,7 +120,6 @@ const StoreHistory = props => {
       };
     });
   };
-
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(storeHistorys), [storeHistorys]);
@@ -146,7 +145,7 @@ const StoreHistory = props => {
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
       paramRef.current = { ...paramRef.current, ...value };
-      dispatch(getStoreHistory({...paramRef.current, ...value, page: 0, size, sort: 'lastModifiedDate,DESC',  }));
+      dispatch(getStoreHistory({ ...paramRef.current, ...value, page: 0, size, sort: 'lastModifiedDate,DESC' }));
     }
   }, 300);
 
@@ -171,7 +170,7 @@ const StoreHistory = props => {
     });
   };
 
-  const renderLink = useCallback((item) => {
+  const renderLink = useCallback(item => {
     if (!item.entityId) return;
     let link = '';
     let href = '';
@@ -182,14 +181,10 @@ const StoreHistory = props => {
       link = `${mappingType[item.entityType] || 'kho'} ${item.entityCode || ''}`;
       href = `/store-inputs/${item.entityId}/detail`;
     }
-    return (
-      <CLink to={href}>
-        {link}
-      </CLink>
-    );
-  },[]);
+    return <CLink to={href}>{link}</CLink>;
+  }, []);
 
-  const renderDestination = useCallback((item) => {
+  const renderDestination = useCallback(item => {
     if (!item.destinationId) return;
     let link = '';
     let href = '';
@@ -197,16 +192,11 @@ const StoreHistory = props => {
       link = `${item.destName || ''}`;
       href = `/customers/${item.destinationId}/edit`;
     } else {
-   
       link = `${item.destName || ''}`;
       href = `/store-inputs/${item.destinationId}/detail`;
     }
-    return (
-      <CLink to={href}>
-        {link}
-      </CLink>
-    );
-  },[]);
+    return <CLink to={href}>{link}</CLink>;
+  }, []);
 
   const memoExcelComputedItems = React.useCallback(items => computedExcelItems(storeHistorys), [storeHistorys]);
   const memoExcelListed = React.useMemo(() => memoExcelComputedItems(storeHistorys), [storeHistorys]);

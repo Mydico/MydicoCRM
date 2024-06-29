@@ -101,7 +101,8 @@ const renderButtonStatus = (
   approveTicket,
   rejectTicket,
   approveCheckingTicket,
-  exportTicket
+  exportTicket,
+  resetTicket
 ) => {
   switch (item.status) {
     case WarehouseImportStatus.APPROVED:
@@ -172,9 +173,7 @@ const renderButtonStatus = (
           {(isAdmin || account.role.filter(rol => rol.method === 'PUT' && rol.entity === '/api/store-inputs/export').length > 0) && (
             <CButton
               onClick={() => {
-                item.type !== WarehouseImportType.EXPORT_TO_PROVIDER
-                  ? toEditWarehouseImport(item.id)
-                  : toEditWarehouseExportProvider(item.id);
+                alertFunc(item, 'Bạn có chắc chắn muốn khôi phục không', resetTicket);
               }}
               color="warning"
               variant="outline"
@@ -183,7 +182,7 @@ const renderButtonStatus = (
               className="mr-1"
             >
               <CIcon name="cil-pencil" />
-              CHỈNH SỬA
+              KHÔI PHỤC
             </CButton>
           )}
           {(isAdmin ||
@@ -385,6 +384,12 @@ const WarehouseImport = props => {
     dispatch(approveWarehouseExport(data));
   };
 
+  const resetTicket = bill => () => {
+    dispatch(fetching());
+    const data = { id: bill.id, status: WarehouseImportStatus.WAITING, type: 'EXPORT', action: 'export', isReset: true };
+    dispatch(updateWarehouseStatusImport(data));
+  };
+
   const approveCheckingTicket = bill => () => {
     dispatch(fetching());
     const data = { id: bill.id, status: WarehouseImportStatus.QUANTITY_VERIFIED, type: 'EXPORT', action: 'export/verify-calculate' };
@@ -530,7 +535,8 @@ const WarehouseImport = props => {
                     approveTicket,
                     rejectTicket,
                     approveCheckingTicket,
-                    exportTicket
+                    exportTicket,
+                    resetTicket
                   )}
                 </td>
               );

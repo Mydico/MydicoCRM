@@ -13,7 +13,8 @@ import {
   HttpException,
   HttpStatus,
   Res,
-  CacheInterceptor
+  CacheInterceptor,
+  Post
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -413,6 +414,12 @@ export class StoreInputController {
   async putExport(@Req() req: Request, @Res() res: Response, @Body() storeInput: StoreInput): Promise<Response> {
     HeaderUtil.addEntityUpdatedHeaders(res, 'StoreInput', storeInput.id);
     const currentUser = req.user as User;
+    if((storeInput as any).isReset){
+      res.send(await this.storeInputService.update({
+        id:storeInput.id,
+        status: StoreImportStatus.WAITING,
+      }));
+    }
     storeInput.approver = currentUser;
     storeInput.lastModifiedDate = new Date()
     if (storeInput.status === StoreImportStatus.APPROVED) {

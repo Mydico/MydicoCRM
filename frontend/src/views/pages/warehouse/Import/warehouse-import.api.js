@@ -120,7 +120,7 @@ export const updateWarehouseStatusImport = createAsyncThunk('api/update/store-in
     const result = await axios.put('api/store-inputs/' + body.action, body);
     return { data: result.data, headers: result.headers, statusCode: result.status };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });
@@ -129,7 +129,7 @@ export const approveWarehouseExport = createAsyncThunk('api/approve/store-inputs
     const result = await axios.put('api/store-inputs/export/approve', body);
     return { data: result.data, headers: result.headers, statusCode: result.status };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return thunkAPI.rejectWithValue(error.response.data);
   }
 });

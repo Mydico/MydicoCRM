@@ -38,7 +38,11 @@ import { HeaderUtil } from '../../client/header-util';
 export class ReportController {
   logger = new Logger('ReportController');
 
-  constructor(private readonly departmentService: DepartmentService, private readonly reportService: ReportService, private readonly userAnswerService: UserAnswerService) {}
+  constructor(
+    private readonly departmentService: DepartmentService,
+    private readonly reportService: ReportService,
+    private readonly userAnswerService: UserAnswerService
+  ) {}
 
   @Get('/sale-report')
   @ApiResponse({
@@ -408,8 +412,8 @@ export class ReportController {
     description: 'List all records'
   })
   async getCountCustomer(@Req() req: Request, @Res() res): Promise<any> {
-    delete req.query['startDate']
-    delete req.query['endDate']
+    // delete req.query['startDate']
+    // delete req.query['endDate']
     const filter = await this.buildFilterForReport(req);
     return res.send(await this.reportService.getCustomerCount(filter));
   }
@@ -432,6 +436,7 @@ export class ReportController {
     delete req.query['size'];
     delete req.query['sort'];
     const filter = await this.buildFilterForReport(req);
+    console.log(filter);
     const [results, count] = await this.userAnswerService.dailyReport(options, filter);
 
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
@@ -480,22 +485,20 @@ export class ReportController {
         departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
         departmentVisible = departmentVisible.map(item => item.id);
       } else {
-       
-        if(req.query['department'] && Array.isArray(JSON.parse(req.query['department']))){
+        if (req.query['department'] && Array.isArray(JSON.parse(req.query['department']))) {
           departmentVisible = departmentVisible.concat(JSON.parse(req.query['department']));
-        }else {
+        } else {
           req.query['department'] && departmentVisible.push(JSON.parse(req.query['department']));
         }
-       
       }
     } else {
-      if(JSON.parse(currentUser.department.externalChild).length > 0){
-        if(req.query['department'] && Array.isArray(JSON.parse(req.query['department']))){
+      if (JSON.parse(currentUser.department.externalChild).length > 0) {
+        if (req.query['department'] && Array.isArray(JSON.parse(req.query['department']))) {
           departmentVisible = departmentVisible.concat(JSON.parse(req.query['department']));
-        }else {
+        } else {
           req.query['department'] && departmentVisible.push(JSON.parse(req.query['department']));
         }
-      }else {
+      } else {
         departmentVisible.push(currentUser.department.id);
       }
     }
@@ -511,11 +514,10 @@ export class ReportController {
     if (isBranchManager) {
       filter['branch'] = currentUser.branch.id;
     }
-    if(JSON.parse(currentUser.department.externalChild).length > 0){
-      if(!filter['department'].includes(JSON.parse(currentUser.department.externalChild)[0])){
-        delete filter['branch']
+    if (JSON.parse(currentUser.department.externalChild).length > 0) {
+      if (!filter['department'].includes(JSON.parse(currentUser.department.externalChild)[0])) {
+        delete filter['branch'];
       }
-      
     }
     if (isEmployee) {
       filter['sale'] = currentUser.id;
