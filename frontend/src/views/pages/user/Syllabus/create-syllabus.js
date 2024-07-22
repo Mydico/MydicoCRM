@@ -18,13 +18,11 @@ import { getQuestion } from '../Question/question.api';
 import { CBadge, CCol, CCollapse, CModal, CModalBody, CModalHeader, CModalTitle, CPagination, CRow } from '@coreui/react';
 import AdvancedTable from '../../../components/table/AdvancedTable';
 
-
-const validationSchema = function () {
+const validationSchema = function() {
   return Yup.object().shape({
     name: Yup.string()
       .min(1, `Tên chương trình học phải lớn hơn 1 kí tự`)
-      .required('Tên chương trình học không để trống'),
-
+      .required('Tên chương trình học không để trống')
   });
 };
 
@@ -34,7 +32,6 @@ export const mappingStatus = {
   DELETED: 'ĐÃ XÓA'
 };
 const fields = [
-
   { key: 'text', label: 'Nội dung câu hỏi', _style: { width: '15%' } },
   { key: 'correct', label: 'Câu trả lời đúng', _style: { width: '15%' } },
   {
@@ -44,25 +41,31 @@ const fields = [
     filter: false
   }
 ];
-const typeList = [{ value: "DAILY", label: "Hàng ngày" }, { value: "EVENT", label: "Sự kiện" }]
+const typeList = [
+  { value: 'DAILY', label: 'Hàng ngày' },
+  { value: 'EVENT', label: 'Sự kiện' }
+];
 
-const statusList = [{ value: "ACTIVE", label: "Hoạt động" }, { value: "DISABLED", label: "Không hoạt động" }]
+const statusList = [
+  { value: 'ACTIVE', label: 'Hoạt động' },
+  { value: 'DISABLED', label: 'Không hoạt động' }
+];
 
 const { selectById } = globalizedSyllabusSelectors;
 const { selectAll } = globalizedQuestionSelectors;
 
-const CreateSyllabus = (props) => {
+const CreateSyllabus = props => {
   const { initialState } = useSelector(state => state.syllabus);
   const { initialState: questionState } = useSelector(state => state.question);
   const syllabus = useSelector(state => selectById(state, props.match.params.id));
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
   const questions = useSelector(selectAll);
-  const [selectedQuestions, setSelectedQuestions] = useState([])
+  const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [initValues, setInitValues] = useState({
-    id: null,
-  })
+    id: null
+  });
   const [details, setDetails] = useState([]);
   const [activePage, setActivePage] = useState(1);
   const [size, setSize] = useState(50);
@@ -71,36 +74,33 @@ const CreateSyllabus = (props) => {
     window.scrollTo(0, 100);
   }, [activePage, size]);
 
-
-
   useEffect(() => {
     const initEditForm = async () => {
       if (syllabus) {
-        const copy = JSON.parse(JSON.stringify(syllabus))
+        const copy = JSON.parse(JSON.stringify(syllabus));
         copy.type = {
           value: typeList.filter(type => type.value === syllabus.type)[0],
           label: typeList.filter(type => type.value === syllabus.type)[0]?.label
-        }
+        };
         copy.status = {
           value: statusList.filter(type => type.value === syllabus.status)[0],
           label: statusList.filter(type => type.value === syllabus.status)[0]?.label
-        }
-        setInitValues(copy)
-        setSelectedQuestions(syllabus.questions)
-
+        };
+        setInitValues(copy);
+        setSelectedQuestions(syllabus.questions);
       }
-    }
-    initEditForm()
-
-  }, [syllabus])
+    };
+    initEditForm();
+  }, [syllabus]);
 
   const onSubmit = (values, { resetForm }) => {
     dispatch(fetching());
-    values = JSON.parse(JSON.stringify(values))
-    values.status = values.status.value.value;
-    values.type = values.type.value.value;
+    values = JSON.parse(JSON.stringify(values));
+    console.log(values);
+    values.status = values.status?.value?.value || 'DISABLED';
+    values.type = values.type?.value?.value || 'EVENT';
     if (selectedQuestions.length > 0) {
-      values.questions = selectedQuestions
+      values.questions = selectedQuestions;
     }
     dispatch(creatingSyllabus(values));
   };
@@ -136,20 +136,19 @@ const CreateSyllabus = (props) => {
     setSelectedQuestions(arr);
   };
 
-  const onSelectedQuestion = (value) => {
+  const onSelectedQuestion = value => {
     if (selectedQuestions.filter(item => item.id === value.id).length === 0) {
-      setSelectedQuestions([...selectedQuestions, value])
+      setSelectedQuestions([...selectedQuestions, value]);
     }
-
-  }
-  const computedItems = items => items
+  };
+  const computedItems = items => items;
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(questions), [questions]);
 
   return (
     <CCard>
       <CCardHeader>
-        <CCardTitle>{syllabus ? "Chỉnh sửa chương trình học" : "Thêm mới chương trình học"}</CCardTitle>
+        <CCardTitle>{syllabus ? 'Chỉnh sửa chương trình học' : 'Thêm mới chương trình học'}</CCardTitle>
       </CCardHeader>
       <CCardBody>
         <Formik initialValues={initValues} enableReinitialize validate={validate(validationSchema)} onSubmit={onSubmit}>
@@ -178,21 +177,23 @@ const CreateSyllabus = (props) => {
                 />
                 <CInvalidFeedback>{errors.name}</CInvalidFeedback>
               </CFormGroup>
-              {values.type?.value?.value === 'DAILY' && <CFormGroup>
-                <CLabel htmlFor="login">Số lượng câu hỏi</CLabel>
-                <CInput
-                  type="text"
-                  name="amount"
-                  id="amount"
-                  type="number"
-                  placeholder="Số lượng câu hỏi"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  invalid={errors.amount}
-                  value={values.amount}
-                />
-                <CInvalidFeedback>{errors.amount}</CInvalidFeedback>
-              </CFormGroup>}
+              {values.type?.value?.value === 'DAILY' && (
+                <CFormGroup>
+                  <CLabel htmlFor="login">Số lượng câu hỏi</CLabel>
+                  <CInput
+                    type="text"
+                    name="amount"
+                    id="amount"
+                    type="number"
+                    placeholder="Số lượng câu hỏi"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    invalid={errors.amount}
+                    value={values.amount}
+                  />
+                  <CInvalidFeedback>{errors.amount}</CInvalidFeedback>
+                </CFormGroup>
+              )}
               <CFormGroup>
                 <CLabel htmlFor="password">Thời gian bắt đầu</CLabel>
                 <CInput type="date" id="startTime" name="startTime" onChange={handleChange} placeholder="Thời gian bắt đầu" />
@@ -243,7 +244,11 @@ const CreateSyllabus = (props) => {
                 />
                 {!values.status && <FormFeedback className="d-block">{errors.status}</FormFeedback>}
               </CFormGroup>
-              {values.type?.value?.value === 'EVENT' && <CButton size="lg" color="primary" onClick={() => setVisible(true)}>Chọn câu hỏi</CButton>}
+              {values.type?.value?.value === 'EVENT' && (
+                <CButton size="lg" color="primary" onClick={() => setVisible(true)}>
+                  Chọn câu hỏi
+                </CButton>
+              )}
               {selectedQuestions.length > 0 ? (
                 <Table style={{ marginTop: 15 }}>
                   <thead>
@@ -263,13 +268,10 @@ const CreateSyllabus = (props) => {
 
                   <tbody>
                     {selectedQuestions.map((gPermission, i) => {
-
                       return (
                         <tr key={gPermission.id}>
                           <td className="text-left">{i + 1}</td>
-                          <td className="text-left">
-                            {gPermission.text}
-                          </td>
+                          <td className="text-left">{gPermission.text}</td>
 
                           <td className="text-center">
                             <CButton type="reset" size="lg" color="danger" onClick={() => removeGPermission(i)} className="ml-5">
@@ -290,18 +292,14 @@ const CreateSyllabus = (props) => {
                 <CButton type="submit" size="lg" color="primary" disabled={initialState.loading}>
                   <CIcon name="cil-save" /> {initialState.loading ? 'Đang xử lý' : initValues.id ? 'Chỉnh sửa' : 'Tạo mới'}
                 </CButton>
-
               </CFormGroup>
             </CForm>
           )}
         </Formik>
-
       </CCardBody>
       <CModal size="lg" show={visible} onClose={() => setVisible(false)}>
-
         <CModalBody>
           <CCardBody>
-
             <AdvancedTable
               items={memoListed}
               fields={fields}
@@ -319,17 +317,11 @@ const CreateSyllabus = (props) => {
               // onColumnFilterChange={onFilterColumn}
               scopedSlots={{
                 order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
-                correct: item => (
-                  <td>
-                    {item?.choices?.filter(item => item.isCorrect)[0]?.text}
-                  </td>
-                ),
+                correct: item => <td>{item?.choices?.filter(item => item.isCorrect)[0]?.text}</td>,
 
                 show_details: item => {
                   return (
                     <td className="d-flex py-2">
-
-
                       <CButton
                         color="primary"
                         variant="outline"
@@ -337,12 +329,11 @@ const CreateSyllabus = (props) => {
                         size="sm"
                         onClick={() => {
                           if (selectedQuestions.filter(question => item.id === question.id).length > 0) {
-                            const index = selectedQuestions.findIndex(question => item.id === question.id)
-                            removeGPermission(index)
+                            const index = selectedQuestions.findIndex(question => item.id === question.id);
+                            removeGPermission(index);
                           } else {
-                            onSelectedQuestion(item)
+                            onSelectedQuestion(item);
                           }
-
                         }}
                       >
                         <CIcon name={selectedQuestions.filter(question => item.id === question.id).length > 0 ? 'cilMinus' : 'cilPlus'} />
@@ -362,15 +353,23 @@ const CreateSyllabus = (props) => {
                               <dt className="col-sm-3">Câu hỏi:</dt>
                               <dd className="col-sm-9">{item.text}</dd>
                             </dl>
-                            {[...item.choices].sort((a, b) => a.id - b.id).map((choice, index) =>
-                              <dl className="row" >
-                                <dt className="col-sm-3">Câu trả lời:</dt>
-                                <dd className="col-sm-9" style={{ background: choice.isCorrect ? "#5e2572" : "", color: choice.isCorrect ? "#fff" : "", fontWeight: choice.isCorrect ? "bold" : "" }}>{alphabet[index]}. {choice.text}</dd>
-                              </dl>
-                            )
-                            }
-
-
+                            {[...item.choices]
+                              .sort((a, b) => a.id - b.id)
+                              .map((choice, index) => (
+                                <dl className="row">
+                                  <dt className="col-sm-3">Câu trả lời:</dt>
+                                  <dd
+                                    className="col-sm-9"
+                                    style={{
+                                      background: choice.isCorrect ? '#5e2572' : '',
+                                      color: choice.isCorrect ? '#fff' : '',
+                                      fontWeight: choice.isCorrect ? 'bold' : ''
+                                    }}
+                                  >
+                                    {alphabet[index]}. {choice.text}
+                                  </dd>
+                                </dl>
+                              ))}
                           </CCol>
                         </CRow>
                       </CCardBody>

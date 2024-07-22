@@ -20,7 +20,7 @@ const mappingStatus = {
 };
 const mappingType = {
   DAILY: 'Hàng ngày',
-  EVENT: 'Sự kiện',
+  EVENT: 'Sự kiện'
 };
 const { selectAll } = globalizedSyllabusSelectors;
 // Code	Tên nhà cung cấp	Người liên lạc	Năm Sinh	Điện thoại	Nhân viên quản lý	Loại nhà cung cấp	Phân loại	Sửa	Tạo đơn
@@ -44,9 +44,9 @@ const fields = [
 
 const getBadge = status => {
   switch (status) {
-    case "ACTIVE":
+    case 'ACTIVE':
       return 'success';
-    case "DISABLED":
+    case 'DISABLED':
       return 'danger';
     default:
       return 'primary';
@@ -65,7 +65,7 @@ const Syllabus = props => {
   const [show, setShow] = useState(false);
   const paramRef = useRef({});
   const selectedSyllabus = useRef({ id: null, activated: true });
-  const [showDelete, setShowDelete] = useState(false)
+  const [showDelete, setShowDelete] = useState(false);
 
   useEffect(() => {
     dispatch(reset());
@@ -94,8 +94,6 @@ const Syllabus = props => {
     });
   };
 
-
-
   const toEditSyllabus = userId => {
     history.push(`${props.match.url}/${userId}/edit`);
   };
@@ -104,10 +102,8 @@ const Syllabus = props => {
     history.push(`${props.match.url}/new`);
   };
 
-
   const debouncedSearchColumn = _.debounce(value => {
     if (Object.keys(value).length > 0) {
-
       paramRef.current = { ...paramRef.current, ...value };
       dispatch(getSyllabus({ page: 0, size: size, sort: 'createdDate,DESC', ...value }));
     }
@@ -128,7 +124,9 @@ const Syllabus = props => {
   };
 
   const lockUser = () => {
-    dispatch(updateSyllabus({ id: selectedSyllabus.current.id, status: selectedSyllabus.current.status === 'ACTIVE' ? 'DISABLED' : "ACTIVE" }));
+    dispatch(
+      updateSyllabus({ id: selectedSyllabus.current.id, status: selectedSyllabus.current.status === 'ACTIVE' ? 'DISABLED' : 'ACTIVE' })
+    );
     setShow(false);
   };
 
@@ -136,7 +134,6 @@ const Syllabus = props => {
     dispatch(deleteSyllabus({ id: selectedSyllabus.current.id }));
     setShowDelete(false);
   };
-
 
   const memoComputedItems = React.useCallback(items => computedItems(items), []);
   const memoListed = React.useMemo(() => memoComputedItems(syllabus), [syllabus]);
@@ -150,9 +147,14 @@ const Syllabus = props => {
             <CIcon name="cil-plus" /> Thêm mới chương trình học
           </CButton>
         )}
-        <CButton color="info" variant="outline" className="ml-3" onClick={() => {
-          history.push(`${props.match.url}/report`);
-        }}>
+        <CButton
+          color="info"
+          variant="outline"
+          className="ml-3"
+          onClick={() => {
+            history.push(`${props.match.url}/report`);
+          }}
+        >
           <CIcon name="cil-plus" /> Xem kết quả rèn luyện
         </CButton>
         {/* <CButton color="primary" variant="outline" className="ml-3" onClick={() => {
@@ -162,7 +164,6 @@ const Syllabus = props => {
         </CButton> */}
       </CCardHeader>
       <CCardBody>
-
         <AdvancedTable
           items={memoListed}
           fields={fields}
@@ -176,13 +177,7 @@ const Syllabus = props => {
             noItems: 'Không có dữ liệu'
           }}
           loading={initialState.loading}
-
-
-
           onPaginationChange={val => setSize(val)}
-
-
-
           onColumnFilterChange={onFilterColumn}
           scopedSlots={{
             order: (item, index) => <td>{(activePage - 1) * size + index + 1}</td>,
@@ -191,11 +186,7 @@ const Syllabus = props => {
                 <CBadge color={getBadge(item.status)}>{mappingStatus[item.status]}</CBadge>
               </td>
             ),
-            type: item => (
-              <td>
-                {mappingType[item.type]}
-              </td>
-            ),
+            type: item => <td>{mappingType[item.type]}</td>,
             show_details: item => {
               return (
                 <td className="d-flex py-2">
@@ -261,8 +252,6 @@ const Syllabus = props => {
                           </dl>
                         )
                         } */}
-
-
                       </CCol>
                     </CRow>
                   </CCardBody>
@@ -281,7 +270,9 @@ const Syllabus = props => {
         <CModalHeader closeButton>
           <CModalTitle>Khóa chương trình học</CModalTitle>
         </CModalHeader>
-        <CModalBody>{`Bạn có chắc chắn muốn ${selectedSyllabus.current.status !== 'ACTIVE' ? 'mở khóa' : 'khóa'} chương trình học này không?`}</CModalBody>
+        <CModalBody>{`Bạn có chắc chắn muốn ${
+          selectedSyllabus.current.status !== 'ACTIVE' ? 'mở khóa' : 'khóa'
+        } chương trình học này không?`}</CModalBody>
         <CModalFooter>
           <CButton color="primary" onClick={lockUser}>
             Đồng ý
@@ -300,7 +291,7 @@ const Syllabus = props => {
           <CButton color="primary" onClick={deleteEntity}>
             Đồng ý
           </CButton>
-          <CButton color="secondary" onClick={() => showDelete(!show)}>
+          <CButton color="secondary" onClick={() => setShowDelete(!show)}>
             Hủy
           </CButton>
         </CModalFooter>

@@ -31,20 +31,23 @@ export class UserAnswerService {
 
   async calculatePoint(user: User, syllabusId: number, filter): Promise<any> {
     if (syllabusId) {
-      const syllabus = this.syllabusRepository.findOne(syllabusId);
+      const syllabus = await this.syllabusRepository.findOne(syllabusId);
+      if (!syllabus) return 0;
       if (syllabus) {
-        let queryString = queryBuilderFunc('UserAnswer', filter);
+        if (syllabus.status === 'ACTIVE') {
+          let queryString = queryBuilderFunc('UserAnswer', filter);
 
-        const queryBuilder = this.userAnswerRepository
-          .createQueryBuilder('UserAnswer')
-          .where('UserAnswer.choiceId = UserAnswer.correct')
-          .andWhere('UserAnswer.userId = :userId', { userId: user.id })
-          .andWhere('UserAnswer.syllabusId = :syllabusId', { syllabusId: syllabusId });
-        if (Object.keys(filter).length > 0) {
-          queryBuilder.andWhere(queryString);
+          const queryBuilder = this.userAnswerRepository
+            .createQueryBuilder('UserAnswer')
+            .where('UserAnswer.choiceId = UserAnswer.correct')
+            .andWhere('UserAnswer.userId = :userId', { userId: user.id })
+            .andWhere('UserAnswer.syllabusId = :syllabusId', { syllabusId: syllabusId });
+          if (Object.keys(filter).length > 0) {
+            queryBuilder.andWhere(queryString);
+          }
+          const count = await queryBuilder.getCount();
+          return count;
         }
-        const count = await queryBuilder.getCount();
-        return count;
       }
     }
   }
@@ -59,18 +62,18 @@ export class UserAnswerService {
       .createQueryBuilder('UserAnswer')
       .select(['UserAnswer.userId, UserAnswer.syllabusId'])
       .addSelect('COUNT(UserAnswer.id)', 'count')
-      .addSelect('COUNT(UserAnswer.id)', 'count')
       .leftJoinAndSelect('UserAnswer.user', 'user')
       .leftJoinAndSelect('UserAnswer.syllabus', 'syllabus')
-      .where('UserAnswer.choiceId = UserAnswer.correct')
+      .where('UserAnswer.choiceId = UserAnswer.correct AND UserAnswer.choiceId is not null')
       .groupBy('UserAnswer.userId, UserAnswer.syllabusId')
       .orderBy('COUNT(UserAnswer.id)', 'DESC')
       .offset(options.skip)
       .limit(options.take);
+
     const countBuilder = this.userAnswerRepository
       .createQueryBuilder('UserAnswer')
       .select(['UserAnswer.userId, UserAnswer.syllabusId'])
-      .where('UserAnswer.choiceId = UserAnswer.correct')
+      .where('UserAnswer.choiceId = UserAnswer.correct AND UserAnswer.choiceId is not null')
       .leftJoinAndSelect('UserAnswer.user', 'user')
       .leftJoinAndSelect('UserAnswer.syllabus', 'syllabus')
       .groupBy('UserAnswer.userId, UserAnswer.syllabusId');
@@ -78,6 +81,7 @@ export class UserAnswerService {
       countBuilder.andWhere(queryString);
       queryBuilder.andWhere(queryString);
     }
+    // console.log(queryBuilder.getSql());
     const results = await queryBuilder.getRawMany();
     const count = await countBuilder.getRawMany();
     return [results, count.length];
@@ -93,7 +97,29 @@ export class UserAnswerService {
   }
 
   async save(userAnswer: UserAnswer): Promise<UserAnswer | undefined> {
-    return await this.userAnswerRepository.save(userAnswer);
+    const activeSyllabus = await this.syllabusRepository.find({
+      where: {
+        status: 'ACTIVE'
+      }
+    });
+    if (activeSyllabus.length > 0) {
+      const existingAsnwer = await this.userAnswerRepository.findOne({
+        where: {
+          user: userAnswer.user,
+          question: userAnswer.question,
+          syllabus: activeSyllabus[0],
+          choice: userAnswer.choice
+        }
+      });
+      if (existingAsnwer) {
+        throw new Error('User already answered this question');
+      }
+      return await this.userAnswerRepository.save({
+        ...userAnswer,
+        syllabus: activeSyllabus[0]
+      });
+    }
+    throw new Error('No active syllabus found');
   }
 
   async update(userAnswer: UserAnswer): Promise<UserAnswer | undefined> {
