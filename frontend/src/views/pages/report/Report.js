@@ -16,7 +16,7 @@ import { globalizedBranchSelectors, setAll } from '../user/UserBranch/branch.red
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getTop10Customer, getTop10Product, getTop10sale } from './report.api';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import ReportDate from '../../../views/components/report-date/ReportDate';
 moment.locale('vi');
 const { selectAll } = globalizedBranchSelectors;
@@ -34,7 +34,7 @@ const Report = props => {
   const isBranchManager = account.roles.filter(item => item.authority.includes('BRANCH_MANAGER')).length > 0;
 
   const specialRole = JSON.parse(account.department.reportDepartment || '[]').length > 0;
-  const branches = ((isEmployee || isBranchManager) && !specialRole) ? [account.branch] : useSelector(selectAll);
+  const branches = (isEmployee || isBranchManager) && !specialRole ? [account.branch] : useSelector(selectAll);
 
   const users = isEmployee ? [account] : useSelector(selectUserAll);
 
@@ -50,19 +50,19 @@ const Report = props => {
   const [top10Product, setTop10Product] = useState([]);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
-    if(isManager){
+    if (isManager) {
       dispatch(getBranch({ department: account.department.id, dependency: true }));
     }
   }, []);
 
   useEffect(() => {
-    console.log(branches)
+    console.log(branches);
     if (account.department.externalChild && department && branches.length > 1) {
       if (JSON.parse(account.department.externalChild).includes(department.id)) {
         dispatch(setAll([account.branch]));
       }
     }
-    if(branches.length === 1){
+    if (branches.length === 1) {
       // dispatch(
       //   getExactUser({
       //     page: 0,
@@ -76,7 +76,7 @@ const Report = props => {
     }
   }, [branches]);
 
-const getTop10 = filter => {
+  const getTop10 = filter => {
     dispatch(
       getExactUser({
         page: 0,
@@ -153,7 +153,7 @@ const getTop10 = filter => {
   }, [branch]);
 
   useEffect(() => {
-    console.log(filter)
+    console.log(filter);
     if (Object.keys(filter).length > 5) {
       getTop10(filter);
     }
@@ -212,27 +212,15 @@ const getTop10 = filter => {
   };
 
   const renderLink = item => {
-    return (
-      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-histories/${item.sale_id}` })} >
-        {item.sale_code}
-      </CLink>
-    );
+    return <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-histories/${item.sale_id}` })}>{item.sale_code}</CLink>;
   };
 
   const renderCustomerLink = item => {
-    return (
-      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-customer-histories/${item.id}` })} >
-        {item.code}
-      </CLink>
-    );
+    return <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-customer-histories/${item.id}` })}>{item.code}</CLink>;
   };
 
   const renderProductLink = item => {
-    return (
-      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-product-histories/${item.id}` })} >
-        {item.code}
-      </CLink>
-    );
+    return <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-product-histories/${item.id}` })}>{item.code}</CLink>;
   };
 
   const memoTop10Sale = React.useMemo(() => top10Sale, [top10Sale]);
@@ -276,13 +264,17 @@ const getTop10 = filter => {
                   onChange={e => {
                     setDepartment(e?.value || null);
                   }}
-                  value={initialState.allChild.length > 1 ? {
-                    value: department,
-                    label: department?.name
-                  } : {
-                    value: initialState.allChild[0],
-                    label: initialState.allChild[0]?.name
-                  }}
+                  value={
+                    initialState.allChild.length > 1
+                      ? {
+                          value: department,
+                          label: department?.name
+                        }
+                      : {
+                          value: initialState.allChild[0],
+                          label: initialState.allChild[0]?.name
+                        }
+                  }
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Chi nhánh"
@@ -300,13 +292,17 @@ const getTop10 = filter => {
                   onChange={e => {
                     setBranch(e?.value || null);
                   }}
-                  value={branches.length > 1 ?{
-                    value: branch,
-                    label: branch?.name
-                  }:{
-                    value: branches[0],
-                    label: branches[0]?.name
-                  }}
+                  value={
+                    branches.length > 1
+                      ? {
+                          value: branch,
+                          label: branch?.name
+                        }
+                      : {
+                          value: branches[0],
+                          label: branches[0]?.name
+                        }
+                  }
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Phòng ban"

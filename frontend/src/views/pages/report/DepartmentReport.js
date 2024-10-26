@@ -9,7 +9,7 @@ import _ from 'lodash';
 import { getDepartmentReport, getDepartmentReportExternal } from './report.api';
 import { CChartBar, CChartDoughnut } from '@coreui/react-chartjs';
 import { getRandomColor } from '../../../shared/utils/helper';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';

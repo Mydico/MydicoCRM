@@ -26,7 +26,7 @@ import { filterCustomerNotToStore } from '../customer/customer.api';
 import { getCustomerType } from '../customer/CustomerType/customer-type.api';
 import { globalizedcustomerTypeSelectors } from '../customer/CustomerType/customer-type.reducer';
 import AdvancedTable from '../../components/table/AdvancedTable';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import { Td } from '../../../views/components/super-responsive-table';
 
 moment.locale('vi');

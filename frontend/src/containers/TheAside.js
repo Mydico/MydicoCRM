@@ -18,7 +18,7 @@ import {
 import CIcon from '@coreui/icons-react/lib/CIcon';
 import { setAsideShow } from '../App.reducer';
 import { userSafeSelector } from '../views/pages/login/authenticate.reducer';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import { CButton, CButtonToolbar, CLink } from '@coreui/react';
 
 const TheAside = () => {
@@ -58,7 +58,7 @@ const TheAside = () => {
               </CListGroupItem>
               <CListGroupItem accent="warning" href="#" className="list-group-item-divider">
                 <div>
-                  Họ tên: {" "}
+                  Họ tên:{' '}
                   <strong>
                     {account.lastName} {account.firstName}
                   </strong>
@@ -104,7 +104,7 @@ const TheAside = () => {
                 className="text-uppercase mb-1 mt-4"
                 onClick={() => {
                   history.push(`/change-password`);
-                  setState(false)
+                  setState(false);
                 }}
               >
                 <small>
@@ -117,7 +117,7 @@ const TheAside = () => {
                 className="text-uppercase mb-1 mt-4"
                 onClick={() => {
                   history.push(`/edit-profile`);
-                  setState(false)
+                  setState(false);
                 }}
               >
                 <small>

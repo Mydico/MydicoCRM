@@ -9,7 +9,7 @@ import { CSVLink } from 'react-csv';
 import moment from 'moment';
 import Download from '../../../components/excel/DownloadExcel.js';
 import { CLink } from '@coreui/react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import ReportDate from '../../../components/report-date/ReportDate';
 import { setParams } from '../../../../App.reducer.js';
 import AdvancedTable from '../../../components/table/AdvancedTable.js';

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle,  CPagination, CLink } from '@coreui/react';
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CWidgetBrand, CCardTitle, CPagination, CLink } from '@coreui/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-dates/initialize';
@@ -16,7 +16,7 @@ import { globalizedBranchSelectors, setAll } from '../user/UserBranch/branch.red
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
 import { getCustomerCountReport, getCustomerSummaryReport, getSaleReport, getSaleSummaryReport } from './report.api';
 import Download from './../../components/excel/DownloadExcel';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import AdvancedTable from '../../components/table/AdvancedTable';
 import ReportDate from '../../../views/components/report-date/ReportDate';
 import { Td } from '../../../views/components/super-responsive-table';
@@ -66,7 +66,7 @@ const SaleReport = props => {
   const isBranchManager = account.roles.filter(item => item.authority.includes('BRANCH_MANAGER')).length > 0;
 
   const specialRole = JSON.parse(account.department.reportDepartment || '[]').length > 0;
-  const branches = ((isEmployee || isBranchManager) && !specialRole) ? [account.branch] : useSelector(selectAll);
+  const branches = (isEmployee || isBranchManager) && !specialRole ? [account.branch] : useSelector(selectAll);
   const users = isEmployee ? [account] : useSelector(selectUserAll);
   const history = useHistory();
 
@@ -89,7 +89,7 @@ const SaleReport = props => {
   const [numOfPriceProduct, setNumOfPriceProduct] = useState(0);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
-    if(isManager){
+    if (isManager) {
       dispatch(getBranch({ department: account.department.id, dependency: true }));
     }
   }, []);
@@ -100,7 +100,7 @@ const SaleReport = props => {
         dispatch(setAll([account.branch]));
       }
     }
-    if(branches.length === 1){
+    if (branches.length === 1) {
       dispatch(
         getExactUser({
           page: 0,
@@ -256,11 +256,7 @@ const SaleReport = props => {
   };
 
   const renderLink = item => {
-    return (
-      <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-histories/${item.sale_id}` })} >
-        {item.sale_code}
-      </CLink>
-    );
+    return <CLink onClick={() => history.push({ pathname: `${props.match.url}/order-histories/${item.sale_id}` })}>{item.sale_code}</CLink>;
   };
 
   const computedExcelItems = React.useCallback(items => {
@@ -304,13 +300,17 @@ const SaleReport = props => {
                   onChange={e => {
                     setDepartment(e?.value || null);
                   }}
-                  value={initialState.allChild.length > 1 ? {
-                    value: department,
-                    label: department?.name
-                  } : {
-                    value: initialState.allChild[0],
-                    label: initialState.allChild[0]?.name
-                  }}
+                  value={
+                    initialState.allChild.length > 1
+                      ? {
+                          value: department,
+                          label: department?.name
+                        }
+                      : {
+                          value: initialState.allChild[0],
+                          label: initialState.allChild[0]?.name
+                        }
+                  }
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Chi nhánh"
@@ -328,13 +328,17 @@ const SaleReport = props => {
                   onChange={e => {
                     setBranch(e?.value || null);
                   }}
-                  value={branches.length > 1 ?{
-                    value: branch,
-                    label: branch?.name
-                  }:{
-                    value: branches[0],
-                    label: branches[0]?.name
-                  }}
+                  value={
+                    branches.length > 1
+                      ? {
+                          value: branch,
+                          label: branch?.name
+                        }
+                      : {
+                          value: branches[0],
+                          label: branches[0]?.name
+                        }
+                  }
                   isClearable={true}
                   openMenuOnClick={false}
                   placeholder="Chọn Phòng ban"
