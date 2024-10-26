@@ -958,6 +958,7 @@ export class ReportService {
           .from(Customer, 'Customer')
           .innerJoin('Customer.order', 'order')
           .where(queryString)
+          .andWhere(`Customer.activated = true`)
           .groupBy('Customer.id');
       }, 'totals');
     if (filter['customer'] && filter['customer'] !== '[]') {
@@ -1098,10 +1099,7 @@ export class ReportService {
 
   async getPromotionReport(options, filter): Promise<any> {
     let queryString = queryBuilderCustomerForPromotionReportFunc(filter);
-    // queryString = queryString.replace('Transaction.promotion', 'order.promotion');
-    // queryString = queryString.replace('Transaction.promotionItem', 'order.promotionItem');
-    // queryString = queryString.replace('Transaction.promotion', 'storeInput.promotion');
-    // queryString = queryString.replace('Transaction.promotionItem', 'order.promotionItem');
+
     const queryBuilder = this.transactionRepository
       .createQueryBuilder('Transaction')
       .select(['Transaction.customerId', 'Transaction.customer_code', 'Transaction.customer_name'])
@@ -1111,14 +1109,8 @@ export class ReportService {
         'realMoney'
       )
       .addSelect(`sum(case when Transaction.type = 'RETURN' then Transaction.refund_money else 0 end)`, 'return')
-      // .leftJoin('Transaction.customer', 'customer')
-      // .leftJoin('Transaction.sale', 'sale')
       .leftJoin('Transaction.order', 'order')
-      // .leftJoin('order.promotion', 'promotion')
-      // .leftJoin('order.promotionItem', 'promotionItem')
       .leftJoin('Transaction.storeInput', 'storeInput')
-      // .leftJoin('storeInput.promotion', 'promotion')
-      // .leftJoin('storeInput.promotionItem', 'promotionItem')
       .where(queryString)
       .groupBy('Transaction.customerId, Transaction.customer_code, Transaction.customer_name')
       .orderBy(`realMoney`, options.order[Object.keys(options.order)[0]] || 'DESC')
@@ -1145,39 +1137,7 @@ export class ReportService {
     const result = await queryBuilder.getRawMany();
 
     return [result, count]
-    // const customerIds = result.map(item => item.customer_id);
-    // if (filter['endDate'] && filter['startDate']) {
 
-    //   queryString = `Transaction.createdDate  >= '${filter['startDate']}' AND  Transaction.createdDate <= '${
-    //     filter['endDate']
-    //   } 23:59:59'`;
-    // }
-    // const returnProduct = await this.transactionRepository
-    //   .createQueryBuilder('Transaction')
-    //   .select(['customer.id', 'customer.code', 'customer.name'])
-    //   .addSelect('sum(Transaction.refund_money)', 'return')
-    //   .leftJoin('Transaction.customer', 'customer')
-    //   .leftJoin('Transaction.storeInput', 'storeInput')
-    //   .andWhere('Transaction.customerId IN (:saleIds)', { saleIds: customerIds.length > 0 ? customerIds : '' })
-    //   .andWhere(queryString)
-    //   .cache(3 * 3600)
-    //   .groupBy('Transaction.customerId, customer.id, customer.code, customer.name')
-    //   .getRawMany();
-    // if (result.length > 0) {
-    //   const final = result.map(item => {
-    //     const index = returnProduct.findIndex(returnItem => returnItem.customer_id === item.customer_id);
-    //     if (index >= 0) {
-    //       return {
-    //         ...item,
-    //         return: Number(returnProduct[index].return)
-    //       };
-    //     }
-    //     return item;
-    //   });
-    //   return [final, Number(count?.length || 0)];
-    // } else {
-    //   return [[], 0];
-    // }
   }
 
   async getCustomerCount(filter): Promise<any> {
@@ -1198,6 +1158,53 @@ export class ReportService {
     const result = await queryBuilder.getRawOne();
     await this.cacheManager.set(cacheKey, result, 60 * 1000);
     return result
+  }
+
+  async getNewCustomerRealIncome(filter): Promise<any> {
+    let queryString = queryBuilderFunc('Customer', filter);
+    queryString = queryString.replace('Customer.customerId', 'Customer.id');
+    const queryBuilderCount = await this.customerRepository.manager.connection
+      .createQueryBuilder()
+      .from(qb => {
+        return qb
+          .select('Customer.id')
+          .addSelect('COUNT(order.id) > 0', 'count')
+          .from(Customer, 'Customer')
+          .innerJoin('Customer.order', 'order')
+          .where(queryString)
+          .andWhere(`Customer.activated = true`)
+          .groupBy('Customer.id');
+      }, 'totals')
+      .getRawMany();
+    // const queryBuilderCount = await this.customerRepository
+    //   .createQueryBuilder('Customer')
+    //   .where(queryString)
+    //   .andWhere(`DATE(Customer.createdDate) > :startDate AND DATE(Customer.createdDate) < :endDate`, { startDate: `${filter.startDate}`, endDate: `${filter.endDate} 23:59:59` })
+    //   .cache(3 * 3600)
+    //   .getMany()
+    const ids = queryBuilderCount.map(item => item.Customer_id)
+
+    const queryBuilder = this.transactionRepository
+      .createQueryBuilder('Transaction')
+      .select(['Customer.id', 'Customer.code', 'Customer.name', 'Customer.address', 'Customer.tel'])
+      .addSelect(`sum(case when type = 'DEBIT' then total_money when  type = 'RETURN' then - refund_money else 0 end)`, 'real')
+      .leftJoin('Transaction.customer', 'Customer')
+      .where(queryString)
+      .andWhere(`Customer.id IN (:ids)`, { ids: [null, ...ids] })
+      .orderBy('`Customer_id`', 'DESC')
+      .groupBy('Customer.id, Customer.code, Customer.name, Customer.address, Customer.tel')
+      .cache(3 * 3600);
+    console.log(queryBuilder.getSql())
+    const cacheKey = queryBuilder.getQueryAndParameters().toString();
+    const cachedQuery = await this.cacheManager.get(cacheKey);
+    if (cachedQuery) {
+      return cachedQuery;
+    }
+    const result = await queryBuilder.getRawMany();
+    const totalReal = result.reduce((acc, curr) => acc + Number(curr.real), 0)
+    console.log(totalReal)
+    await this.cacheManager.set(cacheKey, totalReal, 60 * 1000);
+    return totalReal
   }
 
   async getCustomerDebit(filter): Promise<any> {

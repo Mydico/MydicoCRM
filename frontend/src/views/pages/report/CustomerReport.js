@@ -15,7 +15,13 @@ import { getBranch } from '../user/UserBranch/branch.api';
 import { getExactUser, getUser } from '../user/UserList/user.api';
 import { globalizedBranchSelectors, setAll } from '../user/UserBranch/branch.reducer';
 import { globalizedUserSelectors } from '../user/UserList/user.reducer';
-import { getCustomerCountReport, getCustomerPriceReport, getCustomerReport, getCustomerSummaryReport } from './report.api';
+import {
+  getCustomerCountReport,
+  getCustomerPriceReport,
+  getCustomerReport,
+  getCustomerSummaryReport,
+  getNewCustomerRealIncome
+} from './report.api';
 import { filterCustomerNotToStore } from '../customer/customer.api';
 import { getCustomerType } from '../customer/CustomerType/customer-type.api';
 import { globalizedcustomerTypeSelectors } from '../customer/CustomerType/customer-type.reducer';
@@ -94,7 +100,9 @@ const CustomerReport = props => {
   const [numberOfCustomer, setNumberOfCustomer] = useState(0);
   const [filteredCustomer, setFilteredCustomer] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState([]);
+  const [newCustomerRealIncome, setNewCustomerRealIncome] = useState([]);
 
+  console.log(newCustomerRealIncome);
   useEffect(() => {
     dispatch(getChildTreeDepartmentByUser());
     dispatch(getCustomerType());
@@ -132,14 +140,13 @@ const CustomerReport = props => {
   }, [activePage, size]);
 
   useEffect(() => {
-   
     if (account.department.externalChild && department && branches.length > 1) {
       if (JSON.parse(account.department.externalChild).includes(department.id)) {
         dispatch(setAll([account.branch]));
       }
     }
     if (branches.length === 1) {
-      setBranch( branches[0])
+      setBranch(branches[0]);
       // dispatch(
       //   getExactUser({
       //     page: 0,
@@ -187,6 +194,12 @@ const CustomerReport = props => {
       }
     });
 
+    dispatch(getNewCustomerRealIncome(filter)).then(data => {
+      if (data) {
+        setNewCustomerRealIncome(data.payload || []);
+      }
+    });
+
     dispatch(getCustomerPriceReport(filter)).then(data => {
       if (data) {
         setNumOfPriceProduct(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.payload.realMoney || 0));
@@ -206,7 +219,7 @@ const CustomerReport = props => {
     setBranch(null);
     setUser(null);
     setCustomer(null);
-    setSelectedCustomer([])
+    setSelectedCustomer([]);
   };
   useEffect(() => {
     if (department !== null) {
@@ -286,8 +299,7 @@ const CustomerReport = props => {
   useEffect(() => {
     setFilter({
       ...filter,
-      customer: JSON.stringify(selectedCustomer?.map(item => item.value) || []),
-
+      customer: JSON.stringify(selectedCustomer?.map(item => item.value) || [])
     });
   }, [selectedCustomer]);
 
@@ -550,9 +562,9 @@ const CustomerReport = props => {
           <CCol sm="6" lg="6">
             <CWidgetBrand
               rightHeader={numberOfCustomer}
-              rightFooter="Tổng khách hàng"
-              // leftHeader={numOfProduct}
-              // leftFooter="Tổng khách hàng"
+              rightFooter="Tổng khách hàng tiềm năng mới"
+              leftHeader={(Number(newCustomerRealIncome) || 0).toLocaleString('vi-VN')}
+              leftFooter="Tổng doanh thu khách hàng mở mới"
               color="gradient-danger"
             >
               <CIcon name="cil3d" height="76" className="my-4" />

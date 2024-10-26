@@ -146,6 +146,15 @@ export const getCustomerReport = createAsyncThunk('api/reports/customer-report',
   }
 });
 
+export const getNewCustomerRealIncome = createAsyncThunk('api/reports/new-customer-real-income', async (params, thunkAPI) => {
+  try {
+    const result = await axios.get('api/reports/new-customer-real-income', { params: params });
+    return result.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data);
+  }
+});
+
 export const getCustomerPriceReport = createAsyncThunk('api/reports/customer-price-report', async (params, thunkAPI) => {
   try {
     const result = await axios.get('api/reports/customer-price-report', { params: params });

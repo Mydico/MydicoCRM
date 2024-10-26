@@ -418,6 +418,18 @@ export class ReportController {
     return res.send(await this.reportService.getCustomerCount(filter));
   }
 
+  @Get('/new-customer-real-income')
+  @ApiResponse({
+    status: 200,
+    description: 'List all records'
+  })
+  async getNewCustomerRealIncome(@Req() req: Request, @Res() res): Promise<any> {
+    // delete req.query['startDate']
+    // delete req.query['endDate']
+    const filter = await this.buildFilterForReport(req);
+    return res.send(await this.reportService.getNewCustomerRealIncome(filter));
+  }
+
   @Get('/syllabus/daily-report')
   @Roles(RoleType.USER)
   @ApiResponse({
