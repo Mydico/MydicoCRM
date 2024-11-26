@@ -126,7 +126,7 @@ export class StoreInputController {
     type: StoreInput
   })
   async getAll(@Req() req: Request, @Res() res): Promise<StoreInput[]> {
-    const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort);
+    const pageRequest: PageRequest = new PageRequest(req.query.page , req.query.size , req.query.sort);
     const filter = {};
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {

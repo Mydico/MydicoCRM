@@ -24,7 +24,6 @@ import { User } from '../../domain/user.entity';
 import UserAnswer from '../../domain/user-answer.entity';
 import { Like } from 'typeorm';
 
-
 @Controller('api/questions')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
@@ -32,7 +31,7 @@ import { Like } from 'typeorm';
 export class QuestionController {
   logger = new Logger('QuestionController');
 
-  constructor(private readonly questionService: QuestionService) { }
+  constructor(private readonly questionService: QuestionService) {}
 
   @Get('/syllabusInfo')
   @Roles(RoleType.USER)
@@ -43,14 +42,13 @@ export class QuestionController {
   })
   async getSyllabusInfo(@Req() req: Request, @Res() res): Promise<UserAnswer[]> {
     const currentUser = req.user as User;
-    const id = req.query['syllabus']
+    const id = req.query['syllabus'];
     if (id) {
-      const results = await this.questionService.getQuestionFromSyllabus(id, currentUser)
+      const results = await this.questionService.getQuestionFromSyllabus(id as string, currentUser);
 
       return res.send(results);
     }
-    return []
-
+    return [];
   }
 
   @Get('/')
@@ -66,11 +64,10 @@ export class QuestionController {
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         if (item === 'status') {
-          filter[item] = req.query[item]
-          return
+          filter[item] = req.query[item];
+          return;
         }
-        filter[item] = Like(`%${req.query[item]}%`)
-
+        filter[item] = Like(`%${req.query[item]}%`);
       }
     });
     const [results, count] = await this.questionService.findAndCount({

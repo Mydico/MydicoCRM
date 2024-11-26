@@ -21,7 +21,7 @@ export class InternalNotificationConsumer {
     private readonly userService: UserService,
     private readonly notificationService: NotificationService,
     private readonly firebaseService: FirebaseService
-  ) { }
+  ) {}
   @Process('send-notification')
   async notification(job: Job<any>) {
     const internalNotification = job.data.internalNotification;

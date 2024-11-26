@@ -1,11 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Enforcer } from 'casbin';
+import { Enforcer, getDefaultFileSystem, setDefaultFileSystem } from 'casbin';
 import { ROLE_ENFORCER } from './utils/role.constants';
-
+import fs from 'fs';
 @Injectable()
 export class RoleService {
   // tslint:disable-next-line:no-empty
-  constructor(@Inject(ROLE_ENFORCER) private readonly enforcer: Enforcer) {}
+  constructor(@Inject(ROLE_ENFORCER) private readonly enforcer: Enforcer) {
+    // const defaultFileSystem = getDefaultFileSystem();
+    // console.log(defaultFileSystem);
+  }
 
   public async reloadPolicy() {
     await this.enforcer.loadPolicy();

@@ -74,7 +74,7 @@ export class ReportController {
       }
       return res.send(await this.reportService.getOrderSaleReportForManager(departmentVisible, filter));
     } else {
-      return res.send(await this.reportService.getOrderSaleReport(req.query['userId'], filter));
+      return res.send(await this.reportService.getOrderSaleReport(req.query['userId'] as string, filter));
     }
   }
 

@@ -10,7 +10,7 @@ import {
   UseGuards,
   Req,
   UseInterceptors,
-  Res,
+  Res
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -44,8 +44,12 @@ export class ProductQuantityController {
   async getQuantity(@Req() req: Request, @Res() res: Response): Promise<Response> {
     const results = await this.productQuantityService.findByfields({
       where: {
-        product: req.query.productId,
-        store: req.query.storeId,
+        product: {
+          id: req.query.productId as string
+        },
+        store: {
+          id: req.query.storeId as string
+        },
         status: ProductStatus.ACTIVE
       }
     });
@@ -65,7 +69,7 @@ export class ProductQuantityController {
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
         try {
-          const arr = JSON.parse(req.query[item]);
+          const arr = JSON.parse(req.query[item] as string);
           if (Array.isArray(arr)) {
             filter[item] = In(arr);
           } else {
@@ -126,9 +130,9 @@ export class ProductQuantityController {
     const currentUser = req.user as User;
     let departmentVisible = [];
     if (currentUser.department) {
-        departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-        departmentVisible = departmentVisible.map(item => item.id);
-        departmentVisible.push(currentUser.department.id);
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
     }
     const results = await this.productQuantityService.countProduct(filter, departmentVisible, {
       skip: +pageRequest.page * pageRequest.size,
@@ -150,16 +154,16 @@ export class ProductQuantityController {
     const filter: any = {};
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        const searchString = req.query[item].includes('%') ? req.query[item].replace('%', '\\%') : req.query[item];
+        const searchString = (req.query[item] as string).includes('%') ? (req.query[item] as string).replace('%', '\\%') : req.query[item];
         filter[item] = searchString;
       }
     });
     const currentUser = req.user as User;
     let departmentVisible = [];
     if (currentUser.department) {
-        departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
-        departmentVisible = departmentVisible.map(item => item.id);
-        departmentVisible.push(currentUser.department.id);
+      departmentVisible = await this.departmentService.findAllFlatChild(currentUser.department);
+      departmentVisible = departmentVisible.map(item => item.id);
+      departmentVisible.push(currentUser.department.id);
     }
     const [results, count] = await this.productQuantityService.findAndCount(filter, departmentVisible, {
       skip: +pageRequest.page * pageRequest.size,
@@ -169,7 +173,6 @@ export class ProductQuantityController {
     HeaderUtil.addPaginationHeaders(req, res, new Page(results, count, pageRequest));
     return res.send(results);
   }
-
 
   @PostMethod('/')
   @Roles(RoleType.USER)

@@ -44,7 +44,7 @@ export class ProductController {
     const filter: any = {};
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        const searchString = req.query[item].includes('%') ? req.query[item].replace('%', '\\%') : req.query[item];
+        const searchString = (req.query[item] as string).includes('%') ? (req.query[item] as string).replace('%', '\\%') : req.query[item];
         filter[item] = searchString;
       }
     });
@@ -71,7 +71,7 @@ export class ProductController {
     const filter: any = {};
     Object.keys(req.query).forEach(item => {
       if (item !== 'page' && item !== 'size' && item !== 'sort' && item !== 'dependency') {
-        const searchString = req.query[item].includes('%') ? req.query[item].replace('%', '\\%') : req.query[item];
+        const searchString = (req.query[item] as string).includes('%') ? (req.query[item] as string).replace('%', '\\%') : req.query[item];
         filter[item] = searchString;
       }
     });

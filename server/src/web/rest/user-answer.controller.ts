@@ -22,7 +22,6 @@ import { HeaderUtil } from '../../client/header-util';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
 import { User } from 'src/domain/user.entity';
 
-
 @Controller('api/user-answers')
 @UseGuards(AuthGuard, RolesGuard, PermissionGuard)
 @UseInterceptors(LoggingInterceptor)
@@ -30,8 +29,7 @@ import { User } from 'src/domain/user.entity';
 export class UserAnswerController {
   logger = new Logger('UserAnswerController');
 
-  constructor(private readonly userAnswerService: UserAnswerService,
-  ) { }
+  constructor(private readonly userAnswerService: UserAnswerService) {}
 
   @Get('/point')
   @Roles(RoleType.USER)
@@ -42,13 +40,13 @@ export class UserAnswerController {
   })
   async getPoint(@Req() req: Request, @Res() res): Promise<UserAnswer> {
     const currentUser = req.user as User;
-    const id = req.query['syllabus']
+    const id = req.query['syllabus'];
 
     const filter = {
       startDate: req.query['startDate'],
-      endDate: req.query['endDate'],
-    }
-    return res.send(await this.userAnswerService.calculatePoint(currentUser, id, filter));
+      endDate: req.query['endDate']
+    };
+    return res.send(await this.userAnswerService.calculatePoint(currentUser, Number(id), filter));
   }
 
   @Get('/')
