@@ -43,7 +43,7 @@ export class FirebaseService {
             },
             fcmOptions: {}
           }));
-
+          console.log('start sending ', tokenMessages.length, 'messages');
           const result = await this.sendAll(tokenMessages, dryRun);
           console.log('result', result.responses.map(r => console.log(r)));
           return result;
@@ -88,7 +88,7 @@ export class FirebaseService {
     // }
     // for (const message of messages) {
     //   console.log('message', message);
-    return firebase.messaging().sendEach(messages, dryRun);
+    return await firebase.messaging().sendEach(messages, dryRun);
     // }
   }
 }
