@@ -45,7 +45,7 @@ export class FirebaseService {
           }));
           console.log('start sending ', tokenMessages.length, 'messages');
           const result = await this.sendAll(tokenMessages, dryRun);
-          console.log('result', result.responses.map(r => console.log(r)));
+          console.log('result', result);
           return result;
         } catch (error) {
           return {
